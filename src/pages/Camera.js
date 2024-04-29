@@ -25,7 +25,7 @@ placeholder="Select Camera"
     />
     <Button type="primary" style={{fontSize:"1rem",backgroundColor:"#ec522d",margin:"1rem"}} >></Button>
 
-{/* 
+
     <div className="flex">
     <Space direction="vertical" size={16}>
     <Row gutter={16}>
@@ -47,7 +47,7 @@ placeholder="Select Camera"
   </Row>
     
   </Space>
-    </div> */}
+    </div> 
 
     </div>
 );}
