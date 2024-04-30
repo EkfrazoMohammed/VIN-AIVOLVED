@@ -6,94 +6,93 @@
     function MachineParam() {
     const { Title } = Typography;
     const [groupedData, setGroupedData] = useState({});
-    const[totalData,setTotaldata]=useState(
-        [
-            {
-                "id": 1,
-                "params_count": "18484",
-                "date_time": "2024-04-22T12:45:40",
-                "parameter": "Machine Counter",
-                "color_code": "#64096e"
-            },
-            {
-                "id": 2,
-                "params_count": "15464",
-                "date_time": "2024-04-22T12:45:40",
-                "parameter": "Program Counter",
-                "color_code": "#6e4699"
-            },
-            {
-                "id": 3,
-                "params_count": "800",
-                "date_time": "2024-04-22T12:45:40",
-                "parameter": "Reject Counter",
-                "color_code": "#ed1e07"
-            },
-            {
-                "id": 4,
-                "params_count": "10484",
-                "date_time": "2024-04-23T12:45:40",
-                "parameter": "Machine Counter",
-                "color_code": "#64096e"
-            },
-            {
-                "id": 5,
-                "params_count": "12464",
-                "date_time": "2024-04-23T12:45:40",
-                "parameter": "Program Counter",
-                "color_code": "#6e4699"
-            },
-            {
-                "id": 6,
-                "params_count": "900",
-                "date_time": "2024-04-23T12:45:40",
-                "parameter": "Reject Counter",
-                "color_code": "#ed1e07"
-            },
-            {
-                "id": 7,
-                "params_count": "13484",
-                "date_time": "2024-04-24T12:45:40",
-                "parameter": "Machine Counter",
-                "color_code": "#64096e"
-            },
-            {
-                "id": 8,
-                "params_count": "11464",
-                "date_time": "2024-04-24T12:45:40",
-                "parameter": "Program Counter",
-                "color_code": "#6e4699"
-            },
-            {
-                "id": 9,
-                "params_count": "10000",
-                "date_time": "2024-04-24T12:45:40",
-                "parameter": "Reject Counter",
-                "color_code": "#ed1e07"
-            },
-            {
-                "id": 10,
-                "params_count": "13484",
-                "date_time": "2024-04-25T12:45:40",
-                "parameter": "Machine Counter",
-                "color_code": "#64096e"
-            },
-            {
-                "id": 11,
-                "params_count": "11464",
-                "date_time": "2024-04-25T12:45:40",
-                "parameter": "Program Counter",
-                "color_code": "#6e4699"
-            },
-            {
-                "id": 12,
-                "params_count": "12000",
-                "date_time": "2024-04-25T12:45:40",
-                "parameter": "Reject Counter",
-                "color_code": "#ed1e07"
-            }
-        ]
-    )
+    const dummyData=   [
+        {
+            "id": 1,
+            "params_count": "18484",
+            "date_time": "2024-04-22T12:45:40",
+            "parameter": "Machine Counter",
+            "color_code": "#64096e"
+        },
+        {
+            "id": 2,
+            "params_count": "15464",
+            "date_time": "2024-04-22T12:45:40",
+            "parameter": "Program Counter",
+            "color_code": "#6e4699"
+        },
+        {
+            "id": 3,
+            "params_count": "800",
+            "date_time": "2024-04-22T12:45:40",
+            "parameter": "Reject Counter",
+            "color_code": "#ed1e07"
+        },
+        {
+            "id": 4,
+            "params_count": "10484",
+            "date_time": "2024-04-23T12:45:40",
+            "parameter": "Machine Counter",
+            "color_code": "#64096e"
+        },
+        {
+            "id": 5,
+            "params_count": "12464",
+            "date_time": "2024-04-23T12:45:40",
+            "parameter": "Program Counter",
+            "color_code": "#6e4699"
+        },
+        {
+            "id": 6,
+            "params_count": "900",
+            "date_time": "2024-04-23T12:45:40",
+            "parameter": "Reject Counter",
+            "color_code": "#ed1e07"
+        },
+        {
+            "id": 7,
+            "params_count": "13484",
+            "date_time": "2024-04-24T12:45:40",
+            "parameter": "Machine Counter",
+            "color_code": "#64096e"
+        },
+        {
+            "id": 8,
+            "params_count": "11464",
+            "date_time": "2024-04-24T12:45:40",
+            "parameter": "Program Counter",
+            "color_code": "#6e4699"
+        },
+        {
+            "id": 9,
+            "params_count": "10000",
+            "date_time": "2024-04-24T12:45:40",
+            "parameter": "Reject Counter",
+            "color_code": "#ed1e07"
+        },
+        {
+            "id": 10,
+            "params_count": "13484",
+            "date_time": "2024-04-25T12:45:40",
+            "parameter": "Machine Counter",
+            "color_code": "#64096e"
+        },
+        {
+            "id": 11,
+            "params_count": "11464",
+            "date_time": "2024-04-25T12:45:40",
+            "parameter": "Program Counter",
+            "color_code": "#6e4699"
+        },
+        {
+            "id": 12,
+            "params_count": "12000",
+            "date_time": "2024-04-25T12:45:40",
+            "parameter": "Reject Counter",
+            "color_code": "#ed1e07"
+        }
+    ]
+    const[totalData,setTotaldata]=useState([])
  
     useEffect(() => {
         const getData = async () => {
