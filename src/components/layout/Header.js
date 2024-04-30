@@ -317,13 +317,18 @@ function Header({
             </span>
           </div>
         </Col>
-        <Col span={24} md={18} className="header-control" >
-          <div className="" style={{display:"flex",gap:"1rem", fontSize:"1rem",fontWeight:"500",border:'0.5px solid #c6c6c6',padding:'0.5rem'}}> 
-
+        <Col span={24} md={18} className="header-control"  >
+          <div className="" style={{display:"flex",gap:"2rem", fontSize:"1rem",fontWeight:"500",}}> 
+          <div className="" style={{padding:'0.1rem 1rem',display:"flex",gap:"2rem", fontSize:"1rem",fontWeight:"500",border:'0.5px solid #c6c6c6',alignItems:'center',justifyContent:'center'}}>
           <DateContainer/>
           <Clock />
-  
           </div>
+          <div className="" style={{height:"50px",width:'50px',border:'0.5px solid #c6c6c6',borderRadius:'50%'}}>
+            <img src="https://xtemko.stripocdn.email/content/guids/CABINET_d8f211887c57378d14d80cfb73c09f4b2db394a5cf71f6e0cdda10e02f8c454f/images/vin_logo.jpeg" alt="" width={100} style={{padding:'0.5rem'}} />
+          </div>
+          </div>
+  
+    
           {/* <Badge size="small" count={4}>
             <Dropdown overlay={menu} trigger={["click"]}>
               <a
@@ -461,6 +466,7 @@ function Header({
             placeholder="Type here..."
             prefix={<SearchOutlined />}
           /> */}
+  
         </Col> 
       </Row>
     </>
