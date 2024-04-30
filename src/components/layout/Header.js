@@ -281,7 +281,7 @@ function Header({
       };
     }, []);
     return (
-      <span>
+      <span >
         {date.toLocaleTimeString()}
       </span>
     );
@@ -298,8 +298,8 @@ function Header({
       {/* <div className="setting-drwer" onClick={showDrawer}>
         {setting}
       </div> */}
-      <Row gutter={[24, 0]}>
-        <Col span={24} md={6}>
+      <Row gutter={[24, 0]} style={{marginTop:'2rem'}}>
+        <Col span={24} md={6} style={{display:'flex',alignItems:'center'}}>
           {/* <Breadcrumb>
             <Breadcrumb.Item>
               <NavLink to="/">Pages</NavLink>
@@ -311,17 +311,18 @@ function Header({
           <div className="ant-page-header-heading">
             <span
               className="ant-page-header-heading-title"
-              style={{ textTransform: "capitalize" }}
+              style={{ textTransform:'capitalize',fontSize:'1.5rem' }}
             >
               {subName.replace("/", "")}
             </span>
           </div>
         </Col>
-        <Col span={24} md={18} className="header-control">
-          <div className="" style={{display:"flex",gap:"1rem", fontSize:"1rem",fontWeight:"500"}}> 
+        <Col span={24} md={18} className="header-control" >
+          <div className="" style={{display:"flex",gap:"1rem", fontSize:"1rem",fontWeight:"500",border:'0.5px solid #c6c6c6',padding:'0.5rem'}}> 
 
-          <DateContainer />
+          <DateContainer/>
           <Clock />
+  
           </div>
           {/* <Badge size="small" count={4}>
             <Dropdown overlay={menu} trigger={["click"]}>
