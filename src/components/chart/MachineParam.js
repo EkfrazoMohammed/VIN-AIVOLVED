@@ -97,7 +97,7 @@
     useEffect(() => {
         const getData = async () => {
             try {
-                const res = await axios.get('http://127.0.0.1:8001/machine_params/');
+                const res = await axios.get('http://127.0.0.1:8001/params_graph/');
                 setTotaldata(res.data); // Update totaldata with the fetched data
             } catch (error) {
                 console.error('Error fetching machine parameters:', error);
