@@ -125,3 +125,6 @@ code {
 a {
   text-decoration: none !important;
 }
+label::after{
+content: '' !important;
+}
