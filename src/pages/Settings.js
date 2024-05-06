@@ -64,7 +64,8 @@ console.log(data)
 <h5 style={{fontWeight:650}}>User Creation</h5>
 </Col>
 <Col span={3}  >
-<Button type="primary" style={{width:'90%'}} danger>
+
+<Button type="primary" style={{width:'100%',padding:'0'}} danger>
 User Creation
     </Button>   </Col>
 </Row>
@@ -163,7 +164,7 @@ User Creation
     >
 
       <Form.Item label={<h6>Department Name</h6>} >
-        <Input placeholder="Enter Defect Name"  onChange={(e)=>setData(e.target.value)} />
+        <Input placeholder="Enter Department Name"  onChange={(e)=>setData(e.target.value)} />
       </Form.Item>
       <Form.Item >
         <Button style={{background:'#EC522D',color:'#fff'}} onClick={()=>handlePost('department')}>Create Department</Button>
@@ -191,7 +192,7 @@ User Creation
     >
 
       <Form.Item label={<h6>Machine Name</h6>} >
-        <Input placeholder="Enter Defect Name"  onChange={(e)=>setData(e.target.value)} />
+        <Input placeholder="Enter Machine Name"  onChange={(e)=>setData(e.target.value)} />
       </Form.Item>
       <Form.Item >
         <Button style={{background:'#EC522D',color:'#fff'}} onClick={()=>handlePost('machine')}>Create Machine </Button>
@@ -220,7 +221,7 @@ User Creation
     >
 
       <Form.Item label={<h6>Alerts Name</h6>} >
-        <Input placeholder="Enter Defect Name"  onChange={(e)=>setData(e.target.value)} />
+        <Input placeholder="Enter Alerts Name"  onChange={(e)=>setData(e.target.value)} />
       </Form.Item>
       <Form.Item>
         <Button style={{background:'#EC522D',color:'#fff'}} onClick={()=>handlePost('alerts')}>Create Alerts</Button>

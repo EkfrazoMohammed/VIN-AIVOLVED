@@ -51,9 +51,10 @@ function Dashboard() {
     if (fromDate && toDate) {
       url += `&from_date=${fromDate}&to_date=${toDate}`;
     }
+
     axios.get(url)
       .then(response => {
-        setTableData(response.data);
+        console.log(response)
       })
       .catch(error => {
         console.error('Error:', error);
@@ -98,7 +99,7 @@ function Dashboard() {
         console.error('Error fetching department data:', error);
       });
   };
-console.log(tableData,'<<<')
+
   const initialDateRange = () => {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - 7); // 7 days ago
@@ -116,45 +117,33 @@ console.log(tableData,'<<<')
     const url = `${domain}reports/`;
     axios.get(url)
       .then(response => {
-  
         setTableData(response.data);
       })
       .catch(error => {
         console.error('Error:', error);
       });
   };
- 
-
   const { Title } = Typography;
   const { RangePicker } = DatePicker;
 
   const [categoryDefects, setCategoryDefects] = useState([]);
 
   useEffect(() => {
-
     const categorizedData = categorizeDefects(tableData);
     setCategoryDefects(categorizedData);
   }, [tableData]);
-
+  
   const categorizeDefects = (data) => {
     const categorizedData = {};
-  
-    // Check if data is an array
-    if (Array.isArray(data)) {
-      data.forEach(item => {
-        const { defect_name } = item;
-        if (!categorizedData[defect_name]) {
-          categorizedData[defect_name] = [];
-        }
-        categorizedData[defect_name].push(item);
-      });
-    } else {
-      console.error('Data is not an array:', data);
-    }
-  
+    data.forEach(item => {
+      const { defect_name } = item;
+      if (!categorizedData[defect_name]) {
+        categorizedData[defect_name] = [];
+      }
+      categorizedData[defect_name].push(item);
+    });
     return categorizedData;
   };
-  
   
   const [selectedCheckboxMachine, setSelectedCheckboxMachine] = useState([]);
 
@@ -177,8 +166,8 @@ console.log(tableData,'<<<')
       console.error('Error fetching department data:', error);
     });
   };
-  
-console.log(tableData.length)
+  console.log(tableData,'<<<<<=====')
+
   const menu = (
     <Menu selectable={true}>
       <Menu.Item key="0">
@@ -192,7 +181,6 @@ console.log(tableData.length)
       </Menu.Item>
     </Menu>
   );
-  
   return (
     <>
       <div className="layout-content">
@@ -239,7 +227,6 @@ console.log(tableData.length)
       />
    
       <Button type="primary" onClick={handleApplyFilters} style={{fontSize:"1rem",backgroundColor:"#ec522d",marginRight:"10px"}}>Apply filters</Button>
-
 
        </Col>
         </Row>
@@ -290,7 +277,7 @@ console.log(tableData.length)
                       <Title level={3}>
                         {`Defects`}
                       </Title>
-                      <span>{`${tableData.length ? tableData.length : 0} `}</span>
+                      <span>{`${tableData.length}`}</span>
                     </Col>
                     <Col xs={6}>
                       <div className="icon-box"><BugOutlined /></div>
@@ -315,7 +302,7 @@ console.log(tableData.length)
                       <Title level={3}>
                         {`Alerts`}
                       </Title>
-                      <span>{`${tableData.length ? tableData.length  : 0}`}</span>
+                      <span>{`${tableData.length}`}</span>
                     </Col>
                     <Col xs={6}>
                       <div className="icon-box"><AlertOutlined /></div>
@@ -351,7 +338,7 @@ console.log(tableData.length)
 </Col>
 <Col xs={24} sm={24} md={12} lg={12} xl={16} className="mb-24">
             <Card bordered={false} className="criclebox h-full">
-              <MachineParam   />
+              <MachineParam />
 
             </Card>
             </Col>

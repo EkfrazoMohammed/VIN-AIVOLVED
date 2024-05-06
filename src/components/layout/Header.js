@@ -311,7 +311,7 @@ function Header({
           <div className="ant-page-header-heading">
             <span
               className="ant-page-header-heading-title"
-              style={{ textTransform:'capitalize',fontSize:'1.5rem' }}
+              style={{ textTransform:'capitalize',fontSize:'1.4rem' }}
             >
               {subName.replace("/", "")}
             </span>
@@ -319,7 +319,7 @@ function Header({
         </Col>
         <Col span={24} md={18} className="header-control"  >
           <div className="" style={{display:"flex",gap:"2rem", fontSize:"1rem",fontWeight:"500",}}> 
-          <div className="" style={{padding:'0.1rem 1rem',display:"flex",gap:"2rem", fontSize:"1rem",fontWeight:"500",border:'0.5px solid #c6c6c6',alignItems:'center',justifyContent:'center'}}>
+          <div className="" style={{padding:'0.1rem 1rem',display:"flex",gap:"2rem", fontSize:"1rem",fontWeight:"500",border:'0.5px solid #c6c6c6',alignItems:'center',justifyContent:'center',borderRadius:'10px'}}>
           <DateContainer/>
           <Clock />
           </div>

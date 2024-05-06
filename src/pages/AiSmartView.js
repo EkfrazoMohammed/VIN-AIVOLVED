@@ -5,6 +5,8 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import {Select } from "antd";
 import "../index.css"
+import {RightOutlined ,LeftOutlined} from '@ant-design/icons';
+
 
 const AiSmartView = () => {
   const [defectImages, setDefectImages] = useState([]);
@@ -109,7 +111,7 @@ const AiSmartView = () => {
                 <Slider {...settings} ref={sliderRef}>
                     {defectImages.map((imageData, index) => (
                         <div key={index} className="d-flex justify-content-center">
-                            <img src={imageData.image_url} alt={`Defect ${index + 1}`} style={{ width: '100%', height: '65vh',margin:"0 auto" }} />
+                            <img src={imageData.image_url} alt={`Defect ${index + 1}`} style={{ width: '100%', height: '55vh',margin:"0 auto",maxWidth:'900px' }} />
                         </div>
                     ))}
                 </Slider>
@@ -117,10 +119,10 @@ const AiSmartView = () => {
             {renderNextFourImages()}
           </div>
                 <button className="prev-button btn btn-primary " style={{backgroundColor:"rgb(236, 82, 45)",border:"none",outline:"none"}} onClick={() => sliderRef.current.slickPrev()}>
-                  {"<"}
+                <LeftOutlined />
                 </button>
                 <button className="next-button btn btn-primary"  style={{backgroundColor:"rgb(236, 82, 45)",border:"none",outline:"none"}} onClick={() => sliderRef.current.slickNext()}>
-                {">"}
+                <RightOutlined />
                 </button>
                 </div>
             </>
