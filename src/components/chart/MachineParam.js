@@ -1,188 +1,98 @@
-    import React, { useState, useEffect } from "react";
-    import ReactApexChart from "react-apexcharts";
-    import { Timeline, Typography } from "antd";
-    import axios from "axios";
+import React, { useState, useEffect } from "react";
+import ReactApexChart from "react-apexcharts";
+import { Typography } from "antd";
+import axios from "axios";
 
-    function MachineParam() {
-    const { Title } = Typography;
-    const [groupedData, setGroupedData] = useState({});
-    const dummyData=   [
-        {
-            "id": 1,
-            "params_count": "18484",
-            "date_time": "2024-04-22T12:45:40",
-            "parameter": "Machine Counter",
-            "color_code": "#64096e"
-        },
-        {
-            "id": 2,
-            "params_count": "15464",
-            "date_time": "2024-04-22T12:45:40",
-            "parameter": "Program Counter",
-            "color_code": "#6e4699"
-        },
-        {
-            "id": 3,
-            "params_count": "800",
-            "date_time": "2024-04-22T12:45:40",
-            "parameter": "Reject Counter",
-            "color_code": "#ed1e07"
-        },
-        {
-            "id": 4,
-            "params_count": "10484",
-            "date_time": "2024-04-23T12:45:40",
-            "parameter": "Machine Counter",
-            "color_code": "#64096e"
-        },
-        {
-            "id": 5,
-            "params_count": "12464",
-            "date_time": "2024-04-23T12:45:40",
-            "parameter": "Program Counter",
-            "color_code": "#6e4699"
-        },
-        {
-            "id": 6,
-            "params_count": "900",
-            "date_time": "2024-04-23T12:45:40",
-            "parameter": "Reject Counter",
-            "color_code": "#ed1e07"
-        },
-        {
-            "id": 7,
-            "params_count": "13484",
-            "date_time": "2024-04-24T12:45:40",
-            "parameter": "Machine Counter",
-            "color_code": "#64096e"
-        },
-        {
-            "id": 8,
-            "params_count": "11464",
-            "date_time": "2024-04-24T12:45:40",
-            "parameter": "Program Counter",
-            "color_code": "#6e4699"
-        },
-        {
-            "id": 9,
-            "params_count": "10000",
-            "date_time": "2024-04-24T12:45:40",
-            "parameter": "Reject Counter",
-            "color_code": "#ed1e07"
-        },
-        {
-            "id": 10,
-            "params_count": "13484",
-            "date_time": "2024-04-25T12:45:40",
-            "parameter": "Machine Counter",
-            "color_code": "#64096e"
-        },
-        {
-            "id": 11,
-            "params_count": "11464",
-            "date_time": "2024-04-25T12:45:40",
-            "parameter": "Program Counter",
-            "color_code": "#6e4699"
-        },
-        {
-            "id": 12,
-            "params_count": "12000",
-            "date_time": "2024-04-25T12:45:40",
-            "parameter": "Reject Counter",
-            "color_code": "#ed1e07"
+function MachineParam() {
+  const { Title } = Typography;
+  const [totalData, setTotalData] = useState([]);
+  const [chartOptions, setChartOptions] = useState({});
+  const [chartSeries, setChartSeries] = useState([]);
+
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const res = await axios.get("http://127.0.0.1:8000/params_graph/");
+        if (res.data.length > 0) {
+          const modifiedData = res.data.map(item => ({
+            ...item,
+            date_time: item.date_time.split('T')[0]
+          }));
+          setTotalData(modifiedData);
         }
-    ]
-    const[totalData,setTotaldata]=useState([])
- 
-    useEffect(() => {
-        const getData = async () => {
-            try {
-                const res = await axios.get('http://127.0.0.1:8001/params_graph/');
-                setTotaldata(res.data); // Update totaldata with the fetched data
-            } catch (error) {
-                console.error('Error fetching machine parameters:', error);
-            }
-        };
-
-        getData();
-    }, []);
-
-    useEffect(() => {
-        // Now you can process totaldata here
-        const groupedData = {};
-
-        totalData.forEach(item => {
-            const date = item.date_time.split('T')[0]; // Extract date part
-            if (!groupedData[date]) {
-                groupedData[date] = [];
-            }
-            groupedData[date].push(item);
-            setGroupedData(groupedData)
-        });
-
-        // Do something with groupedData, maybe set it to state or use it directly
-    }, [totalData]);
-
-    // Extract unique dates
-    // console.log(groupedData)
-
-    // Prepare series data
-  
- 
-    const uniqueParameters = [...new Set(totalData.map(item => item.parameter))];
-    // Prepare series data
-    const seriesData = uniqueParameters.map(parameter => {
-        const params = totalData.filter(item => item.parameter === parameter);
-        return {
-            name: parameter,
-            data: params.map(param => parseInt(param.params_count)),
-            color: params[0].color_code,
-        };
-    });
-    
-    
-
-    // Prepare data for the chart
-    const chartData = {
-        series: seriesData,
-        options: {
-        chart: {
-            type: 'bar',
-            height: 350,
-            stacked: true,
-            toolbar: {
-            show: false
-            },
-            zoom: {
-            enabled: true
-            }
-        },
-        xaxis: {
-            categories: Object.keys(groupedData), // Use dates as x-axis categories
-        },
-        legend: {
-            position: 'bottom',
-            offsetY: '0'
-        },
-        fill: {
-            opacity: 1
-        }
-        },
+      } catch (error) {
+        console.error("Error fetching machine parameters:", error);
+      }
     };
 
-    return (
-        <div>
-        <div>
-            <Title level={5}>Production Vs Scanned Vs Rejected</Title>
-        </div>
-        <ReactApexChart 
-            options={chartData.options} 
-            series={chartData.series} 
-            type="bar" 
-            height={350} 
-        />
-        </div>
-    );
-    }
+    getData();
+  }, []);
 
-    export default MachineParam;
+  useEffect(() => {
+    if (totalData.length === 0) return; // Check if totalData is empty
+    const groupedData = {};
+    totalData.forEach(item => {
+      const date = item.date_time;
+      if (!groupedData[date]) {
+        groupedData[date] = {};
+      }
+      if (!groupedData[date][item.parameter]) {
+        groupedData[date][item.parameter] = 0;
+      }
+      groupedData[date][item.parameter] += parseInt(item.params_count);
+    });
+
+    const categories = Object.keys(groupedData);
+    const allParameters = new Set(totalData.map(item => item.parameter));
+    const seriesData = Array.from(allParameters).map(parameter => {
+      return {
+        name: parameter,
+        data: categories.map(date => groupedData[date][parameter] || 0),
+        color: totalData.find(item => item.parameter === parameter).color_code
+      };
+    }).filter(series => series.data.some(count => count > 0)); // Remove series with count 0 for all dates
+
+    setChartSeries(seriesData);
+
+    const chartOptions = {
+      chart: {
+        type: 'bar',
+        height: 350,
+        stacked: true,
+        toolbar: {
+          show: false
+        },
+        zoom: {
+          enabled: true
+        }
+      },
+      xaxis: {
+        categories: categories,
+      },
+      legend: {
+        position: 'bottom',
+        offsetY: '0'
+      },
+      fill: {
+        opacity: 1
+      }
+    };
+    setChartOptions(chartOptions);
+  }, [totalData]);
+
+  return (
+    <div>
+      <div>
+        <Title level={5}>Production Vs Scanned Vs Rejected</Title>
+      </div>
+      <ReactApexChart
+        options={chartOptions}
+        series={chartSeries}
+        type="bar"
+        height={350}
+      />
+    </div>
+  );
+}
+
+export default MachineParam;

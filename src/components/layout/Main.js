@@ -54,7 +54,7 @@ function Main({ children }) {
             pathname === "rtl" ? "layout-dashboard-rtl" : ""
           }`}
         >
-          <Sider
+          <Sider 
             trigger={null}
             width={250}
             theme="light"

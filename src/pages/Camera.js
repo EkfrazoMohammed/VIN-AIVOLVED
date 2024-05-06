@@ -2,7 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import {Button, Select ,Space, Card, Col, Row ,Typography} from 'antd';
 import "../index.css"
+import {RightOutlined ,LeftOutlined} from '@ant-design/icons';
 const { Title } = Typography;
+
 const Camera = () => {
 
     const [camera, setCamera]= useState({
@@ -28,13 +30,13 @@ placeholder="Select Camera"
       style={{ width: 200 }}
       options={[{ value: 'camera1', label: 'camera1' },{ value: 'camera2', label: 'camera2' }]}
     />
-    <Button type="primary" style={{fontSize:"1rem",backgroundColor:"#ec522d",margin:"1rem"}} >></Button>
+    <Button type="primary" style={{fontSize:"1rem",backgroundColor:"#ec522d",margin:"1rem",display:'inline-flex',justifyContent:'center',alignItems:'center'}} ><RightOutlined /></Button>
 
 
     <div className="flex">
     <Space direction="vertical" size={16}>
     <Row  style={{}}>
-    <Col style={{width:'100%',display:'flex',flexWrap:'wrap',gap:'2rem'}}>
+    <Col style={{width:'100%',display:'flex',flexWrap:'wrap',gap:'1rem'}}>
  
     {data.map((item, index) => (
         <Card
