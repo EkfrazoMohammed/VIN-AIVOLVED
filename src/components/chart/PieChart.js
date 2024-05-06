@@ -6,17 +6,16 @@ import axios from "axios";
 function PieChart({ data }) {
   const { Title } = Typography;
   const [defectColors, setDefectColors] = useState({});
+  const [chartData, setChartData] = useState({ labels: [], series: [] });
 
   useEffect(() => {
     // Fetch defect colors from the API
     axios.get('http://127.0.0.1:8001/defect/')
       .then(response => {
-        // Organize the response data as an object with defect names as keys and color codes as values
         const colors = {};
         response.data.forEach(defect => {
           colors[defect.name] = defect.color_code;
         });
-        // Set the defect colors state
         setDefectColors(colors);
       })
       .catch(error => {
@@ -24,56 +23,24 @@ function PieChart({ data }) {
       });
   }, []);
 
-  // Group defects by defect name and count occurrences of each defect type
-  const groupedData = data.reduce((acc, defect) => {
-    if (!acc[defect.defect_name]) {
-      acc[defect.defect_name] = 0;
-    }
-    acc[defect.defect_name]++;
-    return acc;
-  }, {});
+  useEffect(() => {
+    if (!data || typeof data !== 'object') return;
 
-  // Prepare series data and labels for the pie chart
-  const seriesData = Object.values(groupedData);
-  const labels = Object.keys(groupedData);
-
-  // Generate a color palette based on the number of defect types
-  const generateColorPalette = numColors => {
-    const colors = [];
-    for (let i = 0; i < numColors; i++) {
-      // Use the color from the API if available, otherwise fallback to a default color
-      const color = defectColors[labels[i]] || '#000000';
-      colors.push(color);
-    }
-    return colors;
-  };
-
-  // Generate colors for the pie chart
-  const colors = generateColorPalette(labels.length);
-
-  // Prepare data for the chart
-  const chartData = {
-    series: seriesData,
-    options: {
-      chart: {
-        width: 380,
-        type: 'pie',
-      },
-      colors: colors, // Specify the colors for the pie chart
-      labels: labels,
-      responsive: [{
-        breakpoint: 480,
-        options: {
-          chart: {
-            width: 200
-          },
-          legend: {
-            position: 'bottom'
-          }
+    const aggregatedData = Object.values(data).reduce((acc, defects) => {
+      Object.entries(defects).forEach(([defect, count]) => {
+        if (!acc[defect]) {
+          acc[defect] = 0;
         }
-      }]
-    }
-  };
+        acc[defect] += count;
+      });
+      return acc;
+    }, {});
+
+    const labels = Object.keys(aggregatedData);
+    const series = Object.values(aggregatedData);
+
+    setChartData({ labels: labels, series: series });
+  }, [data]);
 
   return (
     <div>
@@ -81,7 +48,25 @@ function PieChart({ data }) {
         <Title level={5}>Pie Chart for Defects</Title>
       </div>
       <ReactApexChart
-        options={chartData.options}
+        options={{
+          chart: {
+            width: 380,
+            type: 'pie',
+          },
+          colors: chartData.labels.map(label => defectColors[label] || '#FF5733'), // Default color if no color code found
+          labels: chartData.labels,
+          responsive: [{
+            breakpoint: 480,
+            options: {
+              chart: {
+                width: 200
+              },
+              legend: {
+                position: 'bottom'
+              }
+            }
+          }]
+        }}
         series={chartData.series}
         type="pie"
         height={350}

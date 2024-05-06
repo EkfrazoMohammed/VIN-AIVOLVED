@@ -166,7 +166,9 @@ function Sidenav({ color }) {
             >
               {dashboard}
             </span>
-            <span className="label">Dashboard</span>
+            <span className="label"          style={{
+                color: page === "dashboard" ? color : "",
+              }}>Dashboard</span>
           </NavLink>
         </Menu.Item>
         <Menu.Item key="2">
@@ -179,7 +181,9 @@ function Sidenav({ color }) {
             >
               {tables}
             </span>
-            <span className="label">Reports</span>
+            <span className="label"       style={{
+                color: page === "Reports" ? color : "",
+              }}>Reports</span>
           </NavLink>
         </Menu.Item>
         <Menu.Item key="3">
@@ -192,7 +196,9 @@ function Sidenav({ color }) {
             >
               {billing}
             </span>
-            <span className="label">AI Smart View</span>
+            <span className="label"   style={{
+                color: page === "ai-smart-view" ? color : "",
+              }}>AI Smart View</span>
           </NavLink>
         </Menu.Item>
 
@@ -201,12 +207,14 @@ function Sidenav({ color }) {
             <span
               className="icon"
               style={{
-                background: page === "ai-smart-view" ? color : "",
+                background: page === "machines-parameter" ? color : "",
               }}
             >
               {billing}
             </span>
-            <span className="label">Machines Parameter</span>
+            <span className="label"      style={{
+                color: page === "machines-parameter" ? color : "",
+              }}>Machines Parameter</span>
           </NavLink>
         </Menu.Item>
 
@@ -216,12 +224,14 @@ function Sidenav({ color }) {
             <span
               className="icon"
               style={{
-                background: page === "ai-smart-view" ? color : "",
+                background: page === "camera" ? color : "",
               }}
             >
               {billing}
             </span>
-            <span className="label">Camera</span>
+            <span className="label"       style={{
+                color: page === "camera" ? color : "",
+              }}>Camera</span>
           </NavLink>
         </Menu.Item>
 
@@ -230,12 +240,14 @@ function Sidenav({ color }) {
             <span
               className="icon"
               style={{
-                background: page === "ai-smart-view" ? color : "",
+                background: page === "settings" ? color : "",
               }}
             >
               {billing}
             </span>
-            <span className="label">Settings</span>
+            <span className="label"           style={{
+                color: page === "settings" ? color : "",
+              }} >Settings</span>
           </NavLink>
         </Menu.Item>
         {/* <Menu.Item key="4">

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ReactApexChart from "react-apexcharts";
 import { Typography } from "antd";
-import axios from "axios";
+import axios from 'axios'
 
 function StackChart({ data }) {
   const { Title } = Typography;
@@ -24,62 +24,23 @@ function StackChart({ data }) {
       });
   }, []);
 
+  if (!data || Object.keys(data).length === 0) {
+    return <div>Loading...</div>; // or some other fallback UI
+  }
+
   // Extract unique defect names
-  const defectNames = [...new Set(data.map(defect => defect.defect_name))];
+  const defectNames = [...new Set(Object.values(data).flatMap(defect => Object.keys(defect)))];
 
-  // // Group defects by date and count occurrences of each defect type
-  // const groupedData = {};
-  // data.forEach(defect => {
-  //   const date = new Date(defect.recorded_date_time); // Parse recorded_date_time into a valid Date object
-  //   const dateString = date.toISOString().split('T')[0]; // Get the date string in 'YYYY-MM-DD' format
-  //   // console.log('this is the date', dateString);
-  //   if (!groupedData[dateString]) {
-  //     groupedData[dateString] = {};
-  //   }
-  //   defectNames.forEach(defectName => {
-  //     if (!groupedData[dateString][defectName]) {
-  //       groupedData[dateString][defectName] = 0;
-  //     }
-  //     if (defect.defect_name === defectName) {
-  //       groupedData[dateString][defectName]++;
-  //     }
-  //   });
-  // });
-// Group defects by date and count occurrences of each defect type
-const groupedData = {};
-data.forEach(defect => {
-  let dateString = defect.recorded_date_time;
-  // Check if the date string contains 'T' separator
-  if (dateString.includes('T')) {
-    dateString = dateString.split('T')[0]; // Get the date part before 'T'
-  } else {
-    dateString = dateString.split(' ')[0]; // Get the date part before the first space
-  }
-  
-  // console.log(dateString)
-  if (!groupedData[dateString]) {
-    groupedData[dateString] = {};
-  }
-  defectNames.forEach(defectName => {
-    if (!groupedData[dateString][defectName]) {
-      groupedData[dateString][defectName] = 0;
-    }
-    if (defect.defect_name === defectName) {
-      groupedData[dateString][defectName]++;
-    }
-  });
-});
-
-
-console.log(groupedData)
   // Sort the dates in ascending order
-  const sortedDates = Object.keys(groupedData).sort((a, b) => new Date(a) - new Date(b));
+  const sortedDates = Object.keys(data).sort((a, b) => new Date(a) - new Date(b));
 
   // Prepare series data with dynamically assigned colors
   const seriesData = defectNames.map((defectName, index) => ({
     name: defectName,
-    data: sortedDates.map(date => groupedData[date][defectName] || 0),
-    color: defectColors[defectName] || ['#FF5733', '#e31f09', '#3357FF'][index % 3] // Use custom colors for bars or fallback to defaults
+    data: sortedDates.map(date => data[date][defectName] || 0),
+    color: defectColors[defectName] || ['#FF5733', '#e31f09', '#3357FF'][index % 3]
+
+    // You can set the color here if needed
   }));
 
   // Prepare data for the chart
@@ -98,7 +59,7 @@ console.log(groupedData)
         }
       },
       xaxis: {
-        type: 'date',
+        type: 'category',
         categories: sortedDates,
       },
       legend: {

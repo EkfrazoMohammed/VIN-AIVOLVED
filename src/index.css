@@ -119,3 +119,12 @@ code {
   font-weight: 500;
 }
 
+.layout-dashboard .ant-layout-content{
+  margin: 0 2.1rem 0 !important;
+}
+a {
+  text-decoration: none !important;
+}
+label::after{
+content: '' !important;
+}
