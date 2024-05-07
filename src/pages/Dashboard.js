@@ -65,6 +65,7 @@ function Dashboard() {
     getMachines();
     initialDateRange();
     initialTableData();
+    alertApi()
   }, []);
 
   const getMachines = () => {
@@ -123,37 +124,71 @@ console.log(tableData,'<<<')
         console.error('Error:', error);
       });
   };
+const [alertData,setAlertData]=useState();
+
+  const alertApi = ()=>{
+    const domain = `http://127.0.0.1:8001/`;
+    const url = `${domain}alerts/`;
+    axios.get(url).then((res)=>{
+console.log(res.data)
+setAlertData(res.data)
+    })
+    .catch((err)=>{
+      console.log(err)
+    })
+  }
  
 
   const { Title } = Typography;
   const { RangePicker } = DatePicker;
 
   const [categoryDefects, setCategoryDefects] = useState([]);
+// Function to categorize defects
+const categorizeDefects = (data) => {
+  const categories = {};
+  
+  // Iterate through each date in the tableData
+  Object.keys(data).forEach(date => {
+    const defects = data[date];
+    
+    // Iterate through each defect in the current date
+    Object.keys(defects).forEach(defect => {
+      if (!categories[defect]) {
+        categories[defect] = 0;
+      }
+      
+      // Accumulate the defect value for the category
+      categories[defect] += defects[defect];
+    });
+  });
+  
+  return categories;
+};
 
   useEffect(() => {
-
+ 
     const categorizedData = categorizeDefects(tableData);
     setCategoryDefects(categorizedData);
   }, [tableData]);
 
-  const categorizeDefects = (data) => {
-    const categorizedData = {};
+  // const categorizeDefects = (data) => {
+  //   const categorizedData = {};
   
-    // Check if data is an array
-    if (Array.isArray(data)) {
-      data.forEach(item => {
-        const { defect_name } = item;
-        if (!categorizedData[defect_name]) {
-          categorizedData[defect_name] = [];
-        }
-        categorizedData[defect_name].push(item);
-      });
-    } else {
-      console.error('Data is not an array:', data);
-    }
+  //   // Check if data is an array
+  //   if (Array.isArray(data)) {
+  //     data.forEach(item => {
+  //       const { defect_name } = item;
+  //       if (!categorizedData[defect_name]) {
+  //         categorizedData[defect_name] = [];
+  //       }
+  //       categorizedData[defect_name].push(item);
+  //     });
+  //   } else {
+  //     console.error('Data is not an array:', data);
+  //   }
   
-    return categorizedData;
-  };
+  //   return categorizedData;
+  // };
   
   
   const [selectedCheckboxMachine, setSelectedCheckboxMachine] = useState([]);
@@ -178,7 +213,7 @@ console.log(tableData,'<<<')
     });
   };
   
-console.log(tableData.length)
+console.log(categoryDefects,'<<<')
   const menu = (
     <Menu selectable={true}>
       <Menu.Item key="0">
@@ -290,7 +325,10 @@ console.log(tableData.length)
                       <Title level={3}>
                         {`Defects`}
                       </Title>
-                      <span>{`${tableData.length ? tableData.length : 0} `}</span>
+
+                      {/* <span>  {Object.keys(categoryDefects).reduce((total, category) => total + category, 0)}</span> */}
+                      <span>  {Object.keys(categoryDefects).length}</span>
+
                     </Col>
                     <Col xs={6}>
                       <div className="icon-box"><BugOutlined /></div>
@@ -315,7 +353,11 @@ console.log(tableData.length)
                       <Title level={3}>
                         {`Alerts`}
                       </Title>
-                      <span>{`${tableData.length ? tableData.length  : 0}`}</span>
+                      {
+                        alertData ? 
+                        <span>{Object.keys(alertData).length }</span>
+                        :null
+                      }
                     </Col>
                     <Col xs={6}>
                       <div className="icon-box"><AlertOutlined /></div>
@@ -329,24 +371,28 @@ console.log(tableData.length)
         <Row gutter={[24, 24]}>
           <Col xs={24} sm={24} md={12} lg={12} xl={8} className="mb-24">
          <Card bordered={false} className="h-full">
-           {Object.keys(categoryDefects).map((category, index) => (
-          <Card key={index} bordered={true} className="criclebox h-full mb-2 px-2 ">
-           <div className="timeline-box">
-              <h5>{category}</h5>
-             <Paragraph className="lastweek">
-               <span className="bnb2">{categoryDefects[category].length}</span> Defects
-          </Paragraph>
-        </div>
-      </Card>
-    ))}
-    <Card bordered={true} className="criclebox h-full mb-2 px-2">
-      <div className="timeline-box">
-        <h5>Total Defects</h5>
-        <Paragraph className="lastweek">
-          <span className="bnb2">{Object.values(categoryDefects).reduce((total, category) => total + category.length, 0)}</span> Defects
-        </Paragraph>
-      </div>
-    </Card>
+         {Object.keys(categoryDefects).map((category, index) => (
+  <Card key={index} bordered={true} className="criclebox h-full mb-2 px-2 ">
+    <div className="timeline-box">
+      <h5>{category}</h5>
+      <Paragraph className="lastweek">
+        <span className="bnb2">{categoryDefects[category]}</span> Defects
+      </Paragraph>
+    </div>
+  </Card>
+))}
+
+<Card bordered={true} className="criclebox h-full mb-2 px-2">
+  <div className="timeline-box">
+    <h5>Total Defects</h5>
+    <Paragraph className="lastweek">
+      <span className="bnb2">
+        {Object.values(categoryDefects).reduce((total, category) => total + category, 0)}
+      </span> Defects
+    </Paragraph>
+  </div>
+</Card>
+
   </Card>
 </Col>
 <Col xs={24} sm={24} md={12} lg={12} xl={16} className="mb-24">
