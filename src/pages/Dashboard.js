@@ -152,36 +152,7 @@ const categorizeDefects = (data) => {
 };
 
   useEffect(() => {
-    let d={
-      "2024-04-14": {
-          "Perforation/Burn/Damage": 45,
-          "Seal-Join/Tear": 55
-      },
-      "2024-04-15": {
-          "Seal-Join/Tear": 922,
-          "Perforation/Burn/Damage": 1757,
-          "Seal - Align": 21
-      },
-      "2024-04-16": {
-          "Perforation/Burn/Damage": 329,
-          "Seal-Join/Tear": 197,
-          "Seal - Align": 4,
-          "Crush/Dent/Tear/Leakage": 8
-      },
-      "2024-04-23": {
-          "Perforation/Burn/Damage": 1
-      },
-      "2024-04-24": {
-          "Perforation/Burn/Damage": 5
-      },
-      "2024-04-30": {
-          "Perforation/Burn/Damage": 4
-      },
-      "2024-05-01": {
-          "Perforation/Burn/Damage": 12
-      }
-  }
-    //  const categorizedData = categorizeDefects(d);
+ 
     const categorizedData = categorizeDefects(tableData);
     setCategoryDefects(categorizedData);
   }, [tableData]);
