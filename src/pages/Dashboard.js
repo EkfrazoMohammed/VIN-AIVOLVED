@@ -129,31 +129,81 @@ console.log(tableData,'<<<')
   const { RangePicker } = DatePicker;
 
   const [categoryDefects, setCategoryDefects] = useState([]);
+// Function to categorize defects
+const categorizeDefects = (data) => {
+  const categories = {};
+  
+  // Iterate through each date in the tableData
+  Object.keys(data).forEach(date => {
+    const defects = data[date];
+    
+    // Iterate through each defect in the current date
+    Object.keys(defects).forEach(defect => {
+      if (!categories[defect]) {
+        categories[defect] = 0;
+      }
+      
+      // Accumulate the defect value for the category
+      categories[defect] += defects[defect];
+    });
+  });
+  
+  return categories;
+};
 
   useEffect(() => {
-
+    let d={
+      "2024-04-14": {
+          "Perforation/Burn/Damage": 45,
+          "Seal-Join/Tear": 55
+      },
+      "2024-04-15": {
+          "Seal-Join/Tear": 922,
+          "Perforation/Burn/Damage": 1757,
+          "Seal - Align": 21
+      },
+      "2024-04-16": {
+          "Perforation/Burn/Damage": 329,
+          "Seal-Join/Tear": 197,
+          "Seal - Align": 4,
+          "Crush/Dent/Tear/Leakage": 8
+      },
+      "2024-04-23": {
+          "Perforation/Burn/Damage": 1
+      },
+      "2024-04-24": {
+          "Perforation/Burn/Damage": 5
+      },
+      "2024-04-30": {
+          "Perforation/Burn/Damage": 4
+      },
+      "2024-05-01": {
+          "Perforation/Burn/Damage": 12
+      }
+  }
+    //  const categorizedData = categorizeDefects(d);
     const categorizedData = categorizeDefects(tableData);
     setCategoryDefects(categorizedData);
   }, [tableData]);
 
-  const categorizeDefects = (data) => {
-    const categorizedData = {};
+  // const categorizeDefects = (data) => {
+  //   const categorizedData = {};
   
-    // Check if data is an array
-    if (Array.isArray(data)) {
-      data.forEach(item => {
-        const { defect_name } = item;
-        if (!categorizedData[defect_name]) {
-          categorizedData[defect_name] = [];
-        }
-        categorizedData[defect_name].push(item);
-      });
-    } else {
-      console.error('Data is not an array:', data);
-    }
+  //   // Check if data is an array
+  //   if (Array.isArray(data)) {
+  //     data.forEach(item => {
+  //       const { defect_name } = item;
+  //       if (!categorizedData[defect_name]) {
+  //         categorizedData[defect_name] = [];
+  //       }
+  //       categorizedData[defect_name].push(item);
+  //     });
+  //   } else {
+  //     console.error('Data is not an array:', data);
+  //   }
   
-    return categorizedData;
-  };
+  //   return categorizedData;
+  // };
   
   
   const [selectedCheckboxMachine, setSelectedCheckboxMachine] = useState([]);
@@ -178,7 +228,7 @@ console.log(tableData,'<<<')
     });
   };
   
-console.log(tableData.length)
+console.log(categoryDefects,'<<<')
   const menu = (
     <Menu selectable={true}>
       <Menu.Item key="0">
@@ -329,24 +379,28 @@ console.log(tableData.length)
         <Row gutter={[24, 24]}>
           <Col xs={24} sm={24} md={12} lg={12} xl={8} className="mb-24">
          <Card bordered={false} className="h-full">
-           {Object.keys(categoryDefects).map((category, index) => (
-          <Card key={index} bordered={true} className="criclebox h-full mb-2 px-2 ">
-           <div className="timeline-box">
-              <h5>{category}</h5>
-             <Paragraph className="lastweek">
-               <span className="bnb2">{categoryDefects[category].length}</span> Defects
-          </Paragraph>
-        </div>
-      </Card>
-    ))}
-    <Card bordered={true} className="criclebox h-full mb-2 px-2">
-      <div className="timeline-box">
-        <h5>Total Defects</h5>
-        <Paragraph className="lastweek">
-          <span className="bnb2">{Object.values(categoryDefects).reduce((total, category) => total + category.length, 0)}</span> Defects
-        </Paragraph>
-      </div>
-    </Card>
+         {Object.keys(categoryDefects).map((category, index) => (
+  <Card key={index} bordered={true} className="criclebox h-full mb-2 px-2 ">
+    <div className="timeline-box">
+      <h5>{category}</h5>
+      <Paragraph className="lastweek">
+        <span className="bnb2">{categoryDefects[category]}</span> Defects
+      </Paragraph>
+    </div>
+  </Card>
+))}
+
+<Card bordered={true} className="criclebox h-full mb-2 px-2">
+  <div className="timeline-box">
+    <h5>Total Defects</h5>
+    <Paragraph className="lastweek">
+      <span className="bnb2">
+        {Object.values(categoryDefects).reduce((total, category) => total + category, 0)}
+      </span> Defects
+    </Paragraph>
+  </div>
+</Card>
+
   </Card>
 </Col>
 <Col xs={24} sm={24} md={12} lg={12} xl={16} className="mb-24">
