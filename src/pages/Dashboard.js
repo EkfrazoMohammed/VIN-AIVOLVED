@@ -65,6 +65,7 @@ function Dashboard() {
     getMachines();
     initialDateRange();
     initialTableData();
+    alertApi()
   }, []);
 
   const getMachines = () => {
@@ -123,6 +124,19 @@ console.log(tableData,'<<<')
         console.error('Error:', error);
       });
   };
+const [alertData,setAlertData]=useState();
+
+  const alertApi = ()=>{
+    const domain = `http://127.0.0.1:8001/`;
+    const url = `${domain}alerts/`;
+    axios.get(url).then((res)=>{
+console.log(res.data)
+setAlertData(res.data)
+    })
+    .catch((err)=>{
+      console.log(err)
+    })
+  }
  
 
   const { Title } = Typography;
@@ -311,7 +325,10 @@ console.log(categoryDefects,'<<<')
                       <Title level={3}>
                         {`Defects`}
                       </Title>
-                      <span>{`${tableData.length ? tableData.length : 0} `}</span>
+
+                      {/* <span>  {Object.keys(categoryDefects).reduce((total, category) => total + category, 0)}</span> */}
+                      <span>  {Object.keys(categoryDefects).length}</span>
+
                     </Col>
                     <Col xs={6}>
                       <div className="icon-box"><BugOutlined /></div>
@@ -336,7 +353,11 @@ console.log(categoryDefects,'<<<')
                       <Title level={3}>
                         {`Alerts`}
                       </Title>
-                      <span>{`${tableData.length ? tableData.length  : 0}`}</span>
+                      {
+                        alertData ? 
+                        <span>{Object.keys(alertData).length }</span>
+                        :null
+                      }
                     </Col>
                     <Col xs={6}>
                       <div className="icon-box"><AlertOutlined /></div>
