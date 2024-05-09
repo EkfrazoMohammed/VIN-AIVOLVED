@@ -10,7 +10,7 @@ function PieChart({ data }) {
 
   useEffect(() => {
     // Fetch defect colors from the API
-    axios.get('http://127.0.0.1:8001/defect/')
+    axios.get('http://143.110.184.45:8100/defect/')
       .then(response => {
         const colors = {};
         response.data.forEach(defect => {

@@ -9,7 +9,7 @@ function LineChart({ data }) {
   const [defectColors, setDefectColors] = useState({});
   useEffect(() => {
     // Fetch defect colors from the API
-    axios.get('http://127.0.0.1:8001/defect/')
+    axios.get('http://143.110.184.45:8100/defect/')
       .then(response => {
         // Organize the response data as an object with defect names as keys and color codes as values
         const colors = {};

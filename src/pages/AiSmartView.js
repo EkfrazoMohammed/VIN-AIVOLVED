@@ -17,7 +17,7 @@ const AiSmartView = () => {
   const sliderRef = useRef(null); 
 
   useEffect(() => {
-    axios.get("http://127.0.0.1:8001/defect/")
+    axios.get("http://143.110.184.45:8100/defect/")
       .then(response => {
         setDefects(response.data);
       })
@@ -28,7 +28,7 @@ const AiSmartView = () => {
 
   useEffect(() => {
     if (selectedDefect) {
-      axios.get(`http://127.0.0.1:8001/aismart/${selectedDefect.id}/`)
+      axios.get(`http://143.110.184.45:8100/aismart/${selectedDefect.id}/`)
         .then(response => {
           if (response.data.message) {
             setErrorMessage(response.data.message);
