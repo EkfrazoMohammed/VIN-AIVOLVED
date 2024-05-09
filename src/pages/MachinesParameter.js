@@ -17,7 +17,7 @@ const MachinesParameter = () => {
   
 const [data,setData]=useState([])
   const getData=async ()=>{
-    await axios.get("http://127.0.0.1:8001/machine_temprature/")
+    await axios.get("http://143.110.184.45:8100/machine_temprature/")
     .then((res)=>{
       console.log(res.data)
       setData(res.data)

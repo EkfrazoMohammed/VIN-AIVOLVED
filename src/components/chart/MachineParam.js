@@ -12,7 +12,7 @@ function MachineParam() {
   useEffect(() => {
     const getData = async () => {
       try {
-        const res = await axios.get("http://127.0.0.1:8000/params_graph/");
+        const res = await axios.get("http://143.110.184.45:8100/params_graph/");
         if (res.data.length > 0) {
           const modifiedData = res.data.map(item => ({
             ...item,
