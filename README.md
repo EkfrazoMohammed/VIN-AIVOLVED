@@ -1,7 +1,7 @@
-# TruckLink UI
-## Created using React + Typescript + Vite
+# VISION INTELLIGENCE NETWORK DASHBOARD
+## Created using React
 
-## Installation
+## Steps to run app
 
 Install the dependencies
 ```sh
