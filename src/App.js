@@ -10,7 +10,7 @@ import AiSmartView from "./pages/AiSmartView";
 import Dashboard from "./pages/Dashboard";
 import MachinesParameter from "./pages/MachinesParameter";
 import Camera from "./pages/Camera";
-import Settings from "./pages/Settings";
+import Settings from "./pages/Settings.jsx";
 
 function App() {
   return (
