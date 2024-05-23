@@ -128,3 +128,22 @@ a {
 label::after{
 content: '' !important;
 }
+
+:where(.css-dev-only-do-not-override-kghr11).ant-tabs-card.ant-tabs-top >.ant-tabs-nav .ant-tabs-tab-active{
+  background-color: rgb(236, 82, 45) !important;
+
+}
+
+:where(.css-dev-only-do-not-override-kghr11).ant-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #fff;
+}
+
+:where(.css-dev-only-do-not-override-kghr11).ant-tabs .ant-tabs-tab-btn{
+  font-weight: 600 !important;
+}
+:where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper table {
+  box-shadow: 1px 2px 27px rgba(0, 0, 0, 0.243);
+}
+:where(.css-dev-only-do-not-override-kghr11).ant-tabs >.ant-tabs-nav .ant-tabs-nav-list{
+  gap: 1rem;
+}

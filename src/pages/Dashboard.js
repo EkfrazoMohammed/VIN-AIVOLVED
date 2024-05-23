@@ -11,7 +11,7 @@ import PieChart from "../components/chart/PieChart";
 import MachinesParameter from "./MachinesParameterWithPagination";
 import MachinesParameterWithPagination from "./MachinesParameterWithPagination";
 import MachineParam from "../components/chart/MachineParam";
-
+import {API, baseURL} from "./../API/API"
 
 function Dashboard() {
  
@@ -112,12 +112,11 @@ console.log(tableData,'<<<')
   };
 
   const initialTableData = () => {
-    const domain = `http://143.110.184.45:8100/`;
+    const domain = baseURL;
     const [fromDate, toDate] = [startDate, endDate].map(date => date.toISOString().slice(0, 10)); // Format dates as YYYY-MM-DD
     const url = `${domain}reports/`;
     axios.get(url)
       .then(response => {
-  
         setTableData(response.data);
       })
       .catch(error => {
