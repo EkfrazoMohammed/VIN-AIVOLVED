@@ -147,3 +147,16 @@ content: '' !important;
 :where(.css-dev-only-do-not-override-kghr11).ant-tabs >.ant-tabs-nav .ant-tabs-nav-list{
   gap: 1rem;
 }
+
+
+:where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper table {
+  box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.243) !important;
+}
+
+:where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper table {
+  width: 100%;
+  text-align: start;
+  border-radius: 8px !important;
+  border-collapse: separate;
+  border-spacing: 0;
+}
