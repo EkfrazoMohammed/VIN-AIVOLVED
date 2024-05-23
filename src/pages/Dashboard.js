@@ -44,7 +44,7 @@ function Dashboard() {
   };
   
   const handleApplyFilters = () => {
-    const domain = 'http://143.110.184.45:8100/';
+    const domain = 'http://vin.aivolved.in:8100/';
     const [fromDate, toDate] = dateRange;
     let url = `${domain}reports/?`;
     url += `machine=${selectedMachine}&department=${selectedDepartment}`;
@@ -69,7 +69,7 @@ function Dashboard() {
   }, []);
 
   const getMachines = () => {
-    const domain = 'http://143.110.184.45:8100/';
+    const domain = 'http://vin.aivolved.in:8100/';
     let url = `${domain}machine/?`;
     axios.get(url)
       .then(response => {
@@ -85,7 +85,7 @@ function Dashboard() {
   };
 
   const getDepartments = () => {
-    const domain = 'http://143.110.184.45:8100/';
+    const domain = 'http://vin.aivolved.in:8100/';
     let url = `${domain}department/?`;
     axios.get(url)
       .then(response => {
@@ -112,7 +112,7 @@ console.log(tableData,'<<<')
   };
 
   const initialTableData = () => {
-    const domain = `http://143.110.184.45:8100/`;
+    const domain = `http://vin.aivolved.in:8100/`;
     const [fromDate, toDate] = [startDate, endDate].map(date => date.toISOString().slice(0, 10)); // Format dates as YYYY-MM-DD
     const url = `${domain}reports/`;
     axios.get(url)
@@ -127,7 +127,7 @@ console.log(tableData,'<<<')
 const [alertData,setAlertData]=useState();
 
   const alertApi = ()=>{
-    const domain = `http://143.110.184.45:8100/`;
+    const domain = `http://vin.aivolved.in:8100/`;
     const url = `${domain}alerts/`;
     axios.get(url).then((res)=>{
 console.log(res.data)
@@ -195,7 +195,7 @@ const categorizeDefects = (data) => {
 
   const handleMachineCheckBoxChange = (checkedValues) => {
     setSelectedCheckboxMachine(checkedValues);
-    let url = 'http://143.110.184.45:8100/reports?machine=';
+    let url = 'http://vin.aivolved.in:8100/reports?machine=';
     checkedValues.forEach((machineId, index) => {
       if (index !== 0) {
         url += ',';

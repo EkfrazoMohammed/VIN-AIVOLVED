@@ -10,7 +10,7 @@ function PieChart({ data }) {
 
   useEffect(() => {
     // Fetch defect colors from the API
-    axios.get('http://143.110.184.45:8100/defect/')
+    axios.get('http://vin.aivolved.in:8100/defect/')
       .then(response => {
         const colors = {};
         response.data.forEach(defect => {

@@ -35,7 +35,7 @@ if(data === '' || data === undefined || data === null){
     }
     
     const PostData = async()=>{
-      const res = await axios.post(`http://143.110.184.45:8100/${param}/`,payload)
+      const res = await axios.post(`http://vin.aivolved.in:8100/${param}/`,payload)
       try{
         api.open({
           message: `${param} created`,

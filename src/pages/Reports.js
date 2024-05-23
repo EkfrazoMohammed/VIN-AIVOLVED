@@ -61,7 +61,7 @@ const Reports = () => {
   };
   
   const handleApplyFilters = () => {
-    const domain = 'http://143.110.184.45:8100/';
+    const domain = 'http://vin.aivolved.in:8100/';
     const [fromDate, toDate] = dateRange;
     let url = `${domain}reports/?`;
     url += `machine=${selectedMachine}&department=${selectedDepartment}`;
@@ -80,7 +80,7 @@ const Reports = () => {
 
   const [machineOptions, setMachineOptions] = useState([]);
   const getMachines=()=>{
-    const domain = 'http://143.110.184.45:8100/';
+    const domain = 'http://vin.aivolved.in:8100/';
     let url = `${domain}machine/?`;
     axios.get(url)
       .then(response => {
@@ -96,7 +96,7 @@ const Reports = () => {
   }
   const [departmentOptions, setDepartmentOptions] = useState([]);
   const getDepartments=()=>{
-    const domain = 'http://143.110.184.45:8100/';
+    const domain = 'http://vin.aivolved.in:8100/';
     let url = `${domain}department/?`;
     axios.get(url)
       .then(response => {
@@ -123,7 +123,7 @@ const Reports = () => {
   };
 
   const initialTableData = () => {
-    const domain = `http://143.110.184.45:8100/`;
+    const domain = `http://vin.aivolved.in:8100/`;
    const url = `${domain}all_reports/`;
     axios.get(url)
       .then(response => {

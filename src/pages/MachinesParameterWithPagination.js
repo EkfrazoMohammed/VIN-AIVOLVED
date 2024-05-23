@@ -9,7 +9,7 @@ const MachinesParameterWithPagination = () => {
 
   const getData = async () => {
     try {
-      const response = await axios.get("http://143.110.184.45:8100/machine_temprature/");
+      const response = await axios.get("http://vin.aivolved.in:8100/machine_temprature/");
       setData(response.data);
     } catch (error) {
       console.log(error);
