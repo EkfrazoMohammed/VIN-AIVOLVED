@@ -83,7 +83,7 @@ function MachineParam() {
   return (
     <div>
       <div>
-        <Title level={5}>Production Vs Scanned Vs Rejected</Title>
+        <Title level={5}>Defects vs Production (CRQS)</Title>
       </div>
       <ReactApexChart
         options={chartOptions}
