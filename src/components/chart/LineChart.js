@@ -3,13 +3,13 @@ import ReactApexChart from "react-apexcharts";
 import { Typography } from "antd";
 import axios from "axios";
 import { createGlobalStyle } from "styled-components";
-
+import {API, baseURL} from "../../API/API"
 function LineChart({ data }) {
   const { Title } = Typography;
   const [defectColors, setDefectColors] = useState({});
   useEffect(() => {
     // Fetch defect colors from the API
-    axios.get('http://143.110.184.45:8100/defect/')
+    axios.get(`${baseURL}/defect/`)
       .then(response => {
         // Organize the response data as an object with defect names as keys and color codes as values
         const colors = {};

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import ReactApexChart from "react-apexcharts";
 import { Typography } from "antd";
 import axios from 'axios'
+import { baseURL } from "../../API/API";
 
 function StackChart({ data }) {
   const { Title } = Typography;
@@ -9,7 +10,7 @@ function StackChart({ data }) {
 
   useEffect(() => {
     // Fetch defect colors from the API
-    axios.get('http://143.110.184.45:8100/defect/')
+    axios.get(`${baseURL}/defect/`)
       .then(response => {
         // Organize the response data as an object with defect names as keys and color codes as values
         const colors = {};

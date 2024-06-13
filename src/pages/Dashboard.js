@@ -1,10 +1,13 @@
 
 import { useState,useEffect } from "react";
+import "../App.css"
+import { Link } from "react-router-dom";
 import axios from 'axios';
 import {Card,Col, Row, Typography, Select, DatePicker,Checkbox, Button, Dropdown, Menu} from "antd";
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Paragraph from "antd/lib/typography/Paragraph";
-import {  VideoCameraOutlined, BugOutlined, AlertOutlined,} from '@ant-design/icons';
+import {  VideoCameraOutlined, BugOutlined, AlertOutlined,NotificationOutlined} from '@ant-design/icons';
 import StackChart from "../components/chart/StackChart";
 import LineChart from "../components/chart/LineChart";
 import PieChart from "../components/chart/PieChart";
@@ -44,7 +47,7 @@ function Dashboard() {
   };
   
   const handleApplyFilters = () => {
-    const domain = 'http://143.110.184.45:8100/';
+    const domain = `${baseURL}`;
     const [fromDate, toDate] = dateRange;
     let url = `${domain}reports/?`;
     url += `machine=${selectedMachine}&department=${selectedDepartment}`;
@@ -69,7 +72,7 @@ function Dashboard() {
   }, []);
 
   const getMachines = () => {
-    const domain = 'http://143.110.184.45:8100/';
+    const domain = `${baseURL}`;
     let url = `${domain}machine/?`;
     axios.get(url)
       .then(response => {
@@ -85,7 +88,7 @@ function Dashboard() {
   };
 
   const getDepartments = () => {
-    const domain = 'http://143.110.184.45:8100/';
+    const domain = `${baseURL}`;
     let url = `${domain}department/?`;
     axios.get(url)
       .then(response => {
@@ -99,7 +102,6 @@ function Dashboard() {
         console.error('Error fetching department data:', error);
       });
   };
-console.log(tableData,'<<<')
   const initialDateRange = () => {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - 7); // 7 days ago
@@ -123,10 +125,10 @@ console.log(tableData,'<<<')
         console.error('Error:', error);
       });
   };
-const [alertData,setAlertData]=useState();
+const [alertData,setAlertData]=useState(null);
 
   const alertApi = ()=>{
-    const domain = `http://143.110.184.45:8100/`;
+    const domain = `${baseURL}`;
     const url = `${domain}alerts/`;
     axios.get(url).then((res)=>{
 console.log(res.data)
@@ -137,7 +139,7 @@ setAlertData(res.data)
     })
   }
  
-
+console.log(alertData)
   const { Title } = Typography;
   const { RangePicker } = DatePicker;
 
@@ -188,13 +190,12 @@ const categorizeDefects = (data) => {
   
   //   return categorizedData;
   // };
-  
-  
+
   const [selectedCheckboxMachine, setSelectedCheckboxMachine] = useState([]);
 
   const handleMachineCheckBoxChange = (checkedValues) => {
     setSelectedCheckboxMachine(checkedValues);
-    let url = 'http://143.110.184.45:8100/reports?machine=';
+    let url = `${baseURL}/reports?machine=`;
     checkedValues.forEach((machineId, index) => {
       if (index !== 0) {
         url += ',';
@@ -227,16 +228,80 @@ console.log(categoryDefects,'<<<')
     </Menu>
   );
   
+
+
+const [notifications, setNotifications] = useState([]);
+const [isSocketConnected, setIsSocketConnected] = useState(false);
+const [prevNotificationLength, setPrevNotificationLength] = useState(0);
+
+const initializeWebSocket = () => {
+  const socket = new WebSocket(`ws://127.0.0.1:8001/ws/notifications/`);
+
+  socket.onopen = () => {
+    console.log("WebSocket connection established");
+    setIsSocketConnected(true); // Update connection status
+  };
+
+  socket.onmessage = (event) => {
+    const message = JSON.parse(event.data);
+    setNotifications(prevNotifications => {
+      const newNotifications = [...prevNotifications, message.notification];
+      // toast.error(message.notification); // Display toast notification
+      toast.error(message.notification, 
+        {
+          position: "top-right",
+          // autoClose: false,
+          autoClose:10000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+          // transition: Bounce,
+          }
+      ); // Display toast notification with 5 seconds duration
+      return newNotifications;
+    });
+  };
+
+  socket.onclose = () => {
+    console.log("WebSocket connection closed");
+    setIsSocketConnected(false); // Update connection status
+  };
+
+  socket.onerror = (error) => {
+    console.error("WebSocket error:", error);
+    setIsSocketConnected(false); // Update connection status
+  };
+
+  return () => {
+    socket.close();
+  };
+};
+
+useEffect(() => {
+  const cleanupWebSocket = initializeWebSocket();
+  return cleanupWebSocket;
+}, []);
+
+useEffect(() => {
+  if (notifications.length > prevNotificationLength) {
+    setPrevNotificationLength(notifications.length);
+  }
+}, [notifications.length]);
+
   return (
     <>
+     <ToastContainer />
       <div className="layout-content">
       <Row className="rowgap-vbox" gutter={[24, 0]}>
       <Col
               xs={24}
               sm={24}
               md={12}
-              lg={8}
-              xl={8}
+              lg={6}
+              lg={6}
               className="mb-24"
               style={{display:"flex",gap:"1rem"}}
             >
@@ -284,8 +349,8 @@ console.log(categoryDefects,'<<<')
               xs={24}
               sm={24}
               md={12}
-              lg={8}
-              xl={8}
+              lg={6}
+              lg={6}
               className="mb-24"
             >
             <Card bordered={false} className="criclebox ">
@@ -297,7 +362,7 @@ console.log(categoryDefects,'<<<')
           <Title level={3}>
             {`Machines`}
           </Title>
-          <span>{`2`}</span>
+          <span>{machineOptions.length}</span>
         </Col>
         <Col xs={6}>
           <div className="icon-box"><VideoCameraOutlined /></div>
@@ -313,8 +378,8 @@ console.log(categoryDefects,'<<<')
               xs={24}
               sm={24}
               md={12}
-              lg={8}
-              xl={8}
+              lg={6}
+              lg={6}
               className="mb-24"
             >
               <Card bordered={false} className="criclebox ">
@@ -341,8 +406,8 @@ console.log(categoryDefects,'<<<')
               xs={24}
               sm={24}
               md={12}
-              lg={8}
-              xl={8}
+              lg={6}
+              lg={6}
               className="mb-24"
             >
               <Card bordered={false} className="criclebox ">
@@ -355,7 +420,7 @@ console.log(categoryDefects,'<<<')
                       {
                         alertData ? 
                         <span>{Object.keys(alertData).length }</span>
-                        :null
+                        : <span>0</span>
                       }
                     </Col>
                     <Col xs={6}>
@@ -365,10 +430,66 @@ console.log(categoryDefects,'<<<')
                 </div>
               </Card>
             </Col>
+
+            <Col
+              key={1}
+              xs={24}
+              sm={24}
+              md={12}
+              lg={6}
+              lg={6}
+              className="mb-24"
+            >
+              <Link to="/insights">
+              <Card
+               bordered={false} className={`criclebox ${notifications.length > prevNotificationLength ? 'notification-change' : ''}`}>
+          
+              {/* <Card bordered={false} className={`criclebox ${notifications.length > prevNotificationLength ? 'notification-change' : ''}`}> */}
+            <div className="number">
+              <Row align="middle">
+                <Col xs={18}>
+                  <Title level={3}>
+                    {`Insights`}
+                  </Title>
+                  {/* {
+                    notifications ? 
+                    <span>{notifications.length}</span>
+                    : 0
+                  } */}
+                  <br />
+                </Col>
+                <Col xs={6}>
+                  <div className="icon-box"><NotificationOutlined /></div>
+                </Col>
+              </Row>
+            </div>
+          </Card>
+          </Link>
+              
+              {/* <Card bordered={false} className="criclebox ">
+                <div className="number">
+                  <Row align="middle">
+                    <Col xs={18}>
+                      <Title level={3}>
+                        {`Insights`}
+                      </Title>
+                      {
+                        notifications ? 
+                        <span>{notifications.length }</span>
+                        :0
+                      }
+                    </Col>
+                    <Col xs={6}>
+                      <div className="icon-box"><AlertOutlined /></div>
+                    </Col>
+                  </Row>
+                </div>
+              </Card> */}
+            </Col>
         </Row>
 
         <Row gutter={[24, 24]}>
-          <Col xs={24} sm={24} md={12} lg={12} xl={8} className="mb-24">
+          <Col xs={24} sm={24} md={12} lg={12} lg={6} className="mb-24">
          <Card bordered={false} className="h-full">
          {Object.keys(categoryDefects).map((category, index) => (
   <Card key={index} bordered={true} className="criclebox h-full mb-2 px-2 ">
@@ -394,7 +515,7 @@ console.log(categoryDefects,'<<<')
 
   </Card>
 </Col>
-<Col xs={24} sm={24} md={12} lg={12} xl={16} className="mb-24">
+<Col xs={24} sm={24} md={12} lg={14} xl={18} className="mb-24">
             <Card bordered={false} className="criclebox h-full">
               <MachineParam   />
 
