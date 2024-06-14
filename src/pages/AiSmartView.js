@@ -29,7 +29,7 @@ const AiSmartView = () => {
 
   useEffect(() => {
     if (selectedDefect) {
-      axios.get(`http://143.110.184.45:8100/aismart/${selectedDefect.id}/`)
+      axios.get(`${baseURL}aismart/${selectedDefect.id}/`)
         .then(response => {
           if (response.data.message) {
             setErrorMessage(response.data.message);
