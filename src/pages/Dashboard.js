@@ -250,8 +250,8 @@ const initializeWebSocket = () => {
       toast.error(message.notification, 
         {
           position: "top-right",
-          // autoClose: false,
-          autoClose:10000,
+          autoClose: false,
+          // autoClose:10000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
