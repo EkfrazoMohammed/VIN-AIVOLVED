@@ -11,7 +11,7 @@ function PieChart({ data }) {
 
   useEffect(() => {
     // Fetch defect colors from the API
-    axios.get(`${baseURL}/defect/`)
+    axios.get(`${baseURL}defect/`)
       .then(response => {
         const colors = {};
         response.data.forEach(defect => {

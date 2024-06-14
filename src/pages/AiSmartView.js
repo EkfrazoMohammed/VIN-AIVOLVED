@@ -6,6 +6,7 @@ import "slick-carousel/slick/slick-theme.css";
 import {Select } from "antd";
 import "../index.css"
 import {RightOutlined ,LeftOutlined} from '@ant-design/icons';
+import { baseURL } from "../API/API";
 
 
 const AiSmartView = () => {
@@ -17,7 +18,7 @@ const AiSmartView = () => {
   const sliderRef = useRef(null); 
 
   useEffect(() => {
-    axios.get("http://143.110.184.45:8100/defect/")
+    axios.get(`${baseURL}defect`)
       .then(response => {
         setDefects(response.data);
       })

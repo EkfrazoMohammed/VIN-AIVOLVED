@@ -125,8 +125,8 @@ const Reports = () => {
   };
 
   const initialTableData = () => {
-    const domain = `http://143.110.184.45:8100/`;
-   const url = `${domain}all_reports/`;
+    // const domain = `http://143.110.184.45:8100/`;
+   const url = `${baseURL}all_reports/`;
     axios.get(url)
       .then(response => {
         setTableData(response.data);

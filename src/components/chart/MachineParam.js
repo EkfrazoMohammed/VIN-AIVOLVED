@@ -13,7 +13,7 @@ function MachineParam() {
   useEffect(() => {
     const getData = async () => {
       try {
-        const res = await axios.get(`${baseURL}/params_graph/`);
+        const res = await axios.get(`${baseURL}params_graph/`);
         if (res.data.length > 0) {
           const modifiedData = res.data.map(item => ({
             ...item,
