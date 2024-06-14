@@ -250,19 +250,19 @@ function Sidenav({ color }) {
               }} >Settings</span>
           </NavLink>
         </Menu.Item>
-        {/* <Menu.Item key="4">
-          <NavLink to="/rtl">
+        <Menu.Item key="4">
+          <NavLink to="/organization">
             <span
               className="icon"
               style={{
-                background: page === "rtl" ? color : "",
+                background: page === "organization" ? color : "",
               }}
             >
               {rtl}
             </span>
-            <span className="label">RTL</span>
+            <span className="label">Organization</span>
           </NavLink>
-        </Menu.Item> */}
+        </Menu.Item>
         {/* <Menu.Item className="menu-item-header" key="5">
           Account Pages
         </Menu.Item> */}
