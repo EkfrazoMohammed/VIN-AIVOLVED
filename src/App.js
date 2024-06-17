@@ -13,6 +13,10 @@ import Dashboard from "./pages/Dashboard";
 import MachinesParameter from "./pages/MachinesParameter";
 import Camera from "./pages/Camera";
 import Settings from "./pages/Settings.jsx";
+
+import Organisation from "./pages/Organization.js";
+import Plants from "./pages/Plants.js";
+import Select_dashboard from "./pages/SelectDashboard.js";
 import "react-toastify/dist/ReactToastify.css";
 import Insights from "./pages/Insights.js";
 
@@ -35,6 +39,9 @@ const App = () => {
           <Route exact path="/machines-parameter" component={MachinesParameter} />
           <Route exact path="/camera" component={Camera} />
           <Route exact path="/settings" component={Settings} />
+          <Route exact path="/organization" component={Organisation} />
+          <Route exact path="/Plants/:id" component={Plants} />
+          <Route exact path="/Organization-Dashboard/:id" component={Select_dashboard} />
           <Redirect from="*" to="/dashboard" />
         </Main>
       </Switch>

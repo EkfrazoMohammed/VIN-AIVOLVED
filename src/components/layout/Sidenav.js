@@ -54,7 +54,21 @@ function Sidenav({ color }) {
   </svg>
   ]
   
+  const rtl = [
+    <svg xmlns="http://www.w3.org/2000/svg" version="1.0"  width="20"
+    height="20"
+    fill="none"
+     viewBox="0 0 256.000000 256.000000"
+      preserveAspectRatio="xMidYMid meet">
   
+  <g transform="translate(0.000000,256.000000) scale(0.100000,-0.100000)" fill="#000000" stroke="none">
+  <path d="M1106 1985 c-200 -42 -418 -151 -608 -306 -154 -126 -368 -358 -368 -399 0 -28 100 -147 222 -266 327 -317 647 -466 973 -451 225 10 448 100 682 276 172 129 423 392 423 443 0 47 -254 311 -419 436 -158 119 -311 198 -476 247 -113 34 -319 43 -429 20z m342 -81 c201 -41 424 -163 634 -348 91 -81 258 -259 258 -276 0 -17 -167 -195 -258 -276 -272 -240 -544 -363 -800 -364 -259 0 -530 123 -804 364 -91 81 -258 259 -258 276 0 17 167 195 258 276 211 186 422 302 636 349 85 18 242 18 334 -1z"/>
+  <path d="M1166 1754 c-242 -59 -408 -305 -368 -546 44 -265 290 -448 549 -411 264 38 454 289 416 550 -41 284 -320 474 -597 407z m196 -75 c162 -34 288 -166 319 -333 50 -272 -205 -521 -477 -466 -217 44 -364 255 -325 466 42 231 258 380 483 333z"/>
+  <path d="M1148 1487 c-7 -8 -40 -100 -72 -205 -63 -205 -64 -222 -10 -222 19 0 26 8 37 46 l13 47 69 1 69 1 14 -47 c11 -40 17 -48 36 -48 54 0 53 18 -9 223 -32 106 -63 198 -68 205 -13 16 -62 15 -79 -1z m82 -258 c0 -13 -10 -16 -47 -15 -27 0 -47 6 -46 11 1 6 12 46 24 90 l23 80 23 -75 c13 -41 23 -82 23 -91z"/>
+  <path d="M1462 1478 c-12 -35 -7 -397 5 -409 6 -6 21 -9 34 -7 l24 3 3 209 c3 219 1 225 -41 226 -10 0 -21 -10 -25 -22z"/>
+  </g>
+  </svg>
+  ]
   const tables = [
     <svg
       width="20"
@@ -211,7 +225,47 @@ function Sidenav({ color }) {
               }} >Settings</span>
           </NavLink>
         </Menu.Item>
-       
+        <Menu.Item key="4">
+          <NavLink to="/organization">
+            <span
+              className="icon"
+              style={{
+                background: page === "organization" ? color : "",
+              }}
+            >
+              {rtl}
+            </span>
+            <span className="label">Organization</span>
+          </NavLink>
+        </Menu.Item>
+        {/* <Menu.Item className="menu-item-header" key="5">
+          Account Pages
+        </Menu.Item> */}
+        {/* <Menu.Item key="6">
+          <NavLink to="/profile">
+            <span
+              className="icon"
+              style={{
+                background: page === "profile" ? color : "",
+              }}
+            >
+              {profile}
+            </span>
+            <span className="label">Profile</span>
+          </NavLink>
+        </Menu.Item>
+        <Menu.Item key="7">
+          <NavLink to="/sign-in">
+            <span className="icon">{signin}</span>
+            <span className="label">Sign In</span>
+          </NavLink>
+        </Menu.Item>
+        <Menu.Item key="8">
+          <NavLink to="/sign-up">
+            <span className="icon">{signup}</span>
+            <span className="label">Sign Up</span>
+          </NavLink>
+        </Menu.Item> */}
       </Menu>
     </>
   );
