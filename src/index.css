@@ -160,3 +160,22 @@ content: '' !important;
   border-collapse: separate;
   border-spacing: 0;
 }
+/* 
+.notification-change {
+  animation: backgroundChange 0.5s forwards;
+}
+
+@keyframes backgroundChange {
+  0% { background-color: red; }
+  100% { background-color: white; }
+} */
+.notification-change {
+  animation: backgroundChange 10s infinite; /* Adjusted duration */
+}
+
+@keyframes backgroundChange {
+  0% { background-color: red; }
+  /* /* 50% { background-color: white; } */
+  100% { background-color: red; } 
+}
+

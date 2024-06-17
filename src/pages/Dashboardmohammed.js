@@ -44,7 +44,7 @@ function Dashboard() {
   };
   
   const handleApplyFilters = () => {
-    const domain = 'http://143.110.184.45:8100/';
+    const domain = `${baseURL}`;
     const [fromDate, toDate] = dateRange;
     let url = `${domain}reports/?`;
     url += `machine=${selectedMachine}&department=${selectedDepartment}`;
@@ -69,7 +69,7 @@ function Dashboard() {
   }, []);
 
   const getMachines = () => {
-    const domain = 'http://143.110.184.45:8100/';
+    const domain = `${baseURL}`;
     let url = `${domain}machine/?`;
     axios.get(url)
       .then(response => {
@@ -85,7 +85,7 @@ function Dashboard() {
   };
 
   const getDepartments = () => {
-    const domain = 'http://143.110.184.45:8100/';
+    const domain = `${baseURL}`;
     let url = `${domain}department/?`;
     axios.get(url)
       .then(response => {

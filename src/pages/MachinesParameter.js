@@ -10,6 +10,7 @@ import {
   RightOutlined,
   DownloadOutlined,
 } from '@ant-design/icons';
+import { baseURL } from '../API/API';
 const { RangePicker } = DatePicker;
 
 const MachinesParameter = () => {
@@ -17,7 +18,7 @@ const MachinesParameter = () => {
   
 const [data,setData]=useState([])
   const getData=async ()=>{
-    await axios.get("http://143.110.184.45:8100/machine_temprature/")
+    await axios.get(`${baseURL}machine_temprature/`)
     .then((res)=>{
       console.log(res.data)
       setData(res.data)

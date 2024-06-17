@@ -1,10 +1,10 @@
+
 import React, { useState, useEffect } from 'react';
 import { Table, Select, DatePicker, Button, Image, Tag } from 'antd';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
-import moment from 'moment';
 import {API, baseURL} from "./../API/API"
-import { ToastContainer, toast } from 'react-toastify';
+import moment from 'moment';
 import {
   VideoCameraOutlined,
   BugOutlined,
@@ -14,23 +14,23 @@ import {
 } from '@ant-design/icons';
 const { RangePicker } = DatePicker;
 
-const Reports = () => {
+const Insights = () => {
  
 
   const columns = [
-    { title: 'Alert Name', dataIndex: 'alert_name', key: 'alert_name' },
-    { title: 'Defect Name', dataIndex: 'defect_name', key: 'defect_name' },
-    { title: 'Machine Name', dataIndex: 'machine_name', key: 'machine_name' },
-    { title: 'Department Name', dataIndex: 'department_name', key: 'department_name' },
-    { title: 'Recorded Date Time', dataIndex: 'recorded_date_time', key: 'recorded_date_time' },
-    { 
-      title: 'Image', 
-      dataIndex: 'image_b64', 
-      key: 'image_b64', 
-      render: image_b64 => (
-        image_b64 ? <Image src={image_b64} alt="Defect Image" width={50} /> : null
-      )
-    },
+    { title: 'Notification Text', dataIndex: 'notification_text', key: 'notification_text' },
+    { title: 'Defect', dataIndex: 'defect', key: 'defect' },
+    // { title: 'Machine Name', dataIndex: 'machine_name', key: 'machine_name' },
+    // { title: 'Department Name', dataIndex: 'department_name', key: 'department_name' },
+    // { title: 'Recorded Date Time', dataIndex: 'recorded_date_time', key: 'recorded_date_time' },
+    // { 
+    //   title: 'Image', 
+    //   dataIndex: 'image_b64', 
+    //   key: 'image_b64', 
+    //   render: image_b64 => (
+    //     image_b64 ? <Image src={image_b64} alt="Defect Image" width={50} /> : null
+    //   )
+    // },
   ];
 
   const startDate = new Date();
@@ -125,8 +125,8 @@ const Reports = () => {
   };
 
   const initialTableData = () => {
-    // const domain = `http://143.110.184.45:8100/`;
-   const url = `${baseURL}all_reports/`;
+    const domain = `http://localhost:8010/`;
+   const url = `${domain}defect_notification/`;
     axios.get(url)
       .then(response => {
         setTableData(response.data);
@@ -175,79 +175,10 @@ const Reports = () => {
       window.URL.revokeObjectURL(url);
     }, 0);
   };
-
-  const [notifications, setNotifications] = useState([]);
-  const [isSocketConnected, setIsSocketConnected] = useState(false);
-  const [prevNotificationLength, setPrevNotificationLength] = useState(0);
-  
-  
-  
-  const initializeWebSocket = () => {
-    const socket = new WebSocket(`ws://127.0.0.1:8001/ws/notifications/`);
-  
-    socket.onopen = () => {
-      console.log("WebSocket connection established");
-      setIsSocketConnected(true); // Update connection status
-    };
-  
-    socket.onmessage = (event) => {
-      const message = JSON.parse(event.data);
-      setNotifications(prevNotifications => {
-        const newNotifications = [...prevNotifications, message.notification];
-        // toast.error(message.notification); // Display toast notification
-        toast.error(message.notification, 
-          {
-            position: "top-right",
-            // autoClose: false,
-            autoClose:10000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "colored",
-            // transition: Bounce,
-            }
-        ); // Display toast notification with 5 seconds duration
-        return newNotifications;
-      });
-    };
-  
-    socket.onclose = () => {
-      console.log("WebSocket connection closed");
-      setIsSocketConnected(false); // Update connection status
-    };
-  
-    socket.onerror = (error) => {
-      console.error("WebSocket error:", error);
-      setIsSocketConnected(false); // Update connection status
-    };
-  
-    return () => {
-      socket.close();
-    };
-  };
-  
-  useEffect(() => {
-    const cleanupWebSocket = initializeWebSocket();
-    return cleanupWebSocket;
-  }, []);
-  
-  useEffect(() => {
-    if (notifications.length > prevNotificationLength) {
-      setPrevNotificationLength(notifications.length);
-    }
-  }, [notifications]);
-  
-    return (
-      
-      <>
-       {/* <ToastContainer /> */}
-
-    
+  return (
     <div className="layout-content">
       
-      <Select
+      {/* <Select
   style={{ minWidth: "200px", marginRight: "10px" }}
   showSearch
   placeholder="Select Machine"
@@ -282,11 +213,12 @@ const Reports = () => {
       <Button type="primary" onClick={handleApplyFilters} style={{fontSize:"1rem",backgroundColor:"#ec522d",marginRight:"10px"}}>Apply filters</Button>
       <Button type="primary" icon={<DownloadOutlined />} size='large' style={{fontSize:"1rem",backgroundColor:"#ec522d"}} onClick={downloadExcel}>
             Download
-          </Button>
-      <Table columns={columns} dataSource={tableData}  style={{margin:"1rem 0"}}/>
+          </Button> */}
+      <Table columns={columns} dataSource={tableData}  
+    //   scroll={{ x: 800, y: 410 }}
+      style={{margin:"1rem 0"}}/>
     </div>
-    </>
   );
 };
 
-export default Reports;
+export default Insights;

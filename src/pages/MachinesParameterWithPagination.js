@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Pagination } from 'antd';
 import axios from 'axios';
+import { baseURL } from '../API/API';
 
 const MachinesParameterWithPagination = () => {
   const [data, setData] = useState([]);
@@ -9,7 +10,7 @@ const MachinesParameterWithPagination = () => {
 
   const getData = async () => {
     try {
-      const response = await axios.get("http://143.110.184.45:8100/machine_temprature/");
+      const response = await axios.get(`${baseURL}machine_temprature/`);
       setData(response.data);
     } catch (error) {
       console.log(error);

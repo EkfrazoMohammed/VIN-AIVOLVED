@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import ReactApexChart from "react-apexcharts";
 import { Typography } from "antd";
 import axios from "axios";
+import { baseURL } from "../../API/API";
 
 function MachineParam() {
   const { Title } = Typography;
@@ -12,7 +13,7 @@ function MachineParam() {
   useEffect(() => {
     const getData = async () => {
       try {
-        const res = await axios.get("http://143.110.184.45:8100/params_graph/");
+        const res = await axios.get(`${baseURL}params_graph/`);
         if (res.data.length > 0) {
           const modifiedData = res.data.map(item => ({
             ...item,
@@ -83,7 +84,7 @@ function MachineParam() {
   return (
     <div>
       <div>
-        <Title level={5}>Production Vs Scanned Vs Rejected</Title>
+        <Title level={5}>Defects vs Production (CRQS)</Title>
       </div>
       <ReactApexChart
         options={chartOptions}
