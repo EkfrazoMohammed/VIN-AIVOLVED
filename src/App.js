@@ -13,7 +13,12 @@ import Dashboard from "./pages/Dashboard";
 import MachinesParameter from "./pages/MachinesParameter";
 import Camera from "./pages/Camera";
 import Settings from "./pages/Settings.jsx";
-
+import {
+  createBrowserRouter,
+  createRoutesFromElements,
+  
+  RouterProvider,
+} from "react-router-dom";
 import Organisation from "./pages/Organization.js";
 import Plants from "./pages/Plants.js";
 import Select_dashboard from "./pages/SelectDashboard.js";
@@ -22,30 +27,94 @@ import Insights from "./pages/Insights.js";
 
 import 'react-toastify/dist/ReactToastify.css';
 // import useWebSocket from './WebSocketService';
+import Layout from "./pages/Layout.js";
+import Login from "./pages/Auth/Login.js"
+import ResetPassword from "./pages/Auth/ResetPassword.js"
 
 const App = () => {
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element: <Layout />,
+   
+      children: [
+        {
+          path: "", 
+          element: <Dashboard />,
+        },
+        {
+         path: 'dashboard-home',
+          element: <Dashboard />,
+        },
+        {
+          path: 'reports',
+          element: <Reports />,
+        },
+        {
+          path: 'ai-smart-view',
+          element: <AiSmartView />,
+        },
+        {
+          path: 'machines-parameter',
+          element: <MachinesParameter />,
+        },
+        {
+          path: 'camera',
+          element: <Camera />,
+        },
+        {
+          path: 'settings',
+          element: <Settings />,
+        },
+        // {
+        //   path: 'organization',
+        //   element: <Organization />,
+     
+        // },
+        {
+          path: 'Plants/:id',
+          element: <Plants />,
+        }, 
+        //     {
+        //   path: 'Organization-Dashboard/:id',
+        //   element: <Selectdashboard />,
+        // },
+      ]
+    },
+    {
+      path: "/login",
+      element: <Login />,
+    },   {
+      path: "/resetPassword",
+      element: <ResetPassword />,
+    },
+
+  ]);
   // const { notifications, isSocketConnected } = useWebSocket();
 
   return (
-    <div className="App" >
-      <Switch>
-        <Route path="/sign-up" exact component={SignUp} />
-        <Route path="/sign-in" exact component={SignIn} />
-        <Main>
-          <Route exact path="/dashboard" component={Dashboard} />
-          <Route exact path="/reports" component={Reports} />
-          <Route exact path="/insights" component={Insights} />
-          <Route exact path="/ai-smart-view" component={AiSmartView} />
-          <Route exact path="/machines-parameter" component={MachinesParameter} />
-          <Route exact path="/camera" component={Camera} />
-          <Route exact path="/settings" component={Settings} />
-          <Route exact path="/organization" component={Organisation} />
-          <Route exact path="/Plants/:id" component={Plants} />
-          <Route exact path="/Organization-Dashboard/:id" component={Select_dashboard} />
-          <Redirect from="*" to="/dashboard" />
-        </Main>
-      </Switch>
-    </div>
+    <>
+         <RouterProvider router={router} />
+    </>
+    // <div className="App" >
+    //   <Switch>
+    //     <Route path="/sign-up" exact component={SignUp} />
+    //     <Route path="/sign-in" exact component={SignIn} />
+    //     <Main>
+    //       <Route exact path="/dashboard" component={Dashboard} />
+    //       <Route exact path="/reports" component={Reports} />
+    //       <Route exact path="/insights" component={Insights} />
+    //       <Route exact path="/ai-smart-view" component={AiSmartView} />
+    //       <Route exact path="/machines-parameter" component={MachinesParameter} />
+    //       <Route exact path="/camera" component={Camera} />
+    //       <Route exact path="/settings" component={Settings} />
+    //       <Route exact path="/organization" component={Organisation} />
+    //       <Route exact path="/Plants/:id" component={Plants} />
+    //       <Route exact path="/Organization-Dashboard/:id" component={Select_dashboard} />
+    //       <Redirect from="*" to="/dashboard" />
+    //     </Main>
+    //   </Switch>
+    // </div>
   );
 }
 

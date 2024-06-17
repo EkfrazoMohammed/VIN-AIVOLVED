@@ -1,6 +1,6 @@
 import { Row, Col, Button, Card, Space, Modal } from "antd";
 import React, { useEffect, useState } from "react";
-import { Link ,useLocation,useHistory} from "react-router-dom";
+import { Link ,useLocation, useNavigation} from "react-router-dom";
 import { baseURL } from "../API/API";
 import axios from "axios";
 import { Switch } from "antd";
@@ -20,7 +20,7 @@ const Organisation = () => {
     organization_logo: "",
   });
 
-const history  = useHistory()
+const navigate  = useNavigation()
 
   const handleImageUpload = async (e) => {
     setError((err) => ({ ...err, imageError: "" }));
@@ -125,7 +125,7 @@ else{
             type="primary"
             style={{ width: "100%", padding: "0" }}
             danger
-            onClick={() =>  { return( setModal2Open(true),history.push("/organization") )}}
+            onClick={() =>  { return( setModal2Open(true),navigate("/organization") )}}
           >
             Create Organization
           </Button>{" "}

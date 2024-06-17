@@ -120,7 +120,7 @@ console.log(data)
   
   </Col>
 </Row>
-<Table columns={columns} dataSource={tableData} pagination={{ pageSize: 6 }}/>
+{/* <Table columns={columns} dataSource={tableData} pagination={{ pageSize: 6 }}/> */}
 
 </>
   )

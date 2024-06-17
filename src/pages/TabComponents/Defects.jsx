@@ -64,7 +64,7 @@ const [data,setData] = useState();
 
   // POST METHOD FOR SENDING COLOR CODE
 const handlePost = (param)=>{
-    console.log(data)
+    
 if(data === '' || data === undefined || data === null){
   return (
     api.open({
@@ -101,7 +101,7 @@ const handleChange = useMemo(
   [color],
 );
 
-const limitedDataSource = tableData.slice(0, 5);
+// const limitedDataSource = tableData.slice(0, 5);
   return (
 <>
 {contextHolder}
@@ -141,7 +141,7 @@ const limitedDataSource = tableData.slice(0, 5);
   </Col>
 </Row>
 
-<Table  columns={columns} dataSource={tableData}  pagination={{ pageSize: 6 }}  />
+{/* <Table  columns={columns} dataSource={tableData}  pagination={{ pageSize: 6 }}  /> */}
 
 
 </>

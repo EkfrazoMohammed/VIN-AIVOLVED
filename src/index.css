@@ -179,3 +179,10 @@ content: '' !important;
   100% { background-color: red; } 
 }
 
+:where(.css-dev-only-do-not-override-kghr11).ant-card .ant-card-body {
+  padding: 24px;
+  border-radius: 0 0 8px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
