@@ -3,6 +3,8 @@ import { Menu, Button } from "antd";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import logo from "../../assets/images/logo.png";
 import { useState } from "react";
+import axios from "axios";
+import { AuthToken, baseURL } from "../../API/API";
 
 function Sidenav({ color }) {
   const { pathname } = useLocation();
@@ -175,6 +177,31 @@ const smartView = [
       />
     </svg>,
   ];
+  const [refreshTokens, setrefreshTokens] = useState(() => 
+    JSON.parse(localStorage.getItem('refreshToken')) || null
+  );
+  
+const logout = async()=>{
+  try {
+    await axios.post(`${baseURL}logout/`,{
+      refresh_token:refreshTokens
+    },{
+      headers:{
+        Authorization: `Bearer ${AuthToken}`
+      }
+    })
+    
+    
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+  const handleLogout  = ()=>{
+    naviagte('/login');
+    localStorage.clear();
+    logout()
+  }
 
   return (
     <>
@@ -234,21 +261,21 @@ const smartView = [
           </NavLink>
         </Menu.Item>
 
-        {/* <Menu.Item key="4">
+        <Menu.Item key="3" onClick={()=>setActive("machines-parameter")}>
           <NavLink to="/machines-parameter">
             <span
               className="icon"
               style={{
-                background: page === "machines-parameter" ? color : "",
+                background: active === "machines-parameter"  || page ==="machines-parameter" ? color : "",
               }}
             >
-              {billing}
-            </span>
-            <span className="label"      style={{
-                color: page === "machines-parameter" ? color : "",
+  {billing}            </span>
+            <span className="label"   style={{
+                color: active === "machines-parameter" || page ==="machines-parameter"  ? color : "",
               }}>Machines Parameter</span>
           </NavLink>
-        </Menu.Item> */}
+        </Menu.Item>
+
 
 
         <Menu.Item key="4">
@@ -284,7 +311,7 @@ const smartView = [
               }} >Settings</span>
           </NavLink>
         </Menu.Item>
-        <Menu.Item key="6">
+        {/* <Menu.Item key="6">
           <NavLink to="/organization" onClick={()=>setActive("organization")} 
           style={{
             background: active === "organization" || page ==="organization" ? "#fff" : "",
@@ -310,7 +337,7 @@ const smartView = [
               }}>Organization</span>
           </NavLink>
           
-        </Menu.Item>
+        </Menu.Item> */}
         {/* <Menu.Item className="menu-item-header" key="5">
           Account Pages
         </Menu.Item> */}
@@ -341,11 +368,10 @@ const smartView = [
         </Menu.Item> */}
       </Menu>
       <div className="brand" style={{display:'flex',alignItems:'center',justifyContent:'center',position:'absolute',bottom:'5%',left:'25%',flexDirection:'column',gap:"0",cursor:'pointer'}}
-      onClick={()=>naviagte("/login")}
+      onClick={()=>handleLogout()}
       >
         <img src="https://w7.pngwing.com/pngs/253/714/png-transparent-logout-heroicons-ui-icon-thumbnail.png" alt="" />
-        
-        <span style={{fontSize:"1.3rem"}} >Logout</span>
+        <span style={{fontSize:"1.3rem"}}  >Logout</span>
       </div>
     </>
   );

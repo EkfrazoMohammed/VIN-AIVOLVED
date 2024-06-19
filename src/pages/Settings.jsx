@@ -34,7 +34,7 @@ const items = [
   },
   {
     key: '5',
-    label: 'Alerts',
+    label: 'Products',
     children: <Alerts />,
   },
 ];

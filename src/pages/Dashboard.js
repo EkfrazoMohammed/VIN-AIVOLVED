@@ -14,7 +14,7 @@ import PieChart from "../components/chart/PieChart";
 import MachinesParameter from "./MachinesParameterWithPagination";
 import MachinesParameterWithPagination from "./MachinesParameterWithPagination";
 import MachineParam from "../components/chart/MachineParam";
-import {API, baseURL} from "./../API/API"
+import {API, baseURL,AuthToken,localPlantData} from "./../API/API"
 
 function Dashboard() {
  
@@ -26,10 +26,14 @@ function Dashboard() {
   
   const [selectedMachine, setSelectedMachine] = useState(null);
   const [selectedDepartment, setSelectedDepartment] = useState(null);
+  const [selectedDefect, setSelectedDefect] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
   const [dateRange, setDateRange] = useState([formattedStartDate, formattedEndDate]);
   const [tableData, setTableData] = useState([]);
   const [machineOptions, setMachineOptions] = useState([]);
   const [departmentOptions, setDepartmentOptions] = useState([]);
+
   const handleMachineChange = value => {
     setSelectedMachine(value);
   };
@@ -37,10 +41,15 @@ function Dashboard() {
     setSelectedDepartment(value);
   };
 
+
+  const localItems = localStorage.getItem("PlantData")
+  const localPlantData = JSON.parse(localItems) 
+  
+
   const handleDateRangeChange = (dates, dateStrings) => {
     if (dateStrings) {
-      console.log(dateStrings)
-      setDateRange(dateStrings);
+      setDateRange("");
+      // console.log(dateStrings)
     } else {
       console.error('Invalid date range:', dates,dateStrings);
     }
@@ -49,12 +58,48 @@ function Dashboard() {
   const handleApplyFilters = () => {
     const domain = `${baseURL}`;
     const [fromDate, toDate] = dateRange;
-    let url = `${domain}reports/?`;
-    url += `machine=${selectedMachine}&department=${selectedDepartment}`;
-    if (fromDate && toDate) {
-      url += `&from_date=${fromDate}&to_date=${toDate}`;
-    }
-    axios.get(url)
+  console.log(fromDate,toDate)
+    let url = `${domain}dashboard/?`;
+    // url += `plant_id=${localPlantData.id}&from_date=${fromDate}&to_date=${toDate}&machine_id=${selectedMachine}&department_id=${selectedDepartment}&product_id=${selectedProduct}&defect_id=${selectedDefect}`;
+    if (localPlantData.id) {
+      url += `plant_id=${localPlantData.id}&`;
+  }
+  if (fromDate) {
+      url += `from_date=${fromDate}&`;
+  }
+  if (toDate) {
+      url += `to_date=${toDate}&`;
+  }
+  if (selectedMachine) {
+      url += `machine_id=${selectedMachine}&`;
+  }
+  if (selectedDepartment) {
+      url += `department_id=${selectedDepartment}&`;
+  }
+  if (selectedProduct) {
+      url += `product_id=${selectedProduct}&`;
+  }
+  if (selectedDefect) {
+      url += `defect_id=${selectedDefect}&`;
+  }
+  
+  // Remove the trailing '&' if present
+  if (url.endsWith('&')) {
+      url = url.slice(0, -1);
+  }
+  
+  // If no filters are added, remove the trailing '?'
+  if (url.endsWith('?')) {
+      url = url.slice(0, -1);
+  }
+    // if (fromDate && toDate) {
+    //   url += `&from_date=${fromDate}&to_date=${toDate}`;
+    // }
+    axios.get(url,{
+      headers:{
+        Authorization:`Bearer ${AuthToken}`
+      }
+    })
       .then(response => {
         setTableData(response.data);
       })
@@ -73,10 +118,15 @@ function Dashboard() {
 
   const getMachines = () => {
     const domain = `${baseURL}`;
-    let url = `${domain}machine/?`;
-    axios.get(url)
+    let url = `${domain}machine/?plant_name=${localPlantData.plant_name}`;
+    axios.get(url,{
+      headers:{
+        'Authorization': `Bearer ${AuthToken}`
+      }
+    })
       .then(response => {
-        const formattedMachines = response.data.map(machine => ({
+        console.log(response)
+        const formattedMachines = response.data.results.map(machine => ({
           id: machine.id,
           name: machine.name,
         }));
@@ -89,10 +139,14 @@ function Dashboard() {
 
   const getDepartments = () => {
     const domain = `${baseURL}`;
-    let url = `${domain}department/?`;
-    axios.get(url)
+    let url = `${domain}department/?plant_name=${localPlantData.plant_name}`;
+    axios.get(url,{
+      headers:{
+        Authorization: ` Bearer ${AuthToken}`
+      }
+    })
       .then(response => {
-        const formattedDepartment = response.data.map(department => ({
+        const formattedDepartment = response.data.results.map(department => ({
           id: department.id,
           name: department.name,
         }));
@@ -105,7 +159,8 @@ function Dashboard() {
   const initialDateRange = () => {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - 7); // 7 days ago
-    const formattedStartDate = startDate.toISOString().slice(0, 10); // Format startDate as YYYY-MM-DD
+    const formattedStartDate = startDate.toISOString().slice(0, 10);
+     // Format startDate as YYYY-MM-DD
     
     const endDate = new Date(); // Today's date
     const formattedEndDate = endDate.toISOString().slice(0, 10); // Format endDate as YYYY-MM-DD
@@ -116,8 +171,12 @@ function Dashboard() {
   const initialTableData = () => {
     const domain = baseURL;
     const [fromDate, toDate] = [startDate, endDate].map(date => date.toISOString().slice(0, 10)); // Format dates as YYYY-MM-DD
-    const url = `${domain}reports/`;
-    axios.get(url)
+    const url = `${domain}dashboard/?plant_id=${localPlantData.id}`;
+    axios.get(url,{
+      headers:{
+        Authorization:` Bearer ${AuthToken}`
+      }
+    })
       .then(response => {
         setTableData(response.data);
       })
@@ -129,20 +188,22 @@ const [alertData,setAlertData]=useState(null);
 
   const alertApi = ()=>{
     const domain = `${baseURL}`;
-    const url = `${domain}alerts/`;
-    axios.get(url).then((res)=>{
-console.log(res.data)
-setAlertData(res.data)
-    })
+    const url = `${domain}product/?plant_name=${localPlantData.plant_name}`;
+    axios.get(url,{
+      headers:{
+        Authorization:`Bearer ${AuthToken}`
+      }
+    }).then((res)=>{
+console.log(res.data,"prod")
+   setAlertData(res.data.results)
+    })  
     .catch((err)=>{
       console.log(err)
     })
   }
  
-console.log(alertData)
   const { Title } = Typography;
   const { RangePicker } = DatePicker;
-
   const [categoryDefects, setCategoryDefects] = useState([]);
 // Function to categorize defects
 const categorizeDefects = (data) => {
@@ -170,6 +231,7 @@ const categorizeDefects = (data) => {
  
     const categorizedData = categorizeDefects(tableData);
     setCategoryDefects(categorizedData);
+
   }, [tableData]);
 
   // const categorizeDefects = (data) => {
@@ -213,14 +275,13 @@ const categorizeDefects = (data) => {
     });
   };
   
-console.log(categoryDefects,'<<<')
   const menu = (
     <Menu selectable={true}>
       <Menu.Item key="0">
         <Checkbox.Group style={{ display: "block" }} value={selectedCheckboxMachine} onChange={handleMachineCheckBoxChange}>
           {machineOptions.map(machine => (
             <div key={machine.id} style={{display:"flex",flexDirection:"column"}}>
-              <Checkbox style={{fontSize:"1.1rem",width:"100%"}} value={machine.id}>{machine.name}</Checkbox>
+              <p style={{fontSize:"1.1rem",width:"100%"}} value={machine.id}>{machine.name}</p>
             </div>
           ))}
         </Checkbox.Group>
@@ -235,7 +296,7 @@ const [isSocketConnected, setIsSocketConnected] = useState(false);
 const [prevNotificationLength, setPrevNotificationLength] = useState(0);
 
 const initializeWebSocket = () => {
-  const socket = new WebSocket(`ws://127.0.0.1:8001/ws/notifications/`);
+  const socket = new WebSocket(`ws://159.65.157.118:8006/ws/notifications/`);
 
   socket.onopen = () => {
     console.log("WebSocket connection established");
@@ -247,6 +308,7 @@ const initializeWebSocket = () => {
     setNotifications(prevNotifications => {
       const newNotifications = [...prevNotifications, message.notification];
       // toast.error(message.notification); // Display toast notification
+      console.log(message,"<,,")
       toast.error(message.notification, 
         {
           position: "top-right",
@@ -258,6 +320,7 @@ const initializeWebSocket = () => {
           draggable: true,
           progress: undefined,
           theme: "colored",
+          style: { whiteSpace: 'pre-line' },  // Added style for new line character
           // transition: Bounce,
           }
       ); // Display toast notification with 5 seconds duration
@@ -280,6 +343,24 @@ const initializeWebSocket = () => {
   };
 };
 
+// const notify=()=>{
+//   toast.error("Defect\n 'Clean Soil' has occurred\n three times\n consecutively.\nRCA1: Pin Hole in Nozzle\n", 
+//     {
+//       position: "top-right",
+//       autoClose: false,
+//       // autoClose:10000,
+//       hideProgressBar: false,
+//       closeOnClick: true,
+//       pauseOnHover: true,
+//       draggable: true,
+//       progress: undefined,
+//       theme: "colored",
+//       style: { whiteSpace: 'pre-line' },  // Added style for new line character
+//       // transition: Bounce,
+//       }
+//   );
+// }
+
 useEffect(() => {
   const cleanupWebSocket = initializeWebSocket();
   return cleanupWebSocket;
@@ -300,7 +381,6 @@ useEffect(() => {
               xs={24}
               sm={24}
               md={12}
-              lg={6}
               lg={6}
               className="mb-24"
               style={{display:"flex",gap:"1rem"}}
@@ -379,7 +459,6 @@ useEffect(() => {
               sm={24}
               md={12}
               lg={6}
-              lg={6}
               className="mb-24"
             >
               <Card bordered={false} className="criclebox ">
@@ -415,7 +494,7 @@ useEffect(() => {
                   <Row align="middle">
                     <Col xs={18}>
                       <Title level={3}>
-                        {`Alerts`}
+                        {`Products`}
                       </Title>
                       {
                         alertData ? 
@@ -451,6 +530,7 @@ useEffect(() => {
                   <Title level={3}>
                     {`Insights`}
                   </Title>
+                  {/* <button onClick={notify}>click</button> */}
                   {/* {
                     notifications ? 
                     <span>{notifications.length}</span>
@@ -489,7 +569,7 @@ useEffect(() => {
         </Row>
 
         <Row gutter={[24, 24]}>
-          <Col xs={24} sm={24} md={12} lg={12} lg={6} className="mb-24">
+          <Col xs={24} sm={24} md={12}  lg={6} className="mb-24">
          <Card bordered={false} className="h-full">
          {Object.keys(categoryDefects).map((category, index) => (
   <Card key={index} bordered={true} className="criclebox h-full mb-2 px-2 ">

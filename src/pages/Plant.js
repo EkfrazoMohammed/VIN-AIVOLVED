@@ -1,6 +1,6 @@
 import { Row, Col, Button, Card, Space, Modal } from "antd";
 import React, { useEffect, useState } from "react";
-import { Link ,useLocation, useNavigation} from "react-router-dom";
+import { Link ,useLocation, useNavigate} from "react-router-dom";
 import { baseURL } from "../API/API";
 import axios from "axios";
 import { Switch } from "antd";
@@ -20,7 +20,7 @@ const Organisation = () => {
     organization_logo: "",
   });
 
-const navigate  = useNavigation()
+const navigate  = useNavigate()
 
   const handleImageUpload = async (e) => {
     setError((err) => ({ ...err, imageError: "" }));
@@ -119,24 +119,25 @@ else{
 
   };
  
-  const handleStorage =(id)=>{
-    const organizationAndplant = {"pID":null,"oID":id}
-    localStorage.setItem("dataOrgPlant", JSON.stringify(organizationAndplant));
+  const handleStorage =(Plant)=>{
+    localStorage.setItem("PlantData", JSON.stringify(Plant));
    
   }
 
   return (
     <>
-      <Row gutter={24} style={{ display: "flex", justifyContent: "end" }}>
+      <Row gutter={24} style={{ display: "flex", justifyContent: "center",margin:"1rem 0" }}>
         <Col span={3}>
-          <Button
+          {/* <Button
             type="primary"
             style={{ width: "100%", padding: "0" }}
             danger
             onClick={() =>  { return( setModal2Open(true),navigate("/organization") )}}
           >
             Create Organization
-          </Button>{" "}
+          </Button>{" "} */}
+         <h3 >Choose Plants</h3>
+         <hr />
         </Col>
       </Row>
 
@@ -147,11 +148,16 @@ else{
           display: "flex",
           flexWrap: "wrap",
           gap: "1rem",
+          justifyContent:'center',
+          alignItems:'center',
+          borderRadius:'10px',
+          padding:'1rem'
         }}
       >
+    
         {organization?.map((item, index) => {
           return (
-            <Link to={`/Plants/${item.id}`} key={item.id} onClick={()=>handleStorage(item.id)}>
+            <div   key={item.id} onClick={()=>{handleStorage(item);navigate('/dashboard-home')}}>
               <Card
                 size="small"
                 style={{
@@ -162,30 +168,28 @@ else{
                   alignItems: "center",
                   boxShadow: "none",
                   border: "1px solid #0000004a",
+                  cursor:'pointer'
                 }}
               >
                 <div
                   style={{
-                    width: "100px",
-                    height: "100px",
-                    background: "rgb(0 0 0 / 4%)",
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
-                    borderRadius: "50%",
                   }}
                 >
                   <img
-                    src={item.organization_logo}
-                    style={{ width: "60%" }}
+                    src='https://parsadi.com/wp-content/uploads/2022/01/Organization.jpg'
+                    style={{     width: "100px",
+                        height: "100px",  borderRadius: "50%", }}
                     alt=""
                   />
                 </div>
-                <h3 style={{ textAlign: "center" }}>
-                  {item.organization_name}
-                </h3>
+                <h5 style={{ textAlign: "center" }}>
+                  {item.plant_name}
+                </h5>
               </Card>
-            </Link>
+            </div>
           );
         })}
       </Row>

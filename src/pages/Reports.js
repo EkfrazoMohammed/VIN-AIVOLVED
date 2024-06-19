@@ -3,7 +3,7 @@ import { Table, Select, DatePicker, Button, Image, Tag } from 'antd';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
 import moment from 'moment';
-import {API, baseURL} from "./../API/API"
+import {API, AuthToken, baseURL, localPlantData} from "./../API/API"
 import { ToastContainer, toast } from 'react-toastify';
 import {
   VideoCameraOutlined,
@@ -15,18 +15,20 @@ import {
 const { RangePicker } = DatePicker;
 
 const Reports = () => {
- 
+  const localItems = localStorage.getItem("PlantData")
+  const localPlantData = JSON.parse(localItems) 
 
   const columns = [
-    { title: 'Alert Name', dataIndex: 'alert_name', key: 'alert_name' },
-    { title: 'Defect Name', dataIndex: 'defect_name', key: 'defect_name' },
-    { title: 'Machine Name', dataIndex: 'machine_name', key: 'machine_name' },
-    { title: 'Department Name', dataIndex: 'department_name', key: 'department_name' },
+    { title: 'Product Name', dataIndex: 'product', key: 'alert_name' },
+    { title: 'Defect Name', dataIndex: 'defect', key: 'defect_name' },
+    { title: 'Machine Name', dataIndex: 'machine', key: 'machine_name' },
+    { title: 'Department Name', dataIndex: 'department', key: 'department_name' },
     { title: 'Recorded Date Time', dataIndex: 'recorded_date_time', key: 'recorded_date_time' },
+    { title: 'Recorded Date Time', dataIndex: 'plant', key: 'plant' },
     { 
       title: 'Image', 
-      dataIndex: 'image_b64', 
-      key: 'image_b64', 
+      dataIndex: 'image', 
+      key: 'image', 
       render: image_b64 => (
         image_b64 ? <Image src={image_b64} alt="Defect Image" width={50} /> : null
       )
@@ -42,6 +44,8 @@ const Reports = () => {
   
   const [selectedMachine, setSelectedMachine] = useState(null);
   const [selectedDepartment, setSelectedDepartment] = useState(null);
+  const [selectedDefect, setselectedDefect] = useState(null);
+  const [selectedProduct, setselectedProduct] = useState(null);
   const [dateRange, setDateRange] = useState([formattedStartDate, formattedEndDate]);
   const [tableData, setTableData] = useState([]);
 
@@ -66,13 +70,50 @@ const Reports = () => {
     const domain = `${baseURL}`;
     const [fromDate, toDate] = dateRange;
     let url = `${domain}reports/?`;
-    url += `machine=${selectedMachine}&department=${selectedDepartment}`;
-    if (fromDate && toDate) {
-      url += `&from_date=${fromDate}&to_date=${toDate}`;
-    }
-    axios.get(url)
+    // url += `machine=${selectedMachine}&department=${selectedDepartment}`;
+    // url += `?plant_id=${localPlantData.id}&from_date=${fromDate}&to_date=${toDate}&machine_id=${selectedMachine}&department_id=${selectedDepartment}&product_id=${selectedProduct}&defect_id=${selectedDefect}`;
+    // if (fromDate && toDate) {
+    //   url += `&from_date=${fromDate}&to_date=${toDate}`;
+    // }
+    if (localPlantData.id) {
+      url += `plant_id=${localPlantData.id}&`;
+  }
+  if (fromDate) {
+      url += `from_date=${fromDate}&`;
+  }
+  if (toDate) {
+      url += `to_date=${toDate}&`;
+  }
+  if (selectedMachine) {
+      url += `machine_id=${selectedMachine}&`;
+  }
+  if (selectedDepartment) {
+      url += `department_id=${selectedDepartment}&`;
+  }
+  if (selectedProduct) {
+      url += `product_id=${selectedProduct}&`;
+  }
+  if (selectedDefect) {
+      url += `defect_id=${selectedDefect}&`;
+  }
+  
+  // Remove the trailing '&' if present
+  if (url.endsWith('&')) {
+      url = url.slice(0, -1);
+  }
+  
+  // If no filters are added, remove the trailing '?'
+  if (url.endsWith('?')) {
+      url = url.slice(0, -1);
+  }
+
+    axios.get(url,{
+      headers:{
+        Authorization:`Bearer ${AuthToken}`
+      }
+    })
       .then(response => {
-        setTableData(response.data);
+        setTableData(response.data.results);
       })
       .catch(error => {
         console.error('Error:', error);
@@ -81,12 +122,17 @@ const Reports = () => {
   const { RangePicker } = DatePicker;
 
   const [machineOptions, setMachineOptions] = useState([]);
+
   const getMachines=()=>{
     const domain = `${baseURL}`;
-    let url = `${domain}machine/?`;
-    axios.get(url)
+    let url = `${domain}machine/?plant_name=${localPlantData.plant_name}`;
+    axios.get(url,{
+      headers:{
+        Authorization:`Bearer ${AuthToken}`
+      }
+    })
       .then(response => {
-        const formattedMachines = response.data.map(machine => ({
+        const formattedMachines = response.data.results.map(machine => ({
           id: machine.id,
           name: machine.name,
         }));
@@ -99,10 +145,14 @@ const Reports = () => {
   const [departmentOptions, setDepartmentOptions] = useState([]);
   const getDepartments=()=>{
     const domain = `${baseURL}`;
-    let url = `${domain}department/?`;
-    axios.get(url)
+    let url = `${domain}department/?plant_name=${localPlantData.plant_name}`;
+    axios.get(url,{
+      headers:{
+        Authorization:`Bearer ${AuthToken}`
+      }
+    })
       .then(response => {
-        const formattedDepartment = response.data.map(department => ({
+        const formattedDepartment = response.data.results.map(department => ({
           id: department.id,
           name: department.name,
         }));
@@ -126,10 +176,15 @@ const Reports = () => {
 
   const initialTableData = () => {
     // const domain = `http://143.110.184.45:8100/`;
-   const url = `${baseURL}all_reports/`;
-    axios.get(url)
+   const url = `${baseURL}reports/?plant_id=${localPlantData.id}`;
+    axios.get(url,{
+      headers:{
+        Authorization:`Bearer ${AuthToken}`
+      }
+    })
       .then(response => {
-        setTableData(response.data);
+        setTableData(response.data.results);
+        console.log(response)
       })
       .catch(error => {
         console.error('Error:', error);
@@ -206,6 +261,7 @@ const Reports = () => {
             draggable: true,
             progress: undefined,
             theme: "colored",
+            style: { whiteSpace: 'pre-line' },  // Added style for new line character
             // transition: Bounce,
             }
         ); // Display toast notification with 5 seconds duration

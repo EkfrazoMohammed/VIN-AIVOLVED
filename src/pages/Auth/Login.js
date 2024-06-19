@@ -34,7 +34,6 @@ const openNotification = (param) => {
 
 const loginPost = async()=>{
     try {
-
      if(loginPayload.email_or_phone === ""){
      setError((prev)=>({...prev,UserError:"Username/Mobile Number not entered"}))
      }
@@ -44,14 +43,17 @@ const loginPost = async()=>{
      }
 
 if(loginPayload.email_or_phone !== "" || loginPayload.password !== ""){
+
     const res = await axios.post(`${baseURL}login/`,loginPayload);
 
     if(res.status == 200){
+      console.log(res.data)
         setuserdata(res.data)
         localStorage.setItem("token",JSON.stringify(res.data.access_token))
+        localStorage.setItem("refreshToken",JSON.stringify(res.data.refresh_token))
         openNotification({status:"success",message:"Login Successful"});
         setTimeout(()=>{
-          navigate("/dashboard-home" );
+          navigate("/Plant" );
          window.location.reload()
 
         },1500)
@@ -130,9 +132,9 @@ console.log(loginPayload)
             error.PasswordError ? <span style={{color:'red',fontWeight:'600',fontSize:'0.8rem'}}>{error.PasswordError}</span>:""
           }
     </div>
-    <div className="">
+    {/* <div className="">
         <p style={{fontSize:'1rem', fontWeight:'bolder',cursor:"pointer"}} onClick={()=>navigate("/resetPassword")}>Reset Password?</p>
-    </div>
+    </div> */}
     <div className="">
         <button style={{padding:'0.8rem 3rem',background:'#ff4403',border:'none',borderRadius:'5px',color:'#fff',fontWeight:'600'}} onClick={loginPost}>Login</button>
     </div>

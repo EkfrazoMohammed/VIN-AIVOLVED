@@ -2,13 +2,14 @@ import React ,{useMemo, useState,useEffect} from 'react';
 import {Button, Select ,Space, Card, Col, Row ,ColorPicker,Table, Tag, Form, Input, Radio, notification, Descriptions } from 'antd';
 import { Switch } from 'antd';
 import axios from "axios";
-import { baseURL } from '../../API/API';
+import { AuthToken, baseURL } from '../../API/API';
 
 import {  EditOutlined} from '@ant-design/icons';
 
 
 const Machine = () => {
-
+  const localItems = localStorage.getItem("PlantData")
+  const localPlantData = JSON.parse(localItems) 
     const [tableData,setTableData]= useState()
 // Table Columns
 const columns = [
@@ -29,10 +30,16 @@ const columns = [
   ];
 
   useEffect(()=>{
-    const url = `${baseURL}machine`
-    axios.get(url)
+    // const url = `${baseURL}machine`
+    const url = `${baseURL}machine/?plant_name=${localPlantData.plant_name}`
+
+    axios.get(url,{
+      headers:{
+        Authorization:`Bearer ${AuthToken}`
+      }
+    })
     .then(res =>
-        setTableData(res.data)
+        setTableData(res.data.results)
     )
     .catch(err=> console.log(err))
     
@@ -94,7 +101,7 @@ console.log(data)
 {contextHolder}
 
 
-<Row gutter={24} style={{margin:'2rem 0',display:'flex',flexDirection:'column'}}>
+{/* <Row gutter={24} style={{margin:'2rem 0',display:'flex',flexDirection:'column'}}>
   <Col>
   <h5 style={{fontWeight:650}}>
     Create Department <EditOutlined /></h5>
@@ -121,8 +128,8 @@ console.log(data)
   
   
   </Col>
-</Row>
-{/* <Table columns={columns} dataSource={tableData} pagination={{ pageSize: 6 }}/> */}
+</Row> */}
+<Table columns={columns} dataSource={tableData} pagination={{ pageSize: 6 }}/>
 
 </>
   )

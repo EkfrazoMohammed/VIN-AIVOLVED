@@ -13,6 +13,7 @@ import Dashboard from "./pages/Dashboard";
 import MachinesParameter from "./pages/MachinesParameter";
 import Camera from "./pages/Camera";
 import Settings from "./pages/Settings.jsx";
+import Plant from "./pages/Plant.js";
 import {
   createBrowserRouter,
   createRoutesFromElements,
@@ -30,8 +31,35 @@ import 'react-toastify/dist/ReactToastify.css';
 import Layout from "./pages/Layout.js";
 import Login from "./pages/Auth/Login.js"
 import ResetPassword from "./pages/Auth/ResetPassword.js"
+import axios from "axios"
+import { baseURL } from "./API/API.js";
 
 const App = () => {
+
+  const [refreshTokens, setrefreshTokens] = useState(() => 
+    JSON.parse(localStorage.getItem('refreshToken')) || null
+  );
+  const refreshToken = async () => {
+    try {
+      const response = await axios.post(`${baseURL}refresh_token/`, {
+        refresh: refreshTokens,
+      });
+      console.log(response)
+ 
+      localStorage.setItem("token",JSON.stringify(response.data.access))
+
+    } catch (error) {
+      console.error('Token refresh failed:', error);
+    }
+  };
+
+
+   setInterval(() => {
+        refreshToken();
+    }, 15 * 60 * 1000); // Refresh every 15 minutes
+
+
+
   const router = createBrowserRouter([
     {
       path: "/",
@@ -65,16 +93,20 @@ const App = () => {
         {
           path: 'settings',
           element: <Settings />,
+        }, 
+          {
+          path: 'insights',
+          element: <Insights />,
         },
         // {
-        //   path: 'organization',
-        //   element: <Organization />,
+        //   path: 'Plants',
+        //   element: <Organisation />,
      
         // },
-        {
-          path: 'Plants/:id',
-          element: <Plants />,
-        }, 
+        // {
+        //   path: 'Plants/:id',
+        //   element: <Plants />,
+        // }, 
         //     {
         //   path: 'Organization-Dashboard/:id',
         //   element: <Selectdashboard />,
@@ -84,9 +116,14 @@ const App = () => {
     {
       path: "/login",
       element: <Login />,
-    },   {
+    }, 
+      {
       path: "/resetPassword",
       element: <ResetPassword />,
+    },
+    {
+      path: "/Plant",
+      element: <Plant />,
     },
 
   ]);

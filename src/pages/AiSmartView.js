@@ -6,10 +6,12 @@ import "slick-carousel/slick/slick-theme.css";
 import {Select } from "antd";
 import "../index.css"
 import {RightOutlined ,LeftOutlined} from '@ant-design/icons';
-import { baseURL } from "../API/API";
+import { AuthToken, baseURL } from "../API/API";
 
 
 const AiSmartView = () => {
+  const localItems = localStorage.getItem("PlantData")
+const localPlantData = JSON.parse(localItems)
   const [defectImages, setDefectImages] = useState([]);
   const [defects, setDefects] = useState([]);
   const [selectedDefect, setSelectedDefect] = useState(null);
@@ -18,9 +20,11 @@ const AiSmartView = () => {
   const sliderRef = useRef(null); 
 
   useEffect(() => {
-    axios.get(`${baseURL}defect`)
+    axios.get(`${baseURL}defect/?plant_name=${localPlantData.plant_name}`,{
+      headers:{Authorization:`Bearer ${AuthToken}`}
+    })
       .then(response => {
-        setDefects(response.data);
+        setDefects(response.data.results);
       })
       .catch(error => {
         console.error("Error fetching defects:", error);
@@ -29,15 +33,24 @@ const AiSmartView = () => {
 
   useEffect(() => {
     if (selectedDefect) {
-      axios.get(`${baseURL}aismart/${selectedDefect.id}/`)
+      axios.get(`${baseURL}ai-smart/?plant_id=${localPlantData.id}&defect_id=${selectedDefect.id}`,{
+        headers:{
+          Authorization:`Bearer ${AuthToken}`
+        }
+      })
         .then(response => {
-          if (response.data.message) {
-            setErrorMessage(response.data.message);
-            setDefectImages([]); 
+          console.log(response)
+          if (response.data.results.length > 0) {
+            setErrorMessage("");
+            setDefectImages(response.data.results);               
+            setDefectImages(response.data.results); 
+
+
           } else {
             setDefectImages(response.data.defect_images);
-            setErrorMessage(""); 
+            setErrorMessage("NO DATA"); 
           }
+
         })
         .catch(error => {
           console.error("Error fetching defect images:", error);
@@ -58,7 +71,7 @@ const AiSmartView = () => {
     slidesToScroll: 1,
     afterChange: (index) => setCurrentSlideIndex(index) 
   };
-
+console.log(defectImages,"<<<<")
   const handleDefectChange = (value) => {
     const selectedId = value;
     const selectedDefect = defects.find(defect => defect.id === selectedId);
@@ -72,7 +85,7 @@ const AiSmartView = () => {
     }
     return nextFourIndexes.map((index) => (
       <div key={index} className="d-flex justify-content-center">
-        <img src={defectImages[index].image_url} alt={`Defect ${index + 1}`} style={{ width: '80px', height: '80px',objectFit:"cover" ,margin: '5px' }} />
+        <img src={defectImages[index].image} alt={`Defect ${index + 1}`} style={{ width: '80px', height: '80px',objectFit:"cover" ,margin: '5px' }} />
       </div>
     ));
   };
@@ -92,12 +105,10 @@ const AiSmartView = () => {
       </Select>
 
         {errorMessage ? (
-            <p style={{ textAlign: 'center', marginTop: '10vh', fontSize: '3rem', fontWeight: '500' }}>{errorMessage}</p>
+            <p style={{ textAlign: 'center', marginTop: '10vh', fontSize: '2.5rem', fontWeight: '500' }}>{errorMessage}</p>
         ) : selectedDefect ? (
             <>
             <div className="AISmartContainer">
-
-       
                 <div className="AISmartContainer-top">
                   <div>
                    <strong> Machine:</strong> {defectImages[currentSlideIndex]?.machine_name}{" "}
@@ -112,7 +123,7 @@ const AiSmartView = () => {
                 <Slider {...settings} ref={sliderRef}>
                     {defectImages.map((imageData, index) => (
                         <div key={index} className="d-flex justify-content-center">
-                            <img src={imageData.image_url} alt={`Defect ${index + 1}`} style={{ width: '100%', height: '55vh',margin:"0 auto",maxWidth:'900px' }} />
+                            <img src={imageData.image} alt={`Defect ${index + 1}`} style={{ width: '100%', height: '55vh',margin:"0 auto",maxWidth:'900px' }} />
                         </div>
                     ))}
                 </Slider>
