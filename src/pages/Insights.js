@@ -12,25 +12,15 @@ import {
   RightOutlined,
   DownloadOutlined,
 } from '@ant-design/icons';
+import { render } from '@testing-library/react';
 const { RangePicker } = DatePicker;
 
 const Insights = () => {
  
 
   const columns = [
-    { title: 'Notification Text', dataIndex: 'notification_text', key: 'notification_text' },
+    { title: 'Notification Text', dataIndex: 'notification_text', key: 'notification_text', render:(text)=> <div className="" style={{whiteSpace:"pre-line"}}>{text}</div> },
     { title: 'Defect', dataIndex: 'defect', key: 'defect' },
-    // { title: 'Machine Name', dataIndex: 'machine_name', key: 'machine_name' },
-    // { title: 'Department Name', dataIndex: 'department_name', key: 'department_name' },
-    // { title: 'Recorded Date Time', dataIndex: 'recorded_date_time', key: 'recorded_date_time' },
-    // { 
-    //   title: 'Image', 
-    //   dataIndex: 'image_b64', 
-    //   key: 'image_b64', 
-    //   render: image_b64 => (
-    //     image_b64 ? <Image src={image_b64} alt="Defect Image" width={50} /> : null
-    //   )
-    // },
   ];
 
   const startDate = new Date();
@@ -48,6 +38,7 @@ const Insights = () => {
   const handleMachineChange = value => {
     setSelectedMachine(value);
   };
+  console.log(tableData,",,,,")
 
   const handleDepartmentChange = value => {
     setSelectedDepartment(value);
@@ -126,10 +117,10 @@ const Insights = () => {
 
   const initialTableData = () => {
     const domain = `http://localhost:8010/`;
-   const url = `${domain}defect_notification/`;
+   const url = `${baseURL}defect-notifications/`;
     axios.get(url)
       .then(response => {
-        setTableData(response.data);
+        setTableData(response.data.results);
       })
       .catch(error => {
         console.error('Error:', error);

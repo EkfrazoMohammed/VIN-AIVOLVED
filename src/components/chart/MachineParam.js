@@ -9,13 +9,24 @@ function MachineParam() {
   const [totalData, setTotalData] = useState([]);
   const [chartOptions, setChartOptions] = useState({});
   const [chartSeries, setChartSeries] = useState([]);
-
+  const localItems = localStorage.getItem("PlantData")
+  const localPlantData = JSON.parse(localItems) 
+  const results =   [
+    {
+        "date_time": "2024-06-17",
+        "defect_percentage": 0
+    },
+    {
+        "date_time": "2024-06-20",
+        "defect_percentage": 50
+    }
+]
   useEffect(() => {
     const getData = async () => {
       try {
-        const res = await axios.get(`${baseURL}params_graph/`);
-        if (res.data.length > 0) {
-          const modifiedData = res.data.map(item => ({
+        const res = await axios.get(`${baseURL}params_graph/?plant_id=${localPlantData.id}`);
+        if (res.data.results.length > 0) {
+          const modifiedData = res.data.results.map(item => ({
             ...item,
             date_time: item.date_time.split('T')[0]
           }));
@@ -40,7 +51,7 @@ function MachineParam() {
       if (!groupedData[date][item.parameter]) {
         groupedData[date][item.parameter] = 0;
       }
-      groupedData[date][item.parameter] += parseInt(item.params_count);
+      groupedData[date][item.parameter] += parseInt(item.defect_percentage);
     });
 
     const categories = Object.keys(groupedData);
