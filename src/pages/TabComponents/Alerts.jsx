@@ -2,13 +2,15 @@ import React ,{useMemo, useState,useEffect} from 'react';
 import {Button, Select ,Space, Card, Col, Row ,ColorPicker,Table, Tag, Form, Input, Radio, notification, Descriptions } from 'antd';
 import { Switch } from 'antd';
 import axios from "axios";
-import { API, baseURL } from '../../API/API';
+import { API, AuthToken, baseURL, localPlantData } from '../../API/API';
 
 import {  EditOutlined} from '@ant-design/icons';
 import Alerts from './Settings';
 
 
 const Alert = () => {
+  const localItems = localStorage.getItem("PlantData")
+  const localPlantData = JSON.parse(localItems) 
 
     const [tableData,setTableData]=useState([])
 // Table Columns
@@ -21,7 +23,7 @@ const columns = [
 
     },
     {
-        title: 'Alert ',
+        title: 'Product ',
         dataIndex: 'name',
         key: 'name',
         render: (text) => <a>{text}</a>,
@@ -29,12 +31,15 @@ const columns = [
 
 
   ];
-  
 useEffect(()=>{
-    const url = `${baseURL}alerts`
-    axios.get(url)
+    const url = `${baseURL}product/?plant_name=${localPlantData.plant_name}`
+    axios.get(url,{
+      headers:{
+        Authorization:`Bearer ${AuthToken}`
+      }
+    })
     .then(res =>
-        setTableData(res.data)
+        setTableData(res.data.results)
     )
     .catch(err=> console.log(err))
     
@@ -42,7 +47,7 @@ useEffect(()=>{
 
 
 
-
+console.log(tableData,"<<<")
 
   const [api, contextHolder] = notification.useNotification();
 
@@ -57,7 +62,6 @@ const [data,setData] = useState();
 
   // POST METHOD FOR SENDING COLOR CODE
   const handlePost = (param)=>{
-    console.log(data)
 if(data === '' || data === undefined || data === null){
   return (
     api.open({
@@ -98,7 +102,7 @@ console.log(data)
 {contextHolder}
 
 
-<Row gutter={24} style={{margin:'2rem 0',display:'flex',flexDirection:'column'}}>
+{/* <Row gutter={24} style={{margin:'2rem 0',display:'flex',flexDirection:'column'}}>
   <Col>
   <h5 style={{fontWeight:650}}>
     Create Department <EditOutlined /></h5>
@@ -125,7 +129,7 @@ console.log(data)
   
   
   </Col>
-</Row>
+</Row> */}
 <Table columns={columns} dataSource={tableData} pagination={{ pageSize: 6 }} />
 </>
   )

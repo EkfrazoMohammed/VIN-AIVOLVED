@@ -2,60 +2,94 @@ import React ,{useMemo, useState} from 'react';
 import {Button, Select ,Space, Card, Col, Row ,ColorPicker, Form, Input, Radio, notification, Descriptions } from 'antd';
 import { Switch } from 'antd';
 import axios from "axios";
-
+import {  Modal } from 'antd';
 import {  EditOutlined} from '@ant-design/icons';
+import { baseURL } from '../../API/API';
 
 
 const Alerts = () => {
   const [api, contextHolder] = notification.useNotification();
+  const [modal2Open, setModal2Open] = useState(false);
+  const [data,setData] = useState({
+    first_name:"" ,
+    last_name: "",
+    phone_number: "",
+    email:""
+  });
 
-  // COLOR PICKER USESTATE
-  const [color, setColor] = useState("#561ecb");
 
-// FORM STATE
-  const [form] = Form.useForm();
+  const [error,setError] = useState({
+    fistName:"",
+    lastName:"",
+    Phone:"",
+    email:""
+  })
 
-// State Values
-const [data,setData] = useState();
+const handlePost = async()=>{
+  try {
 
-  // POST METHOD FOR SENDING COLOR CODE
-  const handlePost = (param)=>{
-    console.log(data)
-if(data === '' || data === undefined || data === null){
-  return (
-    api.open({
-      message: 'Please Fill out required Fields',
-      placement:'top',
-           })
-  )
+if(data.first_name === ""){
+  setError((prev)=>({...prev,fistName:"Please Enter First Name value"}))
+}
+if(data.last_name === ""){
+  setError((prev)=>({...prev,lastName:"Please Enter Last Name value"}))
+}
+
+if(data.phone_number === ""){
+  setError((prev)=>({...prev,Phone:"Please Enter Phone Number value"}))
+}
+if(data.email === ""){
+  setError((prev)=>({...prev,email:"Please Enter Email value"}))
 }
     const payload = {
-      "name": data,
-      "color_code": handleChange
+      "first_name": data.first_name,
+      "last_name": data.last_name,
+      "phone_number": data.phone_number,
+      "email": data.email
     }
-    
-    const PostData = async()=>{
-      const res = await axios.post(`http://143.110.184.45:8100/${param}/`,payload)
-      try{
-        api.open({
-          message: `${param} created`,
-          placement:'top',
-               });
-      }
-      catch(err){
-        console.log(err)
-      }
 
+    if(data.first_name !== "" && data.last_name !== "" && data.phone_number !== "" && data.email !== "" && error.fistName === "" && error.lastName === "" && error.email === "" && error.Phone ==="" ){
+      const postRequest =  await axios.post(`${baseURL}user/`,payload)
+      console.log(postRequest)
+    }else{
+      console.log("ERROR")
     }
-    PostData()
+
+
+  } catch (error) {
+    console.log(error)
   }
+}
 
 
-const handleChange = useMemo(
-  ()=>(typeof color === "string" ? color:color?.toHexString()),
-  [color],
-);
-console.log(data)
+const handleChange = (e)=>{
+const {name, value} =  e.target
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+if(name === "first_name"){
+  setError((prev)=>({...prev,fistName:""}))
+
+}
+if(name === "last_name"){
+  setError((prev)=>({...prev,lastName:""}))
+
+}
+if(name === "phone_number"){
+  setError((prev)=>({...prev,Phone:""}))
+
+}
+if(name === "email" ){
+  if(emailRegex.test(data.email)){
+    setError((prev)=>({...prev,email:"Enter Valid Email"}))
+  }
+  else {
+    setError((prev)=>({...prev,email:""}))
+  }
+}
+
+setData((prev)=>({...prev,[name]:value}))
+
+} 
+
   return (
 <>
 {contextHolder}
@@ -65,7 +99,7 @@ console.log(data)
 </Col>
 <Col span={3}  >
 
-<Button type="primary" style={{width:'100%',padding:'0'}} danger>
+<Button type="primary" style={{width:'100%',padding:'0'}} danger onClick={()=>setModal2Open(true)}>
 User Creation
     </Button>   </Col>
 </Row>
@@ -111,6 +145,38 @@ User Creation
 
   </Col>
 </Row>
+<Modal
+        title={<div style={{textAlign:"center",fontSize:'1.3rem'}}>Create User</div>}
+        centered
+        open={modal2Open}
+        onOk={() => setModal2Open(false)}
+        onCancel={() => setModal2Open(false)}
+        footer={null}
+      >
+        <div className="" style={{display:'flex',flexDirection:'column',gap:'1rem',padding:'1rem'}}>
+
+       <Input placeholder="Enter Your First Name" type='text' name='first_name'value={data.first_name} onChange={handleChange} />
+       {error.fistName ? <span style={{fontWeight:'600',color:'red'}}>{error.fistName}</span> : ""}
+
+       <Input placeholder="Enter Your Last Name"  type='text' name='last_name' value={data.last_name} onChange={handleChange} />
+       {error.lastName ?  <span style={{fontWeight:'600',color:'red'}}>{error.lastName}</span> : ""}
+
+
+       <Input placeholder="Enter Your Phone Number" type='number' name='phone_number' value={data.phone_number} onChange={handleChange} />
+       {error.Phone ?  <span style={{fontWeight:'600',color:'red'}}>{error.Phone}</span> : ""}
+
+
+       <Input placeholder="Enter Your Email"  type='email' name='email' value={data.email} onChange={handleChange}  />
+       {error.email ? <span style={{fontWeight:'600',color:'red'}}>{error.email}</span> : ""}
+
+        </div>
+        <div className="" style={{display:'flex',justifyContent:'flex-end',padding:'1rem'}}>
+        <Button type="primary" style={{width:'20%',padding:'0'}} danger onClick={()=>handlePost()}>
+Submit
+    </Button>
+
+        </div>
+             </Modal>
 </>
   )
 }
