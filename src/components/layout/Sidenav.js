@@ -311,19 +311,19 @@ const logout = async()=>{
               }} >Settings</span>
           </NavLink>
         </Menu.Item>
-        {/* <Menu.Item key="6">
-          <NavLink to="/organization" onClick={()=>setActive("organization")} 
+        <Menu.Item key="6">
+          <NavLink to="/plant" onClick={()=>setActive("organization")} 
           style={{
-            background: active === "organization" || page ==="organization" ? "#fff" : "",
-            boxShadow:active === "organization" || page ==="organization" ? "0 20px 27px rgb(0 0 0 / 5%);" : "",
-            color:active === "organization" || page ==="organization" ? "#fff" : "",
+            background: active === "plant" || page ==="plant" ? "#fff" : "",
+            boxShadow:active === "plant" || page ==="plant" ? "0 20px 27px rgb(0 0 0 / 5%);" : "",
+            color:active === "plant" || page ==="plant" ? "#fff" : "",
             
           }}
           >
             <span
               className="icon"
               style={{ 
-                background: active === "organization"  || page === "organization" ? color : "",
+                background: active === "plant"  || page === "plant" ? color : "",
               }}
             >
               {rtl
@@ -331,13 +331,13 @@ const logout = async()=>{
               }
             </span>
             <span className="label" style={{
-                color: active === "organization" || page === "organization" ? color : "",
-                fontWeight: active === "organization" || page === "organization" ? 600 : "",
+                color: active === "plant" || page === "plant" ? color : "",
+                fontWeight: active === "plant" || page === "plant" ? 600 : "",
 
-              }}>Organization</span>
+              }}>Plant</span>
           </NavLink>
           
-        </Menu.Item> */}
+        </Menu.Item>
         {/* <Menu.Item className="menu-item-header" key="5">
           Account Pages
         </Menu.Item> */}
