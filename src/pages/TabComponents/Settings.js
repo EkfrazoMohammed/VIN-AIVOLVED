@@ -24,7 +24,16 @@ const Alerts = () => {
     Phone:"",
     email:""
   })
-
+  const openNotification = (param) => {
+    const {status,message} = param
+    
+    api[status]({
+      message:<div style={{whiteSpace:"pre-line"}}>{message }</div>|| "",
+    //   description:
+    //     'I will never close automatically. This is a purposely very very long description that has many many characters and words.',
+      duration: 0,
+    });
+  };
 const handlePost = async()=>{
   try {
 
@@ -50,24 +59,23 @@ if(data.email === ""){
 
     if(data.first_name !== "" && data.last_name !== "" && data.phone_number !== "" && data.email !== "" && error.fistName === "" && error.lastName === "" && error.email === "" && error.Phone ==="" ){
       const postRequest =  await axios.post(`${baseURL}user/`,payload)
-      console.log(postRequest)
+      if(postRequest){
+        openNotification({status:"success",message:"User Created Successfully"});
+      }
     }else{
       console.log("ERROR")
     }
-
-
   } catch (error) {
-    console.log(error)
+    openNotification({status:"error",message:`${error.response.data.email ? error.response.data.email : ""} \n ${error.response.data.phone_number ? error.response.data.phone_number : ""}`});
   }
 }
 
 
 const handleChange = (e)=>{
 const {name, value} =  e.target
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const emailRegex = /^[^\s@]+@[^\s@]+\[^\s@]+$/;
 if(name === "first_name"){
   setError((prev)=>({...prev,fistName:""}))
-
 }
 if(name === "last_name"){
   setError((prev)=>({...prev,lastName:""}))
