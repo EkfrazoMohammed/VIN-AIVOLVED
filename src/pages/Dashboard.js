@@ -33,12 +33,16 @@ function Dashboard() {
   const [tableData, setTableData] = useState([]);
   const [machineOptions, setMachineOptions] = useState([]);
   const [departmentOptions, setDepartmentOptions] = useState([]);
+  const [productOptions, setProductOptions] = useState([]);
 
   const handleMachineChange = value => {
     setSelectedMachine(value);
   };
   const handleDepartmentChange = value => {
     setSelectedDepartment(value);
+  };
+  const handleProductChange = value => {
+    setSelectedProduct(value);
   };
 
 
@@ -113,7 +117,7 @@ function Dashboard() {
     getMachines();
     initialDateRange();
     initialTableData();
-    alertApi()
+    prodApi()
   }, []);
 
   const getMachines = () => {
@@ -186,7 +190,7 @@ function Dashboard() {
   };
 const [alertData,setAlertData]=useState(null);
 
-  const alertApi = ()=>{
+  const prodApi = ()=>{
     const domain = `${baseURL}`;
     const url = `${domain}product/?plant_name=${localPlantData.plant_name}`;
     axios.get(url,{
@@ -196,6 +200,7 @@ const [alertData,setAlertData]=useState(null);
     }).then((res)=>{
 console.log(res.data,"prod")
    setAlertData(res.data.results)
+   setProductOptions(res.data.results)
     })  
     .catch((err)=>{
       console.log(err)
@@ -401,12 +406,12 @@ useEffect(() => {
       <Select
         style={{ minWidth: "200px", marginRight: "10px" }}
         showSearch
-        placeholder="Select Department"
-        onChange={handleDepartmentChange}
-        defaultValue={selectedDepartment}
+        placeholder="Select Products"
+        onChange={handleProductChange}
+        defaultValue={selectedProduct}
         size="large"
       >
-        {departmentOptions.map(department => (
+        {productOptions.map(department => (
           <Select.Option key={department.id} value={department.id}>{department.name}</Select.Option>
         ))}
       </Select>

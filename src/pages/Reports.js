@@ -49,6 +49,12 @@ const Reports = () => {
   const [dateRange, setDateRange] = useState([formattedStartDate, formattedEndDate]);
   const [tableData, setTableData] = useState([]);
 
+  const [productOptions, setProductOptions] = useState([]);
+
+
+  const handleProductChange = value => {
+    setselectedProduct(value);
+  };
   const handleMachineChange = value => {
     setSelectedMachine(value);
   };
@@ -190,13 +196,28 @@ const Reports = () => {
         console.error('Error:', error);
       });
   };
-
+  const prodApi = ()=>{
+    const domain = `${baseURL}`;
+    const url = `${domain}product/?plant_name=${localPlantData.plant_name}`;
+    axios.get(url,{
+      headers:{
+        Authorization:`Bearer ${AuthToken}`
+      }
+    }).then((res)=>{
+console.log(res.data,"prod")
+   setProductOptions(res.data.results)
+    })  
+    .catch((err)=>{
+      console.log(err)
+    })
+  }
   
   useEffect(() => {
     getDepartments()
     getMachines();
     initialDateRange()
     initialTableData();
+   prodApi()
   }, []); 
 
   const downloadExcel = () => {
@@ -319,12 +340,12 @@ const Reports = () => {
       <Select
         style={{ minWidth: "200px", marginRight: "10px" }}
         showSearch
-        placeholder="Select Department"
-        onChange={handleDepartmentChange}
-        defaultValue={selectedDepartment}
+        placeholder="Select Product"
+        onChange={handleProductChange}
+        defaultValue={selectedProduct}
         size="large"
       >
-        {departmentOptions.map(department => (
+        {productOptions.map(department => (
           <Select.Option key={department.id} value={department.id}>{department.name}</Select.Option>
         ))}
       </Select>
