@@ -301,7 +301,7 @@ const [isSocketConnected, setIsSocketConnected] = useState(false);
 const [prevNotificationLength, setPrevNotificationLength] = useState(0);
 
 const initializeWebSocket = () => {
-  const socket = new WebSocket(`ws://159.65.157.118:8006/ws/notifications/`);
+  const socket = new WebSocket(`wss://hul.aivolved.in/ws/notifications/`);
 
   socket.onopen = () => {
     console.log("WebSocket connection established");
@@ -579,7 +579,7 @@ useEffect(() => {
          {Object.keys(categoryDefects).map((category, index) => (
   <Card key={index} bordered={true} className="criclebox h-full mb-2 px-2 ">
     <div className="timeline-box">
-      <h5>{category}</h5>
+      <h5 style={{overflowWrap:'break-word'}}>{category}</h5>
       <Paragraph className="lastweek">
         <span className="bnb2">{categoryDefects[category]}</span> Defects
       </Paragraph>

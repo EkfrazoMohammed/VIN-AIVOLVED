@@ -87,14 +87,14 @@ console.log(loginPayload)
     <>
        {contextHolder}
     <div className="" style={{background:'#faf5f5',height:'100vh',width:'100%',overflow:'hidden',display:'flex',alignItems:'center',justifyContent:'center'}}>
-    <Col span={6}>
+    <Col span={8} style={{maxWidth:'500px'}}>
 
       <Card  bordered={false} style={{padding:'2rem',borderRadius:'25px'}}>
-    <div className="">
-    <img src="https://aivolved.in/wp-content/uploads/2022/11/ai-logo.png" style={{height:'80px'}} alt="" />
+    <div className="" >
+    <img src="https://aivolved.in/wp-content/uploads/2022/11/ai-logo.png" style={{height:'70px'}} alt="" />
     </div>
-    <div className="" style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
-        <h2>Login</h2>
+    <div className="" style={{display:'flex',flexDirection:'column',gap:'1rem',}}>
+        <h3 >Login</h3>
         <input
             type="text"
             style={{
@@ -131,13 +131,14 @@ console.log(loginPayload)
               {
             error.PasswordError ? <span style={{color:'red',fontWeight:'600',fontSize:'0.8rem'}}>{error.PasswordError}</span>:""
           }
+            <div className="">
+        <button style={{padding:'0.8rem 3rem',background:'#ff4403',border:'none',borderRadius:'5px',color:'#fff',fontWeight:'600'}} onClick={loginPost}>Login</button>
+    </div>
     </div>
     {/* <div className="">
         <p style={{fontSize:'1rem', fontWeight:'bolder',cursor:"pointer"}} onClick={()=>navigate("/resetPassword")}>Reset Password?</p>
     </div> */}
-    <div className="">
-        <button style={{padding:'0.8rem 3rem',background:'#ff4403',border:'none',borderRadius:'5px',color:'#fff',fontWeight:'600'}} onClick={loginPost}>Login</button>
-    </div>
+  
       </Card>
  
     </Col>

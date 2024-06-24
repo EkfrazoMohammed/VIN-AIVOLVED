@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import ReactApexChart from "react-apexcharts";
 import { Typography } from "antd";
 import axios from "axios";
-import { baseURL } from "../../API/API";
+import { AuthToken, baseURL } from "../../API/API";
 
 function PieChart({ data }) {
   const { Title } = Typography;
@@ -11,7 +11,13 @@ function PieChart({ data }) {
 
   useEffect(() => {
     // Fetch defect colors from the API
-    axios.get(`${baseURL}defect/`)
+    axios.get(`${baseURL}defect/`,{
+      headers:{
+        Authorization:
+          `Bearer ${AuthToken}`
+        
+      }
+    })
       .then(response => {
         const colors = {};
         response.data.forEach(defect => {
@@ -26,7 +32,7 @@ function PieChart({ data }) {
 
   useEffect(() => {
     if (!data || typeof data !== 'object') return;
-
+  console.log(data)
     const aggregatedData = Object.values(data).reduce((acc, defects) => {
       Object.entries(defects).forEach(([defect, count]) => {
         if (!acc[defect]) {
@@ -54,8 +60,10 @@ function PieChart({ data }) {
             width: 380,
             type: 'pie',
           },
-          colors: chartData.labels.map(label => defectColors[label] || '#FF5733'), // Default color if no color code found
-          labels: chartData.labels,
+          colors: chartData.labels.map((label, index) => {
+            const predefinedColors = ['#FF5733','#3357FF','#000080','#00FFFF',"#FFFF00",'#33FF57,#3357HF'];
+            return defectColors[label] || predefinedColors[index % predefinedColors.length];
+          }),          labels: chartData.labels,
           responsive: [{
             breakpoint: 480,
             options: {

@@ -5,11 +5,19 @@ import axios from "axios";
 import {  Modal } from 'antd';
 import {  EditOutlined} from '@ant-design/icons';
 import { baseURL } from '../../API/API';
+import { ColorRing } from 'react-loader-spinner'
 
 
 const Alerts = () => {
   const [api, contextHolder] = notification.useNotification();
+  const [loading,setLoading] = useState(false)
   const [modal2Open, setModal2Open] = useState(false);
+  const initialState = {
+    first_name: "",
+    last_name: "",
+    phone_number: "",
+    email: ""
+  };
   const [data,setData] = useState({
     first_name:"" ,
     last_name: "",
@@ -31,7 +39,7 @@ const Alerts = () => {
       message:<div style={{whiteSpace:"pre-line"}}>{message }</div>|| "",
     //   description:
     //     'I will never close automatically. This is a purposely very very long description that has many many characters and words.',
-      duration: 0,
+      duration: 5,
     });
   };
 const handlePost = async()=>{
@@ -58,14 +66,21 @@ if(data.email === ""){
     }
 
     if(data.first_name !== "" && data.last_name !== "" && data.phone_number !== "" && data.email !== "" && error.fistName === "" && error.lastName === "" && error.email === "" && error.Phone ==="" ){
+      setLoading(true)
       const postRequest =  await axios.post(`${baseURL}user/`,payload)
       if(postRequest){
         openNotification({status:"success",message:"User Created Successfully"});
+        setLoading(false)
+        setModal2Open(false)
+        setData(initialState)
       }
+
     }else{
+      setLoading(false)
       console.log("ERROR")
     }
   } catch (error) {
+    setLoading(false)
     openNotification({status:"error",message:`${error.response.data.email ? error.response.data.email : ""} \n ${error.response.data.phone_number ? error.response.data.phone_number : ""}`});
   }
 }
@@ -161,6 +176,19 @@ User Creation
         onCancel={() => setModal2Open(false)}
         footer={null}
       >
+        {
+          loading ?
+          <div className="" style={{display:'flex',justifyContent:'center',width:'100%',minHeight:'250px',alignItems:'center'}}>
+      <ColorRing
+          height="80"
+          width="80"
+          ariaLabel="color-ring-loading"
+          wrapperClass="color-ring-wrapper"
+          colors={['#008ffb', '#008ffb', '#008ffb', '#008ffb', '#008ffb']}
+          />
+          </div>
+         :
+<>
         <div className="" style={{display:'flex',flexDirection:'column',gap:'1rem',padding:'1rem'}}>
 
        <Input placeholder="Enter Your First Name" type='text' name='first_name'value={data.first_name} onChange={handleChange} />
@@ -184,6 +212,8 @@ Submit
     </Button>
 
         </div>
+</>
+        }
              </Modal>
 </>
   )

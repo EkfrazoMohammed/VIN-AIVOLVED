@@ -9,7 +9,7 @@ const useWebSocket = () => {
   const [prevNotificationLength, setPrevNotificationLength] = useState(0);
 
   useEffect(() => {
-    const socket = new WebSocket(`ws://127.0.0.1:8001/ws/notifications/`);
+    const socket = new WebSocket(`wss://hul.aivolved.in/ws/notifications/`);
 
     socket.onopen = () => {
       console.log("WebSocket connection established");

@@ -31,6 +31,7 @@ function MachineParam() {
             date_time: item.date_time.split('T')[0]
           }));
           setTotalData(modifiedData);
+          console.log(modifiedData,"<<<")
         }
       } catch (error) {
         console.error("Error fetching machine parameters:", error);
@@ -51,14 +52,16 @@ function MachineParam() {
       if (!groupedData[date][item.parameter]) {
         groupedData[date][item.parameter] = 0;
       }
-      groupedData[date][item.parameter] += parseInt(item.defect_percentage);
+      // groupedData[date][item.parameter] += parseInt(item.defect_percentage);
+      groupedData[date][item.parameter] += parseFloat(item.defect_percentage);
     });
 
     const categories = Object.keys(groupedData);
     const allParameters = new Set(totalData.map(item => item.parameter));
     const seriesData = Array.from(allParameters).map(parameter => {
+     
       return {
-        name: parameter,
+        name: "Defect Percentage",
         data: categories.map(date => groupedData[date][parameter] || 0),
         color: totalData.find(item => item.parameter === parameter).color_code
       };

@@ -7,6 +7,7 @@ import {API, baseURL} from "../../API/API"
 function LineChart({ data }) {
   const { Title } = Typography;
   const [defectColors, setDefectColors] = useState({});
+  console.log(data,"<<<line")
   useEffect(() => {
     // Fetch defect colors from the API
     axios.get(`${baseURL}defect/`)

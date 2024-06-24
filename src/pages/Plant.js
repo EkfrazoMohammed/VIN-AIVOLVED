@@ -1,7 +1,7 @@
 import { Row, Col, Button, Card, Space, Modal } from "antd";
 import React, { useEffect, useState } from "react";
 import { Link ,useLocation, useNavigate} from "react-router-dom";
-import { baseURL } from "../API/API";
+import { AuthToken, baseURL } from "../API/API";
 import axios from "axios";
 import { Switch } from "antd";
 
@@ -52,7 +52,7 @@ useEffect(()=>{
         {
 
           headers: {
-     Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE5MjA1NjMzLCJpYXQiOjE3MTg3NzM2MzMsImp0aSI6IjI1NTQ2ZTQ1OWM2MDRhOWRiMTNjM2IwNDFjNjZlZjRjIiwidXNlcl9pZCI6Mn0.68CBeuBUsQRYWDD0FVLoekKWRy_iO_g8sBoGLXrj0J0`,
+     Authorization: `Bearer ${AuthToken}`,
    } 
    }
       )
@@ -127,7 +127,7 @@ else{
   return (
     <>
       <Row gutter={24} style={{ display: "flex", justifyContent: "center",margin:"1rem 0" }}>
-        <Col span={3}>
+        <Col span={12} style={{textAlign:'center'}}>
           {/* <Button
             type="primary"
             style={{ width: "100%", padding: "0" }}
@@ -166,9 +166,9 @@ else{
                   justifyContent: "center",
                   height: "200px",
                   alignItems: "center",
-                  boxShadow: "none",
-                  border: "1px solid #0000004a",
-                  cursor:'pointer'
+                  border: "none",
+                  cursor:'pointer',
+                  boxShadow: "rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px"
                 }}
               >
                 <div
@@ -179,9 +179,9 @@ else{
                   }}
                 >
                   <img
-                    src='https://parsadi.com/wp-content/uploads/2022/01/Organization.jpg'
-                    style={{     width: "100px",
-                        height: "100px",  borderRadius: "50%", }}
+                    src='https://media.licdn.com/dms/image/C4E12AQHw3bPisn1x0g/article-inline_image-shrink_1000_1488/0/1595858405291?e=1724284800&v=beta&t=mHKkjIq_LELHb3yT9Euo1vDxlSfmjlBlZwhTZPdJsDs'
+                    style={{     width: "90%",
+                        height: "90%",  borderRadius: "50%", }}
                     alt=""
                   />
                 </div>
