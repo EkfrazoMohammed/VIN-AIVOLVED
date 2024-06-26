@@ -52,8 +52,7 @@ function Dashboard() {
 
   const handleDateRangeChange = (dates, dateStrings) => {
     if (dateStrings) {
-      setDateRange("");
-      // console.log(dateStrings)
+      setDateRange(dateStrings);
     } else {
       console.error('Invalid date range:', dates,dateStrings);
     }
@@ -62,7 +61,7 @@ function Dashboard() {
   const handleApplyFilters = () => {
     const domain = `${baseURL}`;
     const [fromDate, toDate] = dateRange;
-  console.log(fromDate,toDate)
+  console.log(dateRange,"<<<")
     let url = `${domain}dashboard/?`;
     // url += `plant_id=${localPlantData.id}&from_date=${fromDate}&to_date=${toDate}&machine_id=${selectedMachine}&department_id=${selectedDepartment}&product_id=${selectedProduct}&defect_id=${selectedDefect}`;
     if (localPlantData.id) {
@@ -99,6 +98,7 @@ function Dashboard() {
     // if (fromDate && toDate) {
     //   url += `&from_date=${fromDate}&to_date=${toDate}`;
     // }
+    console.log(url)
     axios.get(url,{
       headers:{
         Authorization:`Bearer ${AuthToken}`
@@ -106,6 +106,7 @@ function Dashboard() {
     })
       .then(response => {
         setTableData(response.data);
+        
       })
       .catch(error => {
         console.error('Error:', error);
@@ -176,6 +177,7 @@ function Dashboard() {
     const domain = baseURL;
     const [fromDate, toDate] = [startDate, endDate].map(date => date.toISOString().slice(0, 10)); // Format dates as YYYY-MM-DD
     const url = `${domain}dashboard/?plant_id=${localPlantData.id}`;
+    // const url = `${domain}dashboard/`;
     axios.get(url,{
       headers:{
         Authorization:` Bearer ${AuthToken}`
@@ -520,7 +522,6 @@ useEffect(() => {
               xs={24}
               sm={24}
               md={12}
-              lg={6}
               lg={6}
               className="mb-24"
             >
