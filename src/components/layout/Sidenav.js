@@ -177,31 +177,11 @@ const smartView = [
       />
     </svg>,
   ];
-  const [refreshTokens, setrefreshTokens] = useState(() => 
-    JSON.parse(localStorage.getItem('refreshToken')) || null
-  );
-  
-const logout = async()=>{
-  try {
-    await axios.post(`${baseURL}logout/`,{
-      refresh_token:refreshTokens
-    },{
-      headers:{
-        Authorization: `Bearer ${AuthToken}`
-      }
-    })
-    
-    
-  } catch (error) {
-    console.log(error)
-  }
-}
 
-  const handleLogout  = ()=>{
-    naviagte('/login');
-    localStorage.clear();
-    logout()
-  }
+  
+
+
+
 
   return (
     <>
@@ -367,12 +347,12 @@ const logout = async()=>{
           </NavLink>
         </Menu.Item> */}
       </Menu>
-      <div className="brand" style={{display:'flex',alignItems:'center',justifyContent:'center',position:'absolute',bottom:'5%',left:'25%',flexDirection:'column',gap:"0",cursor:'pointer'}}
+      {/* <div className="brand" style={{display:'flex',alignItems:'center',justifyContent:'center',position:'absolute',bottom:'5%',left:'25%',flexDirection:'column',gap:"0",cursor:'pointer'}}
       onClick={()=>handleLogout()}
       >
         <img src="https://w7.pngwing.com/pngs/253/714/png-transparent-logout-heroicons-ui-icon-thumbnail.png" alt="" />
         <span style={{fontSize:"1.3rem"}}  >Logout</span>
-      </div>
+      </div> */}
     </>
   );
 }

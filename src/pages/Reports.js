@@ -12,29 +12,66 @@ import {
   RightOutlined,
   DownloadOutlined,
 } from '@ant-design/icons';
+import { Hourglass } from 'react-loader-spinner'
 const { RangePicker } = DatePicker;
+
+
 
 const Reports = () => {
   const localItems = localStorage.getItem("PlantData")
   const localPlantData = JSON.parse(localItems) 
 
   const columns = [
-    { title: 'Product Name', dataIndex: 'product', key: 'alert_name' },
-    { title: 'Defect Name', dataIndex: 'defect', key: 'defect_name' },
-    { title: 'Machine Name', dataIndex: 'machine', key: 'machine_name' },
-    { title: 'Department Name', dataIndex: 'department', key: 'department_name' },
-    { title: 'Recorded Date Time', dataIndex: 'recorded_date_time', key: 'recorded_date_time' },
-    { title: 'Recorded Date Time', dataIndex: 'plant', key: 'plant' },
-    { 
-      title: 'Image', 
-      dataIndex: 'image', 
-      key: 'image', 
-      render: image_b64 => (
-        image_b64 ? <Image src={image_b64} alt="Defect Image" width={50} /> : null
-      )
+    { title: "Product Name", dataIndex: "product", key: "alert_name",id:"alert_name"  ,
+      sorter: (a, b) => a.product.localeCompare(b.product),
+      sortDirections: ['ascend','descend' ,'cancel'], },
+    { title: "Defect Name", dataIndex: "defect", key: "defect_name" ,
+      sorter: (a, b) => a.defect.localeCompare(b.defect),
+      sortDirections: ['ascend','descend' ,'cancel'],
+
+    },
+    { title: "Machine Name", dataIndex: "machine", key: "machine_name",
+      sorter: (a, b) => a.machine.localeCompare(b.machine),
+      sortDirections: ['ascend','descend' ,'cancel'],
+
+     },
+    {
+      title: "Department Name",
+      dataIndex: "department",
+      key: "department_name",
+      sorter: (a, b) => a.department.localeCompare(b.department),
+      sortDirections: ['ascend','descend' ,'cancel'],
+    },
+    {
+      title: "Recorded Date Time",
+      dataIndex: "recorded_date_time",
+      // key: "recorded_date_time",
+      render: (text) => <a>{(text).split("T").join(" , ")}</a>,
+
+    },
+    { title: "Plant Name", dataIndex: "plant", key: "plant" ,
+      sorter: (a, b) => a.plant.localeCompare(b.plant),
+      sortDirections: ['ascend','descend' ,'cancel'],
+
+    },
+    {
+      title: "Image",
+      dataIndex: "image",
+      key: "image",
+      render: (image_b64) =>
+        image_b64 ? (
+          <Image src={image_b64} alt="Defect Image" width={50} />
+        ) : null,
     },
   ];
-
+  const locale = {
+    Table: {
+      sortTitle: 'Sort',
+        triggerAsc: 'Click to sort in ascending order by defect name',
+        triggerDesc: 'Click to sort in descending order by defect name',
+      cancelSort: 'Click to cancel sorting',
+    },
+  };
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - 7); // 7 days ago
   const formattedStartDate = startDate.toISOString().slice(0, 10); // Format startDate as YYYY-MM-DD
@@ -50,6 +87,7 @@ const Reports = () => {
   const [tableData, setTableData] = useState([]);
 
   const [productOptions, setProductOptions] = useState([]);
+  const [loader,setLoader] = useState(false)
 
 
   const handleProductChange = value => {
@@ -120,6 +158,7 @@ const Reports = () => {
     })
       .then(response => {
         setTableData(response.data.results);
+        setfilterActive(true)
       })
       .catch(error => {
         console.error('Error:', error);
@@ -128,6 +167,9 @@ const Reports = () => {
   const { RangePicker } = DatePicker;
 
   const [machineOptions, setMachineOptions] = useState([]);
+  const [filterActive ,setfilterActive] = useState(false);
+
+  
 
   const getMachines=()=>{
     const domain = `${baseURL}`;
@@ -182,6 +224,7 @@ const Reports = () => {
 
   const initialTableData = () => {
     // const domain = `http://143.110.184.45:8100/`;
+    setLoader(true)
    const url = `${baseURL}reports/?plant_id=${localPlantData.id}`;
     axios.get(url,{
       headers:{
@@ -190,7 +233,7 @@ const Reports = () => {
     })
       .then(response => {
         setTableData(response.data.results);
-        console.log(response)
+        setLoader(false)
       })
       .catch(error => {
         console.error('Error:', error);
@@ -316,6 +359,11 @@ console.log(res.data,"prod")
     }
   }, [notifications]);
   
+const resetFilter = ()=>{
+  initialTableData()
+  setfilterActive(false)
+}
+
     return (
       
       <>
@@ -331,6 +379,10 @@ console.log(res.data,"prod")
   defaultValue={selectedMachine} // Set default value to 1 if selectedMachine is null
   onChange={handleMachineChange}
   size="large"
+  filterOption={(input,machineOptions)=>
+
+    (machineOptions.children ?? "").toLowerCase().includes(input.toLowerCase())
+  }
 >
 {machineOptions.map(machine => (
     <Select.Option key={machine.id} value={machine.id}>{machine.name}</Select.Option>
@@ -344,6 +396,11 @@ console.log(res.data,"prod")
         onChange={handleProductChange}
         defaultValue={selectedProduct}
         size="large"
+        filterOption={(input,productOptions)=>
+        // ( productOptions.children ?? "".toLowerCase() ).includes(input.toLowerCase() )
+       ( productOptions.children ?? "").toLowerCase().includes(input.toLowerCase())
+
+        }
       >
         {productOptions.map(department => (
           <Select.Option key={department.id} value={department.id}>{department.name}</Select.Option>
@@ -357,10 +414,40 @@ console.log(res.data,"prod")
       />
    
       <Button type="primary" onClick={handleApplyFilters} style={{fontSize:"1rem",backgroundColor:"#ec522d",marginRight:"10px"}}>Apply filters</Button>
+      {filterActive ? 
+      <Button type="primary" onClick={resetFilter} style={{fontSize:"1rem",backgroundColor:"#ec522d",marginRight:"10px"}}>Reset Filter</Button>
+      :null}
       <Button type="primary" icon={<DownloadOutlined />} size='large' style={{fontSize:"1rem",backgroundColor:"#ec522d"}} onClick={downloadExcel}>
             Download
           </Button>
-      <Table columns={columns} dataSource={tableData}  style={{margin:"1rem 0"}}/>
+          {
+            loader ? <div className="" style={{height:"60vh",width:"100%",display:"flex",justifyContent:"center",alignItems:"center",boxShadow:" rgba(0, 0, 0, 0.24) 0px 3px 8px",marginTop:'1rem',borderRadius:"10px"}}>
+              <Hourglass
+  visible={true}
+  height="40"
+  width="40"
+  ariaLabel="hourglass-loading"
+  wrapperStyle={{}}
+  wrapperClass=""
+  colors={[' #ec522d', '#ec522d']}
+  />
+            </div> : 
+      <Table
+      columns={columns}
+      dataSource={tableData}
+      pagination={{
+        position: ['topRight'],
+        currentPage:2,
+        showSizeChanger:true,
+      }}
+      locale={locale.Table }
+      style={{ margin: "1rem 0", fontSize: "1.5rem" }}
+    />
+    
+        
+
+          }
+      {/* <Table columns={columns} dataSource={tableData}  style={{margin:"1rem 0",fontSize:"1.5rem"}}/> */}
     </div>
     </>
   );

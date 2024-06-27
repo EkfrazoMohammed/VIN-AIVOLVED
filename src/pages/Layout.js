@@ -7,9 +7,10 @@ export default function Layout() {
 const [auth,setAuth] = useState(false)
 
 const token = localStorage.getItem("token");
+const PlantData = localStorage.getItem("PlantData");
 
 useLayoutEffect(()=>{
-    if(token){
+    if(token && PlantData){
         setAuth(true)
     }
     else{

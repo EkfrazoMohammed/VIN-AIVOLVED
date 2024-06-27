@@ -186,3 +186,21 @@ content: '' !important;
   flex-direction: column;
   gap: 1rem;
 }
+
+:where(.css-dev-only-do-not-override-kghr11).ant-checkbox-wrapper:not(.ant-checkbox-wrapper-disabled):hover .ant-checkbox-checked:not(.ant-checkbox-disabled) .ant-checkbox-inner{
+  background-color: orangered !important;
+  border: orangered !important;
+}
+
+
+
+:where(.css-dev-only-do-not-override-kghr11).ant-checkbox-checked .ant-checkbox-inner {
+  background-color: orangered !important;
+  border: orangered !important;
+}
+:where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper .ant-table-thead >tr>th{
+  font-size: 1rem;
+}
+:where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper .ant-table-tbody >tr >th, :where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper .ant-table-tbody >tr >td {
+  font-weight: 500;
+}

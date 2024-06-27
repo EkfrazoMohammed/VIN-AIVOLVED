@@ -3,18 +3,23 @@ import ReactApexChart from "react-apexcharts";
 import { Typography } from "antd";
 import axios from "axios";
 import { createGlobalStyle } from "styled-components";
-import {API, baseURL} from "../../API/API"
+import {API, AuthToken, baseURL} from "../../API/API"
 function LineChart({ data }) {
   const { Title } = Typography;
   const [defectColors, setDefectColors] = useState({});
   console.log(data,"<<<line")
+
   useEffect(() => {
     // Fetch defect colors from the API
-    axios.get(`${baseURL}defect/`)
+    axios.get(`${baseURL}defect/`,{
+      headers:{
+        Authorization:`Bearer ${AuthToken}`
+      }
+    })
       .then(response => {
         // Organize the response data as an object with defect names as keys and color codes as values
         const colors = {};
-        response.data.forEach(defect => {
+        response.data.results.forEach(defect => {
           colors[defect.name] = defect.color_code;
         });
         // Set the defect colors state
@@ -26,12 +31,12 @@ function LineChart({ data }) {
   }, []);
 
   if (!data || Object.keys(data).length === 0) {
-    return <div>Loading...</div>; // or some other fallback UI
+    return <div style={{fontWeight:"700",textAlign:'center'}}>NO DATA</div>; // or some other fallback UI
   }
+  console.log(defectColors,"<<<")
   
   // Extract unique defect names from all dates
   const defectNames = [...new Set(Object.values(data).flatMap(defects => Object.keys(defects)))];
-
   // Sort the dates in ascending order
   const sortedDates = Object.keys(data).sort((a, b) => new Date(a) - new Date(b));
 
@@ -100,14 +105,18 @@ function LineChart({ data }) {
       <div>
         <Title level={5}>Defects Count</Title>
       </div>
+      {Object.keys(data).length > 0 ?
+      
       <ReactApexChart
-        className="full-width"
-        options={chartData.options}
-        series={chartData.series}
-        type="line"
-        height={350}
-        width={"100%"}
-      />
+      className="full-width"
+      options={chartData.options}
+      series={chartData.series}
+      type="line"
+      height={350}
+      width={"100%"}
+    /> : "NO DATA"
+    }
+ 
     </div>
   );
 }

@@ -46,17 +46,22 @@ const handlePost = async()=>{
   try {
 
 if(data.first_name === ""){
-  setError((prev)=>({...prev,fistName:"Please Enter First Name value"}))
+  setError((prev)=>({...prev,fistName:"*Please Enter First Name "}))
 }
 if(data.last_name === ""){
-  setError((prev)=>({...prev,lastName:"Please Enter Last Name value"}))
+  setError((prev)=>({...prev,lastName:"*Please Enter Last Name "}))
 }
 
 if(data.phone_number === ""){
-  setError((prev)=>({...prev,Phone:"Please Enter Phone Number value"}))
+  setError((prev)=>({...prev,Phone:"*Please Enter Phone Number "}))
 }
+else if((data.phone_number).length !== 10 ){
+  setError((prev)=>({...prev,Phone:"*Please Enter Valid Phone Number "}))
+}
+
+
 if(data.email === ""){
-  setError((prev)=>({...prev,email:"Please Enter Email value"}))
+  setError((prev)=>({...prev,email:"*Please Enter Email"}))
 }
     const payload = {
       "first_name": data.first_name,
@@ -190,20 +195,29 @@ User Creation
          :
 <>
         <div className="" style={{display:'flex',flexDirection:'column',gap:'1rem',padding:'1rem'}}>
+<div className="">
 
-       <Input placeholder="Enter Your First Name" type='text' name='first_name'value={data.first_name} onChange={handleChange} />
+       <Input placeholder="Enter Your First Name" type='text' name='first_name'value={data.first_name} onChange={handleChange} helper />
        {error.fistName ? <span style={{fontWeight:'600',color:'red'}}>{error.fistName}</span> : ""}
+</div>
+<div className="">
 
        <Input placeholder="Enter Your Last Name"  type='text' name='last_name' value={data.last_name} onChange={handleChange} />
        {error.lastName ?  <span style={{fontWeight:'600',color:'red'}}>{error.lastName}</span> : ""}
+</div>
 
+
+<div className="">
 
        <Input placeholder="Enter Your Phone Number" type='number' name='phone_number' value={data.phone_number} onChange={handleChange} />
        {error.Phone ?  <span style={{fontWeight:'600',color:'red'}}>{error.Phone}</span> : ""}
+</div>
 
+<div className="">
 
        <Input placeholder="Enter Your Email"  type='email' name='email' value={data.email} onChange={handleChange}  />
        {error.email ? <span style={{fontWeight:'600',color:'red'}}>{error.email}</span> : ""}
+</div>
 
         </div>
         <div className="" style={{display:'flex',justifyContent:'flex-end',padding:'1rem'}}>

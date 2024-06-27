@@ -7,6 +7,8 @@ import {Select } from "antd";
 import "../index.css"
 import {RightOutlined ,LeftOutlined} from '@ant-design/icons';
 import { AuthToken, baseURL } from "../API/API";
+import { Hourglass } from 'react-loader-spinner'
+
 
 
 const AiSmartView = () => {
@@ -18,6 +20,8 @@ const localPlantData = JSON.parse(localItems)
   const [errorMessage, setErrorMessage] = useState(""); 
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0); 
   const sliderRef = useRef(null); 
+  const [loader,setLoader] = useState(false)
+
 
   useEffect(() => {
     axios.get(`${baseURL}defect/?plant_name=${localPlantData.plant_name}`,{
@@ -33,6 +37,7 @@ const localPlantData = JSON.parse(localItems)
 
   useEffect(() => {
     if (selectedDefect) {
+      setLoader(true)
       axios.get(`${baseURL}ai-smart/?plant_id=${localPlantData.id}&defect_id=${selectedDefect.id}`,{
         headers:{
           Authorization:`Bearer ${AuthToken}`
@@ -44,15 +49,17 @@ const localPlantData = JSON.parse(localItems)
             setErrorMessage("");
             setDefectImages(response.data.results);               
             setDefectImages(response.data.results); 
-
+     setLoader(false)
 
           } else {
+            setLoader(false)
             setDefectImages(response.data.defect_images);
             setErrorMessage("NO DATA"); 
           }
 
         })
         .catch(error => {
+          setLoader(false)
           console.error("Error fetching defect images:", error);
           setErrorMessage("No Images to display for this selected defect");
         });
@@ -93,17 +100,38 @@ console.log(defectImages,"<<<<")
     <div className="">
 
         <Select
+        showSearch
         style={{ minWidth: "200px", marginRight: "10px" }}
         placeholder="Select Defects"
         size="large"
         onChange={handleDefectChange}
         defaultValue={null}
+        filterOption={(input,defects)=>
+          (defects.children ?? "").toLowerCase().includes(input.toLowerCase())
+        }
       >
         {defects.map(defects => (
           <Select.Option key={defects.id} value={defects.id}>{defects.name}</Select.Option>
         ))}
       </Select>
+{
+  loader ?  
 
+<div className="" style={{height:"60vh",width:"100%",display:"flex",justifyContent:"center",alignItems:"center",boxShadow:" rgba(0, 0, 0, 0.24) 0px 3px 8px",marginTop:'1rem',borderRadius:"10px"}}>
+              <Hourglass
+  visible={true}
+  height="40"
+  width="40"
+  ariaLabel="hourglass-loading"
+  wrapperStyle={{}}
+  wrapperClass=""
+  colors={[' #ec522d', '#ec522d']}
+  />
+            </div> 
+
+   : 
+
+  <>
         {errorMessage ? (
             <p style={{ textAlign: 'center', marginTop: '10vh', fontSize: '2.5rem', fontWeight: '500' }}>{errorMessage}</p>
         ) : selectedDefect ? (
@@ -116,7 +144,7 @@ console.log(defectImages,"<<<<")
                   </div>
                     <div>
 
-                   <strong>Recorded Date & Time:</strong>  {defectImages[currentSlideIndex]?.recorded_date_time}
+                   <strong>Recorded Date & Time:</strong>  {defectImages[currentSlideIndex]?.recorded_date_time.split("T").join("   ")}
                     </div>
                 </div>
 
@@ -141,6 +169,10 @@ console.log(defectImages,"<<<<")
         ) : (
             <p style={{ display:"flex",justifyContent:"center", alignItems:"center", fontSize: '2rem', fontWeight: '600' }}>Please select a defect to display images.</p>
         )}
+</>
+}
+  
+
     </div>
 );}
 
