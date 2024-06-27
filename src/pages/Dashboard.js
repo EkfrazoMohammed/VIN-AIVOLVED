@@ -57,6 +57,10 @@ function Dashboard() {
       console.error('Invalid date range:', dates,dateStrings);
     }
   };
+  const resetFilter = ()=>{
+initialTableData()
+setFilterActive(false)
+  }
   
   const handleApplyFilters = () => {
     const domain = `${baseURL}`;
@@ -106,7 +110,8 @@ function Dashboard() {
     })
       .then(response => {
         setTableData(response.data);
-        
+
+        setFilterActive(true)
       })
       .catch(error => {
         console.error('Error:', error);
@@ -172,6 +177,8 @@ function Dashboard() {
     
     setDateRange([formattedStartDate, formattedEndDate]);
   };
+
+  const [filterActive,setFilterActive] = useState(false)
 
   const initialTableData = () => {
     const domain = baseURL;
@@ -379,6 +386,8 @@ useEffect(() => {
   }
 }, [notifications.length]);
 
+
+
   return (
     <>
      <ToastContainer />
@@ -398,6 +407,9 @@ useEffect(() => {
   placeholder="Select Machine"
   defaultValue={selectedMachine} 
   onChange={handleMachineChange}
+  filterOption={(input, machineOptions) =>
+    (machineOptions?.children ?? '').toLowerCase().includes(input.toLowerCase())
+  }
   size="large"
 >
   {machineOptions.map(machine => (
@@ -412,20 +424,29 @@ useEffect(() => {
         onChange={handleProductChange}
         defaultValue={selectedProduct}
         size="large"
+        filterOption={(input, productOptions) =>
+          (productOptions?.children ?? '').toLowerCase().includes(input.toLowerCase())
+        }
+     
       >
         {productOptions.map(department => (
           <Select.Option key={department.id} value={department.id}>{department.name}</Select.Option>
         ))}
       </Select>
+
       <RangePicker
           size="large"
         style={{ marginRight: "10px",minWidth:"280px" }}
         onChange={handleDateRangeChange}
-          
+        allowClear={false}
+        inputReadOnly={true}
       />
    
       <Button type="primary" onClick={handleApplyFilters} style={{fontSize:"1rem",backgroundColor:"#ec522d",marginRight:"10px"}}>Apply filters</Button>
-
+      {filterActive ? 
+      <Button type="primary" onClick={resetFilter} style={{fontSize:"1rem",backgroundColor:"#ec522d",marginRight:"10px"}}>Reset Filter</Button>
+      :null}
+      
 
        </Col>
         </Row>
@@ -437,16 +458,15 @@ useEffect(() => {
               sm={24}
               md={12}
               lg={6}
-              lg={6}
               className="mb-24"
             >
-            <Card bordered={false} className="criclebox ">
+            <Card bordered={false} className="criclebox  " style={{minHeight:"180px"}}>
               <Dropdown overlay={menu} trigger={['click']}>
       
     <div className="number">
       <Row align="middle">
         <Col xs={18}>
-          <Title level={3}>
+          <Title level={3} style={{fontSize:"1.5rem"}}>
             {`Machines`}
           </Title>
           <span>{machineOptions.length}</span>
@@ -468,11 +488,11 @@ useEffect(() => {
               lg={6}
               className="mb-24"
             >
-              <Card bordered={false} className="criclebox ">
+              <Card bordered={false} className="criclebox " style={{minHeight:"180px"}}>
                 <div className="number">
                   <Row align="middle">
                     <Col xs={18}>
-                      <Title level={3}>
+                      <Title level={3} style={{fontSize:"1.5rem"}}>
                         {`Defects`}
                       </Title>
 
@@ -493,14 +513,13 @@ useEffect(() => {
               sm={24}
               md={12}
               lg={6}
-              lg={6}
               className="mb-24"
             >
-              <Card bordered={false} className="criclebox ">
+              <Card bordered={false} className="criclebox " style={{minHeight:"180px"}}>
                 <div className="number">
                   <Row align="middle">
                     <Col xs={18}>
-                      <Title level={3}>
+                      <Title level={3} style={{fontSize:"1.5rem"}}>
                         {`Products`}
                       </Title>
                       {
@@ -524,16 +543,17 @@ useEffect(() => {
               md={12}
               lg={6}
               className="mb-24"
+              
             >
               <Link to="/insights">
               <Card
-               bordered={false} className={`criclebox ${notifications.length > prevNotificationLength ? 'notification-change' : ''}`}>
+               bordered={false} className={`criclebox ${notifications.length > prevNotificationLength ? 'notification-change' : ''}`} style={{minHeight:"180px"}}>
           
               {/* <Card bordered={false} className={`criclebox ${notifications.length > prevNotificationLength ? 'notification-change' : ''}`}> */}
-            <div className="number">
+            <div className="number" >
               <Row align="middle">
                 <Col xs={18}>
-                  <Title level={3}>
+                  <Title level={3} style={{fontSize:"1.5rem"}}>
                     {`Insights`}
                   </Title>
                   {/* <button onClick={notify}>click</button> */}

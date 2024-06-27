@@ -20,7 +20,7 @@ function PieChart({ data }) {
     })
       .then(response => {
         const colors = {};
-        response.data.forEach(defect => {
+        response.data.results.forEach(defect => {
           colors[defect.name] = defect.color_code;
         });
         setDefectColors(colors);
@@ -48,7 +48,9 @@ function PieChart({ data }) {
 
     setChartData({ labels: labels, series: series });
   }, [data]);
-
+  if (!data || Object.keys(data).length === 0) {
+    return <div style={{fontWeight:"700",textAlign:'center'}}>NO DATA</div>; // or some other fallback UI
+  }
   return (
     <div>
       <div>

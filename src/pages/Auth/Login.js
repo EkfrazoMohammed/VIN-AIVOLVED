@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Card, Col, Row } from 'antd';
+import { Card, Col, Row ,Input,Checkbox} from 'antd';
 import axios from "axios";
 import { baseURL } from '../../API/API';
 import { Button, notification } from 'antd';
@@ -24,7 +24,7 @@ const openNotification = (param) => {
     const {status,message} = param
     
     api[status]({
-      message:message || "",
+      message: <div style={{fontSize:"1.1rem",fontWeight:"600"}}>{message || ""}</div>,
     //   description:
     //     'I will never close automatically. This is a purposely very very long description that has many many characters and words.',
       duration: 0,
@@ -34,15 +34,16 @@ const openNotification = (param) => {
 
 const loginPost = async()=>{
     try {
+
      if(loginPayload.email_or_phone === ""){
-     setError((prev)=>({...prev,UserError:"Username/Mobile Number not entered"}))
+     setError((prev)=>({...prev,UserError:"*Email / Mobile Number not entered"}))
      }
 
      if(loginPayload.password === ""){
-        setError((prev)=>({...prev,PasswordError:"Password is empty"}))
+        setError((prev)=>({...prev,PasswordError:"*Password is required"}))
      }
 
-if(loginPayload.email_or_phone !== "" || loginPayload.password !== ""){
+if(loginPayload.email_or_phone !== "" && loginPayload.password !== "" && error.UserError === "" && error.PasswordError === ""  ){
 
     const res = await axios.post(`${baseURL}login/`,loginPayload);
 
@@ -95,42 +96,53 @@ console.log(loginPayload)
     </div>
     <div className="" style={{display:'flex',flexDirection:'column',gap:'1rem',}}>
         <h3 >Login</h3>
-        <input
-            type="text"
-            style={{
+        <div className="">
+         
+          <label htmlFor="" style={{fontWeight:"600",fontSize:'1rem'}}>Enter Email / Mobile Number </label>
+          <Input placeholder="Email/Mobile Number"       style={{
               height: "1.5rem",
               width: "100%",
               padding: "1.5rem",  
-                          border: "0.5px solid grey",
               borderRadius: "5px",
               outline: "none",
-              }}
-            name="email_or_phone"
-            placeholder="Username/Mobile Number"
-            onChange={handleChange}
-            helperText={error.UserError}
-          />
+              }} 
+              name="email_or_phone"
+              onChange={handleChange}
+              status={error.UserError ? "error" : ""}
+              />      
+
+
           {
-            error.UserError ? <span style={{color:'red',fontWeight:'600',fontSize:'0.8rem'}}>{error.UserError}</span>:""
+            error.UserError ? <span style={{color:'red',fontWeight:'700',fontSize:'0.8rem',marginLeft:'0.5rem'}}>{error.UserError}</span>:""
           }
-               <input
-            type="text"
+        </div>
+        <div className="">
+        <label htmlFor="" style={{fontWeight:"600",fontSize:'1rem'}}>Enter Password </label>
+   
+     
+
+          
+           <Input.Password placeholder="Enter password"    
             style={{
-              height: "2rem",
+            
               width: "100%",
-              padding: "1.5rem",
-              border: "0.5px solid grey",
               borderRadius: "5px",
+              padding:"0.4rem 1.5rem",
               outline: "none",
-            }}
-            placeholder="Password"
+              }}     
             name='password'
             onChange={handleChange}
+            status={error.PasswordError ? "error" : ""}
 
-          />
+            />
               {
-            error.PasswordError ? <span style={{color:'red',fontWeight:'600',fontSize:'0.8rem'}}>{error.PasswordError}</span>:""
+            error.PasswordError ? <span style={{color:'red',fontWeight:'700',fontSize:'0.8rem',marginLeft:'0.5rem'}}>{error.PasswordError}</span>:""
           }
+        </div>
+
+        <div className="" style={{display:'flex',gap:'1rem'}}>
+        <Checkbox  style={{fontWeight:'700'}}>Remember Me</Checkbox>
+        </div>
             <div className="">
         <button style={{padding:'0.8rem 3rem',background:'#ff4403',border:'none',borderRadius:'5px',color:'#fff',fontWeight:'600'}} onClick={loginPost}>Login</button>
     </div>

@@ -7,6 +7,7 @@ import Header from "./Header";
 
 const { Header: AntHeader, Content, Sider } = Layout;
 
+
 function Main({ children }) {
   const [visible, setVisible] = useState(false);
   const [placement, setPlacement] = useState("right");
@@ -32,6 +33,7 @@ function Main({ children }) {
   }, [pathname]);
 
   return (
+    
     <Layout
       className={`layout-dashboard ${
         pathname === "dashboard" ? "layout-profile" : ""
