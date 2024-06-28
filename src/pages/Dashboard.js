@@ -520,7 +520,7 @@ useEffect(() => {
                   <Row align="middle">
                     <Col xs={18}>
                       <Title level={3} style={{fontSize:"1.5rem"}}>
-                        {`Products`}
+                        {`Number of Products`}
                       </Title>
                       {
                         alertData ? 
