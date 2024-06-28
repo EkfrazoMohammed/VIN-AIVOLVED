@@ -23,6 +23,25 @@ const Insights = () => {
     { title: 'Defect', dataIndex: 'defect', key: 'defect' },
   ];
 
+
+  // GET  https://hul.aivolved.in/api/defect-notifications/
+  // response 
+  // {
+  //   "results": [
+  //       {
+  //           "id": 17,
+  //           "defect": 4,
+  //           "notification_text": "Defect 'Clean Soil' has occurred three times consecutively.",
+  //           "rca1": "Pin Hole in Nozzle",
+  //           "rca2": null,
+  //           "rca3": null,
+  //           "rca4": null,
+  //           "rca5": null,
+  //           "rca6": null,
+  //           "recorded_date_time": null
+  //       },
+  //     ]
+  //   }
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - 7); // 7 days ago
   const formattedStartDate = startDate.toISOString().slice(0, 10); // Format startDate as YYYY-MM-DD

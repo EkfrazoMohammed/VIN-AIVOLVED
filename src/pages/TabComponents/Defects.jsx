@@ -1,258 +1,256 @@
-import React ,{useEffect, useMemo, useState} from 'react';
-import {Button,Modal, Select ,Space, Card, Col, Row ,ColorPicker,Table, Tag, Form, Input, Radio, notification, Descriptions } from 'antd';
-import { Switch } from 'antd';
-import axios from "axios";
-
-import {  EditOutlined,ReloadOutlined} from '@ant-design/icons';
-import { AuthToken, baseURL, localPlantData } from '../../API/API';
-import { render } from '@testing-library/react';
-
+import React, { useEffect, useState } from 'react';
+import { Button, Modal, Select, Table, Form, Input, ColorPicker, notification, Row, Col } from 'antd';
+import axios from 'axios';
+import { EditOutlined, ReloadOutlined } from '@ant-design/icons';
+import { baseURL, AuthToken } from '../../API/API';
 
 const Defects = () => {
-  const localItems = localStorage.getItem("PlantData")
-  const localPlantData = JSON.parse(localItems) 
-  const [modal2Open, setModal2Open] = useState(false);
-  const[editData,setEditData] =  useState("")
-  const [searchResult,setsearchResult] = useState()
+  const localItems = localStorage.getItem('PlantData');
+  const localPlantData = JSON.parse(localItems);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editData, setEditData] = useState(null);
+  const [tableData, setTableData] = useState([]);
+  const [selectedValue, setSelectedValue] = useState(null);
+  const [color, setColor] = useState('#1677ff');
+  const [form] = Form.useForm();
+  const [notificationApi, contextHolder] = notification.useNotification();
 
-// Table Columns
-const handleEdit = (value)=>{
-  setEditData(value);
-setModal2Open(true)
-}
-const columns = [
+  const columns = [
     {
-        title: 'ID',
-        dataIndex: 'id',
-        id: 'id',
-        render: (text) => <a>{text}</a>,
-      },
+      title: 'ID',
+      dataIndex: 'id',
+      render: (text) => <a>{text}</a>,
+    },
     {
       title: 'Defect Name',
       dataIndex: 'name',
-      id: 'name',
-      
       sorter: (a, b) => a.name.localeCompare(b.name),
-      sortDirections: ['ascend','descend' ,'cancel'],
-
-            render: (text) => <a>{text}</a>,
+      render: (text) => <a>{text}</a>,
     },
     {
-      title: 'Color ',
+      title: 'Color',
       dataIndex: 'color_code',
-      id: 'color_code',
-      render:(col)=><div className="" style={{height:"40px",width:'40px',borderRadius:'20px',background:`${col}`}}></div>
+      render: (col) => (
+        <div style={{ height: '40px', width: '40px', borderRadius: '20px', background: col }}></div>
+      ),
     },
     {
-      title: 'Color Code ',
+      title: 'Color Code',
       dataIndex: 'color_code',
-      id: 'color_code',
     },
-    // {
-    //   title: 'Edit ',
-    //   render: (text)=><div className="" style={{cursor:'pointer'}} onClick={()=>handleEdit(text)}><EditOutlined /></div>,
-    //   id: 'color_code',
-    // },
-
+    {
+      title: 'Edit',
+      render: (record) => (
+        <div style={{ cursor: 'pointer' }} onClick={() => handleEdit(record)}>
+          <EditOutlined />
+        </div>
+      ),
+    },
   ];
-// Table  Data 
 
+  const handleEdit = (record) => {
+    setEditData(record);
+    setColor(record.color_code);
+    setEditModalOpen(true);
+  };
 
-const locale = {
-  Table: {
-    sortTitle: 'Sort',
-      triggerAsc: 'Click to sort in ascending order by defect name',
-      triggerDesc: 'Click to sort in descending order by defect name',
-    cancelSort: 'Click to cancel sorting',
-  },
-};
-const [api, contextHolder] = notification.useNotification();
-const [tableData,setTableData] = useState([])
-const [optionsData,setOptionsData] = useState([]);
-const [selectedValue,setSelectedValue] = useState([]);
+  const fetchData = async () => {
+    const url = `${baseURL}defect/?plant_name=${localPlantData.plant_name}`;
+    try {
+      const res = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${AuthToken}`,
+        },
+      });
+      setTableData(res.data.results);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
-const handleDefectChange = async(value) =>{
-  setSelectedValue(value)
- const data =   await tableData.filter((item)=> value === item.id)
-  await setTableData(data)
-  }
+  useEffect(() => {
+    fetchData();
+  }, []);
 
+  const handleDefectChange = (value) => {
+    setSelectedValue(value);
+    const filteredData = tableData.filter((item) => value === item.id);
+    setTableData(filteredData);
+  };
+const [data,setData]=useState("")
+console.log(data)
+  const handlePost = async () => {
+    // const data = form.getFieldValue('name');
+    if (!data) {
+      notificationApi.open({
+        message: 'Please fill out required fields',
+        placement: 'top',
+      });
+      return;
+    }
 
-  const fetchData = async () =>{
-    const url = await `${baseURL}defect/?plant_name=${localPlantData.plant_name}`
-    await axios.get(url,{
-      headers:{
-        'Authorization': `Bearer ${AuthToken}`
-      }
-    })
-    .then((res) =>{
-        setTableData(res.data.results);
-        setOptionsData(res.data.results)}
-    )
-    .catch(err=> console.log(err))
-  }
-
-useEffect(()=>{
-  fetchData()
-},[]);
-
-// COLOR PICKER USESTATE
-  const [color, setColor] = useState("#561ecb");
-
-// FORM STATE
-  const [form] = Form.useForm();
-
-// State Values
-const [data,setData] = useState();
-
-
-  // POST METHOD FOR SENDING COLOR CODE
-const handlePost = (param)=>{
-    
-if(data === '' || data === undefined || data === null){
-  return (
-    api.open({
-      message: 'Please Fill out required Fields',
-      placement:'top',
-           })
-  )
-}
     const payload = {
-      "name": data,
+      name: data,
+      color_code: color,
+      plant: localPlantData.id,
+    };
+
+    try {
+      const url = `${baseURL}defect`;
+      await axios.post(url, payload, {
+        headers: {
+          Authorization: `Bearer ${AuthToken}`,
+        },
+      });
+      notificationApi.open({
+        message: 'Defect created',
+        placement: 'top',
+      });
+      fetchData();
+      setModalOpen(false);
+    } catch (err) {
+      console.log(err);
     }
-    
-    const PostData = async()=>{
-        const url = `${baseURL}defect`
+  };
 
-    //   const res = await axios.post(`http://143.110.184.45:8100/${param}/`,payload)
-      const res = await axios.post(`${url}/`,payload)
-      try{
-        api.open({
-          message: `Defect created`,
-          placement:'top',
-               });
-      }
-      catch(err){
-        console.log(err)
-      }
-
+  const handlePut = async () => {
+    const data = form.getFieldValue('name');
+    if (!data) {
+      notificationApi.open({
+        message: 'Please fill out required fields',
+        placement: 'top',
+      });
+      return;
     }
-    PostData()
-  }
 
-const handleChange = useMemo(
-  ()=>(typeof color === "string" ? color:color?.toHexString()),
-  [color],
-);
+    const payload = {
+      name: data,
+      color_code: color,
+      plant: localPlantData.id,
+    };
 
-const handleRefresh = ()=>{
-  setSelectedValue(null)
-  fetchData()
-}
+    try {
+      const url = `${baseURL}defect/${editData.id}`;
+      await axios.put(url, payload, {
+        headers: {
+          Authorization: `Bearer ${AuthToken}`,
+        },
+      });
+      notificationApi.open({
+        message: 'Defect updated',
+        placement: 'top',
+      });
+      fetchData();
+      setEditModalOpen(false);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
-// const limitedDataSource = tableData.slice(0, 5);
+  const handleRefresh = () => {
+    setSelectedValue(null);
+    fetchData();
+  };
 
   return (
-<>
-{contextHolder}
+    <>
+      {contextHolder}
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', margin: '1rem 0' }}>
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          <Select
+            showSearch
+            value={selectedValue}
+            style={{ width: 200, height: '40px' }}
+            placeholder="Search to Select Defects"
+            optionFilterProp="children"
+            onChange={handleDefectChange}
+            filterOption={(input, option) =>
+              option.children.toLowerCase().includes(input.toLowerCase())
+            }
+          >
+            {tableData.map((defect) => (
+              <Select.Option key={defect.id} value={defect.id}>
+                {defect.name}
+              </Select.Option>
+            ))}
+          </Select>
+          <Button onClick={handleRefresh} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <ReloadOutlined style={{ width: '50px' }} />
+          </Button>
+        </div>
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          <Button type="primary" style={{ background: '#EC522D', color: '#fff' }} onClick={() => setModalOpen(true)}>
+            Add Defects
+          </Button>
+        </div>
+      </div>
 
-{/* <Row gutter={24} style={{margin:'2rem 0',display:'flex',flexDirection:'column'}}>
-  <Col>
-  <h5 style={{fontWeight:650}}>
-    Create Defects <EditOutlined /></h5>
-    
-
-    </Col>
-  <Col style={{margin:'1rem'}}>
-
-  <Form
-      layout='inline'
-      form={form}
-      size= 'large'
-      variant="filled"
-      
-    >
-
-      <Form.Item label={<h6>Defects Name</h6>} >
-        <Input placeholder="Enter Defect Name"  onChange={(e)=>setData(e.target.value)} />
-      </Form.Item>
-      <Form.Item  label={<h6>Select Color</h6>}>
-        <ColorPicker defaultValue="#1677ff"  onChange={setColor} />
-      </Form.Item>
-      <Form.Item >
-      <Input placeholder="input placeholder" value={handleChange} />
-      </Form.Item>
-      <Form.Item >
-        <Button style={{background:'#EC522D',color:'#fff'}} onClick={()=>handlePost('defect')}>Create Defects</Button>
-      </Form.Item>
-    </Form>
-  
-  
-  </Col>
-</Row> */}
-<div className="" style={{display:"flex",gap:"1rem",margin:'1rem 0'}}>
-  <Select
-    showSearch
-    value={selectedValue}
-    style={{ width: 200,height:"40px" }}
-    placeholder="Search to Select Defects"
-    optionFilterProp="label"
-    onChange={(val)=>{handleDefectChange(val)}}
-
-filterOption={(input,tableData)=>
-  (tableData?.children ?? "").toLowerCase().includes(input.toLowerCase())
-  
-}
-  >
-      {tableData.map(defect => (
-    <Select.Option  key={defect.id} value={defect.id}>{defect.name}</Select.Option>
-  ))}
-  </Select>
-
-  <Button onClick={handleRefresh} style={{display:"flex",alignItems:'center',justifyContent:"center"}}><ReloadOutlined style={{width:"50px"}} /></Button>
-</div>
-<Table  columns={columns} dataSource={tableData}  pagination={{ pageSize: 6 }} locale={locale.Table}  />
-
-<Modal
-        title={<div style={{textAlign:"center",fontSize:'1.3rem'}}>Update Defect</div>}
-        centered
-        open={modal2Open}
-        onOk={() => setModal2Open(false)}
-        onCancel={() => setModal2Open(false)}
-        footer={null}
+      <Modal
+        open={modalOpen}
+        title="Create Defects"
+        onCancel={() => setModalOpen(false)}
+        footer={[
+          <Button key="cancel" onClick={() => setModalOpen(false)}>
+            Cancel
+          </Button>,
+          <Button key="submit" type="primary" style={{ background: '#EC522D', color: '#fff' }} onClick={handlePost}>
+            Create Defects
+          </Button>,
+        ]}
       >
-        <div className="" style={{display:'flex',flexDirection:'column',gap:'2rem',padding:'1rem'}}>
-        <Form
-      layout='inline'
-      form={form}
-      size= 'large'
-      variant="filled"
-      style={{display:'flex',flexWrap:'nowrap',gap:'1rem',justifyContent:'center',flexDirection:'column'}}
-      
-    >
+        <Row gutter={24} style={{ margin: '1rem', display: 'flex', flexDirection: 'column' }}>
+          <Col style={{ margin: '1rem' }}>
+            <Form form={form} size="large" layout="vertical">
+              <Form.Item name="name" rules={[{ required: true, message: 'Please enter defect name' }]}>
+              <h6>Defects Name</h6>
+              <div style={{ display: "flex", gap: "1rem" }}>
+                <Input placeholder="Enter Defect Name" name="name" onChange={(e)=>{setData(e.target.value)}}/>
+                </div>
+              </Form.Item>
+             
+              <Form.Item >
+                <h6>Select Color</h6>
+                <div style={{ display: "flex", gap: "1rem" }}>
+                    <ColorPicker value={color} onChange={(color) => setColor(color.toHexString())} showText={(color) => <span>{color.toHexString()}</span>}/>
+              
+                </div>
+              </Form.Item>
+            </Form>
+          </Col>
+        </Row>
+      </Modal>
 
-      <Form.Item label={<h6>Defects Name</h6>} >
-        <Input placeholder="Enter Defect Name"  onChange={(e)=>setData(e.target.value)} />
-      </Form.Item>
-      <Form.Item  label={<h6>Select Color</h6>}>
-      <span>        <ColorPicker defaultValue="#1677ff"  onChange={setColor} />
-        <Input placeholder="input placeholder" value={handleChange} />
-      </span>
-      
+      <Modal
+        open={editModalOpen}
+        title="Edit Defect"
+        onCancel={() => setEditModalOpen(false)}
+        footer={[
+          <Button key="cancel" onClick={() => setEditModalOpen(false)}>
+            Cancel
+          </Button>,
+          <Button key="submit" type="primary" style={{ background: '#EC522D', color: '#fff' }} onClick={handlePut}>
+            Edit Defect
+          </Button>,
+        ]}
+      >
+        <Row gutter={24} style={{ margin: '1rem', display: 'flex', flexDirection: 'column' }}>
+          <Col style={{ margin: '1rem' }}>
+            <Form form={form} size="large" layout="vertical" initialValues={{ name: editData?.name }}>
+              <Form.Item name="name" label="Defects Name" rules={[{ required: true, message: 'Please enter defect name' }]}>
+                <Input placeholder="Enter Defect Name" />
+              </Form.Item>
+              <Form.Item label="Select Color">
+                <ColorPicker value={color} onChange={(color) => setColor(color.toHexString())} />
+              </Form.Item>
+            </Form>
+          </Col>
+        </Row>
+      </Modal>
 
-      </Form.Item>
-    
-    </Form>
-        </div>
-        <div className="" style={{display:'flex',justifyContent:'flex-end',padding:'1rem'}}>
-        <Button type="primary" style={{width:'20%',padding:'0'}} danger onClick={()=>handlePost()}>
-Submit
-    </Button>
+      <Table columns={columns} dataSource={tableData} pagination={{ pageSize: 6 }} locale={{ triggerAsc: 'Click to sort in ascending order', triggerDesc: 'Click to sort in descending order', cancelSort: 'Click to cancel sorting' }} />
+    </>
+  );
+};
 
-        </div>
-             </Modal>
-</>
-  )
-}
-
-export default Defects
+export default Defects;

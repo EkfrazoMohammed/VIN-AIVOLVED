@@ -467,7 +467,7 @@ useEffect(() => {
       <Row align="middle">
         <Col xs={18}>
           <Title level={3} style={{fontSize:"1.5rem"}}>
-            {`Machines`}
+            {`Nos. of Machines`}
           </Title>
           <span>{machineOptions.length}</span>
         </Col>
@@ -520,7 +520,7 @@ useEffect(() => {
                   <Row align="middle">
                     <Col xs={18}>
                       <Title level={3} style={{fontSize:"1.5rem"}}>
-                        {`Number of Products`}
+                        {`Nos. of Products`}
                       </Title>
                       {
                         alertData ? 
