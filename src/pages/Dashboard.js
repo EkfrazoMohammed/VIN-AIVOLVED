@@ -493,7 +493,7 @@ useEffect(() => {
                   <Row align="middle">
                     <Col xs={18}>
                       <Title level={3} style={{fontSize:"1.5rem"}}>
-                        {`Defects`}
+                        {`Defect Classification`}
                       </Title>
 
                       {/* <span>  {Object.keys(categoryDefects).reduce((total, category) => total + category, 0)}</span> */}
