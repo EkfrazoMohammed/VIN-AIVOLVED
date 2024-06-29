@@ -1,11 +1,10 @@
 
 import { useState,useEffect } from "react";
 import "../App.css"
+import { ExclamationCircleOutlined  } from '@ant-design/icons';
 import { Link } from "react-router-dom";
 import axios from 'axios';
-import {Card,Col, Row, Typography, Select, DatePicker,Checkbox, Button, Dropdown, Menu} from "antd";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import {Card,notification, Space ,Col, Row, Typography, Select, DatePicker,Checkbox, Button, Dropdown, Menu} from "antd";
 import Paragraph from "antd/lib/typography/Paragraph";
 import {  VideoCameraOutlined, BugOutlined, AlertOutlined,NotificationOutlined} from '@ant-design/icons';
 import StackChart from "../components/chart/StackChart";
@@ -309,88 +308,216 @@ const [notifications, setNotifications] = useState([]);
 const [isSocketConnected, setIsSocketConnected] = useState(false);
 const [prevNotificationLength, setPrevNotificationLength] = useState(0);
 
-const initializeWebSocket = () => {
-  const socket = new WebSocket(`wss://hul.aivolved.in/ws/notifications/`);
+// const initializeWebSocket = () => {
+//   const socket = new WebSocket(`wss://hul.aivolved.in/ws/notifications/`);
 
-  socket.onopen = () => {
-    console.log("WebSocket connection established");
-    setIsSocketConnected(true); // Update connection status
-  };
+//   socket.onopen = () => {
+//     console.log("WebSocket connection established");
+//     setIsSocketConnected(true); // Update connection status
+//   };
 
-  socket.onmessage = (event) => {
-    const message = JSON.parse(event.data);
-    setNotifications(prevNotifications => {
-      const newNotifications = [...prevNotifications, message.notification];
-      // toast.error(message.notification); // Display toast notification
-      console.log(message,"<,,")
-      toast.error(message.notification, 
-        {
-          position: "top-right",
-          autoClose: false,
-          // autoClose:10000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
+//   socket.onmessage = (event) => {
+//     const message = JSON.parse(event.data);
+//     setNotifications(prevNotifications => {
+//       const newNotifications = [...prevNotifications, message.notification];
+  
+//       // toast.error(message.notification, 
+//       //   {
+//       //     position: "top-right",
+//       //     autoClose: false,
+//       //     // autoClose:10000,
+//       //     hideProgressBar: false,
+//       //     closeOnClick: true,
+//       //     pauseOnHover: true,
+//       //     draggable: true,
+//       //     progress: undefined,
+//       //     theme: "colored",
+//       //     style: { whiteSpace: 'pre-line' },  // Added style for new line character
+//       //     // transition: Bounce,
+//       //     }
+//       // );
+//       return newNotifications;
+//     });
+//   };
+
+//   socket.onclose = () => {
+//     console.log("WebSocket connection closed");
+//     setIsSocketConnected(false); // Update connection status
+//   };
+
+//   socket.onerror = (error) => {
+//     console.error("WebSocket error:", error);
+//     setIsSocketConnected(false); // Update connection status
+//   };
+
+//   return () => {
+//     socket.close();
+//   };
+// };
+
+
+// useEffect(() => {
+//   const cleanupWebSocket = initializeWebSocket();
+//   return cleanupWebSocket;
+// }, []);
+
+// useEffect(() => {
+//   if (notifications.length > prevNotificationLength) {
+//     setPrevNotificationLength(notifications.length);
+//   }
+// }, [notifications.length]);
+const [api, contextHolder] = notification.useNotification();
+useEffect(() => {
+  const initializeWebSocket = () => {
+    const socket = new WebSocket(`wss://hul.aivolved.in/ws/notifications/`);
+
+    socket.onopen = () => {
+      console.log("WebSocket connection established");
+      setIsSocketConnected(true); // Update connection status
+    };
+
+    socket.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      setNotifications(prevNotifications => {
+        const newNotifications = [...prevNotifications, message.notification];
+        
+        // Show notification using Ant Design
+        const key = `open${Date.now()}`;
+      //   api.open({
+      //     message: message.notification,
+      //     // description: message.notification,
+      //     onClose: close,
+      //     duration: 5000,  
+      //     showProgress: true,
+      // pauseOnHover:true,
+      // icon: (
+        
+      //   <ExclamationCircleOutlined 
+      //     style={{
+      //       color: '#ec522d',
+      //     }}
+      //   />
+      // ),
+      //     style: { whiteSpace: 'pre-line' },  // Added style for new line character
+      //     btn: (
+      //       <Space>
+      //         <Button type="primary" size="small" onClick={() => api.destroy(key)} style={{color:"#ec522d"}}>
+      //     Close
+      //   </Button>
+      //         {/* <Button type="link" size="small" onClick={() => api.destroy()}>
+      //           Destroy All
+      //         </Button> */}
+      //         <Button type="primary" size="large"  style={{fontSize:"1rem",backgroundColor:"#ec522d"}} onClick={() => api.destroy()}>
+      //          <Link to="/insights">View All Errors </Link> 
+      //         </Button>
+      //       </Space>
+      //     ),
+      //   });
+        api.open({
+          message: message.notification,
+          // description: message.notification,
+          onClose: close,
+          duration: 5000,  
+          showProgress: true,
+      pauseOnHover:true,
+          key,
+          stack:2,
+      icon: (
+        
+        <ExclamationCircleOutlined 
+          style={{
+            color: '#fff',
+          }}
+        />
+      ),
           style: { whiteSpace: 'pre-line' },  // Added style for new line character
-          // transition: Bounce,
-          }
-      ); // Display toast notification with 5 seconds duration
-      return newNotifications;
-    });
+          btn: (
+            <Space>
+              <Button type="link" size="small" onClick={() => api.destroy(key)} style={{color:"#fff"}}>
+          Close
+        </Button>
+         
+              <Button type="primary" size="large"  style={{fontSize:"1rem",backgroundColor:"#fff",color:"orangered"}} onClick={() => api.destroy()}>
+               <Link to="/insights">View All Errors </Link> 
+              </Button>
+            </Space>
+          ),
+        
+        });
+        
+        return newNotifications;
+      });
+    };
+
+    socket.onclose = () => {
+      console.log("WebSocket connection closed");
+      setIsSocketConnected(false); // Update connection status
+    };
+
+    socket.onerror = (error) => {
+      console.error("WebSocket error:", error);
+      setIsSocketConnected(false); // Update connection status
+    };
+
+    return () => {
+      socket.close();
+    };
   };
 
-  socket.onclose = () => {
-    console.log("WebSocket connection closed");
-    setIsSocketConnected(false); // Update connection status
-  };
-
-  socket.onerror = (error) => {
-    console.error("WebSocket error:", error);
-    setIsSocketConnected(false); // Update connection status
-  };
-
-  return () => {
-    socket.close();
-  };
+  const cleanup = initializeWebSocket();
+  return cleanup;
+}, [api]);
+const close = () => {
+  console.log(
+    'Notification was closed',
+  );
 };
 
-// const notify=()=>{
-//   toast.error("Defect\n 'Clean Soil' has occurred\n three times\n consecutively.\nRCA1: Pin Hole in Nozzle\n", 
-//     {
-//       position: "top-right",
-//       autoClose: false,
-//       // autoClose:10000,
-//       hideProgressBar: false,
-//       closeOnClick: true,
-//       pauseOnHover: true,
-//       draggable: true,
-//       progress: undefined,
-//       theme: "colored",
-//       style: { whiteSpace: 'pre-line' },  // Added style for new line character
-//       // transition: Bounce,
-//       }
-//   );
-// }
-
-useEffect(() => {
-  const cleanupWebSocket = initializeWebSocket();
-  return cleanupWebSocket;
-}, []);
-
-useEffect(() => {
-  if (notifications.length > prevNotificationLength) {
-    setPrevNotificationLength(notifications.length);
-  }
-}, [notifications.length]);
-
-
-
+// const openNotification = () => {
+//   const key = `open${Date.now()}`;
+ 
+//   api.open({
+//     message: 'Defect Clean Soil has occurred three times consecutively.',
+//     key,
+//     onClose: close,
+//     // message: message.notification,
+//     // description: message.notification,
+//     onClose: close,
+//     stack:2,
+//     duration: 5000,  
+//     showProgress: true,
+// pauseOnHover:true,
+// icon: (
+  
+//   <ExclamationCircleOutlined 
+//     style={{
+//       color: '#fff',
+//     }}
+//   />
+// ),
+//     style: { whiteSpace: 'pre-line' },  // Added style for new line character
+//     btn: (
+//       <Space>
+//         <Button type="link" size="small" onClick={() => api.destroy(key)} style={{color:"#fff"}}>
+//     Close
+//   </Button>
+//         {/* <Button type="link" size="small" onClick={() => api.destroy()}>
+//           Destroy All
+//         </Button> */}
+//         <Button type="primary" size="large"  style={{fontSize:"1rem",backgroundColor:"#fff",color:"orangered"}} onClick={() => api.destroy()}>
+//          <Link to="/insights">View All Errors </Link> 
+//         </Button>
+//       </Space>
+//     ),
+  
+//   });
+// };
   return (
     <>
-     <ToastContainer />
+    {contextHolder}
+    {/* <Button type="primary" onClick={openNotification}>
+        Open the notification box
+      </Button> */}
       <div className="layout-content">
       <Row className="rowgap-vbox" gutter={[24, 0]}>
       <Col
@@ -467,7 +594,7 @@ useEffect(() => {
       <Row align="middle">
         <Col xs={18}>
           <Title level={3} style={{fontSize:"1.5rem"}}>
-            {`Machines`}
+            {`Nos. of Machines`}
           </Title>
           <span>{machineOptions.length}</span>
         </Col>
@@ -520,7 +647,7 @@ useEffect(() => {
                   <Row align="middle">
                     <Col xs={18}>
                       <Title level={3} style={{fontSize:"1.5rem"}}>
-                        {`Number of Products`}
+                        {`Nos. of Products`}
                       </Title>
                       {
                         alertData ? 
