@@ -78,8 +78,8 @@ const Defects = () => {
     const filteredData = tableData.filter((item) => value === item.id);
     setTableData(filteredData);
   };
-const [data,setData]=useState("")
-console.log(data)
+  const [data, setData] = useState("")
+  console.log(data)
   const handlePost = async () => {
     // const data = form.getFieldValue('name');
     if (!data) {
@@ -97,7 +97,7 @@ console.log(data)
     };
 
     try {
-      const url = `${baseURL}defect`;
+      const url = `${baseURL}defect/`;
       await axios.post(url, payload, {
         headers: {
           Authorization: `Bearer ${AuthToken}`,
@@ -131,7 +131,7 @@ console.log(data)
     };
 
     try {
-      const url = `${baseURL}defect/${editData.id}`;
+      const url = `${baseURL}defect/${editData.id}/`;
       await axios.put(url, payload, {
         headers: {
           Authorization: `Bearer ${AuthToken}`,
@@ -203,17 +203,17 @@ console.log(data)
           <Col style={{ margin: '1rem' }}>
             <Form form={form} size="large" layout="vertical">
               <Form.Item name="name" rules={[{ required: true, message: 'Please enter defect name' }]}>
-              <h6>Defects Name</h6>
-              <div style={{ display: "flex", gap: "1rem" }}>
-                <Input placeholder="Enter Defect Name" name="name" onChange={(e)=>{setData(e.target.value)}}/>
+                <h6>Defects Name</h6>
+                <div style={{ display: "flex", gap: "1rem" }}>
+                  <Input placeholder="Enter Defect Name" name="name" onChange={(e) => { setData(e.target.value) }} />
                 </div>
               </Form.Item>
-             
+
               <Form.Item >
                 <h6>Select Color</h6>
                 <div style={{ display: "flex", gap: "1rem" }}>
-                    <ColorPicker value={color} onChange={(color) => setColor(color.toHexString())} showText={(color) => <span>{color.toHexString()}</span>}/>
-              
+                  <ColorPicker value={color} onChange={(color) => setColor(color.toHexString())} showText={(color) => <span>{color.toHexString()}</span>} />
+
                 </div>
               </Form.Item>
             </Form>
@@ -241,7 +241,7 @@ console.log(data)
                 <Input placeholder="Enter Defect Name" />
               </Form.Item>
               <Form.Item label="Select Color">
-                <ColorPicker value={color} onChange={(color) => setColor(color.toHexString())} />
+                <ColorPicker value={color} onChange={(color) => setColor(color.toHexString())}showText={(color) => <span>{color.toHexString()}</span>} />
               </Form.Item>
             </Form>
           </Col>
