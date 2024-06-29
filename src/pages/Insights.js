@@ -19,8 +19,15 @@ const Insights = () => {
  
 
   const columns = [
-    { title: 'Notification Text', dataIndex: 'notification_text', key: 'notification_text', render:(text)=> <div className="" style={{whiteSpace:"pre-line"}}>{text}</div> },
-    { title: 'Defect', dataIndex: 'defect', key: 'defect' },
+    { title: 'Notification Text', dataIndex: 'notification_text', key: 'notification_text', responsive: ['md'], render:(text)=> <div className="" style={{whiteSpace:"pre-line"}}>{text}</div> },
+    { title: 'RCA 1', dataIndex: 'rca1', key: 'rca1', responsive: ['lg'],  render:(text)=> <div className="" style={{whiteSpace:"pre-line"}}>{text}</div>},
+    { title: 'RCA 2', dataIndex: 'rca2', key: 'rca2' , responsive: ['lg'], render:(text)=> <div className="" style={{whiteSpace:"pre-line"}}>{text}</div>},
+    { title: 'RCA 3', dataIndex: 'rca3', key: 'rca3', responsive: ['lg'], render:(text)=> <div className="" style={{whiteSpace:"pre-line"}}>{text}</div> },
+    { title: 'RCA 4', dataIndex: 'rca4', key: 'rca4' , responsive: ['lg'], render:(text)=> <div className="" style={{whiteSpace:"pre-line"}}>{text}</div>},
+    { title: 'RCA 5', dataIndex: 'rca5', key: 'rca5', responsive: ['lg'], render:(text)=> <div className="" style={{whiteSpace:"pre-line"}}>{text}</div> },
+    { title: 'RCA 6', dataIndex: 'rca6', key: 'rca6', responsive: ['lg'], render:(text)=> <div className="" style={{whiteSpace:"pre-line"}}>{text}</div> },
+    { title: 'Recorded Date & Time', dataIndex: 'recorded_date_time', key: 'recorded_date_time', responsive: ['md'], render:(text)=> <div className="" style={{whiteSpace:"pre-line"}}>{text}</div> },
+    { title: 'Defect', dataIndex: 'defect', key: 'defect', responsive: ['lg'], },
   ];
 
   const startDate = new Date();
@@ -127,7 +134,7 @@ const Insights = () => {
       });
   };
 
-  
+  console.log(tableData,"<<<<")
   useEffect(() => {
     getDepartments()
     getMachines();
