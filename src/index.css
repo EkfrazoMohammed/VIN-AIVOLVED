@@ -44,7 +44,6 @@ code {
   gap: .4rem;
   flex-direction: column;
   width: 44%;
-  
   height: auto;
   border: 1px solid #C4C4C4;
   border-radius: 5px;
@@ -73,17 +72,17 @@ code {
   align-items: center;
 }
 
-.firstLine .columnData{
+.firstLine .columnData {
   width: 100%;
   height: auto;
 }
 
-.firstLine .columnData .columnDataHeading{
+.firstLine .columnData .columnDataHeading {
   width: 100%;
   height: auto;
 }
 
-.firstLine .columnData  .columnDataValue {
+.firstLine .columnData .columnDataValue {
   width: 100%;
   height: auto;
   font-weight: 500;
@@ -100,6 +99,7 @@ code {
   justify-content: center;
   align-items: center;
 }
+
 .secondLine .secondLinecolumnData {
   width: 100%;
   height: auto;
@@ -108,28 +108,30 @@ code {
   flex-wrap: wrap;
 }
 
-.secondLine .secondLinecolumnData .secondLinecolumnDataHeading{
+.secondLine .secondLinecolumnData .secondLinecolumnDataHeading {
   width: 100%;
   height: auto;
 }
 
-.secondLine .secondLinecolumnData  .secondLinecolumnDataValue {
+.secondLine .secondLinecolumnData .secondLinecolumnDataValue {
   display: flex;
   gap: 5px;
   font-weight: 500;
 }
 
-.layout-dashboard .ant-layout-content{
+.layout-dashboard .ant-layout-content {
   margin: 0 2.1rem 0 !important;
 }
+
 a {
   text-decoration: none !important;
 }
-label::after{
-content: '' !important;
+
+label::after {
+  content: '' !important;
 }
 
-:where(.css-dev-only-do-not-override-kghr11).ant-tabs-card.ant-tabs-top >.ant-tabs-nav .ant-tabs-tab-active{
+:where(.css-dev-only-do-not-override-kghr11).ant-tabs-card.ant-tabs-top>.ant-tabs-nav .ant-tabs-tab-active {
   background-color: rgb(236, 82, 45) !important;
 
 }
@@ -138,13 +140,15 @@ content: '' !important;
   color: #fff;
 }
 
-:where(.css-dev-only-do-not-override-kghr11).ant-tabs .ant-tabs-tab-btn{
+:where(.css-dev-only-do-not-override-kghr11).ant-tabs .ant-tabs-tab-btn {
   font-weight: 600 !important;
 }
+
 :where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper table {
   box-shadow: 1px 2px 27px rgba(0, 0, 0, 0.243);
 }
-:where(.css-dev-only-do-not-override-kghr11).ant-tabs >.ant-tabs-nav .ant-tabs-nav-list{
+
+:where(.css-dev-only-do-not-override-kghr11).ant-tabs>.ant-tabs-nav .ant-tabs-nav-list {
   gap: 1rem;
 }
 
@@ -160,6 +164,7 @@ content: '' !important;
   border-collapse: separate;
   border-spacing: 0;
 }
+
 /* 
 .notification-change {
   animation: backgroundChange 0.5s forwards;
@@ -170,13 +175,19 @@ content: '' !important;
   100% { background-color: white; }
 } */
 .notification-change {
-  animation: backgroundChange 10s infinite; /* Adjusted duration */
+  animation: backgroundChange 10s infinite;
+  /* Adjusted duration */
 }
 
 @keyframes backgroundChange {
-  0% { background-color: red; }
+  0% {
+    background-color: red;
+  }
+
   /* /* 50% { background-color: white; } */
-  100% { background-color: red; } 
+  100% {
+    background-color: red;
+  }
 }
 
 :where(.css-dev-only-do-not-override-kghr11).ant-card .ant-card-body {
@@ -187,7 +198,7 @@ content: '' !important;
   gap: 1rem;
 }
 
-:where(.css-dev-only-do-not-override-kghr11).ant-checkbox-wrapper:not(.ant-checkbox-wrapper-disabled):hover .ant-checkbox-checked:not(.ant-checkbox-disabled) .ant-checkbox-inner{
+:where(.css-dev-only-do-not-override-kghr11).ant-checkbox-wrapper:not(.ant-checkbox-wrapper-disabled):hover .ant-checkbox-checked:not(.ant-checkbox-disabled) .ant-checkbox-inner {
   background-color: orangered !important;
   border: orangered !important;
 }
@@ -198,9 +209,45 @@ content: '' !important;
   background-color: orangered !important;
   border: orangered !important;
 }
-:where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper .ant-table-thead >tr>th{
+
+:where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper .ant-table-thead>tr>th {
   font-size: 1rem;
 }
-:where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper .ant-table-tbody >tr >th, :where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper .ant-table-tbody >tr >td {
+
+:where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper .ant-table-tbody>tr>th,
+:where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper .ant-table-tbody>tr>td {
   font-weight: 500;
+}
+
+:where(.css-dev-only-do-not-override-kghr11).ant-notification .ant-notification-notice-wrapper .ant-notification-notice {
+  padding: 20px 24px;
+  width: 384px;
+  background-color: orangered;
+  color: #fff !important;
+  max-width: calc(100vw - 48px);
+  overflow: hidden;
+  line-height: 1.5714285714285714;
+  word-wrap: break-word;
+}
+
+:where(.css-dev-only-do-not-override-kghr11).ant-notification .ant-notification-notice-wrapper .ant-notification-notice-with-icon .ant-notification-notice-message {
+  margin-bottom: 8px;
+  margin-inline-start: 36px;
+  color: #fff !important;
+  font-size: 16px;
+}
+
+:where(.css-dev-only-do-not-override-kghr11).ant-notification .ant-notification-notice-wrapper .ant-notification-notice-close {
+  position: absolute;
+  top: 20px;
+  inset-inline-end: 24px;
+  color: #fff !important;
+  outline: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  transition: background-color 0.2s, color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
