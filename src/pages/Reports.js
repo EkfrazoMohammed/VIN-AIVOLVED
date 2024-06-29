@@ -49,11 +49,11 @@ const Reports = () => {
       render: (text) => <a>{(text).split("T").join(" , ")}</a>,
 
     },
-    { title: "Plant Name", dataIndex: "plant", key: "plant" ,
-      sorter: (a, b) => a.plant.localeCompare(b.plant),
-      sortDirections: ['ascend','descend' ,'cancel'],
+    // { title: "Plant Name", dataIndex: "plant", key: "plant" ,
+    //   sorter: (a, b) => a.plant.localeCompare(b.plant),
+    //   sortDirections: ['ascend','descend' ,'cancel'],
 
-    },
+    // },
     {
       title: "Image",
       dataIndex: "image",
