@@ -443,9 +443,6 @@ const resetFilter = ()=>{
       locale={locale.Table }
       style={{ margin: "1rem 0", fontSize: "1.5rem" }}
     />
-    
-        
-
           }
       {/* <Table columns={columns} dataSource={tableData}  style={{margin:"1rem 0",fontSize:"1.5rem"}}/> */}
     </div>
