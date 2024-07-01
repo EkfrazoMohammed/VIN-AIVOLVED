@@ -13,7 +13,7 @@ import PieChart from "../components/chart/PieChart";
 import MachinesParameter from "./MachinesParameterWithPagination";
 import MachinesParameterWithPagination from "./MachinesParameterWithPagination";
 import MachineParam from "../components/chart/MachineParam";
-import {API, baseURL,AuthToken,localPlantData} from "./../API/API"
+import {API, baseURL,AuthToken,localPlantData,axiosInstance} from "./../API/API"
 
 function Dashboard() {
  
@@ -61,60 +61,66 @@ initialTableData()
 setFilterActive(false)
   }
   
-  const handleApplyFilters = () => {
-    const domain = `${baseURL}`;
-    const [fromDate, toDate] = dateRange;
-  console.log(dateRange,"<<<")
-    let url = `${domain}dashboard/?`;
-    // url += `plant_id=${localPlantData.id}&from_date=${fromDate}&to_date=${toDate}&machine_id=${selectedMachine}&department_id=${selectedDepartment}&product_id=${selectedProduct}&defect_id=${selectedDefect}`;
-    if (localPlantData.id) {
-      url += `plant_id=${localPlantData.id}&`;
-  }
-  if (fromDate) {
-      url += `from_date=${fromDate}&`;
-  }
-  if (toDate) {
-      url += `to_date=${toDate}&`;
-  }
-  if (selectedMachine) {
-      url += `machine_id=${selectedMachine}&`;
-  }
-  if (selectedDepartment) {
-      url += `department_id=${selectedDepartment}&`;
-  }
-  if (selectedProduct) {
-      url += `product_id=${selectedProduct}&`;
-  }
-  if (selectedDefect) {
-      url += `defect_id=${selectedDefect}&`;
-  }
+  const handleApplyFilters = async () => {
+  try {
+      const [fromDate, toDate] = dateRange;
+      let url = `dashboard/?`;
+      // url += `plant_id=${localPlantData.id}&from_date=${fromDate}&to_date=${toDate}&machine_id=${selectedMachine}&department_id=${selectedDepartment}&product_id=${selectedProduct}&defect_id=${selectedDefect}`;
+      if (localPlantData.id) {
+        url += `plant_id=${localPlantData.id}&`;
+    }
+    if (fromDate) {
+        url += `from_date=${fromDate}&`;
+    }
+    if (toDate) {
+        url += `to_date=${toDate}&`;
+    }
+    if (selectedMachine) {
+        url += `machine_id=${selectedMachine}&`;
+    }
+    if (selectedDepartment) {
+        url += `department_id=${selectedDepartment}&`;
+    }
+    if (selectedProduct) {
+        url += `product_id=${selectedProduct}&`;
+    }
+    if (selectedDefect) {
+        url += `defect_id=${selectedDefect}&`;
+    }
+    
+    // Remove the trailing '&' if present
+    if (url.endsWith('&')) {
+        url = url.slice(0, -1);
+    }
+    
+    // If no filters are added, remove the trailing '?'
+    if (url.endsWith('?')) {
+        url = url.slice(0, -1);
+    }
+      // if (fromDate && toDate) {
+      //   url += `&from_date=${fromDate}&to_date=${toDate}`;
+      // }
   
-  // Remove the trailing '&' if present
-  if (url.endsWith('&')) {
-      url = url.slice(0, -1);
-  }
-  
-  // If no filters are added, remove the trailing '?'
-  if (url.endsWith('?')) {
-      url = url.slice(0, -1);
-  }
-    // if (fromDate && toDate) {
-    //   url += `&from_date=${fromDate}&to_date=${toDate}`;
-    // }
-    console.log(url)
-    axios.get(url,{
-      headers:{
-        Authorization:`Bearer ${AuthToken}`
-      }
-    })
-      .then(response => {
-        setTableData(response.data);
+    const response =  await axiosInstance.get(url)
+    setTableData(response.data);
+    setFilterActive(true)
 
-        setFilterActive(true)
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
+      // axios.get(url,{
+      //   headers:{
+      //     Authorization:`Bearer ${AuthToken}`
+      //   }
+      // })
+      //   .then(response => {
+      //     setTableData(response.data);
+  
+      //     setFilterActive(true)
+      //   })
+      //   .catch(error => {
+      //     console.error('Error:', error);
+      //   });
+  } catch (error) {
+    console.log("Error",error)
+  }
   };
   
   useEffect(() => {
@@ -177,25 +183,38 @@ setFilterActive(false)
     setDateRange([formattedStartDate, formattedEndDate]);
   };
 
-  const [filterActive,setFilterActive] = useState(false)
+  const [filterActive,setFilterActive] = useState(false);
 
-  const initialTableData = () => {
-    const domain = baseURL;
-    const [fromDate, toDate] = [startDate, endDate].map(date => date.toISOString().slice(0, 10)); // Format dates as YYYY-MM-DD
-    const url = `${domain}dashboard/?plant_id=${localPlantData.id}`;
-    // const url = `${domain}dashboard/`;
-    axios.get(url,{
-      headers:{
-        Authorization:` Bearer ${AuthToken}`
-      }
-    })
-      .then(response => {
-        setTableData(response.data);
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
+
+
+
+  const initialTableData =  async () => {
+   try {
+    const res =  await axiosInstance.get(`dashboard/?plant_id=${localPlantData.id}`);
+    setTableData(res.data)
+
+   } catch (error) {
+    console.error('Error:', error);
+   }
+ 
   };
+
+  // const initialTableData =  async () => {
+  //   const domain = baseURL;
+  //   const [fromDate, toDate] = [startDate, endDate].map(date => date.toISOString().slice(0, 10)); // Format dates as YYYY-MM-DD
+  //   const url = `${domain}dashboard/?plant_id=${localPlantData.id}`;
+  //   axios.get(url,{
+  //     headers:{
+  //       Authorization:` Bearer ${AuthToken}`
+  //     }
+  //   })
+  //     .then(response => {
+  //       setTableData(response.data);
+  //     })
+  //     .catch(error => {
+  //       console.error('Error:', error);
+  //     });
+  // };
 const [alertData,setAlertData]=useState(null);
 
   const prodApi = ()=>{

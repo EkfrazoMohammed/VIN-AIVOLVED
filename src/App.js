@@ -36,27 +36,27 @@ import { baseURL } from "./API/API.js";
 
 const App = () => {
 
-  const [refreshTokens, setrefreshTokens] = useState(() => 
-    JSON.parse(localStorage.getItem('refreshToken')) || null
-  );
-  const refreshToken = async () => {
-    try {
-      const response = await axios.post(`${baseURL}refresh_token/`, {
-        refresh: refreshTokens,
-      });
-      console.log(response)
+  // const [refreshTokens, setrefreshTokens] = useState(() => 
+  //   JSON.parse(localStorage.getItem('refreshToken')) || null
+  // );
+  // const refreshToken = async () => {
+  //   try {
+  //     const response = await axios.post(`${baseURL}refresh_token/`, {
+  //       refresh: refreshTokens,
+  //     });
+  //     console.log(response)
  
-      localStorage.setItem("token",JSON.stringify(response.data.access))
+  //     localStorage.setItem("token",JSON.stringify(response.data.access))
 
-    } catch (error) {
-      console.error('Token refresh failed:', error);
-    }
-  };
+  //   } catch (error) {
+  //     console.error('Token refresh failed:', error);
+  //   }
+  // };
 
 
-   setInterval(() => {
-        refreshToken();
-    }, 15 * 60 * 1000); // Refresh every 15 minutes
+  //  setInterval(() => {
+  //       refreshToken();
+  //   }, 15 * 60 * 1000); // Refresh every 15 minutes
 
 
 

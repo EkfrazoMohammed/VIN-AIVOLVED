@@ -98,7 +98,7 @@ function MachineParam() {
   return (
     <div>
       <div>
-        <h4>DPMU</h4>
+        <h4>Realtime DPMU</h4>
       </div>
       <ReactApexChart
         options={chartOptions}
