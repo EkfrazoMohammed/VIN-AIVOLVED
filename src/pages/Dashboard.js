@@ -647,7 +647,7 @@ const close = () => {
                   <Row align="middle">
                     <Col xs={18}>
                       <Title level={3} style={{fontSize:"1.5rem"}}>
-                        {`Nos. of Products`}
+                        {`Nos. of SKU`}
                       </Title>
                       {
                         alertData ? 
@@ -772,11 +772,11 @@ const close = () => {
             </Card>
           </Col>
         </Row>
-        <Row>
+        {/* <Row>
         <Card bordered={false} className="criclebox h-full">
          <MachinesParameterWithPagination />
          </Card>
-        </Row>
+        </Row> */}
 
       </div>
     </>

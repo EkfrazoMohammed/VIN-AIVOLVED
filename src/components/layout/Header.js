@@ -261,6 +261,9 @@ function Header({
 }) {
   const { Title, Text } = Typography;
   const navigate = useNavigate()
+const localData =  localStorage.getItem("PlantData");
+const PlantName = JSON.parse(localData)
+
 
   const [refreshTokens, setrefreshTokens] = useState(() => 
     JSON.parse(localStorage.getItem('refreshToken')) || null
@@ -352,14 +355,21 @@ function Header({
         {setting}
       </div> */}
       <Row gutter={[24, 0]}>
-        <Col span={24}  style={{display:'flex',justifyContent:'end'}}>
+      <Col span={12}>
+      <div  className="" style={{padding:"0.5rem 2rem", borderRadius:'10px',background:'#fafafa',    boxShadow: '0 20px 27px rgb(0 0 0 / 5%)',width:"50%",textAlign:"center",color:'#000',fontWeight:'600',fontSize:'1.6rem'}}>
+    
+         {PlantName.plant_name}
+        </div>
+      </Col>
+        <Col span={12}  style={{display:'flex',justifyContent:'end'}}>
         
-        <div onClick={()=>setModal1Open(true)} className="" style={{padding:"0.5rem 2rem", borderRadius:'10px',cursor:'pointer',background:'#fafafa',boxShadow:'rgba(0, 0, 0, 0.1) 0px 2px 4px',border:'0.5px solid #8080806e'}}>
+        <div onClick={()=>setModal1Open(true)} className="" style={{padding:"0.5rem 2rem", borderRadius:'10px',cursor:'pointer',background:'#fafafa',boxShadow:'rgba(0, 0, 0, 0.1) 0px 2px 4px',border:'0.5px solid #8080806e',display:'flex',justifyContent:'center',alignItems:'center'}}>
         <img src="https://w7.pngwing.com/pngs/253/714/png-transparent-logout-heroicons-ui-icon-thumbnail.png" style={{height:'30px',width:'30px'}} alt="" />
 
          <span style={{color:"#000",fontWeight:'700'}}> Logout</span>
         </div>
         </Col>
+            
       </Row>
       <Row gutter={[24, 0]} style={{marginTop:'2rem'}}>
         <Col span={24} md={6} style={{display:'flex',alignItems:'center'}}>

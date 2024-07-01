@@ -54,7 +54,7 @@ function PieChart({ data }) {
   return (
     <div>
       <div>
-        <Title level={5}>Pie Chart for Defects</Title>
+        <Title level={5}>Pie Chart for Defects (7 days)</Title>
       </div>
       <ReactApexChart
         options={{
