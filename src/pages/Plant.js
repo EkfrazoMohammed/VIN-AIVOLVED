@@ -174,7 +174,7 @@ else{
 <Row gutter={24} style={{display:'flex',justifyContent:'center',}}>
   <Col span={24} style={{display:'flex',justifyContent:'center',}}>  
   
-  <img style={{height:'300px'}} src="https://eimkeia.stripocdn.email/content/guids/CABINET_8270216c780e362a1fbcd636b59c67ae376eb446dc5f95e17700b638b8c3f618/images/131321hulremovebgpreview.png" alt="" />
+  <img style={{width:'60%'}} src="https://eimkeia.stripocdn.email/content/guids/CABINET_8270216c780e362a1fbcd636b59c67ae376eb446dc5f95e17700b638b8c3f618/images/131321hulremovebgpreview.png" alt="" />
   </Col>
 </Row>
 <Col  style={{display:'flex',justifyContent:'center'}}>

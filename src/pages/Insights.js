@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Table, Select, DatePicker, Button, Image, Tag } from 'antd';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
-import {API, baseURL} from "./../API/API"
+import {API, baseURL, localPlantData} from "./../API/API"
 import { Hourglass } from 'react-loader-spinner';
 const { RangePicker } = DatePicker;
 
@@ -135,11 +135,11 @@ const Insights = () => {
     
     setDateRange([formattedStartDate, formattedEndDate]);
   };
-
+console.log(localPlantData)
   const initialTableData = () => {
     setLoader(true)
     const domain = `http://localhost:8010/`;
-   const url = `${baseURL}defect-notifications/`;
+   const url = `${baseURL}defect-notifications/?plant_id=${localPlantData.id}`;
     axios.get(url)
       .then(response => {
         setTableData(response.data.results);
@@ -151,7 +151,6 @@ const Insights = () => {
       });
   };
 
-  console.log(tableData,"<<<<")
   useEffect(() => {
     getDepartments()
     getMachines();
