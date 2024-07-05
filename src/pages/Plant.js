@@ -6,11 +6,14 @@ import axios from "axios";
 import { Switch } from "antd";
 import Slider from "react-slick";
 import "../assets/styles/Plant.css"
+import { Hourglass } from 'react-loader-spinner'
+
 
 const Organisation = () => {
   const [modal2Open, setModal2Open] = useState(false);
   const [ImageFile, setImageFile] = useState(null);
   const [organization, setOrganization] = useState();
+  const [loader, setLoader] = useState(true);
 
 
   const settings = {
@@ -79,8 +82,13 @@ useEffect(()=>{
       )
 
       .then((res) => {
+
+        if(res.data.results){
+            setLoader(false)
+        }
         setOrganization(res.data.results);
         console.log(res.data)
+       
       })
       .catch((err) => {
         console.log(err);
@@ -170,24 +178,40 @@ else{
       </Slider>
     </div>
 </Col>
-<Col span={14} style={{display:'flex',justifyContent:"start",background:'#dfefff',flexDirection:'column',gap:"2rem",alignItems:"center"}}>
+<Col span={14} style={{display:'flex',justifyContent:"start",background:'#dfefff',flexDirection:'column',gap:"0rem",alignItems:"center"}}>
 <Row gutter={24} style={{display:'flex',justifyContent:'center',}}>
   <Col span={24} style={{display:'flex',justifyContent:'center',}}>  
   
-  <img style={{width:'60%'}} src="https://eimkeia.stripocdn.email/content/guids/CABINET_8270216c780e362a1fbcd636b59c67ae376eb446dc5f95e17700b638b8c3f618/images/131321hulremovebgpreview.png" alt="" />
+  <img style={{width:'50%'}} src="https://eimkeia.stripocdn.email/content/guids/CABINET_8270216c780e362a1fbcd636b59c67ae376eb446dc5f95e17700b638b8c3f618/images/131321hulremovebgpreview.png" alt="" />
   </Col>
 </Row>
+{
+  loader ?        
+  <div className="" style={{height:"50vh",display:'flex',justifyContent:'center',alignItems:'center'}}>
+      <Hourglass
+  visible={true}
+  height="40"
+  width="40"
+  ariaLabel="hourglass-loading"
+  wrapperStyle={{}}
+  wrapperClass=""
+  colors={[' #293dbe', '#293dbe']}
+  />
+  </div>    : 
+  <>
+  
 <Col  style={{display:'flex',justifyContent:'center'}}>
 
 <div className="mytab-content" >
 <div className="" style={{padding:'0 0.5rem',display:'flex',gap:'0.5rem',flexDirection:'column'}}>
   <h3 style={{color:'#000'}}>Plants</h3>
   <h5 >Choose Plants </h5>
-  <h6 style={{borderBottom:'2px solid #2186eb',width:'125px'}} >   </h6>
+  <h6 style={{borderBottom:'2px solid #2186eb',width:'125px'}} ></h6>
 </div>
 <div className="" style={{display:'flex',flexWrap:'wrap',justifyContent:'center',width:'100%',gap:'0.5rem'}}>
 
-{organization?.map((item, index) => {
+ 
+  {organization?.map((item, index) => {
           return (
             <>
             
@@ -229,9 +253,14 @@ else{
             </>
           );
         })}
+
+
+
 </div>
 </div>
 </Col>
+  </>
+}
 
 </Col>
 <Col span={5} style={{display:'flex',justifyContent:'center'}}>

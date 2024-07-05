@@ -221,7 +221,7 @@ console.log(res.data,"prod")
 // Function to categorize defects
 const categorizeDefects = (data) => {
   const categories = {};
-  
+  console.log(data,"?????")
   // Iterate through each date in the tableData
   Object.keys(data).forEach(date => {
     const defects = data[date];
@@ -367,14 +367,15 @@ const [prevNotificationLength, setPrevNotificationLength] = useState(0);
 //   }
 // }, [notifications.length]);
 const [api, contextHolder] = notification.useNotification();
+
 useEffect(() => {
   const initializeWebSocket = () => {
-    const socket = new WebSocket(`wss://hul.aivolved.in/ws/notifications/`);
-
+    const socket = new WebSocket(`wss://hul.aivolved.in/ws/notifications/${localPlantData.id}/`);
     socket.onopen = () => {
-      console.log("WebSocket connection established");
+      console.log(`WebSocket connection established ${localPlantData.id}`);
       setIsSocketConnected(true); // Update connection status
     };
+
 
     socket.onmessage = (event) => {
       const message = JSON.parse(event.data);
@@ -562,6 +563,7 @@ const close = () => {
       </Select>
 
       <RangePicker
+      showTime
           size="large"
         style={{ marginRight: "10px",minWidth:"280px" }}
         onChange={handleDateRangeChange}

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Table, Select, DatePicker, Button, Image, Tag } from 'antd';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
-import {API, baseURL, localPlantData} from "./../API/API"
+import {API, baseURL} from "./../API/API"
 import { Hourglass } from 'react-loader-spinner';
 const { RangePicker } = DatePicker;
 
@@ -11,7 +11,8 @@ const { RangePicker } = DatePicker;
 const Insights = () => {
   const [loader,setLoader] = useState(false)
 
-
+  const localItems = localStorage.getItem("PlantData")
+  const localPlantData = JSON.parse(localItems) 
   const columns = [
     { title: 'Notification Text', dataIndex: 'notification_text', key: 'notification_text', responsive: ['md'], render:(text)=> <div className="" style={{whiteSpace:"pre-line"}}>{text}</div> },
     { title: 'RCA 1', dataIndex: 'rca1', key: 'rca1', responsive: ['lg'],  render:(text)=> <div className="" style={{whiteSpace:"pre-line"}}>{text}</div>},
@@ -135,7 +136,6 @@ const Insights = () => {
     
     setDateRange([formattedStartDate, formattedEndDate]);
   };
-console.log(localPlantData)
   const initialTableData = () => {
     setLoader(true)
     const domain = `http://localhost:8010/`;

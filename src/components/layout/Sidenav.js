@@ -270,7 +270,7 @@ const smartView = [
             </span>
             <span className="label"       style={{
                 color: active === "camera" || page ==="camera" ? color : "",
-              }}>Camera</span>
+              }}>System Status</span>
           </NavLink>
         </Menu.Item>
 

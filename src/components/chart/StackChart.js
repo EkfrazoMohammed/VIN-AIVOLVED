@@ -3,10 +3,12 @@ import ReactApexChart from "react-apexcharts";
 import { Typography } from "antd";
 import axios from 'axios'
 import { AuthToken, baseURL } from "../../API/API";
+import { Hourglass } from 'react-loader-spinner'
 
 function StackChart({ data }) {
   const { Title } = Typography;
   const [defectColors, setDefectColors] = useState({});
+  
 
   useEffect(() => {
     // Fetch defect colors from the API
@@ -31,9 +33,7 @@ function StackChart({ data }) {
   }, []);
 
 
-  if (!data || Object.keys(data).length === 0) {
-    return <div style={{fontWeight:"700",textAlign:'center'}}>NO DATA</div>; // or some other fallback UI
-  }
+
 
   // Extract unique defect names
   const defectNames = [...new Set(Object.values(data).flatMap(defects => Object.keys(defects)))];
@@ -98,6 +98,11 @@ function StackChart({ data }) {
       }
     },
   };
+
+  if (!data || Object.keys(data).length === 0 ) {
+    return <div className="" style={{fontWeight:"700",textAlign:'center'}}>NO DATA</div>
+  }
+
 
   return (
     <div>

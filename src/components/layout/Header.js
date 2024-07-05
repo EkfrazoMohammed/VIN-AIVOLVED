@@ -326,13 +326,12 @@ const PlantName = JSON.parse(localData)
     }
   }
   const handleLogout  = async ()=>{
-    setModal1Open(false)
-    openNotification()
-    setTimeout(()=>{
-      navigate('/login');
-    },1000)
-    localStorage.clear();
-    logout()
+     await setModal1Open(false)
+    await openNotification()
+  
+      await navigate('/login');
+     await logout()
+     await localStorage.clear();
 
   }
   return (

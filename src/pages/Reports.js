@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+
 import { Table, Select, DatePicker, Button, Image, Tag } from 'antd';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
@@ -18,8 +20,14 @@ const { RangePicker } = DatePicker;
 
 
 const Reports = () => {
+
+  const location = useLocation();
   const localItems = localStorage.getItem("PlantData")
   const localPlantData = JSON.parse(localItems) 
+  const defectProp = location?.state?.clickedVal[0]?.name || null
+  const defectId = location?.state?.clickedVal[0]?.id || null
+
+
 
   const columns = [
     { title: "Product Name", dataIndex: "product", key: "alert_name",id:"alert_name"  ,
@@ -81,7 +89,7 @@ const Reports = () => {
   
   const [selectedMachine, setSelectedMachine] = useState(null);
   const [selectedDepartment, setSelectedDepartment] = useState(null);
-  const [selectedDefect, setselectedDefect] = useState(null);
+  const [selectedDefect, setselectedDefect] = useState(defectId || null);
   const [selectedProduct, setselectedProduct] = useState(null);
   const [dateRange, setDateRange] = useState([formattedStartDate, formattedEndDate]);
   const [tableData, setTableData] = useState([]);
@@ -92,6 +100,9 @@ const Reports = () => {
 
   const handleProductChange = value => {
     setselectedProduct(value);
+  };
+  const handleDefectChange = value => {
+    setselectedDefect(value);
   };
   const handleMachineChange = value => {
     setSelectedMachine(value);
@@ -109,10 +120,14 @@ const Reports = () => {
       console.error('Invalid date range:', dates,dateStrings);
     }
   };
+
+    
+    
   
   const handleApplyFilters = () => {
     const domain = `${baseURL}`;
     const [fromDate, toDate] = dateRange;
+    console.log(fromDate,"----<<<")
     let url = `${domain}reports/?`;
     // url += `machine=${selectedMachine}&department=${selectedDepartment}`;
     // url += `?plant_id=${localPlantData.id}&from_date=${fromDate}&to_date=${toDate}&machine_id=${selectedMachine}&department_id=${selectedDepartment}&product_id=${selectedProduct}&defect_id=${selectedDefect}`;
@@ -150,13 +165,14 @@ const Reports = () => {
   if (url.endsWith('?')) {
       url = url.slice(0, -1);
   }
-
+  setLoader(true)
     axios.get(url,{
       headers:{
         Authorization:`Bearer ${AuthToken}`
       }
     })
-      .then(response => {
+    .then(response => {
+        setLoader(false)
         setTableData(response.data.results);
         setfilterActive(true)
       })
@@ -167,6 +183,7 @@ const Reports = () => {
   const { RangePicker } = DatePicker;
 
   const [machineOptions, setMachineOptions] = useState([]);
+  const [defectsOptions, setDefectsOptions] = useState([]);
   const [filterActive ,setfilterActive] = useState(false);
 
   
@@ -190,6 +207,26 @@ const Reports = () => {
         console.error('Error fetching machine data:', error);
       });
   }
+
+  const getDefects=()=>{
+    let url = `${baseURL}defect/?plant_name=${localPlantData.plant_name}`;
+    axios.get(url,{
+      headers:{
+        Authorization:`Bearer ${AuthToken}`
+      }
+    })
+      .then(response => {
+        const formattedMachines = response.data.results.map(machine => ({
+          id: machine.id,
+          name: machine.name,
+        }));
+        setDefectsOptions(formattedMachines);
+      })
+      .catch(error => {
+        console.error('Error fetching machine data:', error);
+      });
+  }
+
   const [departmentOptions, setDepartmentOptions] = useState([]);
   const getDepartments=()=>{
     const domain = `${baseURL}`;
@@ -247,7 +284,6 @@ const Reports = () => {
         Authorization:`Bearer ${AuthToken}`
       }
     }).then((res)=>{
-console.log(res.data,"prod")
    setProductOptions(res.data.results)
     })  
     .catch((err)=>{
@@ -258,8 +294,13 @@ console.log(res.data,"prod")
   useEffect(() => {
     getDepartments()
     getMachines();
+    getDefects()
+    if(defectProp){
+      handleApplyFilters()
+    }else{
+      initialTableData();
+    }
     initialDateRange()
-    initialTableData();
    prodApi()
   }, []); 
 
@@ -362,6 +403,7 @@ console.log(res.data,"prod")
 const resetFilter = ()=>{
   initialTableData()
   setfilterActive(false)
+  setselectedDefect(null)
 }
 
     return (
@@ -406,11 +448,32 @@ const resetFilter = ()=>{
           <Select.Option key={department.id} value={department.id}>{department.name}</Select.Option>
         ))}
       </Select>
+      <Select
+        style={{ minWidth: "200px", marginRight: "10px" }}
+        showSearch
+        placeholder="Select Defect"
+        onChange={handleDefectChange}
+        value={selectedDefect}
+        size="large"
+        filterOption={(input,defectsOptions)=>
+        // ( productOptions.children ?? "".toLowerCase() ).includes(input.toLowerCase() )
+       ( defectsOptions.children ?? "").toLowerCase().includes(input.toLowerCase())
+
+        }
+      >
+        {defectsOptions.map(department => (
+          <Select.Option key={department.id} value={department.id}>{department.name}</Select.Option>
+        ))}
+      </Select>
+
       <RangePicker
+      showTime
           size="large"
         style={{ marginRight: "10px" }}
         onChange={handleDateRangeChange}
-          
+          allowClear={false}
+          inputReadOnly={true}
+
       />
    
       <Button type="primary" onClick={handleApplyFilters} style={{fontSize:"1rem",backgroundColor:"#ec522d",marginRight:"10px"}}>Apply filters</Button>
