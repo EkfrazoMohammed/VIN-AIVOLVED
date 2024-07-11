@@ -98,7 +98,7 @@ console.log(loginPayload)
         <h3 >Login</h3>
         <div className="">
          
-          <label htmlFor="" style={{fontWeight:"600",fontSize:'1rem'}}>Enter Email / Mobile Number </label>
+          <label htmlFor="" style={{fontWeight:"600",fontSize:'1rem'}}>  Enter Email / Mobile Number<span style={{color:'red',fontWeight:'900',fontSize:'1rem',marginLeft:'0.1rem'}}>*</span> </label>
           <Input placeholder="Email/Mobile Number"       style={{
               height: "1.5rem",
               width: "100%",
@@ -117,7 +117,7 @@ console.log(loginPayload)
           }
         </div>
         <div className="">
-        <label htmlFor="" style={{fontWeight:"600",fontSize:'1rem'}}>Enter Password </label>
+        <label htmlFor="" style={{fontWeight:"600",fontSize:'1rem'}}>Enter Password<span style={{color:'red',fontWeight:'900',fontSize:'1rem',marginLeft:'0.1rem'}}>*</span> </label>
    
      
 

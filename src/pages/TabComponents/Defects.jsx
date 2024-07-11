@@ -49,11 +49,12 @@ const Defects = () => {
     },
   ];
 
-  const handleEdit = (record) => {
-    setEditData(record);
-    setColor(record.color_code);
-    setEditModalOpen(true);
+  const handleEdit = async(record) => {
+    await setEditData(record);
+    await setColor(record.color_code);
+    await setEditModalOpen(true);
   };
+  
 
   const fetchData = async () => {
     const url = `${baseURL}defect/?plant_name=${localPlantData.plant_name}`;
@@ -193,6 +194,8 @@ const Defects = () => {
         footer={[
           <Button key="cancel" onClick={() => setModalOpen(false)}>
             Cancel
+
+            
           </Button>,
           <Button key="submit" type="primary" style={{ background: '#EC522D', color: '#fff' }} onClick={handlePost}>
             Create Defects
@@ -226,7 +229,7 @@ const Defects = () => {
         title="Edit Defect"
         onCancel={() => setEditModalOpen(false)}
         footer={[
-          <Button key="cancel" onClick={() => setEditModalOpen(false)}>
+          <Button key="cancel" onClick={() => {setEditModalOpen(false)}}>
             Cancel
           </Button>,
           <Button key="submit" type="primary" style={{ background: '#EC522D', color: '#fff' }} onClick={handlePut}>
@@ -236,9 +239,10 @@ const Defects = () => {
       >
         <Row gutter={24} style={{ margin: '1rem', display: 'flex', flexDirection: 'column' }}>
           <Col style={{ margin: '1rem' }}>
-            <Form form={form} size="large" layout="vertical" initialValues={{ name: editData?.name }}>
+            <Form form={form} size="large" layout="vertical" >
               <Form.Item name="name" label="Defects Name" rules={[{ required: true, message: 'Please enter defect name' }]}>
-                <Input placeholder="Enter Defect Name" />
+                <Input placeholder="Enter Defect Name" value={editData?.name} />
+                <input type="text" value={editData?.name} style={{display:'none'}} />
               </Form.Item>
               <Form.Item label="Select Color">
                 <ColorPicker value={color} onChange={(color) => setColor(color.toHexString())}showText={(color) => <span>{color.toHexString()}</span>} />
