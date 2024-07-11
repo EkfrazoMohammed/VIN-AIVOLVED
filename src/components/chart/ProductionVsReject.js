@@ -8,8 +8,8 @@ function ProductionVsReject({ data }) {
   const { Title } = Typography;
  
   // Check if data is valid
-  if (!data || !data.length) {
-    return <div style={{ fontWeight: "700", textAlign: 'center' }}>NO DATA</div>; // or some other fallback UI
+  if (!data || Object.keys(data).length === 0) {
+    return <div style={{ fontWeight: "700", textAlign: 'center' ,display:'flex',justifyContent:'center',alignItems:'center'}}>NO DATA</div>; // or some other fallback UI
   }
 
   // Process data to create series for bar chart
