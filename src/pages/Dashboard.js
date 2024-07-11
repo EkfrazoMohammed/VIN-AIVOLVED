@@ -2,7 +2,7 @@
 import { useState,useEffect } from "react";
 import "../App.css"
 import { ExclamationCircleOutlined  } from '@ant-design/icons';
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useNavigation } from "react-router-dom";
 import axios from 'axios';
 import {Card,notification, Space ,Col, Row, Typography, Select, DatePicker,Checkbox, Button, Dropdown, Menu} from "antd";
 import Paragraph from "antd/lib/typography/Paragraph";
@@ -14,7 +14,7 @@ import MachinesParameter from "./MachinesParameterWithPagination";
 import MachinesParameterWithPagination from "./MachinesParameterWithPagination";
 import MachineParam from "../components/chart/MachineParam";
 import {API, baseURL,AuthToken,localPlantData} from "./../API/API"
-
+import dayjs from 'dayjs';
 function Dashboard() {
  
   const startDate = new Date();
@@ -22,11 +22,13 @@ function Dashboard() {
   const formattedStartDate = startDate.toISOString().slice(0, 10);  
   const endDate = new Date(); 
   const formattedEndDate = endDate.toISOString().slice(0, 10); 
-  
+  const dateFormat = 'YYYY/MM/DD';
+
   const [selectedMachine, setSelectedMachine] = useState(null);
   const [selectedDepartment, setSelectedDepartment] = useState(null);
   const [selectedDefect, setSelectedDefect] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(null);
 
   const [dateRange, setDateRange] = useState([formattedStartDate, formattedEndDate]);
   const [tableData, setTableData] = useState([]);
@@ -44,6 +46,11 @@ function Dashboard() {
     setSelectedProduct(value);
   };
 
+  const handleChange =  value =>{
+    
+  }
+
+  const navigate =  useNavigate()
 
   const localItems = localStorage.getItem("PlantData")
   const localPlantData = JSON.parse(localItems) 
@@ -51,6 +58,7 @@ function Dashboard() {
 
   const handleDateRangeChange = (dates, dateStrings) => {
     if (dateStrings) {
+      setSelectedDate(dateStrings)
       setDateRange(dateStrings);
     } else {
       console.error('Invalid date range:', dates,dateStrings);
@@ -59,6 +67,9 @@ function Dashboard() {
   const resetFilter = ()=>{
 initialTableData()
 setFilterActive(false)
+setSelectedMachine(null)
+setSelectedProduct(null)
+setSelectedDate(null)
   }
   
   const handleApplyFilters = () => {
@@ -513,6 +524,7 @@ const close = () => {
   
 //   });
 // };
+console.log(selectedDate,"<<<<")
   return (
     <>
     {contextHolder}
@@ -533,7 +545,7 @@ const close = () => {
   style={{ minWidth: "200px", marginRight: "10px" }}
   showSearch
   placeholder="Select Machine"
-  defaultValue={selectedMachine} 
+  value={selectedMachine} 
   onChange={handleMachineChange}
   filterOption={(input, machineOptions) =>
     (machineOptions?.children ?? '').toLowerCase().includes(input.toLowerCase())
@@ -550,7 +562,7 @@ const close = () => {
         showSearch
         placeholder="Select Products"
         onChange={handleProductChange}
-        defaultValue={selectedProduct}
+        value={selectedProduct}
         size="large"
         filterOption={(input, productOptions) =>
           (productOptions?.children ?? '').toLowerCase().includes(input.toLowerCase())
@@ -563,12 +575,13 @@ const close = () => {
       </Select>
 
       <RangePicker
-      showTime
+      // showTime
           size="large"
         style={{ marginRight: "10px",minWidth:"280px" }}
         onChange={handleDateRangeChange}
         allowClear={false}
         inputReadOnly={true}
+        value={selectedDate ? [dayjs(selectedDate[0] , dateFormat), dayjs(selectedDate[1], dateFormat)]:[]} 
       />
    
       <Button type="primary" onClick={handleApplyFilters} style={{fontSize:"1rem",backgroundColor:"#ec522d",marginRight:"10px"}}>Apply filters</Button>

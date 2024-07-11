@@ -15,11 +15,14 @@ import {
   DownloadOutlined,
 } from '@ant-design/icons';
 import { Hourglass } from 'react-loader-spinner'
+import dayjs from 'dayjs';
+
 const { RangePicker } = DatePicker;
 
 
 
 const Reports = () => {
+  const dateFormat = 'YYYY/MM/DD';
 
   const location = useLocation();
   const localItems = localStorage.getItem("PlantData")
@@ -93,6 +96,8 @@ const Reports = () => {
   const [selectedProduct, setselectedProduct] = useState(null);
   const [dateRange, setDateRange] = useState([formattedStartDate, formattedEndDate]);
   const [tableData, setTableData] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(null);
+
 
   const [productOptions, setProductOptions] = useState([]);
   const [loader,setLoader] = useState(false)
@@ -114,7 +119,7 @@ const Reports = () => {
 
   const handleDateRangeChange = (dates, dateStrings) => {
     if (dateStrings) {
-      console.log(dateStrings)
+      setSelectedDate(dateStrings)
       setDateRange(dateStrings);
     } else {
       console.error('Invalid date range:', dates,dateStrings);
@@ -404,6 +409,10 @@ const resetFilter = ()=>{
   initialTableData()
   setfilterActive(false)
   setselectedDefect(null)
+  setSelectedMachine(null)
+  setselectedProduct(null)
+  setSelectedDate(null)
+
 }
 
     return (
@@ -418,7 +427,7 @@ const resetFilter = ()=>{
   style={{ minWidth: "200px", marginRight: "10px" }}
   showSearch
   placeholder="Select Machine"
-  defaultValue={selectedMachine} // Set default value to 1 if selectedMachine is null
+  value={selectedMachine} // Set default value to 1 if selectedMachine is null
   onChange={handleMachineChange}
   size="large"
   filterOption={(input,machineOptions)=>
@@ -436,7 +445,7 @@ const resetFilter = ()=>{
         showSearch
         placeholder="Select Product"
         onChange={handleProductChange}
-        defaultValue={selectedProduct}
+        value={selectedProduct}
         size="large"
         filterOption={(input,productOptions)=>
         // ( productOptions.children ?? "".toLowerCase() ).includes(input.toLowerCase() )
@@ -467,13 +476,13 @@ const resetFilter = ()=>{
       </Select>
 
       <RangePicker
-      showTime
+      // showTime
           size="large"
         style={{ marginRight: "10px" }}
         onChange={handleDateRangeChange}
           allowClear={false}
           inputReadOnly={true}
-
+         value={selectedDate ? [dayjs(selectedDate[0],dateFormat),dayjs(selectedDate[1],dateFormat)]:[]}
       />
    
       <Button type="primary" onClick={handleApplyFilters} style={{fontSize:"1rem",backgroundColor:"#ec522d",marginRight:"10px"}}>Apply filters</Button>

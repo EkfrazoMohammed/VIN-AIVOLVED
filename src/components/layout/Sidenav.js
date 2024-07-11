@@ -259,17 +259,17 @@ const smartView = [
 
 
         <Menu.Item key="4">
-          <NavLink to="/camera" onClick={()=>setActive("camera")}>
+          <NavLink to="/system-status" onClick={()=>setActive("system-status")}>
             <span
               className="icon"
               style={{
-                background: active === "camera" || page ==="camera"  ? color : "",
+                background: active === "system-status" || page ==="system-status"  ? color : "",
               }}
             >
               {camera}
             </span>
             <span className="label"       style={{
-                color: active === "camera" || page ==="camera" ? color : "",
+                color: active === "system-status" || page ==="system-status" ? color : "",
               }}>System Status</span>
           </NavLink>
         </Menu.Item>
