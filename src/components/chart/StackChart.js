@@ -39,9 +39,6 @@ function StackChart({ data }) {
   const defectNames = [...new Set(Object.values(data).flatMap(defects => Object.keys(defects)))];
   // Sort the dates in ascending order
   const sortedDates = Object.keys(data).sort((a, b) => new Date(a) - new Date(b));
-  console.log(defectColors)
-  console.log(defectNames)
-  console.log(defectNames.map((name,index)=>defectColors[name]))
   // Prepare series data
   const seriesData = defectNames.map((defectName, index) => {
     return {

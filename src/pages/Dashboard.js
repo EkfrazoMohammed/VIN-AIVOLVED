@@ -14,6 +14,7 @@ import MachinesParameter from "./MachinesParameterWithPagination";
 import MachinesParameterWithPagination from "./MachinesParameterWithPagination";
 import MachineParam from "../components/chart/MachineParam";
 import {API, baseURL,AuthToken,localPlantData} from "./../API/API"
+import ProductionVsReject from "../components/chart/ProductionVsReject";
 
 function Dashboard() {
  
@@ -30,6 +31,7 @@ function Dashboard() {
 
   const [dateRange, setDateRange] = useState([formattedStartDate, formattedEndDate]);
   const [tableData, setTableData] = useState([]);
+  const [productionData,setProductionData]=useState([])
   const [machineOptions, setMachineOptions] = useState([]);
   const [departmentOptions, setDepartmentOptions] = useState([]);
   const [productOptions, setProductOptions] = useState([]);
@@ -59,6 +61,7 @@ function Dashboard() {
   const resetFilter = ()=>{
 initialTableData()
 setFilterActive(false)
+initialProductionData()
   }
   
   const handleApplyFilters = () => {
@@ -101,7 +104,6 @@ setFilterActive(false)
     // if (fromDate && toDate) {
     //   url += `&from_date=${fromDate}&to_date=${toDate}`;
     // }
-    console.log(url)
     axios.get(url,{
       headers:{
         Authorization:`Bearer ${AuthToken}`
@@ -122,6 +124,7 @@ setFilterActive(false)
     getMachines();
     initialDateRange();
     initialTableData();
+    initialProductionData()
     prodApi()
   }, []);
 
@@ -196,6 +199,24 @@ setFilterActive(false)
         console.error('Error:', error);
       });
   };
+
+  const initialProductionData = () => {
+    const domain = baseURL;
+    // const [fromDate, toDate] = [startDate, endDate].map(date => date.toISOString().slice(0, 10)); // Format dates as YYYY-MM-DD
+    const url = `${domain}defct-vs-machine/?plant_id=${localPlantData.id}`;
+    // const url = `${domain}dashboard/`;
+    axios.get(url,{
+      headers:{
+        Authorization:` Bearer ${AuthToken}`
+      }
+    })
+      .then(response => {
+        setProductionData(response.data.data_last_7_days);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  };
 const [alertData,setAlertData]=useState(null);
 
   const prodApi = ()=>{
@@ -221,7 +242,7 @@ console.log(res.data,"prod")
 // Function to categorize defects
 const categorizeDefects = (data) => {
   const categories = {};
-  console.log(data,"?????")
+
   // Iterate through each date in the tableData
   Object.keys(data).forEach(date => {
     const defects = data[date];
@@ -307,65 +328,6 @@ const categorizeDefects = (data) => {
 const [notifications, setNotifications] = useState([]);
 const [isSocketConnected, setIsSocketConnected] = useState(false);
 const [prevNotificationLength, setPrevNotificationLength] = useState(0);
-
-// const initializeWebSocket = () => {
-//   const socket = new WebSocket(`wss://hul.aivolved.in/ws/notifications/`);
-
-//   socket.onopen = () => {
-//     console.log("WebSocket connection established");
-//     setIsSocketConnected(true); // Update connection status
-//   };
-
-//   socket.onmessage = (event) => {
-//     const message = JSON.parse(event.data);
-//     setNotifications(prevNotifications => {
-//       const newNotifications = [...prevNotifications, message.notification];
-  
-//       // toast.error(message.notification, 
-//       //   {
-//       //     position: "top-right",
-//       //     autoClose: false,
-//       //     // autoClose:10000,
-//       //     hideProgressBar: false,
-//       //     closeOnClick: true,
-//       //     pauseOnHover: true,
-//       //     draggable: true,
-//       //     progress: undefined,
-//       //     theme: "colored",
-//       //     style: { whiteSpace: 'pre-line' },  // Added style for new line character
-//       //     // transition: Bounce,
-//       //     }
-//       // );
-//       return newNotifications;
-//     });
-//   };
-
-//   socket.onclose = () => {
-//     console.log("WebSocket connection closed");
-//     setIsSocketConnected(false); // Update connection status
-//   };
-
-//   socket.onerror = (error) => {
-//     console.error("WebSocket error:", error);
-//     setIsSocketConnected(false); // Update connection status
-//   };
-
-//   return () => {
-//     socket.close();
-//   };
-// };
-
-
-// useEffect(() => {
-//   const cleanupWebSocket = initializeWebSocket();
-//   return cleanupWebSocket;
-// }, []);
-
-// useEffect(() => {
-//   if (notifications.length > prevNotificationLength) {
-//     setPrevNotificationLength(notifications.length);
-//   }
-// }, [notifications.length]);
 const [api, contextHolder] = notification.useNotification();
 
 useEffect(() => {
@@ -473,47 +435,7 @@ const close = () => {
     'Notification was closed',
   );
 };
-
-// const openNotification = () => {
-//   const key = `open${Date.now()}`;
- 
-//   api.open({
-//     message: 'Defect Clean Soil has occurred three times consecutively.',
-//     key,
-//     onClose: close,
-//     // message: message.notification,
-//     // description: message.notification,
-//     onClose: close,
-//     stack:2,
-//     duration: 5000,  
-//     showProgress: true,
-// pauseOnHover:true,
-// icon: (
-  
-//   <ExclamationCircleOutlined 
-//     style={{
-//       color: '#fff',
-//     }}
-//   />
-// ),
-//     style: { whiteSpace: 'pre-line' },  // Added style for new line character
-//     btn: (
-//       <Space>
-//         <Button type="link" size="small" onClick={() => api.destroy(key)} style={{color:"#fff"}}>
-//     Close
-//   </Button>
-//         {/* <Button type="link" size="small" onClick={() => api.destroy()}>
-//           Destroy All
-//         </Button> */}
-//         <Button type="primary" size="large"  style={{fontSize:"1rem",backgroundColor:"#fff",color:"orangered"}} onClick={() => api.destroy()}>
-//          <Link to="/insights">View All Errors </Link> 
-//         </Button>
-//       </Space>
-//     ),
-  
-//   });
-// };
-  return (
+ return (
     <>
     {contextHolder}
     {/* <Button type="primary" onClick={openNotification}>
@@ -759,7 +681,8 @@ const close = () => {
 
           <Col xs={24} sm={24} md={12} lg={12} xl={12} className="mb-24">
             <Card bordered={false} className="criclebox h-full">
-              <LineChart data={tableData}/>
+              {/* <LineChart data={tableData}/> */}
+              <ProductionVsReject data={productionData}/>
             </Card>
           </Col>
            <Col xs={24} sm={24} md={12} lg={12} xl={12} className="mb-24">
@@ -774,12 +697,7 @@ const close = () => {
             </Card>
           </Col>
         </Row>
-        {/* <Row>
-        <Card bordered={false} className="criclebox h-full">
-         <MachinesParameterWithPagination />
-         </Card>
-        </Row> */}
-
+      
       </div>
     </>
   );
