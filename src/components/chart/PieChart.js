@@ -53,7 +53,7 @@ function PieChart({ data }) {
   }, [data]);
 
   if (!data || Object.keys(data).length === 0) {
-    return <div style={{ fontWeight: "700", textAlign: 'center' }}>NO DATA</div>; // or some other fallback UI
+    return <div style={{ fontWeight: "700", textAlign: 'center' ,display:'flex',justifyContent:'center',alignItems:'center'}}>NO DATA</div>; // or some other fallback UI
   }
 
   let clickedVal;

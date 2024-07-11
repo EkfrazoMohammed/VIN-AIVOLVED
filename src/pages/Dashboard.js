@@ -16,8 +16,10 @@ import MachineParam from "../components/chart/MachineParam";
 import {API, baseURL,AuthToken,localPlantData} from "./../API/API"
 import ProductionVsReject from "../components/chart/ProductionVsReject";
 import dayjs from 'dayjs';
+import  {Hourglass} from "react-loader-spinner";
+
 function Dashboard() {
- 
+
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - 7); 
   const formattedStartDate = startDate.toISOString().slice(0, 10);  
@@ -30,7 +32,7 @@ function Dashboard() {
   const [selectedDefect, setSelectedDefect] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
-
+const [loaderData,setLoaderData] = useState(false)
   const [dateRange, setDateRange] = useState([formattedStartDate, formattedEndDate]);
   const [tableData, setTableData] = useState([]);
   const [productionData,setProductionData]=useState([])
@@ -77,6 +79,7 @@ setSelectedDate(null)
   }
   
   const handleApplyFilters = () => {
+    setLoaderData(true)
     const domain = `${baseURL}`;
     const [fromDate, toDate] = dateRange;
   console.log(dateRange,"<<<")
@@ -122,12 +125,14 @@ setSelectedDate(null)
       }
     })
       .then(response => {
+        setLoaderData(false)
         setTableData(response.data);
 
         setFilterActive(true)
       })
       .catch(error => {
         console.error('Error:', error);
+        setLoaderData(false)
       });
   };
   
@@ -195,6 +200,7 @@ setSelectedDate(null)
   const [filterActive,setFilterActive] = useState(false)
 
   const initialTableData = () => {
+    setLoaderData(true)
     const domain = baseURL;
     const [fromDate, toDate] = [startDate, endDate].map(date => date.toISOString().slice(0, 10)); // Format dates as YYYY-MM-DD
     const url = `${domain}dashboard/?plant_id=${localPlantData.id}`;
@@ -205,10 +211,12 @@ setSelectedDate(null)
       }
     })
       .then(response => {
+        setLoaderData(false)
         setTableData(response.data);
       })
       .catch(error => {
         console.error('Error:', error);
+        setLoaderData(false)
       });
   };
 
@@ -693,6 +701,22 @@ const close = () => {
             </Card>
             </Col>
 
+{
+  loaderData ? 
+  <div className="" style={{display:'flex',justifyContent:'center',width:"100%",height:"300px"}}>
+    
+    <Hourglass
+    visible={true}
+    height="40"
+    width="40"
+    ariaLabel="hourglass-loading"
+    wrapperStyle={{}}
+    wrapperClass=""
+    colors={[' #ec522d', '#ec522d']}
+    /> 
+  </div>
+  :
+<>
           <Col xs={24} sm={24} md={12} lg={12} xl={12} className="mb-24">
             <Card bordered={false} className="criclebox h-full">
               {/* <LineChart data={tableData}/> */}
@@ -710,6 +734,9 @@ const close = () => {
               <PieChart  data={tableData} />
             </Card>
           </Col>
+</>
+}
+
         </Row>
       
       </div>
