@@ -31,7 +31,6 @@ function MachineParam() {
             date_time: item.date_time.split('T')[0]
           }));
           setTotalData(modifiedData);
-          console.log(modifiedData,"<<<")
         }
       } catch (error) {
         console.error("Error fetching machine parameters:", error);
@@ -110,7 +109,6 @@ function MachineParam() {
     setChartOptions(chartOptions);
   }, [totalData]);
 
-  console.log(chartOptions)
 
   return (
     <div>
