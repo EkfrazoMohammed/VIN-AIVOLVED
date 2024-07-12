@@ -31,7 +31,6 @@ function MachineParam() {
             date_time: item.date_time.split('T')[0]
           }));
           setTotalData(modifiedData);
-          console.log(modifiedData,"<<<")
         }
       } catch (error) {
         console.error("Error fetching machine parameters:", error);
@@ -58,11 +57,18 @@ function MachineParam() {
 
     const categories = Object.keys(groupedData);
     const allParameters = new Set(totalData.map(item => item.parameter));
+    // const seriesData = Array.from(allParameters).map(parameter => {
+       
+    //   return {
+    //     name: "DPMU",
+    //     data: categories.map(date => groupedData[date][parameter] || 0),
+    //     color: totalData.find(item => item.parameter === parameter).color_code
+    //   };
+    // }).filter(series => series.data.some(count => count > 0)); // Remove series with count 0 for all dates
     const seriesData = Array.from(allParameters).map(parameter => {
-     
       return {
-        name: "Defect Percentage",
-        data: categories.map(date => groupedData[date][parameter] || 0),
+        name: "DPMU",
+        data: categories.map(date => Math.round(groupedData[date][parameter] || 0)),
         color: totalData.find(item => item.parameter === parameter).color_code
       };
     }).filter(series => series.data.some(count => count > 0)); // Remove series with count 0 for all dates
@@ -84,6 +90,14 @@ function MachineParam() {
       xaxis: {
         categories: categories,
       },
+      yaxis: {
+        labels: {
+          formatter: function (val) {
+            return Math.round(val);
+          }
+        }
+      },
+   
       legend: {
         position: 'bottom',
         offsetY: '0'
@@ -95,10 +109,11 @@ function MachineParam() {
     setChartOptions(chartOptions);
   }, [totalData]);
 
+
   return (
     <div>
       <div>
-        <Title level={5}>Defects vs Production (CRQS)</Title>
+        <h4>Realtime DPMU</h4>
       </div>
       <ReactApexChart
         options={chartOptions}

@@ -1,0 +1,59 @@
+.slick-list{
+    height: 99vh !important;
+padding: 0;
+margin: 0;
+
+}
+
+
+.mytab-content{
+    width:100%;
+    max-width: 1200px;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    padding:1rem;
+    height:400px;
+    max-height: 400px;
+    border-radius:50px;
+    overflow-y:scroll;
+    border:15px solid #ababab12;
+    display:flex;
+    flex-direction:column;
+    gap:2rem;
+    background:#fff;
+}
+.mytab-content::-webkit-scrollbar {
+    width: 4px;
+    /* Width of the scrollbar */
+    height: 90% !important;
+  }
+  
+  .mytab-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 20px;
+    height: 90%;
+  }
+  
+  .mytab-content::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 20px;
+    height: 90%;
+
+  }
+  
+  .mytab-content::-webkit-scrollbar-thumb:hover {
+    background: #555;
+    border-radius: 20px;
+    height: 90%;
+
+  }
+  .image_wrapper{
+    display: flex !important;
+    width: 100%;
+    justify-content: center;
+    margin: 2rem 0;
+    height: 200px; width: 200px,
+  }
+
+  .slick-prev{
+    display: none !important;
+  }

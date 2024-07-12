@@ -87,7 +87,7 @@ const App = () => {
           element: <MachinesParameter />,
         },
         {
-          path: 'camera',
+          path: 'system-status',
           element: <Camera />,
         },
         {

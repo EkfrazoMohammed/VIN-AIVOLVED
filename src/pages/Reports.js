@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+
 import { Table, Select, DatePicker, Button, Image, Tag } from 'antd';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
@@ -13,13 +15,22 @@ import {
   DownloadOutlined,
 } from '@ant-design/icons';
 import { Hourglass } from 'react-loader-spinner'
+import dayjs from 'dayjs';
+
 const { RangePicker } = DatePicker;
 
 
 
 const Reports = () => {
+  const dateFormat = 'YYYY/MM/DD';
+
+  const location = useLocation();
   const localItems = localStorage.getItem("PlantData")
   const localPlantData = JSON.parse(localItems) 
+  const defectProp = location?.state?.clickedVal[0]?.name || null
+  const defectId = location?.state?.clickedVal[0]?.id || null
+
+
 
   const columns = [
     { title: "Product Name", dataIndex: "product", key: "alert_name",id:"alert_name"  ,
@@ -49,11 +60,11 @@ const Reports = () => {
       render: (text) => <a>{(text).split("T").join(" , ")}</a>,
 
     },
-    { title: "Plant Name", dataIndex: "plant", key: "plant" ,
-      sorter: (a, b) => a.plant.localeCompare(b.plant),
-      sortDirections: ['ascend','descend' ,'cancel'],
+    // { title: "Plant Name", dataIndex: "plant", key: "plant" ,
+    //   sorter: (a, b) => a.plant.localeCompare(b.plant),
+    //   sortDirections: ['ascend','descend' ,'cancel'],
 
-    },
+    // },
     {
       title: "Image",
       dataIndex: "image",
@@ -81,17 +92,27 @@ const Reports = () => {
   
   const [selectedMachine, setSelectedMachine] = useState(null);
   const [selectedDepartment, setSelectedDepartment] = useState(null);
-  const [selectedDefect, setselectedDefect] = useState(null);
+  const [selectedDefect, setselectedDefect] = useState(defectId || null);
   const [selectedProduct, setselectedProduct] = useState(null);
   const [dateRange, setDateRange] = useState([formattedStartDate, formattedEndDate]);
   const [tableData, setTableData] = useState([]);
-
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+    position: ['topRight'],
+    showSizeChanger:false
+  });
   const [productOptions, setProductOptions] = useState([]);
   const [loader,setLoader] = useState(false)
 
 
   const handleProductChange = value => {
     setselectedProduct(value);
+  };
+  const handleDefectChange = value => {
+    setselectedDefect(value);
   };
   const handleMachineChange = value => {
     setSelectedMachine(value);
@@ -103,16 +124,20 @@ const Reports = () => {
 
   const handleDateRangeChange = (dates, dateStrings) => {
     if (dateStrings) {
-      console.log(dateStrings)
+      setSelectedDate(dateStrings)
       setDateRange(dateStrings);
     } else {
       console.error('Invalid date range:', dates,dateStrings);
     }
   };
+
+    
+    
   
   const handleApplyFilters = () => {
     const domain = `${baseURL}`;
     const [fromDate, toDate] = dateRange;
+    console.log(fromDate,"----<<<")
     let url = `${domain}reports/?`;
     // url += `machine=${selectedMachine}&department=${selectedDepartment}`;
     // url += `?plant_id=${localPlantData.id}&from_date=${fromDate}&to_date=${toDate}&machine_id=${selectedMachine}&department_id=${selectedDepartment}&product_id=${selectedProduct}&defect_id=${selectedDefect}`;
@@ -150,13 +175,14 @@ const Reports = () => {
   if (url.endsWith('?')) {
       url = url.slice(0, -1);
   }
-
+  setLoader(true)
     axios.get(url,{
       headers:{
         Authorization:`Bearer ${AuthToken}`
       }
     })
-      .then(response => {
+    .then(response => {
+        setLoader(false)
         setTableData(response.data.results);
         setfilterActive(true)
       })
@@ -167,7 +193,9 @@ const Reports = () => {
   const { RangePicker } = DatePicker;
 
   const [machineOptions, setMachineOptions] = useState([]);
+  const [defectsOptions, setDefectsOptions] = useState([]);
   const [filterActive ,setfilterActive] = useState(false);
+
 
   
 
@@ -190,6 +218,26 @@ const Reports = () => {
         console.error('Error fetching machine data:', error);
       });
   }
+
+  const getDefects=()=>{
+    let url = `${baseURL}defect/?plant_name=${localPlantData.plant_name}`;
+    axios.get(url,{
+      headers:{
+        Authorization:`Bearer ${AuthToken}`
+      }
+    })
+      .then(response => {
+        const formattedMachines = response.data.results.map(machine => ({
+          id: machine.id,
+          name: machine.name,
+        }));
+        setDefectsOptions(formattedMachines);
+      })
+      .catch(error => {
+        console.error('Error fetching machine data:', error);
+      });
+  }
+
   const [departmentOptions, setDepartmentOptions] = useState([]);
   const getDepartments=()=>{
     const domain = `${baseURL}`;
@@ -222,18 +270,28 @@ const Reports = () => {
     setDateRange([formattedStartDate, formattedEndDate]);
   };
 
-  const initialTableData = () => {
+  const initialTableData = (page,pageSize) => {
     // const domain = `http://143.110.184.45:8100/`;
     setLoader(true)
-   const url = `${baseURL}reports/?plant_id=${localPlantData.id}`;
+
+   const url = `${baseURL}reports/?page=${page}&plant_id=${localPlantData.id}`;
     axios.get(url,{
       headers:{
         Authorization:`Bearer ${AuthToken}`
       }
     })
       .then(response => {
-        setTableData(response.data.results);
+
+const {results,total_count,page_size} = response.data
+
+        setTableData(results);
         setLoader(false)
+        setPagination({
+          ...pagination,
+          current: page,
+          pageSize:page_size,
+          total: total_count,
+        });
       })
       .catch(error => {
         console.error('Error:', error);
@@ -247,7 +305,6 @@ const Reports = () => {
         Authorization:`Bearer ${AuthToken}`
       }
     }).then((res)=>{
-console.log(res.data,"prod")
    setProductOptions(res.data.results)
     })  
     .catch((err)=>{
@@ -258,8 +315,15 @@ console.log(res.data,"prod")
   useEffect(() => {
     getDepartments()
     getMachines();
+    getDefects()
+    if(defectProp){
+      handleApplyFilters()
+    }else{
+
+      initialTableData(pagination.current, pagination.pageSize);
+
+    }
     initialDateRange()
-    initialTableData();
    prodApi()
   }, []); 
 
@@ -299,7 +363,9 @@ console.log(res.data,"prod")
   const [isSocketConnected, setIsSocketConnected] = useState(false);
   const [prevNotificationLength, setPrevNotificationLength] = useState(0);
   
-  
+  const handleTableChange = (pagination) => {
+    initialTableData(pagination.current, pagination.pageSize);
+  };
   
   const initializeWebSocket = () => {
     const socket = new WebSocket(`wss://hul.aivolved.in/ws/notifications/`);
@@ -362,6 +428,11 @@ console.log(res.data,"prod")
 const resetFilter = ()=>{
   initialTableData()
   setfilterActive(false)
+  setselectedDefect(null)
+  setSelectedMachine(null)
+  setselectedProduct(null)
+  setSelectedDate(null)
+
 }
 
     return (
@@ -376,7 +447,7 @@ const resetFilter = ()=>{
   style={{ minWidth: "200px", marginRight: "10px" }}
   showSearch
   placeholder="Select Machine"
-  defaultValue={selectedMachine} // Set default value to 1 if selectedMachine is null
+  value={selectedMachine} // Set default value to 1 if selectedMachine is null
   onChange={handleMachineChange}
   size="large"
   filterOption={(input,machineOptions)=>
@@ -394,7 +465,7 @@ const resetFilter = ()=>{
         showSearch
         placeholder="Select Product"
         onChange={handleProductChange}
-        defaultValue={selectedProduct}
+        value={selectedProduct}
         size="large"
         filterOption={(input,productOptions)=>
         // ( productOptions.children ?? "".toLowerCase() ).includes(input.toLowerCase() )
@@ -406,11 +477,32 @@ const resetFilter = ()=>{
           <Select.Option key={department.id} value={department.id}>{department.name}</Select.Option>
         ))}
       </Select>
+      <Select
+        style={{ minWidth: "200px", marginRight: "10px" }}
+        showSearch
+        placeholder="Select Defect"
+        onChange={handleDefectChange}
+        value={selectedDefect}
+        size="large"
+        filterOption={(input,defectsOptions)=>
+        // ( productOptions.children ?? "".toLowerCase() ).includes(input.toLowerCase() )
+       ( defectsOptions.children ?? "").toLowerCase().includes(input.toLowerCase())
+
+        }
+      >
+        {defectsOptions.map(department => (
+          <Select.Option key={department.id} value={department.id}>{department.name}</Select.Option>
+        ))}
+      </Select>
+
       <RangePicker
+      // showTime
           size="large"
         style={{ marginRight: "10px" }}
         onChange={handleDateRangeChange}
-          
+          allowClear={false}
+          inputReadOnly={true}
+         value={selectedDate ? [dayjs(selectedDate[0],dateFormat),dayjs(selectedDate[1],dateFormat)]:[]}
       />
    
       <Button type="primary" onClick={handleApplyFilters} style={{fontSize:"1rem",backgroundColor:"#ec522d",marginRight:"10px"}}>Apply filters</Button>
@@ -435,17 +527,17 @@ const resetFilter = ()=>{
       <Table
       columns={columns}
       dataSource={tableData}
-      pagination={{
-        position: ['topRight'],
-        currentPage:2,
-        showSizeChanger:true,
-      }}
+      // pagination={{
+      //   position: ['topRight'],
+      //   currentPage:2,
+      //   showSizeChanger:true,
+      // }}
+      pagination={pagination}
       locale={locale.Table }
       style={{ margin: "1rem 0", fontSize: "1.5rem" }}
+      loading={loader}
+      onChange={handleTableChange}
     />
-    
-        
-
           }
       {/* <Table columns={columns} dataSource={tableData}  style={{margin:"1rem 0",fontSize:"1.5rem"}}/> */}
     </div>

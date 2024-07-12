@@ -3,10 +3,12 @@ import ReactApexChart from "react-apexcharts";
 import { Typography } from "antd";
 import axios from 'axios'
 import { AuthToken, baseURL } from "../../API/API";
+import { Hourglass } from 'react-loader-spinner'
 
 function StackChart({ data }) {
   const { Title } = Typography;
   const [defectColors, setDefectColors] = useState({});
+  
 
   useEffect(() => {
     // Fetch defect colors from the API
@@ -31,17 +33,12 @@ function StackChart({ data }) {
   }, []);
 
 
-  if (!data || Object.keys(data).length === 0) {
-    return <div style={{fontWeight:"700",textAlign:'center'}}>NO DATA</div>; // or some other fallback UI
-  }
+
 
   // Extract unique defect names
   const defectNames = [...new Set(Object.values(data).flatMap(defects => Object.keys(defects)))];
   // Sort the dates in ascending order
   const sortedDates = Object.keys(data).sort((a, b) => new Date(a) - new Date(b));
-  console.log(defectColors)
-  console.log(defectNames)
-  console.log(defectNames.map((name,index)=>defectColors[name]))
   // Prepare series data
   const seriesData = defectNames.map((defectName, index) => {
     return {
@@ -98,6 +95,11 @@ function StackChart({ data }) {
       }
     },
   };
+
+  if (!data || Object.keys(data).length === 0) {
+    return <div style={{ fontWeight: "700", textAlign: 'center' ,display:'flex',justifyContent:'center',alignItems:'center',height:'300px'}}>NO DATA</div>; // or some other fallback UI
+  }
+
 
   return (
     <div>

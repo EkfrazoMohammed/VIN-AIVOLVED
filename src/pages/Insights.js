@@ -4,25 +4,47 @@ import { Table, Select, DatePicker, Button, Image, Tag } from 'antd';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
 import {API, baseURL} from "./../API/API"
-import moment from 'moment';
-import {
-  VideoCameraOutlined,
-  BugOutlined,
-  AlertOutlined,
-  RightOutlined,
-  DownloadOutlined,
-} from '@ant-design/icons';
-import { render } from '@testing-library/react';
+import { Hourglass } from 'react-loader-spinner';
 const { RangePicker } = DatePicker;
 
+
 const Insights = () => {
+  const [loader,setLoader] = useState(false)
+
+  const localItems = localStorage.getItem("PlantData")
+  const localPlantData = JSON.parse(localItems) 
+  const columns = [
+    { title: 'Notification Text', dataIndex: 'notification_text', key: 'notification_text', responsive: ['md'], render:(text)=> <div className="" style={{whiteSpace:"pre-line"}}>{text}</div> },
+    { title: 'RCA 1', dataIndex: 'rca1', key: 'rca1', responsive: ['lg'],  render:(text)=> <div className="" style={{whiteSpace:"pre-line"}}>{text}</div>},
+    { title: 'RCA 2', dataIndex: 'rca2', key: 'rca2' , responsive: ['lg'], render:(text)=> <div className="" style={{whiteSpace:"pre-line"}}>{text}</div>},
+    { title: 'RCA 3', dataIndex: 'rca3', key: 'rca3', responsive: ['lg'], render:(text)=> <div className="" style={{whiteSpace:"pre-line"}}>{text}</div> },
+    { title: 'RCA 4', dataIndex: 'rca4', key: 'rca4' , responsive: ['lg'], render:(text)=> <div className="" style={{whiteSpace:"pre-line"}}>{text}</div>},
+    { title: 'RCA 5', dataIndex: 'rca5', key: 'rca5', responsive: ['lg'], render:(text)=> <div className="" style={{whiteSpace:"pre-line"}}>{text}</div> },
+    { title: 'RCA 6', dataIndex: 'rca6', key: 'rca6', responsive: ['lg'], render:(text)=> <div className="" style={{whiteSpace:"pre-line"}}>{text}</div> },
+    { title: 'Recorded Date & Time', dataIndex: 'recorded_date_time', key: 'recorded_date_time', responsive: ['md'], render:(text)=> <div className="" style={{whiteSpace:"pre-line"}}>{text}</div> },
+    { title: 'Defect', dataIndex: 'defect', key: 'defect', responsive: ['lg'], },
+  ];
  
 
-  const columns = [
-    { title: 'Notification Text', dataIndex: 'notification_text', key: 'notification_text', render:(text)=> <div className="" style={{whiteSpace:"pre-line"}}>{text}</div> },
-    { title: 'Defect', dataIndex: 'defect', key: 'defect' },
-  ];
 
+  // GET  https://hul.aivolved.in/api/defect-notifications/
+  // response 
+  // {
+  //   "results": [
+  //       {
+  //           "id": 17,
+  //           "defect": 4,
+  //           "notification_text": "Defect 'Clean Soil' has occurred three times consecutively.",
+  //           "rca1": "Pin Hole in Nozzle",
+  //           "rca2": null,
+  //           "rca3": null,
+  //           "rca4": null,
+  //           "rca5": null,
+  //           "rca6": null,
+  //           "recorded_date_time": null
+  //       },
+  //     ]
+  //   }
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - 7); // 7 days ago
   const formattedStartDate = startDate.toISOString().slice(0, 10); // Format startDate as YYYY-MM-DD
@@ -114,20 +136,21 @@ const Insights = () => {
     
     setDateRange([formattedStartDate, formattedEndDate]);
   };
-
   const initialTableData = () => {
+    setLoader(true)
     const domain = `http://localhost:8010/`;
-   const url = `${baseURL}defect-notifications/`;
+   const url = `${baseURL}defect-notifications/?plant_id=${localPlantData.id}`;
     axios.get(url)
       .then(response => {
         setTableData(response.data.results);
+        setLoader(false)
       })
       .catch(error => {
         console.error('Error:', error);
+
       });
   };
 
-  
   useEffect(() => {
     getDepartments()
     getMachines();
@@ -169,45 +192,22 @@ const Insights = () => {
   return (
     <div className="layout-content">
       
-      {/* <Select
-  style={{ minWidth: "200px", marginRight: "10px" }}
-  showSearch
-  placeholder="Select Machine"
-  defaultValue={selectedMachine} // Set default value to 1 if selectedMachine is null
-  onChange={handleMachineChange}
-  size="large"
->
-{machineOptions.map(machine => (
-    <Select.Option key={machine.id} value={machine.id}>{machine.name}</Select.Option>
-  ))}
-</Select>
-
-      <Select
-        style={{ minWidth: "200px", marginRight: "10px" }}
-        showSearch
-        placeholder="Select Department"
-        onChange={handleDepartmentChange}
-        defaultValue={selectedDepartment}
-        size="large"
-      >
-        {departmentOptions.map(department => (
-          <Select.Option key={department.id} value={department.id}>{department.name}</Select.Option>
-        ))}
-      </Select>
-      <RangePicker
-          size="large"
-        style={{ marginRight: "10px" }}
-        onChange={handleDateRangeChange}
-          
-      />
    
-      <Button type="primary" onClick={handleApplyFilters} style={{fontSize:"1rem",backgroundColor:"#ec522d",marginRight:"10px"}}>Apply filters</Button>
-      <Button type="primary" icon={<DownloadOutlined />} size='large' style={{fontSize:"1rem",backgroundColor:"#ec522d"}} onClick={downloadExcel}>
-            Download
-          </Button> */}
-      <Table columns={columns} dataSource={tableData}  
-    //   scroll={{ x: 800, y: 410 }}
-      style={{margin:"1rem 0"}}/>
+{
+            loader ? <div className="" style={{height:"60vh",width:"100%",display:"flex",justifyContent:"center",alignItems:"center",boxShadow:" rgba(0, 0, 0, 0.24) 0px 3px 8px",marginTop:'1rem',borderRadius:"10px"}}>
+              <Hourglass
+  visible={true}
+  height="40"
+  width="40"
+  ariaLabel="hourglass-loading"
+  wrapperStyle={{}}
+  wrapperClass=""
+  colors={[' #ec522d', '#ec522d']}
+  />
+            </div> : 
+          <Table columns={columns} dataSource={tableData}  
+           style={{margin:"1rem 0"}}/>
+          }
     </div>
   );
 };

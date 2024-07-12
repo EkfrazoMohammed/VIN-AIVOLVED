@@ -4,11 +4,35 @@ import { Link ,useLocation, useNavigate} from "react-router-dom";
 import { AuthToken, baseURL } from "../API/API";
 import axios from "axios";
 import { Switch } from "antd";
+import Slider from "react-slick";
+import "../assets/styles/Plant.css"
+import { Hourglass } from 'react-loader-spinner'
+
 
 const Organisation = () => {
   const [modal2Open, setModal2Open] = useState(false);
   const [ImageFile, setImageFile] = useState(null);
   const [organization, setOrganization] = useState();
+  const [loader, setLoader] = useState(true);
+
+
+  const settings = {
+    dots: false,
+    infinite: true,
+    slidesToShow: 3,
+    slidesToScroll: 1,
+    vertical: true,
+    verticalSwiping: true,
+    autoplay: true,
+    speed: 1500,
+    autoplaySpeed: 1,
+    // beforeChange: function(currentSlide, nextSlide) {
+    //   console.log("before change", currentSlide, nextSlide);
+    // },
+    // afterChange: function(currentSlide) {
+    //   console.log("after change", currentSlide);
+    // }
+  };
 
   const [error, setError] = useState({
     imageError: "",
@@ -58,8 +82,13 @@ useEffect(()=>{
       )
 
       .then((res) => {
+
+        if(res.data.results){
+            setLoader(false)
+        }
         setOrganization(res.data.results);
         console.log(res.data)
+       
       })
       .catch((err) => {
         console.log(err);
@@ -126,37 +155,71 @@ else{
 
   return (
     <>
-      <Row gutter={24} style={{ display: "flex", justifyContent: "center",margin:"1rem 0" }}>
-        <Col span={12} style={{textAlign:'center'}}>
-          {/* <Button
-            type="primary"
-            style={{ width: "100%", padding: "0" }}
-            danger
-            onClick={() =>  { return( setModal2Open(true),navigate("/organization") )}}
-          >
-            Create Organization
-          </Button>{" "} */}
-         <h3 >Choose Plants</h3>
-         <hr />
-        </Col>
-      </Row>
 
-      <Row
-        gutter={24}
-        style={{
-          margin: "2rem",
-          display: "flex",
-          flexWrap: "wrap",
-          gap: "1rem",
-          justifyContent:'center',
-          alignItems:'center',
-          borderRadius:'10px',
-          padding:'1rem'
-        }}
-      >
-    
-        {organization?.map((item, index) => {
+  <Row gutter={24} style={{display:'flex',height:'100vh',margin:'0',padding:'0',overflow:"hidden"}}> 
+<Col span={5} style={{display:'flex',justifyContent:'center',padding:"0",margin:'0'}}>
+<div className="slider-container">
+      <Slider {...settings}>
+      <div className="image_wrapper">
+    <img 
+        style={{height: '100%', width: '200px', objectFit: 'contain',objectPosition:'center'}} 
+        src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/hamamsoap.png" 
+        alt="" 
+    />
+</div>
+<img 
+        style={{height: '100%', width: '200px', objectFit: 'contain',objectPosition:'center'}} 
+        src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/surfexcel.png" 
+        alt="" 
+    />
+        <div  className="image_wrapper" >
+
+        <img style={{height: '100%', width: '200px',  objectFit: 'contain',objectPosition:'center'}} src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/dovesachet.png" alt="" />        </div>
+        <div  className="image_wrapper" >
+        <img style={{height: '100%', width: '200px',  objectFit: 'contain',objectPosition:'center'}}src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/sunsilksaceht.png" alt="" />        </div>
+        <div  className="image_wrapper" >
+        <img style={{height: '100%', width: '200px',  objectFit: 'contain',objectPosition:'center'}}src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/clinicplus.png" alt="" />        </div>
+  
+      </Slider>
+    </div>
+</Col>
+<Col span={14} style={{display:'flex',justifyContent:"start",background:'#dfefff',flexDirection:'column',gap:"0rem",alignItems:"center"}}>
+<Row gutter={24} style={{display:'flex',justifyContent:'center',}}>
+  <Col span={24} style={{display:'flex',justifyContent:'center',}}>  
+  
+  <img style={{width:'50%'}} src="https://eimkeia.stripocdn.email/content/guids/CABINET_8270216c780e362a1fbcd636b59c67ae376eb446dc5f95e17700b638b8c3f618/images/131321hulremovebgpreview.png" alt="" />
+  </Col>
+</Row>
+{
+  loader ?        
+  <div className="" style={{height:"50vh",display:'flex',justifyContent:'center',alignItems:'center'}}>
+      <Hourglass
+  visible={true}
+  height="40"
+  width="40"
+  ariaLabel="hourglass-loading"
+  wrapperStyle={{}}
+  wrapperClass=""
+  colors={[' #293dbe', '#293dbe']}
+  />
+  </div>    : 
+  <>
+  
+<Col  style={{display:'flex',justifyContent:'center'}}>
+
+<div className="mytab-content" >
+<div className="" style={{padding:'0 0.5rem',display:'flex',gap:'0.5rem',flexDirection:'column'}}>
+  <h3 style={{color:'#000'}}>Plants</h3>
+  <h5 >Choose Plants </h5>
+  <h6 style={{borderBottom:'2px solid #2186eb',width:'125px'}} ></h6>
+</div>
+<div className="" style={{display:'flex',flexWrap:'wrap',justifyContent:'center',width:'100%',gap:'0.5rem'}}>
+
+ 
+  {organization?.map((item, index) => {
           return (
+            <>
+            
             <div   key={item.id} onClick={()=>{handleStorage(item);navigate('/dashboard-home')}}>
               <Card
                 size="small"
@@ -190,125 +253,51 @@ else{
                 </h5>
               </Card>
             </div>
+     
+        
+            </>
           );
         })}
-      </Row>
 
-      <Modal
-        width={"400px"}
-        title={
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              fontSize: "1.5rem",
-            }}
-          >
-            Create Organization
-          </div>
-        }
-        centered
-        open={modal2Open}
-        onOk={() => setModal2Open(false)}
-        onCancel={() => setModal2Open(false)}
-        footer={null}
-      >
-        <div
-          className=""
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "1rem",
-            padding: "1rem 1rem",
-            alignItems: "center",
-          }}
-        >
-          {ImageFile ? (
-            <img
-              src={ImageFile}
-              style={{
-                width: "100px",
-                height: "100px",
-                background: "grey",
-                borderRadius: "50%",
-                objectFit: "contain",
-              }}
-              alt=""
-            />
-          ) : null}
-          <label>
-            Upload image
-            <input
-              name="myImage"
-              type="file"
-              onChange={handleImageUpload}
-              accept="image/*"
-            />
-          </label>
-          {error.imageError ? (
-            <span style={{ fontWeight: "bolder", color: "red" }}>
-              *{error.imageError}
-            </span>
-          ) : (
-            ""
-          )}
 
-          <input
-            type="text"
-            style={{
-              height: "1.5rem",
-              width: "100%",
-              padding: "0.5rem",
-              border: "0.5px solid grey",
-              borderRadius: "5px",
-              outline: "none",
-            }}
-            placeholder="Enter Organization Name"
-            onChange={handleChange}
-          />
-          {error.nameError ? (
-            <span
-              style={{
-                fontWeight: "bolder",
-                color: "red",
-                textAlign: "start",
-                width: "100%",
-              }}
-            >
-              *{error.nameError}
-            </span>
-          ) : (
-            ""
-          )}
 
-          <div
-            className=""
-            style={{
-              display: "flex",
-              justifyContent: "flex-start",
-              width: "100%",
-            }}
-          >
-            <Switch onChange={handleSwitch} />
-          </div>
-        </div>
-        <div
-          className=""
-          style={{ display: "flex", justifyContent: "end", gap: "1rem" }}
-        >
-          <Button
-            type="primary"
-            danger
-            onClick={() => setModal2Open(false)}
-            style={{ background: "transparent", color: "#000" }}
-          >
-            Cancel
-          </Button>{" "}
-          <Button type="primary" danger onClick={() => handlepost()}>
-            Save
-          </Button>{" "}
-        </div>
-      </Modal>
+</div>
+</div>
+</Col>
+  </>
+}
+
+</Col>
+<Col span={5} style={{display:'flex',justifyContent:'center'}}>
+<div className="slider-container">
+<Slider {...settings}>
+<div className="slider-container">
+      <Slider {...settings}>
+      <div className="image_wrapper">
+    <img 
+        style={{height: '100%', width: '200px', objectFit: 'contain',objectPosition:'center'}} 
+        src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/surfexcel.png" 
+        alt="" 
+    />
+</div>
+        <div  className="image_wrapper" >
+
+        <img style={{height: '100%', width: '200px',  objectFit: 'contain',objectPosition:'center'}} src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/lifebuoy.png" alt="" />        </div>
+        <div  className="image_wrapper" >
+        <img style={{height: '100%', width: '200px',  objectFit: 'contain',objectPosition:'center'}}src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/comfortgreen.png" alt="" />        </div>
+        <div  className="image_wrapper" >
+        <img style={{height: '100%', width: '200px',  objectFit: 'contain',objectPosition:'center'}}src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/comfortpink.png" alt="" />        </div>
+        <div  className="image_wrapper" >
+        <img style={{height: '100%', width: '200px',  objectFit: 'contain',objectPosition:'center'}}src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/comfortblue.png" alt="" />        </div>
+  
+      </Slider>
+    </div>
+      </Slider>
+    </div>
+</Col>
+
+  </Row>
+
     </>
   );
 };

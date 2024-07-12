@@ -7,6 +7,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  padding: 0;
 }
 
 code {
@@ -14,50 +15,50 @@ code {
     monospace;
 }
 
-.AISmartContainer-top{
+.AISmartContainer-top {
   display: flex;
-  gap:1rem;
+  gap: 1rem;
   margin: 0.3rem 0;
-  
+
 }
 
-.AISmartContainer{
+.AISmartContainer {
   border: 2px solid #eee;
   border-radius: 5px;
   margin: 0.5rem;
   padding: 0.5rem;
 }
 
-.machineParameterContainer{
+.machineParameterContainer {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
-    margin: 1rem 0;
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2rem;
+  margin: 1rem 0;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
 
 }
-.mycardContainer{
+
+.mycardContainer {
   display: flex;
   gap: .4rem;
   flex-direction: column;
   width: 44%;
-  
   height: auto;
   border: 1px solid #C4C4C4;
   border-radius: 5px;
 }
 
-.cardUpper{
+.cardUpper {
   background-color: #AB0000 !important;
   color: #fff !important;
   padding: .5rem;
   font-size: 1.2rem;
 }
 
-.cardBottom{
+.cardBottom {
   font-size: 1rem;
   width: 100%;
   height: auto;
@@ -73,17 +74,17 @@ code {
   align-items: center;
 }
 
-.firstLine .columnData{
+.firstLine .columnData {
   width: 100%;
   height: auto;
 }
 
-.firstLine .columnData .columnDataHeading{
+.firstLine .columnData .columnDataHeading {
   width: 100%;
   height: auto;
 }
 
-.firstLine .columnData  .columnDataValue {
+.firstLine .columnData .columnDataValue {
   width: 100%;
   height: auto;
   font-weight: 500;
@@ -100,6 +101,7 @@ code {
   justify-content: center;
   align-items: center;
 }
+
 .secondLine .secondLinecolumnData {
   width: 100%;
   height: auto;
@@ -108,28 +110,30 @@ code {
   flex-wrap: wrap;
 }
 
-.secondLine .secondLinecolumnData .secondLinecolumnDataHeading{
+.secondLine .secondLinecolumnData .secondLinecolumnDataHeading {
   width: 100%;
   height: auto;
 }
 
-.secondLine .secondLinecolumnData  .secondLinecolumnDataValue {
+.secondLine .secondLinecolumnData .secondLinecolumnDataValue {
   display: flex;
   gap: 5px;
   font-weight: 500;
 }
 
-.layout-dashboard .ant-layout-content{
+.layout-dashboard .ant-layout-content {
   margin: 0 2.1rem 0 !important;
 }
+
 a {
   text-decoration: none !important;
 }
-label::after{
-content: '' !important;
+
+label::after {
+  content: '' !important;
 }
 
-:where(.css-dev-only-do-not-override-kghr11).ant-tabs-card.ant-tabs-top >.ant-tabs-nav .ant-tabs-tab-active{
+:where(.css-dev-only-do-not-override-kghr11).ant-tabs-card.ant-tabs-top>.ant-tabs-nav .ant-tabs-tab-active {
   background-color: rgb(236, 82, 45) !important;
 
 }
@@ -138,13 +142,15 @@ content: '' !important;
   color: #fff;
 }
 
-:where(.css-dev-only-do-not-override-kghr11).ant-tabs .ant-tabs-tab-btn{
+:where(.css-dev-only-do-not-override-kghr11).ant-tabs .ant-tabs-tab-btn {
   font-weight: 600 !important;
 }
+
 :where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper table {
   box-shadow: 1px 2px 27px rgba(0, 0, 0, 0.243);
 }
-:where(.css-dev-only-do-not-override-kghr11).ant-tabs >.ant-tabs-nav .ant-tabs-nav-list{
+
+:where(.css-dev-only-do-not-override-kghr11).ant-tabs>.ant-tabs-nav .ant-tabs-nav-list {
   gap: 1rem;
 }
 
@@ -160,6 +166,7 @@ content: '' !important;
   border-collapse: separate;
   border-spacing: 0;
 }
+
 /* 
 .notification-change {
   animation: backgroundChange 0.5s forwards;
@@ -170,13 +177,19 @@ content: '' !important;
   100% { background-color: white; }
 } */
 .notification-change {
-  animation: backgroundChange 10s infinite; /* Adjusted duration */
+  animation: backgroundChange 10s infinite;
+  /* Adjusted duration */
 }
 
 @keyframes backgroundChange {
-  0% { background-color: red; }
+  0% {
+    background-color: red;
+  }
+
   /* /* 50% { background-color: white; } */
-  100% { background-color: red; } 
+  100% {
+    background-color: red;
+  }
 }
 
 :where(.css-dev-only-do-not-override-kghr11).ant-card .ant-card-body {
@@ -187,7 +200,7 @@ content: '' !important;
   gap: 1rem;
 }
 
-:where(.css-dev-only-do-not-override-kghr11).ant-checkbox-wrapper:not(.ant-checkbox-wrapper-disabled):hover .ant-checkbox-checked:not(.ant-checkbox-disabled) .ant-checkbox-inner{
+:where(.css-dev-only-do-not-override-kghr11).ant-checkbox-wrapper:not(.ant-checkbox-wrapper-disabled):hover .ant-checkbox-checked:not(.ant-checkbox-disabled) .ant-checkbox-inner {
   background-color: orangered !important;
   border: orangered !important;
 }
@@ -198,9 +211,45 @@ content: '' !important;
   background-color: orangered !important;
   border: orangered !important;
 }
-:where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper .ant-table-thead >tr>th{
+
+:where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper .ant-table-thead>tr>th {
   font-size: 1rem;
 }
-:where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper .ant-table-tbody >tr >th, :where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper .ant-table-tbody >tr >td {
+
+:where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper .ant-table-tbody>tr>th,
+:where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper .ant-table-tbody>tr>td {
   font-weight: 500;
+}
+
+:where(.css-dev-only-do-not-override-kghr11).ant-notification .ant-notification-notice-wrapper .ant-notification-notice {
+  padding: 20px 24px !important;
+  width: 384px !important;
+  background-color: orangered !important;
+  color: #fff !important;
+  max-width: calc(100vw - 48px) !important;
+  overflow: hidden !important;
+  line-height: 1.5714285714285714 !important;
+  word-wrap: break-word !important;
+}
+
+:where(.css-dev-only-do-not-override-kghr11).ant-notification .ant-notification-notice-wrapper .ant-notification-notice-with-icon .ant-notification-notice-message {
+  margin-bottom: 8px !important;
+  margin-inline-start: 36px !important;
+  color: #fff !important;
+  font-size: 16px !important;
+}
+
+:where(.css-dev-only-do-not-override-kghr11).ant-notification .ant-notification-notice-wrapper .ant-notification-notice-close {
+  position: absolute !important;
+  top: 20px !important;
+  inset-inline-end: 24px !important;
+  color: #fff !important;
+  outline: none !important;
+  width: 22px !important;
+  height: 22px !important;
+  border-radius: 4px !important;
+  transition: background-color 0.2s, color 0.2s !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
