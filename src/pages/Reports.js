@@ -71,7 +71,7 @@ const Reports = () => {
       key: "image",
       render: (image_b64) =>
         image_b64 ? (
-          <Image src={image_b64} alt="Defect Image" width={50} />
+          <Image src={`http://localhost:8000${image_b64}`} alt="Defect Image" width={50} />
         ) : null,
     },
   ];
