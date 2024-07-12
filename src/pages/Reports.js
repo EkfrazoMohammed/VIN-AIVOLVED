@@ -97,8 +97,13 @@ const Reports = () => {
   const [dateRange, setDateRange] = useState([formattedStartDate, formattedEndDate]);
   const [tableData, setTableData] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
-
-
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+    position: ['topRight'],
+    showSizeChanger:false
+  });
   const [productOptions, setProductOptions] = useState([]);
   const [loader,setLoader] = useState(false)
 
@@ -191,6 +196,7 @@ const Reports = () => {
   const [defectsOptions, setDefectsOptions] = useState([]);
   const [filterActive ,setfilterActive] = useState(false);
 
+
   
 
   const getMachines=()=>{
@@ -264,18 +270,28 @@ const Reports = () => {
     setDateRange([formattedStartDate, formattedEndDate]);
   };
 
-  const initialTableData = () => {
+  const initialTableData = (page,pageSize) => {
     // const domain = `http://143.110.184.45:8100/`;
     setLoader(true)
-   const url = `${baseURL}reports/?plant_id=${localPlantData.id}`;
+
+   const url = `${baseURL}reports/?page=${page}&plant_id=${localPlantData.id}`;
     axios.get(url,{
       headers:{
         Authorization:`Bearer ${AuthToken}`
       }
     })
       .then(response => {
-        setTableData(response.data.results);
+
+const {results,total_count,page_size} = response.data
+
+        setTableData(results);
         setLoader(false)
+        setPagination({
+          ...pagination,
+          current: page,
+          pageSize:page_size,
+          total: total_count,
+        });
       })
       .catch(error => {
         console.error('Error:', error);
@@ -303,7 +319,9 @@ const Reports = () => {
     if(defectProp){
       handleApplyFilters()
     }else{
-      initialTableData();
+
+      initialTableData(pagination.current, pagination.pageSize);
+
     }
     initialDateRange()
    prodApi()
@@ -345,7 +363,9 @@ const Reports = () => {
   const [isSocketConnected, setIsSocketConnected] = useState(false);
   const [prevNotificationLength, setPrevNotificationLength] = useState(0);
   
-  
+  const handleTableChange = (pagination) => {
+    initialTableData(pagination.current, pagination.pageSize);
+  };
   
   const initializeWebSocket = () => {
     const socket = new WebSocket(`wss://hul.aivolved.in/ws/notifications/`);
@@ -507,13 +527,16 @@ const resetFilter = ()=>{
       <Table
       columns={columns}
       dataSource={tableData}
-      pagination={{
-        position: ['topRight'],
-        currentPage:2,
-        showSizeChanger:true,
-      }}
+      // pagination={{
+      //   position: ['topRight'],
+      //   currentPage:2,
+      //   showSizeChanger:true,
+      // }}
+      pagination={pagination}
       locale={locale.Table }
       style={{ margin: "1rem 0", fontSize: "1.5rem" }}
+      loading={loader}
+      onChange={handleTableChange}
     />
           }
       {/* <Table columns={columns} dataSource={tableData}  style={{margin:"1rem 0",fontSize:"1.5rem"}}/> */}
