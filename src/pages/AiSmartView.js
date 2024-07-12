@@ -92,7 +92,7 @@ console.log(defectImages,"<<<<")
     }
     return nextFourIndexes.map((index) => (
       <div key={index} className="d-flex justify-content-center">
-        <img src={defectImages[index].image} alt={`Defect ${index + 1}`} style={{ width: '80px', height: '80px',objectFit:"cover" ,margin: '5px' }} />
+        <img src={`http://localhost:8000${defectImages[index].image}`} alt={`Defect ${index + 1}`} style={{ width: '80px', height: '80px',objectFit:"cover" ,margin: '5px' }} />
       </div>
     ));
   };
@@ -151,7 +151,7 @@ console.log(defectImages,"<<<<")
                 <Slider {...settings} ref={sliderRef}>
                     {defectImages.map((imageData, index) => (
                         <div key={index} className="d-flex justify-content-center">
-                            <img src={imageData.image} alt={`Defect ${index + 1}`} style={{ width: '100%', height: '55vh',margin:"0 auto",maxWidth:'900px' }} />
+                            <img src={`http://localhost:8000${imageData.image}`} alt={`Defect ${index + 1}`} style={{ width: '100%', height: '55vh',margin:"0 auto",maxWidth:'900px' }} />
                         </div>
                     ))}
                 </Slider>
