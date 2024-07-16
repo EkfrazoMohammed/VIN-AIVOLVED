@@ -3139,11 +3139,11 @@ section.ant-layout.ant-layout-has-sider.layout-dashboard.layout-profile .header-
 }
 button.prev-button {
   position: absolute;
-  top: 50%;
+  top: 60%;
 }
 button.next-button {
   position: absolute;
-  top: 50%;
+  top: 60%;
   right: 5%;
 }
 

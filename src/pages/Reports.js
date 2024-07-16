@@ -102,7 +102,7 @@ const Reports = () => {
     pageSize: 10,
     total: 0,
     position: ['topRight'],
-    showSizeChanger:false
+    showSizeChanger:true
   });
   const [productOptions, setProductOptions] = useState([]);
   const [loader,setLoader] = useState(false)
@@ -110,12 +110,24 @@ const Reports = () => {
 
   const handleProductChange = value => {
     setselectedProduct(value);
+    setPagination({
+      ...pagination,
+      current: 1,
+    })
   };
   const handleDefectChange = value => {
     setselectedDefect(value);
+    setPagination({
+      ...pagination,
+      current: 1,
+    })
   };
   const handleMachineChange = value => {
     setSelectedMachine(value);
+    setPagination({
+      ...pagination,
+      current: 1,
+    })
   };
 
   const handleDepartmentChange = value => {
@@ -133,12 +145,13 @@ const Reports = () => {
 
     
     
-  
-  const handleApplyFilters = () => {
+  let url ;
+  const handleApplyFilters = (page,pageSize) => {
+
     const domain = `${baseURL}`;
+    console.log(page)
     const [fromDate, toDate] = dateRange;
-    console.log(fromDate,"----<<<")
-    let url = `${domain}reports/?`;
+     url = `${domain}reports/?page=${page}&page_size=${pageSize}&`;
     // url += `machine=${selectedMachine}&department=${selectedDepartment}`;
     // url += `?plant_id=${localPlantData.id}&from_date=${fromDate}&to_date=${toDate}&machine_id=${selectedMachine}&department_id=${selectedDepartment}&product_id=${selectedProduct}&defect_id=${selectedDefect}`;
     // if (fromDate && toDate) {
@@ -182,9 +195,16 @@ const Reports = () => {
       }
     })
     .then(response => {
+      const {results,total_count,page_size} = response.data
         setLoader(false)
-        setTableData(response.data.results);
+        setTableData(results);
         setfilterActive(true)
+        setPagination({
+          ...pagination,
+          current: page,
+          pageSize:page_size, 
+          total: total_count,
+        });
       })
       .catch(error => {
         console.error('Error:', error);
@@ -273,8 +293,8 @@ const Reports = () => {
   const initialTableData = (page,pageSize) => {
     // const domain = `http://143.110.184.45:8100/`;
     setLoader(true)
-
-   const url = `${baseURL}reports/?page=${page}&plant_id=${localPlantData.id}`;
+   console.log(pageSize)
+   const url = `${baseURL}reports/?page=${page}&plant_id=${localPlantData.id}&page_size=${pageSize}`;
     axios.get(url,{
       headers:{
         Authorization:`Bearer ${AuthToken}`
@@ -317,9 +337,8 @@ const {results,total_count,page_size} = response.data
     getMachines();
     getDefects()
     if(defectProp){
-      handleApplyFilters()
+      handleApplyFilters(pagination.current, pagination.pageSize)
     }else{
-
       initialTableData(pagination.current, pagination.pageSize);
 
     }
@@ -363,8 +382,20 @@ const {results,total_count,page_size} = response.data
   const [isSocketConnected, setIsSocketConnected] = useState(false);
   const [prevNotificationLength, setPrevNotificationLength] = useState(0);
   
+
   const handleTableChange = (pagination) => {
-    initialTableData(pagination.current, pagination.pageSize);
+    console.log(pagination.pageSize)
+   setPagination({
+    ...pagination,
+    pageSize:pagination.pageSize
+   })
+if(filterActive){
+handleApplyFilters(pagination.current, pagination.pageSize)
+}
+else {
+  initialTableData(pagination.current, pagination.pageSize);
+}
+
   };
   
   const initializeWebSocket = () => {
@@ -426,13 +457,16 @@ const {results,total_count,page_size} = response.data
   }, [notifications]);
   
 const resetFilter = ()=>{
-  initialTableData()
+  initialTableData(pagination.current,pagination.pageSize)
   setfilterActive(false)
   setselectedDefect(null)
   setSelectedMachine(null)
   setselectedProduct(null)
   setSelectedDate(null)
-
+  setPagination({
+    ...pagination,
+    current: 1,
+  })
 }
 
     return (
@@ -442,7 +476,8 @@ const resetFilter = ()=>{
 
     
     <div className="layout-content">
-      
+      <div className="" style={{display:'flex',flexWrap:'wrap',gap:'1rem'}}>
+
       <Select
   style={{ minWidth: "200px", marginRight: "10px" }}
   showSearch
@@ -505,13 +540,15 @@ const resetFilter = ()=>{
          value={selectedDate ? [dayjs(selectedDate[0],dateFormat),dayjs(selectedDate[1],dateFormat)]:[]}
       />
    
-      <Button type="primary" onClick={handleApplyFilters} style={{fontSize:"1rem",backgroundColor:"#ec522d",marginRight:"10px"}}>Apply filters</Button>
+      <Button type="primary" onClick={()=>handleApplyFilters(pagination.current, pagination.pageSize)} style={{fontSize:"1rem",backgroundColor:"#ec522d",marginRight:"10px"}}>Apply filters</Button>
       {filterActive ? 
       <Button type="primary" onClick={resetFilter} style={{fontSize:"1rem",backgroundColor:"#ec522d",marginRight:"10px"}}>Reset Filter</Button>
       :null}
       <Button type="primary" icon={<DownloadOutlined />} size='large' style={{fontSize:"1rem",backgroundColor:"#ec522d"}} onClick={downloadExcel}>
             Download
           </Button>
+      </div>
+          
           {
             loader ? <div className="" style={{height:"60vh",width:"100%",display:"flex",justifyContent:"center",alignItems:"center",boxShadow:" rgba(0, 0, 0, 0.24) 0px 3px 8px",marginTop:'1rem',borderRadius:"10px"}}>
               <Hourglass

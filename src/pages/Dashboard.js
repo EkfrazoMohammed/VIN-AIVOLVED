@@ -14,7 +14,7 @@ import MachinesParameter from "./MachinesParameterWithPagination";
 import MachinesParameterWithPagination from "./MachinesParameterWithPagination";
 import MachineParam from "../components/chart/MachineParam";
 import {API, baseURL,AuthToken,localPlantData} from "./../API/API"
-import ProductionVsReject from "../components/chart/ProductionVsReject";
+import ProductionVsReject from  "../components/chart/ProductionVsReject"
 import dayjs from 'dayjs';
 import  {Hourglass} from "react-loader-spinner";
 
@@ -68,6 +68,7 @@ const [loaderData,setLoaderData] = useState(false)
       console.error('Invalid date range:', dates,dateStrings);
     }
   };
+  
   const resetFilter = ()=>{
 initialTableData()
 setFilterActive(false)
@@ -82,7 +83,7 @@ setSelectedDate(null)
     setLoaderData(true)
     const domain = `${baseURL}`;
     const [fromDate, toDate] = dateRange;
-  console.log(dateRange,"<<<")
+
     let url = `${domain}dashboard/?`;
     // url += `plant_id=${localPlantData.id}&from_date=${fromDate}&to_date=${toDate}&machine_id=${selectedMachine}&department_id=${selectedDepartment}&product_id=${selectedProduct}&defect_id=${selectedDefect}`;
     if (localPlantData.id) {
@@ -593,7 +594,7 @@ const close = () => {
                   <Row align="middle">
                     <Col xs={18}>
                       <Title level={3} style={{fontSize:"1.5rem"}}>
-                        {`Nos. of SKU`}
+                        {`No. of SKU`}
                       </Title>
                       {
                         alertData ? 
@@ -731,7 +732,7 @@ const close = () => {
           </Col> 
           <Col xs={24} sm={24} md={12} lg={12} xl={12} className="mb-24">
             <Card bordered={false} className="criclebox h-full">
-              <PieChart  data={tableData} />
+              <PieChart data={tableData} selectedDate={selectedDate} />
             </Card>
           </Col>
 </>

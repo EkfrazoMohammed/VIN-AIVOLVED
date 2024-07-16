@@ -5,7 +5,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { AuthToken, baseURL } from "../../API/API";
 
-function PieChart({ data }) {
+function PieChart({data,selectedDate} ) {
+
 
   const navigate = useNavigate()
   const { Title } = Typography;
@@ -60,7 +61,7 @@ function PieChart({ data }) {
   return (
     <div>
       <div>
-        <Title level={5}>Pie Chart for Defects (7 days)</Title>
+        <Title level={5}>{selectedDate ? `Pie Chart from ${selectedDate[0]}  to  ${selectedDate[1]}` : "Pie Chart for Defects (7 days)"}</Title>
       </div>
       <ReactApexChart
         options={{
