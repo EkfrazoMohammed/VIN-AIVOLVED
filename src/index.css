@@ -253,3 +253,7 @@ label::after {
   align-items: center !important;
   justify-content: center !important;
 }
+
+.ai-view-image_container{
+  height: 50vh !important;
+}
