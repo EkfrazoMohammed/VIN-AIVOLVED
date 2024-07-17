@@ -83,7 +83,7 @@ const App = () => {
           element: <AiSmartView />,
         },
         {
-          path: 'machines-parameter',
+          path: 'machine-parameter',
           element: <MachinesParameter />,
         },
         {

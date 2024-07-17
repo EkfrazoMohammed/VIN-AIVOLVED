@@ -355,7 +355,7 @@ const PlantName = JSON.parse(localData)
       </div> */}
       <Row gutter={[24, 0]}>
       <Col span={12}>
-      <div  className="" style={{padding:"0.5rem 2rem", borderRadius:'10px',background:'#fafafa',    boxShadow: '0 20px 27px rgb(0 0 0 / 5%)',width:"50%",textAlign:"center",color:'#000',fontWeight:'600',fontSize:'1.6rem'}}>
+      <div  className="" style={{padding:"0.5rem 2rem", borderRadius:'10px',background:'#fafafa',    boxShadow: '0 20px 27px rgb(0 0 0 / 5%)',width:"100%",textAlign:"center",color:'#000',fontWeight:'600',fontSize:'1.6rem',maxWidth:"350px"}}>
     
          {PlantName.plant_name}
         </div>

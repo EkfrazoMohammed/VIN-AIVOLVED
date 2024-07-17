@@ -39,6 +39,8 @@ const [loaderData,setLoaderData] = useState(false)
   const [machineOptions, setMachineOptions] = useState([]);
   const [departmentOptions, setDepartmentOptions] = useState([]);
   const [productOptions, setProductOptions] = useState([]);
+  const [activeMachines,setActiveMachines] = useState([])
+  const [activeProd,setActiveProd] = useState([])
 
   const handleMachineChange = value => {
     setSelectedMachine(value);
@@ -127,8 +129,9 @@ setSelectedDate(null)
     })
       .then(response => {
         setLoaderData(false)
-        setTableData(response.data);
-
+        const {active_products,...filterData} = response.data
+        setTableData(filterData);
+        setActiveProd(active_products)
         setFilterActive(true)
       })
       .catch(error => {
@@ -137,6 +140,23 @@ setSelectedDate(null)
       });
   };
   
+  const getSystemStatus = () => {
+    const domain = `${baseURL}`;
+    let url = `${domain}system-status/?plant_id=${localPlantData.id}`;
+    axios.get(url,{
+      headers:{
+        'Authorization': `Bearer ${AuthToken}`
+      }
+    })
+      .then(response => {
+        setActiveMachines(response.data.results.filter(machine=>machine.system_status === true));
+      })
+      .catch(error => {
+        console.error('Error fetching machine data:', error);
+      });
+  };
+
+
   useEffect(() => {
     getDepartments();
     getMachines();
@@ -144,6 +164,7 @@ setSelectedDate(null)
     initialTableData();
     initialProductionData()
     prodApi()
+    getSystemStatus()
   }, []);
 
   const getMachines = () => {
@@ -201,11 +222,14 @@ setSelectedDate(null)
   const [filterActive,setFilterActive] = useState(false)
 
   const initialTableData = () => {
+
     setLoaderData(true)
+
     const domain = baseURL;
     const [fromDate, toDate] = [startDate, endDate].map(date => date.toISOString().slice(0, 10)); // Format dates as YYYY-MM-DD
     const url = `${domain}dashboard/?plant_id=${localPlantData.id}`;
     // const url = `${domain}dashboard/`;
+
     axios.get(url,{
       headers:{
         Authorization:` Bearer ${AuthToken}`
@@ -213,13 +237,19 @@ setSelectedDate(null)
     })
       .then(response => {
         setLoaderData(false)
-        setTableData(response.data);
+        const { active_products, ...datesData } = response.data;
+        setTableData(datesData);
+        setActiveProd(active_products);
       })
       .catch(error => {
         console.error('Error:', error);
         setLoaderData(false)
       });
   };
+
+ 
+
+  // console.log(Object.keys(tableData).filter(res=>res !== "active_products"),"<<<tabledata")
 
   const initialProductionData = () => {
     const domain = baseURL;
@@ -334,18 +364,51 @@ const categorizeDefects = (data) => {
     <Menu selectable={true}>
       <Menu.Item key="0">
         <Checkbox.Group style={{ display: "block" }} value={selectedCheckboxMachine} onChange={handleMachineCheckBoxChange}>
-          {machineOptions.map(machine => (
+          {activeMachines.map(machine => (
             <div key={machine.id} style={{display:"flex",flexDirection:"column"}}>
-              <p style={{fontSize:"1.1rem",width:"100%"}} value={machine.id}>{machine.name}</p>
+           {   machine.system_status ? 
+              <p style={{fontSize:"1.1rem",width:"100%"}} value={machine.id}>{machine.machine_name}</p> : null}
             </div>
           ))}
         </Checkbox.Group>
       </Menu.Item>
     </Menu>
   );
-  
+  const defectMenu =  (
+    <Menu>
+      <Menu.Item key="0">
+        <Checkbox.Group style={{display:"block"}} >
+{
+  Object.keys(categoryDefects).map(defect => (
+    <div key={defect.id} style={{display:"flex",flexDirection:"column"}}>
+    <p style={{fontSize:"1.1rem",width:"100%"}} value={defect}>{defect}</p>
+  </div>
+  ))
+}
+       
 
+        </Checkbox.Group>
+      </Menu.Item>
+    </Menu>
+  )
+console.log(activeProd,"activeProd")
+const prodMenu = (
+  <Menu>
+  <Menu.Item key="0">
+    <Checkbox.Group style={{display:"block"}} >
+{
+Object.values(activeProd).map(prod => (
+<div key={prod.id} style={{display:"flex",flexDirection:"column"}}>
+<p style={{fontSize:"1.1rem",width:"100%"}} value={prod}>{prod}</p>
+</div>
+))
+}
+   
 
+    </Checkbox.Group>
+  </Menu.Item>
+</Menu>
+)
 const [notifications, setNotifications] = useState([]);
 const [isSocketConnected, setIsSocketConnected] = useState(false);
 const [prevNotificationLength, setPrevNotificationLength] = useState(0);
@@ -456,7 +519,7 @@ const close = () => {
     'Notification was closed',
   );
 };
-
+console.log(menu,"<<<")
   return (
     <>
     {contextHolder}
@@ -537,13 +600,13 @@ const close = () => {
             <Card bordered={false} className="criclebox  " style={{minHeight:"180px"}}>
               <Dropdown overlay={menu} trigger={['click']}>
       
-    <div className="number">
+    <div className="number" style={{cursor:"pointer"}}>
       <Row align="middle">
         <Col xs={18}>
           <Title level={3} style={{fontSize:"1.5rem"}}>
-            {`Nos. of Machines`}
+            {`Active Machines`}
           </Title>
-          <span>{machineOptions.length}</span>
+          <span>{activeMachines.length}</span>
         </Col>
         <Col xs={6}>
           <div className="icon-box"><VideoCameraOutlined /></div>
@@ -563,7 +626,9 @@ const close = () => {
               className="mb-24"
             >
               <Card bordered={false} className="criclebox " style={{minHeight:"180px"}}>
-                <div className="number">
+              <Dropdown overlay={defectMenu} trigger={['click']} >
+
+                <div className="number" style={{cursor:"pointer"}}>
                   <Row align="middle">
                     <Col xs={18}>
                       <Title level={3} style={{fontSize:"1.5rem"}}>
@@ -573,12 +638,14 @@ const close = () => {
                       {/* <span>  {Object.keys(categoryDefects).reduce((total, category) => total + category, 0)}</span> */}
                       <span>  {Object.keys(categoryDefects).length}</span>
 
+
                     </Col>
                     <Col xs={6}>
                       <div className="icon-box"><BugOutlined /></div>
                     </Col>
                   </Row>
                 </div>
+              </Dropdown>
               </Card>
             </Col>
             <Col
@@ -590,7 +657,8 @@ const close = () => {
               className="mb-24"
             >
               <Card bordered={false} className="criclebox " style={{minHeight:"180px"}}>
-                <div className="number">
+                <Dropdown overlay={prodMenu} trigger={['click']}>
+                <div className="number" style={{cursor:"pointer"}}>
                   <Row align="middle">
                     <Col xs={18}>
                       <Title level={3} style={{fontSize:"1.5rem"}}>
@@ -598,7 +666,7 @@ const close = () => {
                       </Title>
                       {
                         alertData ? 
-                        <span>{Object.keys(alertData).length }</span>
+                        <span>{Object.keys(activeProd).length }</span>
                         : <span>0</span>
                       }
                     </Col>
@@ -607,6 +675,7 @@ const close = () => {
                     </Col>
                   </Row>
                 </div>
+                </Dropdown>
               </Card>
             </Col>
 

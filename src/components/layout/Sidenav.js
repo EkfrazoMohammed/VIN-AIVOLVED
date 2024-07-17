@@ -241,18 +241,18 @@ const smartView = [
           </NavLink>
         </Menu.Item>
 
-        <Menu.Item key="3" onClick={()=>setActive("machines-parameter")}>
-          <NavLink to="/machines-parameter">
+        <Menu.Item key="3" onClick={()=>setActive("machine-parameter")}>
+          <NavLink to="/machine-parameter">
             <span
               className="icon"
               style={{
-                background: active === "machines-parameter"  || page ==="machines-parameter" ? color : "",
+                background: active === "machine-parameter"  || page ==="machine-parameter" ? color : "",
               }}
             >
   {billing}            </span>
             <span className="label"   style={{
-                color: active === "machines-parameter" || page ==="machines-parameter"  ? color : "",
-              }}>Machines Parameter</span>
+                color: active === "machine-parameter" || page ==="machine-parameter"  ? color : "",
+              }}>Machine Parameter</span>
           </NavLink>
         </Menu.Item>
 
