@@ -4,9 +4,9 @@ import { Typography } from "antd";
 import axios from "axios";
 import { API, AuthToken, baseURL } from "../../API/API";
 
-function ProductionVsReject({ data }) {
+function ProductionVsReject({data}) {
   const { Title } = Typography;
- 
+
   // Check if data is valid
   if (!data || Object.keys(data).length === 0) {
     return <div style={{ fontWeight: "700", textAlign: 'center' ,display:'flex',justifyContent:'center',alignItems:'center'}}>NO DATA</div>; // or some other fallback UI
@@ -30,20 +30,68 @@ function ProductionVsReject({ data }) {
 
   const chartData = {
     series: series,
+
     options: {
       chart: {
         type: 'bar',
         height: 350,
-        stacked: false,
+        stacked: true,
         toolbar: {
           show: false,
         }
       },
+    //   legend: {
+    //     show: true,
+    //     showForSingleSeries: false,
+    //     showForNullSeries: true,
+    //     showForZeroSeries: true,
+    //     position: 'bottom',
+    //     horizontalAlign: 'center', 
+    //     floating: true,
+    //     fontSize: '16px',
+    //     fontFamily: 'Helvetica, Arial',
+    //     fontWeight: 600,
+    //     formatter: undefined,
+    //     inverseOrder: false,
+    //     // width: '16px',
+    //     // height: "500px",
+    //     tooltipHoverFormatter: undefined,
+    //     customLegendItems: [],
+    //     offsetX: 0,
+    //     offsetY: 0,
+    //     labels: {
+    //         colors: undefined,
+    //         useSeriesColors: false
+    //     },
+    //     markers: {
+    //         size: 2,
+    //         shape: 'line', // circle, square, line, plus, cross
+    //         strokeWidth: 0,
+    //         // fillColors: ["#000","#e5050"],
+    //         radius: 6,
+    //         // customHTML: function() {
+    //         //   return '<span class="custom-marker">hhh</span>'
+    //         // },        
+    //             onClick: undefined,
+    //         offsetX: 0,
+    //         offsetY: 0
+    //     },
+    //     itemMargin: {
+    //         horizontal: 5,
+    //         vertical: 0
+    //     },
+    //     onItemClick: {
+    //         toggleDataSeries: true
+    //     },
+    //     onItemHover: {
+    //         highlightDataSeries: true
+    //     },
+    // },
       plotOptions: {
         bar: {
-          horizontal: false,
+          horizontal: true,
           columnWidth: '55%',
-          endingShape: 'rounded'
+          // endingShape: 'rounded'
         },
       },
       dataLabels: {
@@ -82,6 +130,7 @@ function ProductionVsReject({ data }) {
         type="bar"
         height={350}
         width={"100%"}
+        
       />
     </div>
   );

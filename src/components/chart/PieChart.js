@@ -7,7 +7,6 @@ import { AuthToken, baseURL } from "../../API/API";
 
 function PieChart({data,selectedDate} ) {
 
-
   const navigate = useNavigate()
   const { Title } = Typography;
   const [defectColors, setDefectColors] = useState({});
@@ -71,13 +70,16 @@ function PieChart({data,selectedDate} ) {
             events: {
               dataPointSelection: (event, chartContext, opts) => {
                 const clickedIndex = opts.dataPointIndex;
-                  const clickedLabel = chartData.labels[clickedIndex];  
-                  clickedVal =  defectData.filter((val)=>val.name == clickedLabel)
+                const clickedLabel = chartData.labels[clickedIndex];
+                clickedVal = defectData.filter((val) => val.name === clickedLabel);
               },
-              click:(event,chartContext,opts) => {
-              navigate(`/reports`,{ state:{ clickedVal } })
-              }
-            }
+              click: (event, chartContext, opts) => {
+                if (opts?.globals?.selectedDataPoints[0]?.length > 0) {
+                  navigate(`/reports`, { state: { clickedVal } });
+                }
+              },
+            },
+          
           },
           colors: chartData.labels.map((label, index) => {
             const predefinedColors = ['#FF5733', '#3357FF', '#000080', '#00FFFF', "#FFFF00", '#33FF57', '#3357HF'];
@@ -91,8 +93,22 @@ function PieChart({data,selectedDate} ) {
                 width: 200
               },
               legend: {
-                position: 'bottom'
-              }
+                position: 'bottom',
+
+              },
+              markers: {
+                size: 6,
+                shape: undefined, // circle, square, line, plus, cross
+                strokeWidth: 2,
+                fillColors: undefined,
+                radius: 2,
+                customHTML: undefined,
+                onClick: function(){
+                  return null
+                },
+                offsetX: 0,
+                offsetY: 0
+            },
             }
           }]
         }}
