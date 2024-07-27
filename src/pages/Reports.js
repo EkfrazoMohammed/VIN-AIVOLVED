@@ -76,6 +76,7 @@ const Reports = () => {
         ) : null,
     },
   ];
+
   const locale = {
     Table: {
       sortTitle: 'Sort',
@@ -84,6 +85,7 @@ const Reports = () => {
       cancelSort: 'Click to cancel sorting',
     },
   };
+
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - 7); // 7 days ago
   const formattedStartDate = startDate.toISOString().slice(0, 10); // Format startDate as YYYY-MM-DD
@@ -95,7 +97,7 @@ const Reports = () => {
   const [selectedDepartment, setSelectedDepartment] = useState(null);
   const [selectedDefect, setselectedDefect] = useState(defectId || null);
   const [selectedProduct, setselectedProduct] = useState(null);
-  const [dateRange, setDateRange] = useState([formattedStartDate, formattedEndDate]);
+  const [dateRange, setDateRange] = useState();
   const [tableData, setTableData] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
   const [pagination, setPagination] = useState({
@@ -137,6 +139,7 @@ const Reports = () => {
 
   const handleDateRangeChange = (dates, dateStrings) => {
     if (dateStrings) {
+      console.log(dateStrings)
       setSelectedDate(dateStrings)
       setDateRange(dateStrings);
     } else {
@@ -147,11 +150,17 @@ const Reports = () => {
     
     
   let url ;
+
   const handleApplyFilters = (page,pageSize) => {
 
     const domain = `${baseURL}`;
-    console.log(page)
-    const [fromDate, toDate] = dateRange;
+
+ let fromDate, toDate;
+
+  // Check if dateRange is valid and destructure it
+  if (Array.isArray(dateRange) && dateRange.length === 2) {
+    [fromDate, toDate] = dateRange;
+  }
      url = `${domain}reports/?page=${page}&page_size=${pageSize}&`;
     // url += `machine=${selectedMachine}&department=${selectedDepartment}`;
     // url += `?plant_id=${localPlantData.id}&from_date=${fromDate}&to_date=${toDate}&machine_id=${selectedMachine}&department_id=${selectedDepartment}&product_id=${selectedProduct}&defect_id=${selectedDefect}`;
@@ -280,16 +289,16 @@ const Reports = () => {
       });
   }
   
-  const initialDateRange = () => {
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - 7); // 7 days ago
-    const formattedStartDate = startDate.toISOString().slice(0, 10); // Format startDate as YYYY-MM-DD
+  // const initialDateRange = () => {
+  //   const startDate = new Date();
+  //   startDate.setDate(startDate.getDate() - 7); // 7 days ago
+  //   const formattedStartDate = startDate.toISOString().slice(0, 10); // Format startDate as YYYY-MM-DD
     
-    const endDate = new Date(); // Today's date
-    const formattedEndDate = endDate.toISOString().slice(0, 10); // Format endDate as YYYY-MM-DD
+  //   const endDate = new Date(); // Today's date
+  //   const formattedEndDate = endDate.toISOString().slice(0, 10); // Format endDate as YYYY-MM-DD
     
-    setDateRange([formattedStartDate, formattedEndDate]);
-  };
+  //   setDateRange([formattedStartDate, formattedEndDate]);
+  // };
 
   const initialTableData = (page,pageSize) => {
     // const domain = `http://143.110.184.45:8100/`;
@@ -343,7 +352,7 @@ const {results,total_count,page_size} = response.data
       initialTableData(pagination.current, pagination.pageSize);
 
     }
-    initialDateRange()
+    // initialDateRange()
    prodApi()
   }, []); 
 

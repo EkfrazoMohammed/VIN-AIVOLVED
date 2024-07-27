@@ -416,7 +416,7 @@ const [api, contextHolder] = notification.useNotification();
 
 useEffect(() => {
   const initializeWebSocket = () => {
-    const socket = new WebSocket(`wss://hul.aivolved.in/ws/notifications/${localPlantData.id}/`);
+    const socket = new WebSocket(`wss://localhost:8000/ws/notifications/${localPlantData.id}/`);
     socket.onopen = () => {
       console.log(`WebSocket connection established ${localPlantData.id}`);
       setIsSocketConnected(true); // Update connection status
