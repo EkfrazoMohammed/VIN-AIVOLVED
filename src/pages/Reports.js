@@ -71,8 +71,8 @@ const Reports = () => {
       key: "image",
       render: (image_b64) =>
         image_b64 ? (
-          <Image src={`http://localhost:8000${image_b64}`} alt="Defect Image" width={50} />
-          // <Image src={image_b64} alt="Defect Image" width={50} />
+          // <Image src={`http://localhost:8000${image_b64}`} alt="Defect Image" width={50} />
+          <Image src={image_b64} alt="Defect Image" width={50} />
         ) : null,
     },
   ];
@@ -155,13 +155,13 @@ const Reports = () => {
 
     const domain = `${baseURL}`;
 
- let fromDate, toDate;
+    let fromDate, toDate;
 
   // Check if dateRange is valid and destructure it
   if (Array.isArray(dateRange) && dateRange.length === 2) {
     [fromDate, toDate] = dateRange;
   }
-     url = `${domain}reports/?page=${page}&page_size=${pageSize}&`;
+     url = `${domain}reports/?page=1&page_size=${pageSize}&`;
     // url += `machine=${selectedMachine}&department=${selectedDepartment}`;
     // url += `?plant_id=${localPlantData.id}&from_date=${fromDate}&to_date=${toDate}&machine_id=${selectedMachine}&department_id=${selectedDepartment}&product_id=${selectedProduct}&defect_id=${selectedDefect}`;
     // if (fromDate && toDate) {
@@ -208,7 +208,8 @@ const Reports = () => {
       const {results,total_count,page_size} = response.data
         setLoader(false)
         setTableData(results);
-        setfilterActive(true)
+        setfilterActive(true);
+
         setPagination({
           ...pagination,
           current: page,
@@ -318,7 +319,7 @@ const {results,total_count,page_size} = response.data
         setLoader(false)
         setPagination({
           ...pagination,
-          current: page,
+          current: 1,
           pageSize:page_size,
           total: total_count,
         });
