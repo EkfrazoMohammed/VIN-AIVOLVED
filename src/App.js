@@ -21,7 +21,6 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import Organisation from "./pages/Organization.js";
-import Plants from "./pages/Plants.js";
 import Select_dashboard from "./pages/SelectDashboard.js";
 import "react-toastify/dist/ReactToastify.css";
 import Insights from "./pages/Insights.js";

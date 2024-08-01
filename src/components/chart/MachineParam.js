@@ -11,16 +11,6 @@ function MachineParam() {
   const [chartSeries, setChartSeries] = useState([]);
   const localItems = localStorage.getItem("PlantData")
   const localPlantData = JSON.parse(localItems) 
-  const results =   [
-    {
-        "date_time": "2024-06-17",
-        "defect_percentage": 0
-    },
-    {
-        "date_time": "2024-06-20",
-        "defect_percentage": 50
-    }
-]
   useEffect(() => {
     const getData = async () => {
       try {
