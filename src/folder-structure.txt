@@ -1,0 +1,106 @@
+src
+├── API
+│   └── API.js
+├── App.css
+├── App.js
+├── App.test.js
+├── assets
+│   ├── images
+│   │   ├── bg-profile.jpg
+│   │   ├── bg-signup.jpg
+│   │   ├── calendar.svg
+│   │   ├── duplicate.svg
+│   │   ├── face-1.jpg
+│   │   ├── face-2.jpg
+│   │   ├── face-3.jpg
+│   │   ├── face-4.jpg
+│   │   ├── face-5.jpeg
+│   │   ├── face-6.jpeg
+│   │   ├── Google__G__Logo.svg.png
+│   │   ├── home-decor-1.jpeg
+│   │   ├── home-decor-2.jpeg
+│   │   ├── home-decor-3.jpeg
+│   │   ├── icon-1.svg
+│   │   ├── image-statue@2x.png
+│   │   ├── image@2x.png
+│   │   ├── img-signin.jpg
+│   │   ├── info-card-1.9dbf753.jpg
+│   │   ├── info-card-1.jpg
+│   │   ├── info-card-2.jpg
+│   │   ├── info-card-3.jpg
+│   │   ├── logo-apple.svg
+│   │   ├── logo-atlassian.svg
+│   │   ├── logo-invision.svg
+│   │   ├── logo-jira.svg
+│   │   ├── logo-shopify.svg
+│   │   ├── logo-slack.svg
+│   │   ├── logo-slack1.svg
+│   │   ├── logo-spotify.svg
+│   │   ├── logo-webdev.svg
+│   │   ├── logo.png
+│   │   ├── logos-facebook.svg
+│   │   ├── mastercard-logo.png
+│   │   ├── paypal-logo-2.png
+│   │   ├── pencil.svg
+│   │   ├── rocket-white.png
+│   │   ├── team-1.jpg
+│   │   ├── team-2.jpg
+│   │   ├── team-3.jpg
+│   │   ├── team-4.jpg
+│   │   ├── user-circle.svg
+│   │   └── visa-logo.png
+│   └── styles
+│       ├── ai-smart.css
+│       ├── main.css
+│       ├── Plant.css
+│       └── responsive.css
+├── components
+│   ├── chart
+│   │   ├── configs
+│   │   │   ├── eChart.js
+│   │   │   └── lineChart.js
+│   │   ├── EChart.js
+│   │   ├── LineChart.js
+│   │   ├── Linechart.txt
+│   │   ├── MachineParam.js
+│   │   ├── PieChart.js
+│   │   ├── ProductionVsReject.js
+│   │   ├── StackChart.js
+│   │   └── StackChart.zip
+│   └── layout
+│       ├── Footer.js
+│       ├── Header.js
+│       ├── HeaderRtl.js
+│       ├── Main.js
+│       └── Sidenav.js
+├── index.css
+├── index.js
+├── logo.svg
+├── pages
+│   ├── AiSmartView.js
+│   ├── Auth
+│   │   ├── Login.js
+│   │   └── ResetPassword.js
+│   ├── Camera.js
+│   ├── Dashboard.js
+│   ├── Insights.js
+│   ├── Layout.js
+│   ├── MachinesParameter.js
+│   ├── MachinesParameterWithPagination.js
+│   ├── Organization.js
+│   ├── Plant.js
+│   ├── Reports.js
+│   ├── SelectDashboard.js
+│   ├── Settings.jsx
+│   ├── SignIn.js
+│   ├── SignUp.js
+│   ├── TabComponents
+│   │   ├── Alerts.jsx
+│   │   ├── Defects.jsx
+│   │   ├── Department.jsx
+│   │   ├── Machine.jsx
+│   │   └── Settings.js
+│   └── Tabs.jsx
+├── reportWebVitals.js
+├── setupTests.js
+└── WebSocketService.js
