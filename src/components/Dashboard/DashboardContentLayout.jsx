@@ -1,6 +1,18 @@
 import { useState, useEffect } from "react";
+import ProductAndDefect from "./ProductAndDefect";
+import DefectsReport from "./DefectsReport";
+import TotalOverview from "./TotalOverview";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
-import { Link, useNavigate, useNavigation } from "react-router-dom";
+import { IoIosArrowDown } from "react-icons/io";
+import { IoMdArrowForward } from "react-icons/io";
+import DOMPurify from 'dompurify';
+
+import {
+  Link,
+  useNavigate,
+  useNavigation,
+  useLocation,
+} from "react-router-dom";
 import axios from "axios";
 import {
   Card,
@@ -23,20 +35,23 @@ import {
   AlertOutlined,
   NotificationOutlined,
 } from "@ant-design/icons";
-import StackChart from "../components/chart/StackChart";
-import LineChart from "../components/chart/LineChart";
-import PieChart from "../components/chart/PieChart";
-import MachinesParameter from "./MachinesParameterWithPagination";
-import MachinesParameterWithPagination from "./MachinesParameterWithPagination";
-import MachineParam from "../components/chart/MachineParam";
-import { API, baseURL, AuthToken, localPlantData } from "./../API/API";
-import ProductionVsReject from "../components/chart/ProductionVsReject";
+import StackChart from "../../components/chart/StackChart";
+import LineChart from "../../components/chart/LineChart";
+import PieChart from "../../components/chart/PieChart";
+import MachinesParameter from "../../pages/MachinesParameterWithPagination";
+import MachinesParameterWithPagination from "../../pages/MachinesParameterWithPagination";
+import MachineParam from "../../components/chart/MachineParam";
+import { API, baseURL, AuthToken, localPlantData } from "../../API/API";
+import ProductionVsReject from "../../components/chart/ProductionVsReject";
 import dayjs from "dayjs";
 import { Hourglass } from "react-loader-spinner";
+import { IoFilterSharp } from "react-icons/io5";
+import RealTimeManufacturingSection from "./RealTimeManufacturingSection";
 
+const DashboardContentLayout = ({ children }) => {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-
-function Dashboard() {
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - 7);
   const formattedStartDate = startDate.toISOString().slice(0, 10);
@@ -62,6 +77,8 @@ function Dashboard() {
   const [activeMachines, setActiveMachines] = useState([]);
   const [activeProd, setActiveProd] = useState([]);
 
+  const currentUrlPath = useLocation();
+
   const handleMachineChange = (value) => {
     setSelectedMachine(value);
   };
@@ -72,15 +89,22 @@ function Dashboard() {
     setSelectedProduct(value);
   };
 
-  const handleChange = (value) => {};
-
-  const navigate = useNavigate();
-
   const localItems = localStorage.getItem("PlantData");
-  const localPlantData = JSON.parse(localItems);
+  let localPlantData = [];
 
+  try {
+    // Parse only if localItems is not null
+    if (localItems) {
+      localPlantData = JSON.parse(localItems);
+    }
+  } catch (error) {
+    console.error("Failed to parse PlantData from localStorage:", error);
+  }
+
+  // Handler for date range changes
   const handleDateRangeChange = (dates, dateStrings) => {
-    if (dateStrings) {
+    // Ensure dates and dateStrings are valid before updating state
+    if (Array.isArray(dateStrings) && dateStrings.length === 2) {
       setSelectedDate(dateStrings);
       setDateRange(dateStrings);
     } else {
@@ -89,13 +113,17 @@ function Dashboard() {
   };
 
   const resetFilter = () => {
+    // Reset data only if needed
     initialTableData();
-    setFilterActive(false);
     initialProductionData();
 
+    // Reset selected filters in a single setState call
     setSelectedMachine(null);
     setSelectedProduct(null);
     setSelectedDate(null);
+
+    // Reset filter active state
+    setFilterActive(false);
   };
 
   const handleApplyFilters = () => {
@@ -103,42 +131,27 @@ function Dashboard() {
     const domain = `${baseURL}`;
     const [fromDate, toDate] = dateRange;
 
-    let url = `${domain}dashboard/?`;
-    // url += `plant_id=${localPlantData.id}&from_date=${fromDate}&to_date=${toDate}&machine_id=${selectedMachine}&department_id=${selectedDepartment}&product_id=${selectedProduct}&defect_id=${selectedDefect}`;
-    if (localPlantData.id) {
-      url += `plant_id=${localPlantData.id}&`;
-    }
-    if (fromDate) {
-      url += `from_date=${fromDate}&`;
-    }
-    if (toDate) {
-      url += `to_date=${toDate}&`;
-    }
-    if (selectedMachine) {
-      url += `machine_id=${selectedMachine}&`;
-    }
-    if (selectedDepartment) {
-      url += `department_id=${selectedDepartment}&`;
-    }
-    if (selectedProduct) {
-      url += `product_id=${selectedProduct}&`;
-    }
-    if (selectedDefect) {
-      url += `defect_id=${selectedDefect}&`;
-    }
+    const queryParams = {
+      plant_id: localPlantData.id,
+      from_date: fromDate,
+      to_date: toDate,
+      machine_id: selectedMachine,
+      department_id: selectedDepartment,
+      product_id: selectedProduct,
+      defect_id: selectedDefect,
+    };
 
-    // Remove the trailing '&' if present
-    if (url.endsWith("&")) {
-      url = url.slice(0, -1);
-    }
+    // Filter out undefined or null values
+    const filteredQueryParams = Object.fromEntries(
+      Object.entries(queryParams).filter(
+        ([_, value]) => value !== undefined && value !== null
+      )
+    );
 
-    // If no filters are added, remove the trailing '?'
-    if (url.endsWith("?")) {
-      url = url.slice(0, -1);
-    }
-    // if (fromDate && toDate) {
-    //   url += `&from_date=${fromDate}&to_date=${toDate}`;
-    // }
+    // Create query string
+    const queryString = new URLSearchParams(filteredQueryParams).toString();
+    const url = `${domain}dashboard/?${queryString}`;
+
     axios
       .get(url, {
         headers: {
@@ -180,14 +193,30 @@ function Dashboard() {
   };
 
   useEffect(() => {
-    getDepartments();
-    getMachines();
-    initialDateRange();
-    initialTableData();
-    initialProductionData();
-    prodApi();
-    getSystemStatus();
-  }, []);
+    const fetchData = async () => {
+      try {
+        // Set loading to true
+        setLoading(true);
+
+        // Fetching data in parallel
+        await Promise.all([
+          getDepartments(),
+          getMachines(),
+          initialDateRange(),
+          initialTableData(),
+          initialProductionData(),
+          prodApi(),
+          getSystemStatus(),
+        ]);
+      } catch (err) {
+        setError(err.message || "Failed to fetch data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []); // Add dependencies
 
   const getMachines = () => {
     const domain = `${baseURL}`;
@@ -199,7 +228,6 @@ function Dashboard() {
         },
       })
       .then((response) => {
-        console.log(response);
         const formattedMachines = response.data.results.map((machine) => ({
           id: machine.id,
           name: machine.name,
@@ -568,336 +596,186 @@ function Dashboard() {
     const cleanup = initializeWebSocket();
     return cleanup;
   }, [api]);
+
+  
   const close = () => {
     console.log("Notification was closed");
   };
-  console.log(menu, "<<<");
+  // console.log(menu, "<<<");
+
   return (
     <>
-      {contextHolder}
-      {/* <Button type="primary" onClick={openNotification}>
-        Open the notification box
-      </Button> */}
-      <div className="layout-content">
-        <Row className="rowgap-vbox" gutter={[24, 0]}>
-          <Col
-            xs={24}
-            sm={24}
-            md={12}
-            lg={6}
-            className="mb-24"
-            style={{ display: "flex", gap: "1rem" }}
-          >
-            <Select
-              style={{ minWidth: "200px", marginRight: "10px" }}
-              showSearch
-              placeholder="Select Machine"
-              value={selectedMachine}
-              onChange={handleMachineChange}
-              filterOption={(input, machineOptions) =>
-                (machineOptions?.children ?? "")
-                  .toLowerCase()
-                  .includes(input.toLowerCase())
-              }
-              size="large"
-            >
-              {machineOptions.map((machine) => (
-                <Select.Option key={machine.id} value={machine.id}>
-                  {machine.name}
-                </Select.Option>
-              ))}
-            </Select>
+      {children && (currentUrlPath.pathname !== "/" && currentUrlPath.pathname !== "/dashboard-home") ? (
+        children
+      ) : (
+        <>
+          <div className="dx-row flex  pb-4 gap-3">
+            <TotalOverview />
+            <div className="overview-container w-9/12 h-[257px] flex flex-col justify-between p-3 rounded-md border-2">
+              <div className="filter-lg-w">
+                <div className="inner-w">
+                  <div className="flex items-center space-x-4 mb-4 h-[40px]">
+                    <button className="p-2 bg-gray-200 rounded h-full w-[40px] flex justify-center items-center">
+                      <IoFilterSharp />
+                    </button>
+                    <Select
+                      className="dx-default-select select-machines"
+                      showSearch
+                      placeholder="Select Machine"
+                      value={selectedMachine}
+                      onChange={handleMachineChange}
+                      filterOption={(input, machineOptions) =>
+                        (machineOptions?.children ?? "")
+                          .toLowerCase()
+                          .includes(input.toLowerCase())
+                      }
+                    >
+                      {machineOptions.map((machine) => (
+                        <Select.Option key={machine.id} value={machine.id}>
+                          {machine.name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                    <Select
+                      className="dx-default-select"
+                      showSearch
+                      placeholder="Select Products"
+                      onChange={handleProductChange}
+                      value={selectedProduct}
+                      filterOption={(input, productOptions) =>
+                        (productOptions?.children ?? "")
+                          .toLowerCase()
+                          .includes(input.toLowerCase())
+                      }
+                    >
+                      {productOptions.map((department) => (
+                        <Select.Option
+                          key={department.id}
+                          value={department.id}
+                        >
+                          {department.name}
+                        </Select.Option>
+                      ))}
+                    </Select>
 
-            <Select
-              style={{ minWidth: "200px", marginRight: "10px" }}
-              showSearch
-              placeholder="Select Products"
-              onChange={handleProductChange}
-              value={selectedProduct}
-              size="large"
-              filterOption={(input, productOptions) =>
-                (productOptions?.children ?? "")
-                  .toLowerCase()
-                  .includes(input.toLowerCase())
-              }
-            >
-              {productOptions.map((department) => (
-                <Select.Option key={department.id} value={department.id}>
-                  {department.name}
-                </Select.Option>
-              ))}
-            </Select>
-
-            <RangePicker
-              // showTime
-              size="large"
-              style={{ marginRight: "10px", minWidth: "280px" }}
-              onChange={handleDateRangeChange}
-              allowClear={false}
-              inputReadOnly={true}
-              value={
-                selectedDate
-                  ? [
-                      dayjs(selectedDate[0], dateFormat),
-                      dayjs(selectedDate[1], dateFormat),
-                    ]
-                  : []
-              }
-            />
-
-            <Button
-              type="primary"
-              onClick={handleApplyFilters}
-              style={{
-                fontSize: "1rem",
-                backgroundColor: "#ec522d",
-                marginRight: "10px",
-              }}
-            >
-              Apply filters
-            </Button>
-            {filterActive ? (
-              <Button
-                type="primary"
-                onClick={resetFilter}
-                style={{
-                  fontSize: "1rem",
-                  backgroundColor: "#ec522d",
-                  marginRight: "10px",
-                }}
-              >
-                Reset Filter
-              </Button>
-            ) : null}
-          </Col>
-        </Row>
-
-        <Row className="rowgap-vbox" gutter={[24, 0]}>
-          <Col key={1} xs={24} sm={24} md={12} lg={6} className="mb-24">
-            <Card
-              bordered={false}
-              className="criclebox  "
-              style={{ minHeight: "180px" }}
-            >
-              <Dropdown overlay={menu} trigger={["click"]}>
-                <div className="number" style={{ cursor: "pointer" }}>
-                  <Row align="middle">
-                    <Col xs={18}>
-                      <Title level={3} style={{ fontSize: "1.5rem" }}>
-                        {`Active Machines`}
-                      </Title>
-                      <span>{activeMachines.length}</span>
-                    </Col>
-                    <Col xs={6}>
-                      <div className="icon-box">
+                    <RangePicker
+                      className="dx-default-date-range"
+                      style={{ marginRight: "10px", minWidth: "280px" }}
+                      onChange={handleDateRangeChange}
+                      allowClear={false}
+                      inputReadOnly
+                      value={
+                        selectedDate
+                          ? [
+                              dayjs(selectedDate[0], "YYYY/MM/DD"),
+                              dayjs(selectedDate[1], "YYYY/MM/DD"),
+                            ]
+                          : []
+                      }
+                    />
+                    <Button
+                      type="primary"
+                      onClick={handleApplyFilters}
+                      className="p-2 bg-red-500 text-white rounded flex items-center justify-center"
+                    >
+                      Apply filters
+                    </Button>
+                    {filterActive && (
+                      <Button
+                        type="primary"
+                        onClick={resetFilter}
+                        className="p-2 bg-red-500 text-white rounded flex items-center justify-center"
+                      >
+                        Reset Filter
+                      </Button>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-4 gap-4 h-[150px]">
+                    <div className="p-4 bg-gray-100 rounded-xl text-left">
+                      <div className="flex justify-between items-center">
+                        <span>Active Machines</span>
                         <VideoCameraOutlined />
                       </div>
-                    </Col>
-                  </Row>
-                </div>
-              </Dropdown>
-            </Card>
-          </Col>
-          <Col key={1} xs={24} sm={24} md={12} lg={6} className="mb-24">
-            <Card
-              bordered={false}
-              className="criclebox "
-              style={{ minHeight: "180px" }}
-            >
-              <Dropdown overlay={defectMenu} trigger={["click"]}>
-                <div className="number" style={{ cursor: "pointer" }}>
-                  <Row align="middle">
-                    <Col xs={18}>
-                      <Title level={3} style={{ fontSize: "1.5rem" }}>
-                        {`Defect Classification`}
-                      </Title>
-
-                      {/* <span>  {Object.keys(categoryDefects).reduce((total, category) => total + category, 0)}</span> */}
-                      <span> {Object.keys(categoryDefects).length}</span>
-                    </Col>
-                    <Col xs={6}>
-                      <div className="icon-box">
+                      <Dropdown overlay={menu} trigger={["click"]}>
+                        <div className="number" style={{ cursor: "pointer" }}>
+                          <div className="text-[35px] text-gray-500 font-semibold bg-white rounded mt-3 px-2 flex items-center justify-between">
+                            {activeMachines.length}
+                            <IoIosArrowDown className="text-[18px]" />
+                          </div>
+                        </div>
+                      </Dropdown>
+                    </div>
+                    <div className="p-4 bg-gray-100 rounded-xl text-left">
+                      <div className="flex justify-between items-center">
+                        <span>Defect Classification</span>
                         <BugOutlined />
                       </div>
-                    </Col>
-                  </Row>
-                </div>
-              </Dropdown>
-            </Card>
-          </Col>
-          <Col key={1} xs={24} sm={24} md={12} lg={6} className="mb-24">
-            <Card
-              bordered={false}
-              className="criclebox "
-              style={{ minHeight: "180px" }}
-            >
-              <Dropdown overlay={prodMenu} trigger={["click"]}>
-                <div className="number" style={{ cursor: "pointer" }}>
-                  <Row align="middle">
-                    <Col xs={18}>
-                      <Title level={3} style={{ fontSize: "1.5rem" }}>
-                        {`No. of SKU`}
-                      </Title>
-                      {alertData ? (
-                        <span>{Object.keys(activeProd).length}</span>
-                      ) : (
-                        <span>0</span>
-                      )}
-                    </Col>
-                    <Col xs={6}>
-                      <div className="icon-box">
+                      <Dropdown overlay={defectMenu} trigger={["click"]}>
+                        <div className="number" style={{ cursor: "pointer" }}>
+                          <div className="text-[35px] text-gray-500 font-semibold bg-white rounded mt-3 px-2 flex items-center justify-between">
+                            {Object.keys(categoryDefects).length}
+                            <IoIosArrowDown className="text-[18px]" />
+                          </div>
+                        </div>
+                      </Dropdown>
+                    </div>
+                    <div className="p-4 bg-gray-100 rounded-xl text-left">
+                      <div className="flex justify-between items-center">
+                        <span>No. of SKU</span>
                         <AlertOutlined />
                       </div>
-                    </Col>
-                  </Row>
-                </div>
-              </Dropdown>
-            </Card>
-          </Col>
-
-          <Col key={1} xs={24} sm={24} md={12} lg={6} className="mb-24">
-            <Link to="/insights">
-              <Card
-                bordered={false}
-                className={`criclebox notification-change ${
-                  notifications.length > prevNotificationLength
-                    ? "notification-change"
-                    : ""
-                }`}
-                style={{ minHeight: "180px" }}
-              >
-                {/* <Card bordered={false} className={`criclebox ${notifications.length > prevNotificationLength ? 'notification-change' : ''}`}> */}
-                <div className="number">
-                  <Row align="middle">
-                    <Col xs={18}>
-                      <Title level={3} style={{ fontSize: "1.5rem" }}>
-                        {`Insights`}
-                      </Title>
-                      {/* <button onClick={notify}>click</button> */}
-                      {/* {
-                    notifications ? 
-                    <span>{notifications.length}</span>
-                    : 0
-                  } */}
-                      <br />
-                    </Col>
-                    <Col xs={6}>
-                      <div className="icon-box">
+                      <Dropdown overlay={prodMenu} trigger={["click"]}>
+                        <div className="number" style={{ cursor: "pointer" }}>
+                          <div className="text-[35px] text-gray-500 font-semibold bg-white rounded mt-3 px-2 flex items-center justify-between">
+                            {Object.keys(activeProd).length}
+                            <IoIosArrowDown className="text-[18px]" />
+                          </div>
+                        </div>
+                      </Dropdown>
+                    </div>
+                    <Link
+                      to="/insights"
+                      className={`relative p-4 bg-gray-100 rounded-xl text-left group hover:text-white hover:!bg-red-500 
+                    ${
+                      notifications.length > prevNotificationLength
+                        ? "notification-change"
+                        : ""
+                    }
+                  `}
+                    >
+                      <div className="flex justify-between items-center">
+                        <span>Insights</span>
                         <NotificationOutlined />
                       </div>
-                    </Col>
-                  </Row>
-                </div>
-              </Card>
-            </Link>
-
-            {/* <Card bordered={false} className="criclebox ">
-                <div className="number">
-                  <Row align="middle">
-                    <Col xs={18}>
-                      <Title level={3}>
-                        {`Insights`}
-                      </Title>
-                      {
-                        notifications ? 
-                        <span>{notifications.length }</span>
-                        :0
-                      }
-                    </Col>
-                    <Col xs={6}>
-                      <div className="icon-box"><AlertOutlined /></div>
-                    </Col>
-                  </Row>
-                </div>
-              </Card> */}
-          </Col>
-        </Row>
-
-        <Row gutter={[24, 24]}>
-          <Col xs={24} sm={24} md={12} lg={6} className="mb-24">
-            <Card bordered={false} className="h-full">
-              {Object.keys(categoryDefects).map((category, index) => (
-                <Card
-                  key={index}
-                  bordered={true}
-                  className="criclebox h-full mb-2 px-2 "
-                >
-                  <div className="timeline-box">
-                    <h5 style={{ overflowWrap: "break-word" }}>{category}</h5>
-                    <Paragraph className="lastweek">
-                      <span className="bnb2">{categoryDefects[category]}</span>{" "}
-                      Defects
-                    </Paragraph>
+                      {/* <div className="text-[40px] text-gray-600 font-bold group-hover:text-white">
+                    0
+                  </div> */}
+                      <IoMdArrowForward className="absolute bottom-5 right-5 text-lg" />
+                    </Link>
                   </div>
-                </Card>
-              ))}
-
-              <Card bordered={true} className="criclebox h-full mb-2 px-2">
-                <div className="timeline-box">
-                  <h5>Total Defects</h5>
-                  <Paragraph className="lastweek">
-                    <span className="bnb2">
-                      {Object.values(categoryDefects).reduce(
-                        (total, category) => total + category,
-                        0
-                      )}
-                    </span>{" "}
-                    Defects
-                  </Paragraph>
                 </div>
-              </Card>
-            </Card>
-          </Col>
-          <Col xs={24} sm={24} md={12} lg={14} xl={18} className="mb-24">
-            <Card bordered={false} className="criclebox h-full">
-              <MachineParam />
-            </Card>
-          </Col>
-
-          {loaderData ? (
-            <div
-              className=""
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                width: "100%",
-                height: "300px",
-              }}
-            >
-              <Hourglass
-                visible={true}
-                height="40"
-                width="40"
-                ariaLabel="hourglass-loading"
-                wrapperStyle={{}}
-                wrapperClass=""
-                colors={[" #ec522d", "#ec522d"]}
-              />
+              </div>
             </div>
-          ) : (
-            <>
-              <Col xs={24} sm={24} md={12} lg={12} xl={12} className="mb-24">
-                <Card bordered={false} className="criclebox h-full">
-                  {/* <LineChart data={tableData}/> */}
-                  <ProductionVsReject data={productionData} />
-                </Card>
-              </Col>
-              <Col xs={24} sm={24} md={12} lg={12} xl={12} className="mb-24">
-                <Card bordered={false} className="criclebox h-full">
-                  <StackChart data={tableData} />
-                </Card>
-              </Col>
-              <Col xs={24} sm={24} md={12} lg={12} xl={12} className="mb-24">
-                <Card bordered={false} className="criclebox h-full">
-                  <PieChart data={tableData} selectedDate={selectedDate} />
-                </Card>
-              </Col>
-            </>
-          )}
-        </Row>
-      </div>
+          </div>
+
+          <RealTimeManufacturingSection
+            loading={loading}
+            categoryDefects={categoryDefects}
+            productionData={productionData}
+          />
+          <div className="production-defect-report-container flex">
+            <ProductAndDefect loading={loading} chartData={productionData} />
+          </div>
+          <DefectsReport
+            loading={loading}
+            chartData={tableData}
+            chart1={<StackChart data={tableData} />}
+            chart2={<PieChart data={tableData} selectedDate={selectedDate} />}
+          />
+        </>
+      )}
     </>
   );
-}
+};
 
-export default Dashboard;
+export default DashboardContentLayout;

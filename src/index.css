@@ -1,17 +1,47 @@
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap");
+
+*, ::before, ::after {
+  border-color: #fff4f4;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: "Nunito Sans", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   padding: 0;
 }
+body :where(.css-dev-only-do-not-override-kghr11).ant-layout {
+  font-family: "Nunito Sans", sans-serif;
+}
 
+body .layout-dashboard .ant-layout-content{
+  margin: 75px 0 0 !important;
+  padding: 20px;
+}
+
+body .ant-layout {
+  background: #ffffff;
+}
+
+::-webkit-scrollbar{
+  width: 5px;
+}
+::-webkit-scrollbar-thumb{
+  background-color: #ff3180;
+}
+::-webkit-scrollbar-track{
+  background-color: #cfcfcf;
+}
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
 
@@ -19,7 +49,6 @@ code {
   display: flex;
   gap: 1rem;
   margin: 0.3rem 0;
-
 }
 
 .AISmartContainer {
@@ -30,31 +59,30 @@ code {
 }
 
 .machineParameterContainer {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   margin: 1rem 0;
   width: 100%;
   display: flex;
   flex-wrap: wrap;
   gap: 2rem;
-
 }
 
 .mycardContainer {
   display: flex;
-  gap: .4rem;
+  gap: 0.4rem;
   flex-direction: column;
   width: 44%;
   height: auto;
-  border: 1px solid #C4C4C4;
+  border: 1px solid #c4c4c4;
   border-radius: 5px;
 }
 
 .cardUpper {
-  background-color: #AB0000 !important;
+  background-color: #ab0000 !important;
   color: #fff !important;
-  padding: .5rem;
+  padding: 0.5rem;
   font-size: 1.2rem;
 }
 
@@ -69,7 +97,7 @@ code {
   height: auto;
   display: flex;
   gap: 1rem;
-  padding: .2rem 1rem;
+  padding: 0.2rem 1rem;
   justify-content: center;
   align-items: center;
 }
@@ -90,14 +118,13 @@ code {
   font-weight: 500;
 }
 
-
 .secondLine {
   width: 100%;
   height: auto;
   display: flex;
   flex-direction: column !important;
-  gap: .4rem;
-  padding: .2rem 1rem;
+  gap: 0.4rem;
+  padding: 0.2rem 1rem;
   justify-content: center;
   align-items: center;
 }
@@ -130,15 +157,18 @@ a {
 }
 
 label::after {
-  content: '' !important;
+  content: "" !important;
 }
 
-:where(.css-dev-only-do-not-override-kghr11).ant-tabs-card.ant-tabs-top>.ant-tabs-nav .ant-tabs-tab-active {
+:where(.css-dev-only-do-not-override-kghr11).ant-tabs-card.ant-tabs-top
+  > .ant-tabs-nav
+  .ant-tabs-tab-active {
   background-color: rgb(236, 82, 45) !important;
-
 }
 
-:where(.css-dev-only-do-not-override-kghr11).ant-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+:where(.css-dev-only-do-not-override-kghr11).ant-tabs
+  .ant-tabs-tab.ant-tabs-tab-active
+  .ant-tabs-tab-btn {
   color: #fff;
 }
 
@@ -150,10 +180,11 @@ label::after {
   box-shadow: 1px 2px 27px rgba(0, 0, 0, 0.243);
 }
 
-:where(.css-dev-only-do-not-override-kghr11).ant-tabs>.ant-tabs-nav .ant-tabs-nav-list {
+:where(.css-dev-only-do-not-override-kghr11).ant-tabs
+  > .ant-tabs-nav
+  .ant-tabs-nav-list {
   gap: 1rem;
 }
-
 
 :where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper table {
   box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.243) !important;
@@ -200,28 +231,42 @@ label::after {
   gap: 1rem;
 }
 
-:where(.css-dev-only-do-not-override-kghr11).ant-checkbox-wrapper:not(.ant-checkbox-wrapper-disabled):hover .ant-checkbox-checked:not(.ant-checkbox-disabled) .ant-checkbox-inner {
+:where(.css-dev-only-do-not-override-kghr11).ant-checkbox-wrapper:not(
+    .ant-checkbox-wrapper-disabled
+  ):hover
+  .ant-checkbox-checked:not(.ant-checkbox-disabled)
+  .ant-checkbox-inner {
   background-color: orangered !important;
   border: orangered !important;
 }
 
-
-
-:where(.css-dev-only-do-not-override-kghr11).ant-checkbox-checked .ant-checkbox-inner {
+:where(.css-dev-only-do-not-override-kghr11).ant-checkbox-checked
+  .ant-checkbox-inner {
   background-color: orangered !important;
   border: orangered !important;
 }
 
-:where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper .ant-table-thead>tr>th {
+:where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper
+  .ant-table-thead
+  > tr
+  > th {
   font-size: 1rem;
 }
 
-:where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper .ant-table-tbody>tr>th,
-:where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper .ant-table-tbody>tr>td {
+:where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper
+  .ant-table-tbody
+  > tr
+  > th,
+:where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper
+  .ant-table-tbody
+  > tr
+  > td {
   font-weight: 500;
 }
 
-:where(.css-dev-only-do-not-override-kghr11).ant-notification .ant-notification-notice-wrapper .ant-notification-notice {
+:where(.css-dev-only-do-not-override-kghr11).ant-notification
+  .ant-notification-notice-wrapper
+  .ant-notification-notice {
   padding: 20px 24px !important;
   width: 384px !important;
   background-color: orangered !important;
@@ -232,14 +277,19 @@ label::after {
   word-wrap: break-word !important;
 }
 
-:where(.css-dev-only-do-not-override-kghr11).ant-notification .ant-notification-notice-wrapper .ant-notification-notice-with-icon .ant-notification-notice-message {
+:where(.css-dev-only-do-not-override-kghr11).ant-notification
+  .ant-notification-notice-wrapper
+  .ant-notification-notice-with-icon
+  .ant-notification-notice-message {
   margin-bottom: 8px !important;
   margin-inline-start: 36px !important;
   color: #fff !important;
   font-size: 16px !important;
 }
 
-:where(.css-dev-only-do-not-override-kghr11).ant-notification .ant-notification-notice-wrapper .ant-notification-notice-close {
+:where(.css-dev-only-do-not-override-kghr11).ant-notification
+  .ant-notification-notice-wrapper
+  .ant-notification-notice-close {
   position: absolute !important;
   top: 20px !important;
   inset-inline-end: 24px !important;
@@ -254,6 +304,106 @@ label::after {
   justify-content: center !important;
 }
 
-.ai-view-image_container{
+.ai-view-image_container {
   height: 50vh !important;
+}
+
+/* custom select */
+.dx-default-select {
+  height: 100%;
+
+}
+.dx-default-date-range.ant-picker,
+.dx-default-select .ant-select-selector{
+  height: 100%;
+
+}
+.ant-picker .ant-picker-range,
+.dx-default-select.select-machines .ant-select-selector{
+  background-color: #e5e7eb !important;
+
+}
+.dx-default-date-range.ant-picker .ant-picker-input input::placeholder,
+.dx-default-select .ant-select-selector .ant-select-selection-placeholder{
+  color: #585858 !important;
+}
+/* ui enhancement */
+/* side menu */
+/* ui enhancement end */
+.logo-w span{
+  color: #ffffff;
+}
+.logo-w{
+  filter: brightness(100);
+}
+.client-name-w{
+  color: #f80759;
+}
+.section-title{
+  font-size: 20px;
+  font-weight: 600;
+  position: relative;
+  height: 45px;
+  color: #707070;
+
+}
+.section-title-overlay{
+  position: absolute;
+  top: 50%;
+  left: 0;
+  padding-right: 20px;
+  transform: translateY(-50%);
+  background-color: #ffffff;
+  z-index: 2;
+
+}
+.section-title:after{
+  content: "";
+	display: block;
+	height: 1px;
+	width: 100%;
+	background-color: #d3d3d3;
+  position: absolute;
+  top: 50%;
+  left: 0px;
+  transform: translateY(-50%);
+  z-index: 0;
+}
+.menu-items-w .menu-category-name{
+  color: #e4e4e4 !important;
+}
+.sidemenu-link{
+  color: #e4e4e4 !important;
+}
+.sidemenu-link:hover{
+  color: #003253 !important;
+}
+.ant-btn,
+.sidemenu-link.active{
+  /* background: linear-gradient(90deg, #cfd9df6b 0%, #ffffff8c 100%); !important */
+  background-color: #e6e6e6 !important;
+  color: #4d4d4d !important;
+
+}
+
+.sidemenu-container{
+  background:linear-gradient(-45deg, #ee7752, #8a274d, #970254, #c92a02);
+}
+
+.overview-container.dashboard-data{
+  background: linear-gradient(-45deg, #ee7752, #8a274d, #c92a02, #0096b1);
+	background-size: 400% 400%;
+	animation: gradient 15s ease infinite;
+}
+
+@keyframes gradient {
+	0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
 }

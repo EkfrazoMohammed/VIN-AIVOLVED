@@ -1,12 +1,13 @@
-
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Layout, Drawer, Affix } from "antd";
 import Sidenav from "./Sidenav";
 import Header from "./Header";
+import SideMenu from "../common/SideMenu";
+import TopHeader from "../common/TopHeader";
+import DashboardContentLayout from "../Dashboard/DashboardContentLayout";
 
 const { Header: AntHeader, Content, Sider } = Layout;
-
 
 function Main({ children }) {
   const [visible, setVisible] = useState(false);
@@ -15,6 +16,9 @@ function Main({ children }) {
   const [sidenavColor, setSidenavColor] = useState("#ec522d");
   const [sidenavType, setSidenavType] = useState("transparent");
   const [fixed, setFixed] = useState(false);
+
+  const localData = localStorage.getItem("PlantData");
+  const PlantName = JSON.parse(localData);
 
   const openDrawer = () => setVisible(!visible);
   const handleSidenavType = (type) => setSidenavType(type);
@@ -33,7 +37,6 @@ function Main({ children }) {
   }, [pathname]);
 
   return (
-    
     <Layout
       className={`layout-dashboard ${
         pathname === "dashboard" ? "layout-profile" : ""
@@ -56,7 +59,7 @@ function Main({ children }) {
             pathname === "rtl" ? "layout-dashboard-rtl" : ""
           }`}
         >
-          <Sider 
+          <Sider
             trigger={null}
             width={250}
             theme="light"
@@ -69,7 +72,7 @@ function Main({ children }) {
           </Sider>
         </Layout>
       </Drawer>
-      <Sider
+      {/* <Sider
         breakpoint="lg"
         collapsedWidth="0"
         onCollapse={(collapsed, type) => {
@@ -84,9 +87,10 @@ function Main({ children }) {
         style={{ background: sidenavType }}
       >
         <Sidenav color={sidenavColor} />
-      </Sider>
+      </Sider> */}
+      <SideMenu />
       <Layout>
-        {fixed ? (
+        {/* {fixed ? (
           <Affix>
             <AntHeader className={`${fixed ? "ant-header-fixed" : ""}`}>
               <Header
@@ -99,20 +103,19 @@ function Main({ children }) {
               />
             </AntHeader>
           </Affix>
-        ) : (
-          <AntHeader className={`${fixed ? "ant-header-fixed" : ""}`}>
-            <Header
-              onPress={openDrawer}
-              name={pathname}
-              subName={pathname}
-              handleSidenavColor={handleSidenavColor}
-              handleSidenavType={handleSidenavType}
-              handleFixedNavbar={handleFixedNavbar}
-            />
-          </AntHeader>
-        )}
-        <Content className="content-ant">{children}</Content>
-      
+        ) : ( */}
+        <TopHeader
+          clientName={PlantName?.plant_name}
+          clientLogoImgUrl={
+            "https://xtemko.stripocdn.email/content/guids/CABINET_d8f211887c57378d14d80cfb73c09f4b2db394a5cf71f6e0cdda10e02f8c454f/images/vin_logo.jpeg"
+          }
+        />
+
+        {/* )} */}
+        <Content className="content-ant">
+          <DashboardContentLayout>{children}</DashboardContentLayout>
+        </Content>
+        {/* <Content className="content-ant">{children}</Content> */}
       </Layout>
     </Layout>
   );
