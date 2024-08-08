@@ -1,157 +1,79 @@
-import { useState,useEffect } from "react";
-import { Switch, Route, Redirect } from "react-router-dom";
-import { ToastContainer,toast } from "react-toastify";
-import SignUp from "./pages/SignUp";
-import SignIn from "./pages/SignIn";
-import Main from "./components/layout/Main";
-import "../node_modules/antd/dist/antd"
-import "./assets/styles/main.css";
-import "./assets/styles/responsive.css";
-import Reports from "./pages/Reports";
-import AiSmartView from "./pages/AiSmartView";
-import Dashboard from "./pages/Dashboard";
-import MachinesParameter from "./pages/MachinesParameter";
-import Camera from "./pages/Camera";
-import Settings from "./pages/Settings.jsx";
-import Plant from "./pages/Plant.js";
-import {
-  createBrowserRouter,
-  createRoutesFromElements,
-  
-  RouterProvider,
-} from "react-router-dom";
-import Organisation from "./pages/Organization.js";
-import Select_dashboard from "./pages/SelectDashboard.js";
-import "react-toastify/dist/ReactToastify.css";
-import Insights from "./pages/Insights.js";
-
+// src/App.js
+import React, { useEffect } from 'react';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { setToken, setRefreshToken, clearAuth } from './redux/slices/authSlice';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-// import useWebSocket from './WebSocketService';
-import Layout from "./pages/Layout.js";
-import Login from "./pages/Auth/Login.js"
-import ResetPassword from "./pages/Auth/ResetPassword.js"
-import axios from "axios"
-import { baseURL } from "./API/API.js";
+import axios from 'axios';
+import Layout from './pages/Layout';
+import Login from './pages/Auth/Login';
+import ResetPassword from './pages/Auth/ResetPassword';
+import Plant from './pages/Plant';
+import Reports from './pages/Reports';
+import AiSmartView from './pages/AiSmartView';
+import Dashboard from './pages/Dashboard';
+import MachinesParameter from './pages/MachinesParameter';
+import Camera from './pages/Camera';
+import Settings from './pages/Settings';
+import Insights from './pages/Insights';
+import Organisation from './pages/Organization';
+import Select_dashboard from './pages/SelectDashboard';
 
 const App = () => {
+  const dispatch = useDispatch();
+  const { refreshToken, token } = useSelector((state) => state.auth);
 
-  const [refreshTokens, setrefreshTokens] = useState(() => 
-    JSON.parse(localStorage.getItem('refreshToken')) || null
-  );
-  const refreshToken = async () => {
+  const refreshTokenHandler = async () => {
+    if (!refreshToken) return;
     try {
       const response = await axios.post(`${baseURL}refresh_token/`, {
-        refresh: refreshTokens,
+        refresh: refreshToken,
       });
-      console.log(response)
- 
-      localStorage.setItem("token",JSON.stringify(response.data.access))
-
+      dispatch(setToken(response.data.access));
+      dispatch(setRefreshToken(response.data.refresh));
     } catch (error) {
       console.error('Token refresh failed:', error);
+      dispatch(clearAuth());
     }
   };
 
+  useEffect(() => {
+    if (token) {
+      const interval = setInterval(() => {
+        refreshTokenHandler();
+      }, 15 * 60 * 1000); // Refresh every 15 minutes
 
-   setInterval(() => {
-        refreshToken();
-    }, 15 * 60 * 1000); // Refresh every 15 minutes
-
-
+      return () => clearInterval(interval);
+    }
+  }, [token, refreshToken, dispatch]);
 
   const router = createBrowserRouter([
     {
-      path: "/",
+      path: '/',
       element: <Layout />,
-   
       children: [
-        {
-          path: "", 
-          element: <Dashboard />,
-        },
-        {
-         path: 'dashboard-home',
-          element: <Dashboard />,
-        },
-        {
-          path: 'reports',
-          element: <Reports />,
-        },
-        {
-          path: 'ai-smart-view',
-          element: <AiSmartView />,
-        },
-        {
-          path: 'machine-parameter',
-          element: <MachinesParameter />,
-        },
-        {
-          path: 'system-status',
-          element: <Camera />,
-        },
-        {
-          path: 'settings',
-          element: <Settings />,
-        }, 
-          {
-          path: 'insights',
-          element: <Insights />,
-        },
-        // {
-        //   path: 'Plants',
-        //   element: <Organisation />,
-     
-        // },
-        // {
-        //   path: 'Plants/:id',
-        //   element: <Plants />,
-        // }, 
-        //     {
-        //   path: 'Organization-Dashboard/:id',
-        //   element: <Selectdashboard />,
-        // },
-      ]
+        { path: '', element: <Dashboard /> },
+        { path: 'dashboard-home', element: <Dashboard /> },
+        { path: 'reports', element: <Reports /> },
+        { path: 'ai-smart-view', element: <AiSmartView /> },
+        { path: 'machine-parameter', element: <MachinesParameter /> },
+        { path: 'system-status', element: <Camera /> },
+        { path: 'settings', element: <Settings /> },
+        { path: 'insights', element: <Insights /> },
+      ],
     },
-    {
-      path: "/login",
-      element: <Login />,
-    }, 
-      {
-      path: "/resetPassword",
-      element: <ResetPassword />,
-    },
-    {
-      path: "/Plant",
-      element: <Plant />,
-    },
-
+    { path: '/login', element: <Login /> },
+    { path: '/resetPassword', element: <ResetPassword /> },
+    { path: '/Plant', element: <Plant /> },
   ]);
-  // const { notifications, isSocketConnected } = useWebSocket();
 
   return (
     <>
-         <RouterProvider router={router} />
+      <RouterProvider router={router} />
+      <ToastContainer />
     </>
-    // <div className="App" >
-    //   <Switch>
-    //     <Route path="/sign-up" exact component={SignUp} />
-    //     <Route path="/sign-in" exact component={SignIn} />
-    //     <Main>
-    //       <Route exact path="/dashboard" component={Dashboard} />
-    //       <Route exact path="/reports" component={Reports} />
-    //       <Route exact path="/insights" component={Insights} />
-    //       <Route exact path="/ai-smart-view" component={AiSmartView} />
-    //       <Route exact path="/machines-parameter" component={MachinesParameter} />
-    //       <Route exact path="/camera" component={Camera} />
-    //       <Route exact path="/settings" component={Settings} />
-    //       <Route exact path="/organization" component={Organisation} />
-    //       <Route exact path="/Plants/:id" component={Plants} />
-    //       <Route exact path="/Organization-Dashboard/:id" component={Select_dashboard} />
-    //       <Redirect from="*" to="/dashboard" />
-    //     </Main>
-    //   </Switch>
-    // </div>
   );
-}
+};
 
 export default App;

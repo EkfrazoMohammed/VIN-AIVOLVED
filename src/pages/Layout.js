@@ -21,10 +21,10 @@ useLayoutEffect(()=>{
   return (
     <>
     
-  {
+  {/* {
     auth ? <Main><Outlet/> </Main> : <Login/>
-  }
-   
+  } */}
+   <Login />
     </>
   )
 }
