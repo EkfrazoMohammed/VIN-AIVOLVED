@@ -610,8 +610,8 @@ const DashboardContentLayout = ({ children }) => {
       ) : (
         <>
           <div className="dx-row flex  pb-4 gap-3">
-            <TotalOverview />
-            <div className="overview-container w-9/12 h-[257px] flex flex-col justify-between p-3 rounded-md border-2">
+            {/* <TotalOverview /> */}
+            <div className="overview-container w-full h-[257px] flex flex-col justify-between p-3 rounded-md border-2">
               <div className="filter-lg-w">
                 <div className="inner-w">
                   <div className="flex items-center space-x-4 mb-4 h-[40px]">
