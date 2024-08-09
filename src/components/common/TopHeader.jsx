@@ -2,7 +2,7 @@ import React from 'react'
 
 const TopHeader = ({clientName, clientLogoImgUrl}) => {
   return (
-    <div className='top-header-container flex justify-between border-b-2 h-[75px] py-3 px-4 fixed top-0 bg-white w-[calc(100%-275px)] z-10'>
+    <div className='top-header-container flex justify-between border-b-2 h-[75px] py-3 px-4 fixed top-0 right-0 bg-white w-[calc(100%-275px)] z-10'>
       <div className="client-name-w text-[20px] font-bold flex items-center">
         <select name="" id="" className='focus:outline-none'>
           <option value={clientName} selected="true">{clientName}</option>

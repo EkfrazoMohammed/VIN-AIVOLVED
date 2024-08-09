@@ -1,9 +1,10 @@
+// src/pages/Auth/Login.js
 import React, { useState } from 'react';
 import { Card, Col, Input, Checkbox, notification } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { API } from '../../API/API';
-import { setToken } from '../../redux/slices/apiSlice';
+import axiosInstance from '../../API/axiosInstance'; // Ensure this is correctly imported
+import { setAuthData } from '../../redux/slices/authSlice'; // Import the setAuthData action
 
 const Login = () => {
   const navigate = useNavigate();
@@ -37,13 +38,17 @@ const Login = () => {
     if (!loginPayload.password) {
       setError(prev => ({ ...prev, PasswordError: "*Password is required" }));
     }
-    
+
     // Proceed with login if no errors
     if (loginPayload.email_or_phone && loginPayload.password && !error.UserError && !error.PasswordError) {
       try {
-        const res = await API.post('/login/', loginPayload);
+        const res = await axiosInstance.post('/login/', loginPayload);
         if (res.status === 200) {
-          dispatch(setToken(res.data.access_token));
+          const { access_token, refresh_token, user_id,first_name,last_name,user_name,is_superuser } = res.data;
+        let myuser={
+          user_id,first_name,last_name,user_name,is_superuser
+        }
+          dispatch(setAuthData({ access_token, refresh_token, myuser }));
           openNotification("success", "Login Successful");
           navigate("/Plant");
         }
@@ -64,6 +69,7 @@ const Login = () => {
       setError(prev => ({ ...prev, PasswordError: "" }));
     }
   };
+
 
   return (
     <div style={{ background: '#faf5f5', height: '100vh', width: '100%', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

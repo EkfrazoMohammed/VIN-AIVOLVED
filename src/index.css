@@ -22,11 +22,16 @@ body :where(.css-dev-only-do-not-override-kghr11).ant-layout {
   font-family: "Nunito Sans", sans-serif;
 }
 
-body .layout-dashboard .ant-layout-content{
+
+/* body .layout-dashboard .ant-layout-content {
   margin: 75px 0 0 !important;
   padding: 20px;
+} */
+body .layout-dashboard .ant-layout-content {
+  margin: 75px 0 0 !important;
+  padding: 20px;
+  padding-left: 295px;
 }
-
 body .ant-layout {
   background: #ffffff;
 }

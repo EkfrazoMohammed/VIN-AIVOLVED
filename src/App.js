@@ -1,11 +1,10 @@
-// src/App.js
 import React, { useEffect } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { setToken, setRefreshToken, clearAuth } from './redux/slices/authSlice';
+import { setAuthData, clearAuthData } from './redux/slices/authSlice';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import axios from 'axios';
+import axiosInstance from './API/axiosInstance'; // Ensure this is correctly configured
 import Layout from './pages/Layout';
 import Login from './pages/Auth/Login';
 import ResetPassword from './pages/Auth/ResetPassword';
@@ -22,31 +21,34 @@ import Select_dashboard from './pages/SelectDashboard';
 
 const App = () => {
   const dispatch = useDispatch();
-  const { refreshToken, token } = useSelector((state) => state.auth);
+  const { refreshToken, accessToken } = useSelector((state) => state.auth);
+  console.log(accessToken)
 
-  const refreshTokenHandler = async () => {
-    if (!refreshToken) return;
-    try {
-      const response = await axios.post(`${baseURL}refresh_token/`, {
-        refresh: refreshToken,
-      });
-      dispatch(setToken(response.data.access));
-      dispatch(setRefreshToken(response.data.refresh));
-    } catch (error) {
-      console.error('Token refresh failed:', error);
-      dispatch(clearAuth());
-    }
-  };
+  // const refreshTokenHandler = async () => {
+  //   if (!refreshToken) return;
 
-  useEffect(() => {
-    if (token) {
-      const interval = setInterval(() => {
-        refreshTokenHandler();
-      }, 15 * 60 * 1000); // Refresh every 15 minutes
+  //   try {
+  //     const response = await axiosInstance.post('/refresh_token/', {
+  //       refresh: refreshToken,
+  //     });
 
-      return () => clearInterval(interval);
-    }
-  }, [token, refreshToken, dispatch]);
+  //     const { access_token, refresh_token } = response.data;
+  //     dispatch(setAuthData({ access_token, refresh_token }));
+  //   } catch (error) {
+  //     console.error('Token refresh failed:', error);
+  //     dispatch(clearAuthData());
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   if (accessToken) {
+  //     const interval = setInterval(() => {
+  //       refreshTokenHandler();
+  //     }, 15 * 60 * 1000); // Refresh every 15 minutes
+
+  //     return () => clearInterval(interval);
+  //   }
+  // }, [accessToken, refreshToken, dispatch]);
 
   const router = createBrowserRouter([
     {
@@ -65,7 +67,7 @@ const App = () => {
     },
     { path: '/login', element: <Login /> },
     { path: '/resetPassword', element: <ResetPassword /> },
-    { path: '/Plant', element: <Plant /> },
+    { path: '/plant', element: <Plant /> }, // Changed to lowercase for consistency
   ]);
 
   return (
