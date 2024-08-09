@@ -20,33 +20,36 @@ import Insights from './pages/Insights';
 import Organisation from './pages/Organization';
 import Select_dashboard from './pages/SelectDashboard';
 
+
 const App = () => {
-  const dispatch = useDispatch();
-  const { refreshToken, token } = useSelector((state) => state.auth);
+  // const dispatch = useDispatch();
+  // const { refreshToken, token } = useSelector((state) => state.auth);
 
-  const refreshTokenHandler = async () => {
-    if (!refreshToken) return;
-    try {
-      const response = await axios.post(`${baseURL}refresh_token/`, {
-        refresh: refreshToken,
-      });
-      dispatch(setToken(response.data.access));
-      dispatch(setRefreshToken(response.data.refresh));
-    } catch (error) {
-      console.error('Token refresh failed:', error);
-      dispatch(clearAuth());
-    }
-  };
 
-  useEffect(() => {
-    if (token) {
-      const interval = setInterval(() => {
-        refreshTokenHandler();
-      }, 15 * 60 * 1000); // Refresh every 15 minutes
+  // const refreshTokenHandler = async () => {
+  //   if (!refreshToken) return;
+  //   try {
+  //     const response = await axios.post(`${baseURL}refresh_token/`, {
+  //       refresh: refreshToken,
+  //     });
+  //     dispatch(setToken(response.data.access));
+  //     dispatch(setRefreshToken(response.data.refresh));
+  //   } catch (error) {
+  //     console.error('Token refresh failed:', error);
+  //     dispatch(clearAuth());
+  //   }
+  // };
 
-      return () => clearInterval(interval);
-    }
-  }, [token, refreshToken, dispatch]);
+  // useEffect(() => {
+  //   if (token) {
+  //     const interval = setInterval(() => {
+  //       refreshTokenHandler();
+  //     }, 15 * 60 * 1000); // Refresh every 15 minutes
+
+  //     return () => clearInterval(interval);
+  //   }
+  // }, [token, refreshToken, dispatch]);
+
 
   const router = createBrowserRouter([
     {
@@ -55,12 +58,12 @@ const App = () => {
       children: [
         { path: '', element: <Dashboard /> },
         { path: 'dashboard-home', element: <Dashboard /> },
-        { path: 'reports', element: <Reports /> },
-        { path: 'ai-smart-view', element: <AiSmartView /> },
-        { path: 'machine-parameter', element: <MachinesParameter /> },
-        { path: 'system-status', element: <Camera /> },
-        { path: 'settings', element: <Settings /> },
-        { path: 'insights', element: <Insights /> },
+        // { path: 'reports', element: <Reports /> },
+        // { path: 'ai-smart-view', element: <AiSmartView /> },
+        // { path: 'machine-parameter', element: <MachinesParameter /> },
+        // { path: 'system-status', element: <Camera /> },
+        // { path: 'settings', element: <Settings /> },
+        // { path: 'insights', element: <Insights /> },
       ],
     },
     { path: '/login', element: <Login /> },

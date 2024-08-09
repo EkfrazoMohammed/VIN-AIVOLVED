@@ -7,6 +7,7 @@ const authSlice = createSlice({
     token: JSON.parse(localStorage.getItem('token')) || null,
     refreshToken: JSON.parse(localStorage.getItem('refreshToken')) || null,
   },
+  
   reducers: {
     setToken(state, action) {
       state.token = action.payload;

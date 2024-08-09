@@ -29,10 +29,13 @@ import PieChart from "../components/chart/PieChart";
 import MachinesParameter from "./MachinesParameterWithPagination";
 import MachinesParameterWithPagination from "./MachinesParameterWithPagination";
 import MachineParam from "../components/chart/MachineParam";
-import { API, baseURL, AuthToken, localPlantData } from "./../API/API";
+import { AuthToken, localPlantData } from "./../API/API";
 import ProductionVsReject from "../components/chart/ProductionVsReject";
 import dayjs from "dayjs";
 import { Hourglass } from "react-loader-spinner";
+
+import api from "../hooks/AuthHook/Apinterceptor";
+import { useSelector } from "react-redux";
 
 
 
@@ -72,9 +75,12 @@ function Dashboard() {
     setSelectedProduct(value);
   };
 
-  const handleChange = (value) => {};
+  const handleChange = (value) => { };
 
   const navigate = useNavigate();
+
+  const plantData = useSelector((state) => state.auth.plantData)
+
 
   const localItems = localStorage.getItem("PlantData");
   const localPlantData = JSON.parse(localItems);
@@ -100,10 +106,10 @@ function Dashboard() {
 
   const handleApplyFilters = () => {
     setLoaderData(true);
-    const domain = `${baseURL}`;
+    // const domain = `${baseURL}`;
     const [fromDate, toDate] = dateRange;
 
-    let url = `${domain}dashboard/?`;
+    let url = `dashboard/?`;
     // url += `plant_id=${localPlantData.id}&from_date=${fromDate}&to_date=${toDate}&machine_id=${selectedMachine}&department_id=${selectedDepartment}&product_id=${selectedProduct}&defect_id=${selectedDefect}`;
     if (localPlantData.id) {
       url += `plant_id=${localPlantData.id}&`;
@@ -159,14 +165,16 @@ function Dashboard() {
   };
 
   const getSystemStatus = () => {
-    const domain = `${baseURL}`;
-    let url = `${domain}system-status/?plant_id=${localPlantData.id}`;
-    axios
-      .get(url, {
-        headers: {
-          Authorization: `Bearer ${AuthToken}`,
-        },
-      })
+    // const domain = `${baseURL}`;
+    // let url = `${domain}system-status/?plant_id=${localPlantData.id}`;
+
+    // axios
+    //   .get(url, {
+    //     headers: {
+    //       Authorization: `Bearer ${AuthToken}`,
+    //     },
+    //   })
+    api.get(`system-status/?plant_id=${localPlantData.id}`)
       .then((response) => {
         setActiveMachines(
           response.data.results.filter(
@@ -190,14 +198,15 @@ function Dashboard() {
   }, []);
 
   const getMachines = () => {
-    const domain = `${baseURL}`;
-    let url = `${domain}machine/?plant_name=${localPlantData.plant_name}`;
-    axios
-      .get(url, {
-        headers: {
-          Authorization: `Bearer ${AuthToken}`,
-        },
-      })
+    // const domain = `${baseURL}`;
+    // let url = `${domain}machine/?plant_name=${localPlantData.plant_name}`;
+    // axios
+    //   .get(url, {
+    //     headers: {
+    //       Authorization: `Bearer ${AuthToken}`,
+    //     },
+    //   })
+    api.get(`machine/?plant_name=${localPlantData.plant_name}`)
       .then((response) => {
         console.log(response);
         const formattedMachines = response.data.results.map((machine) => ({
@@ -212,14 +221,15 @@ function Dashboard() {
   };
 
   const getDepartments = () => {
-    const domain = `${baseURL}`;
-    let url = `${domain}department/?plant_name=${localPlantData.plant_name}`;
-    axios
-      .get(url, {
-        headers: {
-          Authorization: ` Bearer ${AuthToken}`,
-        },
-      })
+    // const domain = `${baseURL}`;
+    // let url = `${domain}department/?plant_name=${localPlantData.plant_name}`;
+    // axios
+    //   .get(url, {
+    //     headers: {
+    //       Authorization: ` Bearer ${AuthToken}`,
+    //     },
+    //   })
+    api.get(`department/?plant_name=${localPlantData.plant_name}`)
       .then((response) => {
         const formattedDepartment = response.data.results.map((department) => ({
           id: department.id,
@@ -248,19 +258,20 @@ function Dashboard() {
   const initialTableData = () => {
     setLoaderData(true);
 
-    const domain = baseURL;
+    // const domain = baseURL;
     const [fromDate, toDate] = [startDate, endDate].map((date) =>
       date.toISOString().slice(0, 10)
     ); // Format dates as YYYY-MM-DD
-    const url = `${domain}dashboard/?plant_id=${localPlantData.id}`;
+    // const url = `${domain}dashboard/?plant_id=${localPlantData.id}`;
     // const url = `${domain}dashboard/`;
 
-    axios
-      .get(url, {
-        headers: {
-          Authorization: ` Bearer ${AuthToken}`,
-        },
-      })
+    // axios
+    //   .get(url, {
+    //     headers: {
+    //       Authorization: ` Bearer ${AuthToken}`,
+    //     },
+    //   })
+    api.get(`dashboard/?plant_id=${localPlantData.id}`)
       .then((response) => {
         setLoaderData(false);
         const { active_products, ...datesData } = response.data;
@@ -276,16 +287,17 @@ function Dashboard() {
   // console.log(Object.keys(tableData).filter(res=>res !== "active_products"),"<<<tabledata")
 
   const initialProductionData = () => {
-    const domain = baseURL;
+    // const domain = baseURL;
     // const [fromDate, toDate] = [startDate, endDate].map(date => date.toISOString().slice(0, 10)); // Format dates as YYYY-MM-DD
-    const url = `${domain}defct-vs-machine/?plant_id=${localPlantData.id}`;
+    // const url = `${domain}defct-vs-machine/?plant_id=${localPlantData.id}`;
     // const url = `${domain}dashboard/`;
-    axios
-      .get(url, {
-        headers: {
-          Authorization: ` Bearer ${AuthToken}`,
-        },
-      })
+    // axios
+    //   .get(url, {
+    //     headers: {
+    //       Authorization: ` Bearer ${AuthToken}`,
+    //     },
+    //   })
+    api.get(`defct-vs-machine/?plant_id=${localPlantData.id}`)
       .then((response) => {
         setProductionData(response.data.data_last_7_days);
       })
@@ -296,14 +308,15 @@ function Dashboard() {
   const [alertData, setAlertData] = useState(null);
 
   const prodApi = () => {
-    const domain = `${baseURL}`;
-    const url = `${domain}product/?plant_name=${localPlantData.plant_name}`;
-    axios
-      .get(url, {
-        headers: {
-          Authorization: `Bearer ${AuthToken}`,
-        },
-      })
+    // const domain = `${baseURL}`;
+    // const url = `${domain}product/?plant_name=${localPlantData.plant_name}`;
+    // axios
+    //   .get(url, {
+    //     headers: {
+    //       Authorization: `Bearer ${AuthToken}`,
+    //     },
+    //   })
+    api.get(`product/?plant_name=${localPlantData.plant_name}`)
       .then((res) => {
         console.log(res.data, "prod");
         setAlertData(res.data.results);
@@ -367,7 +380,7 @@ function Dashboard() {
 
   const handleMachineCheckBoxChange = (checkedValues) => {
     setSelectedCheckboxMachine(checkedValues);
-    let url = `${baseURL}/reports?machine=`;
+    let url = `/reports?machine=`;
     checkedValues.forEach((machineId, index) => {
       if (index !== 0) {
         url += ",";
@@ -375,12 +388,15 @@ function Dashboard() {
       url += `machine${machineId}`;
     });
 
-    axios
-      .get(url)
+    // axios
+    //   .get(url)
+
+    api.get(url)
       .then((response) => {
         console.log(response);
         // setTableData(response.data);
       })
+
       .catch((error) => {
         console.error("Error fetching department data:", error);
       });
@@ -638,9 +654,9 @@ function Dashboard() {
               value={
                 selectedDate
                   ? [
-                      dayjs(selectedDate[0], dateFormat),
-                      dayjs(selectedDate[1], dateFormat),
-                    ]
+                    dayjs(selectedDate[0], dateFormat),
+                    dayjs(selectedDate[1], dateFormat),
+                  ]
                   : []
               }
             />
@@ -759,11 +775,10 @@ function Dashboard() {
             <Link to="/insights">
               <Card
                 bordered={false}
-                className={`criclebox notification-change ${
-                  notifications.length > prevNotificationLength
-                    ? "notification-change"
-                    : ""
-                }`}
+                className={`criclebox notification-change ${notifications.length > prevNotificationLength
+                  ? "notification-change"
+                  : ""
+                  }`}
                 style={{ minHeight: "180px" }}
               >
                 {/* <Card bordered={false} className={`criclebox ${notifications.length > prevNotificationLength ? 'notification-change' : ''}`}> */}

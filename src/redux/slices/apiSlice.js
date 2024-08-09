@@ -13,13 +13,14 @@ const initialState = {
   error: null,
 };
 
+
 // Create async thunk for API requests
 export const fetchApiData = createAsyncThunk(
   'api/fetchApiData',
   async (endpoint, { getState, rejectWithValue }) => {
     const state = getState();
     const { token } = state.api;
-    
+
     try {
       const response = await axios.get(`${baseURL}/${endpoint}`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -30,6 +31,7 @@ export const fetchApiData = createAsyncThunk(
     }
   }
 );
+
 
 const apiSlice = createSlice({
   name: 'api',
@@ -42,6 +44,7 @@ const apiSlice = createSlice({
       state.token = null;
     },
   },
+
   extraReducers: (builder) => {
     builder
       .addCase(fetchApiData.pending, (state) => {
@@ -56,6 +59,7 @@ const apiSlice = createSlice({
         state.error = action.payload;
       });
   },
+
 });
 
 export const { setToken, clearToken } = apiSlice.actions;

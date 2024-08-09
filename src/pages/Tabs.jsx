@@ -54,9 +54,9 @@ const TabsData = ({param}) => {
       tags: ['cool', 'teacher'],
     },
   ];
-  const [api, contextHolder] = notification.useNotification();
+const [api, contextHolder] = notification.useNotification();
 
-const [tableData,setTableData]=useState([])
+          const [tableData,setTableData]=useState([])
 const [color, setColor] = useState("#561ecb");
 const [data,setData] = useState();
 const [form] = Form.useForm();

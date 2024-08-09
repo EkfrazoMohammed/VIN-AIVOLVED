@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { Card, Col, Input, Checkbox, notification } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { API } from '../../API/API';
+import { useDispatch, useSelector } from 'react-redux';
+import ApiCall, { API } from '../../API/API';
 import { setToken } from '../../redux/slices/apiSlice';
+import { login } from "../../redux/slices/authSlice2"
 
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
 
   const [loginPayload, setLoginPayload] = useState({
     email_or_phone: "",
@@ -37,16 +39,28 @@ const Login = () => {
     if (!loginPayload.password) {
       setError(prev => ({ ...prev, PasswordError: "*Password is required" }));
     }
-    
+
     // Proceed with login if no errors
     if (loginPayload.email_or_phone && loginPayload.password && !error.UserError && !error.PasswordError) {
       try {
-        const res = await API.post('/login/', loginPayload);
+
+        const res = await ApiCall.post('/login/', loginPayload);
+
+
         if (res.status === 200) {
-          dispatch(setToken(res.data.access_token));
+          // dispatch(setToken(res.data.access_token));
+          const { access_token
+            , refresh_token } = res.data
+
+          dispatch(login({ accessToken: access_token, refreshToken: refresh_token }))
+
           openNotification("success", "Login Successful");
           navigate("/Plant");
+
         }
+
+
+
       } catch (error) {
         openNotification("error", error.response?.data?.detail || "Invalid Credentials");
       }

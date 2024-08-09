@@ -47,8 +47,12 @@ import dayjs from "dayjs";
 import { Hourglass } from "react-loader-spinner";
 import { IoFilterSharp } from "react-icons/io5";
 import RealTimeManufacturingSection from "./RealTimeManufacturingSection";
+import { useSelector } from "react-redux";
+import useApiInterceptor from "../../hooks/AuthHook/Apinterceptor";
 
 const DashboardContentLayout = ({ children }) => {
+  const apiCall = useApiInterceptor();
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -88,18 +92,19 @@ const DashboardContentLayout = ({ children }) => {
   const handleProductChange = (value) => {
     setSelectedProduct(value);
   };
+  const localPlantData = useSelector((state) => state.auth.plantData)
 
-  const localItems = localStorage.getItem("PlantData");
-  let localPlantData = [];
+  // const localPlantData = localStorage.getItem("PlantData");
+  // let localPlantData = [];
 
-  try {
-    // Parse only if localItems is not null
-    if (localItems) {
-      localPlantData = JSON.parse(localItems);
-    }
-  } catch (error) {
-    console.error("Failed to parse PlantData from localStorage:", error);
-  }
+  // try {
+  //   // Parse only if localItems is not null
+  //   if (localItems) {
+  //     localPlantData = JSON.parse(localItems);
+  //   }
+  // } catch (error) {
+  //   console.error("Failed to parse PlantData from localStorage:", error);
+  // }
 
   // Handler for date range changes
   const handleDateRangeChange = (dates, dateStrings) => {
@@ -174,12 +179,14 @@ const DashboardContentLayout = ({ children }) => {
   const getSystemStatus = () => {
     const domain = `${baseURL}`;
     let url = `${domain}system-status/?plant_id=${localPlantData.id}`;
-    axios
-      .get(url, {
-        headers: {
-          Authorization: `Bearer ${AuthToken}`,
-        },
-      })
+    // axios
+    //   .get(url, {
+    //     headers: {
+    //       Authorization: `Bearer ${AuthToken}`,
+    //     },
+    //   })
+
+    apiCall.get(`system-status/?plant_id=${localPlantData.id}`)
       .then((response) => {
         setActiveMachines(
           response.data.results.filter(
@@ -200,11 +207,11 @@ const DashboardContentLayout = ({ children }) => {
 
         // Fetching data in parallel
         await Promise.all([
+          initialProductionData(),
           getDepartments(),
           getMachines(),
           initialDateRange(),
           initialTableData(),
-          initialProductionData(),
           prodApi(),
           getSystemStatus(),
         ]);
@@ -221,12 +228,13 @@ const DashboardContentLayout = ({ children }) => {
   const getMachines = () => {
     const domain = `${baseURL}`;
     let url = `${domain}machine/?plant_name=${localPlantData.plant_name}`;
-    axios
-      .get(url, {
-        headers: {
-          Authorization: `Bearer ${AuthToken}`,
-        },
-      })
+    // axios
+    //   .get(url, {
+    //     headers: {
+    //       Authorization: `Bearer ${AuthToken}`,
+    //     },
+    //   })
+    api.get(`machine/?plant_name=${localPlantData.plant_name}`)
       .then((response) => {
         const formattedMachines = response.data.results.map((machine) => ({
           id: machine.id,
@@ -242,12 +250,13 @@ const DashboardContentLayout = ({ children }) => {
   const getDepartments = () => {
     const domain = `${baseURL}`;
     let url = `${domain}department/?plant_name=${localPlantData.plant_name}`;
-    axios
-      .get(url, {
-        headers: {
-          Authorization: ` Bearer ${AuthToken}`,
-        },
-      })
+    // axios
+    //   .get(url, {
+    //     headers: {
+    //       Authorization: ` Bearer ${AuthToken}`,
+    //     },
+    //   })
+    apiCall.get(`department/?plant_name=${localPlantData.plant_name}`)
       .then((response) => {
         const formattedDepartment = response.data.results.map((department) => ({
           id: department.id,
@@ -289,6 +298,8 @@ const DashboardContentLayout = ({ children }) => {
           Authorization: ` Bearer ${AuthToken}`,
         },
       })
+      // apiCall.get(`dashboard/?plant_id=${localPlantData.id}`)
+
       .then((response) => {
         setLoaderData(false);
         const { active_products, ...datesData } = response.data;
@@ -308,12 +319,13 @@ const DashboardContentLayout = ({ children }) => {
     // const [fromDate, toDate] = [startDate, endDate].map(date => date.toISOString().slice(0, 10)); // Format dates as YYYY-MM-DD
     const url = `${domain}defct-vs-machine/?plant_id=${localPlantData.id}`;
     // const url = `${domain}dashboard/`;
-    axios
-      .get(url, {
-        headers: {
-          Authorization: ` Bearer ${AuthToken}`,
-        },
-      })
+    // axios
+    //   .get(url, {
+    //     headers: {
+    //       Authorization: ` Bearer ${AuthToken}`,
+    //     },
+    //   })
+    api.get(`defct-vs-machine/?plant_id=${localPlantData.id}`)
       .then((response) => {
         setProductionData(response.data.data_last_7_days);
       })
@@ -597,12 +609,12 @@ const DashboardContentLayout = ({ children }) => {
     return cleanup;
   }, [api]);
 
-  
+
   const close = () => {
     console.log("Notification was closed");
   };
-  // console.log(menu, "<<<");
 
+  console.log(productionData, "prodData")
   return (
     <>
       {children && (currentUrlPath.pathname !== "/" && currentUrlPath.pathname !== "/dashboard-home") ? (
@@ -667,9 +679,9 @@ const DashboardContentLayout = ({ children }) => {
                       value={
                         selectedDate
                           ? [
-                              dayjs(selectedDate[0], "YYYY/MM/DD"),
-                              dayjs(selectedDate[1], "YYYY/MM/DD"),
-                            ]
+                            dayjs(selectedDate[0], "YYYY/MM/DD"),
+                            dayjs(selectedDate[1], "YYYY/MM/DD"),
+                          ]
                           : []
                       }
                     />
@@ -736,11 +748,10 @@ const DashboardContentLayout = ({ children }) => {
                     <Link
                       to="/insights"
                       className={`relative p-4 bg-gray-100 rounded-xl text-left group hover:text-white hover:!bg-red-500 
-                    ${
-                      notifications.length > prevNotificationLength
-                        ? "notification-change"
-                        : ""
-                    }
+                    ${notifications.length > prevNotificationLength
+                          ? "notification-change"
+                          : ""
+                        }
                   `}
                     >
                       <div className="flex justify-between items-center">
