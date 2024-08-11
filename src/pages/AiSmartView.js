@@ -7,13 +7,16 @@
 // import { Select } from "antd";
 // import "../index.css";
 // import { RightOutlined, LeftOutlined } from '@ant-design/icons';
-// import { AuthToken, baseURL } from "../API/API";
 // import { Hourglass } from 'react-loader-spinner';
 // import "../assets/styles/ai-smart.css";
-
+// // import {API, AuthToken, baseURL, localPlantData} from "./../API/API"
+// import { useSelector,useDispatch } from "react-redux";
+// import {baseURL} from "./../API/API"
 // const AiSmartView = () => {
-//   const localItems = localStorage.getItem("PlantData");
-//   const localPlantData = JSON.parse(localItems);
+// //   const localItems = localStorage.getItem("PlantData");
+// //   const localPlantData = JSON.parse(localItems);
+// const localPlantData = useSelector((state) => state.plant.plantData);
+//   const AuthToken = useSelector((state) => state.auth.authData.access_token);
 //   const [defectImages, setDefectImages] = useState([]);
 //   const [defects, setDefects] = useState([]);
 //   const [selectedDefect, setSelectedDefect] = useState(null);

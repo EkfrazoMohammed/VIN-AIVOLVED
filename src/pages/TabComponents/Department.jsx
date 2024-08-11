@@ -1,16 +1,19 @@
 import React ,{useMemo, useState,useEffect} from 'react';
 import {Button, Select ,Space, Card, Col, Row ,ColorPicker,Table, Tag, Form, Input, Radio, notification, Descriptions } from 'antd';
 import { Switch } from 'antd';
+import { useSelector } from 'react-redux';
 import axios from "axios";
 
 import {  EditOutlined} from '@ant-design/icons';
-import { AuthToken, baseURL } from '../../API/API';
-
+// import {API, AuthToken, baseURL, localPlantData} from "./../API/API"
+import {baseURL} from "../../API/API"
 
 const Departments = () => {
-  const localItems = localStorage.getItem("PlantData")
-  const localPlantData = JSON.parse(localItems) 
+  // const localItems = localStorage.getItem("PlantData")
+  // const localPlantData = JSON.parse(localItems) 
 
+  const localPlantData = useSelector((state) => state.plant.plantData);
+  const AuthToken = useSelector((state) => state.auth.authData.access_token);
     const [tableData,setTableData]= useState()
 // Table Columns
 const columns = [

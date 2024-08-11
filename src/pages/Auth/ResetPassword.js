@@ -89,8 +89,6 @@ if(name === "confirm_password" ){
 setresetPayload((prev)=>({...prev,[name]:value}))
 }
 
-console.log(resetPayload)
-
 const confirmEmail =async ()=>{
 try {
     if(resetPayload.email === ""){

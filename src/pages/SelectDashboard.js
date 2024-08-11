@@ -25,7 +25,6 @@ useEffect(()=>{
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     const image = URL.createObjectURL(file);
-    console.log(image);
     setImageFile(image);
   };
   let token;

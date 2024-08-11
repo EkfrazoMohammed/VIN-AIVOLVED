@@ -10,8 +10,6 @@ import { setPlantData } from "../redux/slices/plantSlice"; // Import setPlantDat
 
 import { useNavigate } from 'react-router-dom';
 const Plant = () => {
-  const [modal2Open, setModal2Open] = useState(false);
-  const [ImageFile, setImageFile] = useState(null);
   const [plant, setPlant] = useState([]);
   const [loader, setLoader] = useState(true);
 
@@ -21,7 +19,7 @@ const Plant = () => {
     slidesToShow: 3,
     slidesToScroll: 1,
     vertical: true,
-    verticalSwiping: true,
+    verticalSwiping: false,
     autoplay: true,
     speed: 1500,
     autoplaySpeed: 1,
@@ -59,10 +57,30 @@ const Plant = () => {
 return (
   <Row className="h-screen m-0 p-0 overflow-hidden">
     <Col span={5} className="flex justify-center p-0 m-0">
+     
       <div className="slider-container">
-        <Slider {...settings}>
-          {/* Slider items */}
-        </Slider>
+      <Slider {...settings}>
+      <div className="image_wrapper">
+    <img 
+        style={{height: '100%', width: '200px', objectFit: 'contain',objectPosition:'center'}} 
+        src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/hamamsoap.png" 
+        alt="" 
+    />
+</div>
+<img 
+        style={{height: '100%', width: '200px', objectFit: 'contain',objectPosition:'center'}} 
+        src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/surfexcel.png" 
+        alt="" 
+    />
+        <div  className="image_wrapper" >
+
+        <img style={{height: '100%', width: '200px',  objectFit: 'contain',objectPosition:'center'}} src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/dovesachet.png" alt="" />        </div>
+        <div  className="image_wrapper" >
+        <img style={{height: '100%', width: '200px',  objectFit: 'contain',objectPosition:'center'}}src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/sunsilksaceht.png" alt="" />        </div>
+        <div  className="image_wrapper" >
+        <img style={{height: '100%', width: '200px',  objectFit: 'contain',objectPosition:'center'}}src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/clinicplus.png" alt="" />        </div>
+  
+      </Slider>
       </div>
     </Col>
     <Col span={14} className="flex justify-start bg-[#dfefff] flex-col gap-0 items-center">
@@ -98,11 +116,16 @@ return (
                         onClick={() => handleStorage(plant)}
                       >
                         <div className="custom-card-content flex flex-col items-center">
-                          <img
+                          {/* <img
                             src={plant.plant_logo}
                             alt=""
                             className="custom-card-image"
-                          />
+                          /> */}
+                            <img
+                    src='https://media.licdn.com/dms/image/C4E12AQHw3bPisn1x0g/article-inline_image-shrink_1000_1488/0/1595858405291?e=1724284800&v=beta&t=mHKkjIq_LELHb3yT9Euo1vDxlSfmjlBlZwhTZPdJsDs'
+                    style={{ width: "90%",height: "90%",  borderRadius: "50%", }}
+                    alt=""
+                  />
                           <h3>{plant.plant_name}</h3>
                         </div>
                       </Card>
@@ -115,6 +138,32 @@ return (
         </>
       }
     </Col>
+
+    <Col span={5} style={{display:'flex',justifyContent:'center'}}>
+
+<div className="slider-container">
+      <Slider {...settings}>
+      <div className="image_wrapper">
+    <img 
+        style={{height: '100%', width: '200px', objectFit: 'contain',objectPosition:'center'}} 
+        src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/surfexcel.png" 
+        alt="" 
+    />
+</div>
+        <div  className="image_wrapper" >
+
+        <img style={{height: '100%', width: '200px',  objectFit: 'contain',objectPosition:'center'}} src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/lifebuoy.png" alt="" />        </div>
+        <div  className="image_wrapper" >
+        <img style={{height: '100%', width: '200px',  objectFit: 'contain',objectPosition:'center'}}src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/comfortgreen.png" alt="" />        </div>
+        <div  className="image_wrapper" >
+        <img style={{height: '100%', width: '200px',  objectFit: 'contain',objectPosition:'center'}}src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/comfortpink.png" alt="" />        </div>
+        <div  className="image_wrapper" >
+        <img style={{height: '100%', width: '200px',  objectFit: 'contain',objectPosition:'center'}}src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/comfortblue.png" alt="" />        </div>
+  
+      </Slider>
+    </div>
+     
+</Col>
   </Row>
 );
 };

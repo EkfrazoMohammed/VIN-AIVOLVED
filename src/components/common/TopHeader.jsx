@@ -8,6 +8,7 @@ const TopHeader = ({clientName, clientLogoImgUrl}) => {
           <option value={clientName} selected="true">{clientName}</option>
         </select>
       </div>
+      
       <div className="client-logo-w">
         <img src={clientLogoImgUrl} alt="client logo" className='w-[38px] h-[35px] object-contain bg-gray-200 rounded-full border' />
       </div>

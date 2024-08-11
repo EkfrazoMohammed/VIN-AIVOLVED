@@ -1,24 +1,32 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
-import sessionStorage from 'redux-persist/lib/storage/session'; // Use sessionStorage
-
+import storage from 'redux-persist/lib/storage';
 import authReducer from './slices/authSlice';
-import plantReducer from './slices/plantSlice'; // Import plant slice
+import plantReducer from './slices/plantSlice';
 
-const persistConfig = {
-  key: 'root',
-  storage: sessionStorage, 
+// Persist Configurations for each slice
+const authPersistConfig = {
+  key: 'auth',
+  storage,
 };
 
-// Wrap individual reducers with persistReducer
-const persistedAuthReducer = persistReducer(persistConfig, authReducer);
-const persistedPlantReducer = persistReducer(persistConfig, plantReducer);
+const plantPersistConfig = {
+  key: 'plant',
+  storage,
+};
+
+// Combine reducers
+const rootReducer = {
+  auth: persistReducer(authPersistConfig, authReducer),
+  plant: persistReducer(plantPersistConfig, plantReducer),
+};
 
 const store = configureStore({
-  reducer: {
-    auth: persistedAuthReducer,
-    plant: persistedPlantReducer,
-  },
+  reducer: rootReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false, // Necessary for Redux Persist
+    }),
 });
 
 export const persistor = persistStore(store);

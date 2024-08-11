@@ -5,8 +5,6 @@ import TotalOverview from "./TotalOverview";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoMdArrowForward } from "react-icons/io";
-
-import { useSelector,useDispatch } from "react-redux";
 import DOMPurify from 'dompurify';
 
 import {
@@ -43,8 +41,7 @@ import PieChart from "../../components/chart/PieChart";
 import MachinesParameter from "../../pages/MachinesParameterWithPagination";
 import MachinesParameterWithPagination from "../../pages/MachinesParameterWithPagination";
 import MachineParam from "../../components/chart/MachineParam";
-// import { API, baseURL, AuthToken, localPlantData } from "../../API/API";
-import { baseURL } from "../../API/API";
+import { API, baseURL, AuthToken, localPlantData } from "../../API/API";
 import ProductionVsReject from "../../components/chart/ProductionVsReject";
 import dayjs from "dayjs";
 import { Hourglass } from "react-loader-spinner";
@@ -92,19 +89,17 @@ const DashboardContentLayout = ({ children }) => {
     setSelectedProduct(value);
   };
 
-  // const localItems = localStorage.getItem("PlantData");
-  // let localPlantData = [];
+  const localItems = localStorage.getItem("PlantData");
+  let localPlantData = [];
 
-  // try {
-  //   // Parse only if localItems is not null
-  //   if (localItems) {
-  //     localPlantData = JSON.parse(localItems);
-  //   }
-  // } catch (error) {
-  //   console.error("Failed to parse PlantData from localStorage:", error);
-  // }
-  const localPlantData = useSelector((state) => state.plant.plantData);
-  const AuthToken = useSelector((state) => state.auth.authData.access_token);
+  try {
+    // Parse only if localItems is not null
+    if (localItems) {
+      localPlantData = JSON.parse(localItems);
+    }
+  } catch (error) {
+    console.error("Failed to parse PlantData from localStorage:", error);
+  }
 
   // Handler for date range changes
   const handleDateRangeChange = (dates, dateStrings) => {
@@ -338,6 +333,7 @@ const DashboardContentLayout = ({ children }) => {
         },
       })
       .then((res) => {
+        console.log(res.data, "prod");
         setAlertData(res.data.results);
         setProductOptions(res.data.results);
       })
@@ -390,8 +386,8 @@ const DashboardContentLayout = ({ children }) => {
     axios
       .get(url)
       .then((response) => {
-       
-        setTableData(response.data);
+        console.log(response);
+        // setTableData(response.data);
       })
       .catch((error) => {
         console.error("Error fetching department data:", error);

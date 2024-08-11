@@ -25,11 +25,11 @@ const createAxiosInstance = (accessToken) => {
 
 // Custom hook
 const useAxiosInstance = () => {
-  const accessToken = useSelector((state) => state.auth.accessToken);
+  const accessToken = useSelector((state) => state.auth.authData.access_token);
 
   useEffect(() => {
     // Log the accessToken for debugging
-    console.log("Access Token:", accessToken);
+    // console.log("Access Token:", accessToken);
   }, [accessToken]);
 
   // Create and return axios instance

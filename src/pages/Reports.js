@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-
+import { useSelector,useDispatch } from 'react-redux';
 import { Table, Select, DatePicker, Button, Image, Tag } from 'antd';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
 import moment from 'moment';
-import {API, AuthToken, baseURL, localPlantData} from "./../API/API"
+// import {API, AuthToken, baseURL, localPlantData} from "./../API/API"
+import {baseURL} from "./../API/API"
 import { ToastContainer, toast } from 'react-toastify';
 import {
   VideoCameraOutlined,
@@ -25,8 +26,11 @@ const Reports = () => {
   const dateFormat = 'YYYY/MM/DD';
 
   const location = useLocation();
-  const localItems = localStorage.getItem("PlantData")
-  const localPlantData = JSON.parse(localItems) 
+  // const localItems = localStorage.getItem("PlantData")
+  // const localPlantData = JSON.parse(localItems) 
+  const localPlantData = useSelector((state) => state.plant.plantData);
+  const AuthToken = useSelector((state) => state.auth.authData.access_token);
+
   const defectProp = location?.state?.clickedVal[0]?.name || null
   const defectId = location?.state?.clickedVal[0]?.id || null
 
@@ -139,7 +143,6 @@ const Reports = () => {
 
   const handleDateRangeChange = (dates, dateStrings) => {
     if (dateStrings) {
-      console.log(dateStrings)
       setSelectedDate(dateStrings)
       setDateRange(dateStrings);
     } else {
@@ -304,7 +307,6 @@ const Reports = () => {
   const initialTableData = (page,pageSize) => {
     // const domain = `http://143.110.184.45:8100/`;
     setLoader(true)
-   console.log(pageSize)
    const url = `${baseURL}reports/?page=${page}&plant_id=${localPlantData.id}&page_size=${pageSize}`;
     axios.get(url,{
       headers:{
@@ -395,7 +397,6 @@ const {results,total_count,page_size} = response.data
   
 
   const handleTableChange = (pagination) => {
-    console.log(pagination.pageSize)
    setPagination({
     ...pagination,
     pageSize:pagination.pageSize

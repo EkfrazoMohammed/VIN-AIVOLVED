@@ -5,6 +5,8 @@ import TotalOverview from "./TotalOverview";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoMdArrowForward } from "react-icons/io";
+
+import { useSelector,useDispatch } from "react-redux";
 import DOMPurify from 'dompurify';
 
 import {
@@ -41,7 +43,8 @@ import PieChart from "../../components/chart/PieChart";
 import MachinesParameter from "../../pages/MachinesParameterWithPagination";
 import MachinesParameterWithPagination from "../../pages/MachinesParameterWithPagination";
 import MachineParam from "../../components/chart/MachineParam";
-import { API, baseURL, AuthToken, localPlantData } from "../../API/API";
+// import { API, baseURL, AuthToken, localPlantData } from "../../API/API";
+import { baseURL } from "../../API/API";
 import ProductionVsReject from "../../components/chart/ProductionVsReject";
 import dayjs from "dayjs";
 import { Hourglass } from "react-loader-spinner";
@@ -89,17 +92,19 @@ const DashboardContentLayout = ({ children }) => {
     setSelectedProduct(value);
   };
 
-  const localItems = localStorage.getItem("PlantData");
-  let localPlantData = [];
+  // const localItems = localStorage.getItem("PlantData");
+  // let localPlantData = [];
 
-  try {
-    // Parse only if localItems is not null
-    if (localItems) {
-      localPlantData = JSON.parse(localItems);
-    }
-  } catch (error) {
-    console.error("Failed to parse PlantData from localStorage:", error);
-  }
+  // try {
+  //   // Parse only if localItems is not null
+  //   if (localItems) {
+  //     localPlantData = JSON.parse(localItems);
+  //   }
+  // } catch (error) {
+  //   console.error("Failed to parse PlantData from localStorage:", error);
+  // }
+  const localPlantData = useSelector((state) => state.plant.plantData);
+  const AuthToken = useSelector((state) => state.auth.authData.access_token);
 
   // Handler for date range changes
   const handleDateRangeChange = (dates, dateStrings) => {
@@ -333,7 +338,6 @@ const DashboardContentLayout = ({ children }) => {
         },
       })
       .then((res) => {
-        console.log(res.data, "prod");
         setAlertData(res.data.results);
         setProductOptions(res.data.results);
       })
@@ -372,27 +376,7 @@ const DashboardContentLayout = ({ children }) => {
     setCategoryDefects(categorizedData);
   }, [tableData]);
 
-  // const categorizeDefects = (data) => {
-  //   const categorizedData = {};
-
-  //   // Check if data is an array
-  //   if (Array.isArray(data)) {
-  //     data.forEach(item => {
-  //       const { defect_name } = item;
-  //       if (!categorizedData[defect_name]) {
-  //         categorizedData[defect_name] = [];
-  //       }
-  //       categorizedData[defect_name].push(item);
-  //     });
-  //   } else {
-  //     console.error('Data is not an array:', data);
-  //   }
-
-  //   return categorizedData;
-  // };
-
   const [selectedCheckboxMachine, setSelectedCheckboxMachine] = useState([]);
-
   const handleMachineCheckBoxChange = (checkedValues) => {
     setSelectedCheckboxMachine(checkedValues);
     let url = `${baseURL}/reports?machine=`;
@@ -406,8 +390,8 @@ const DashboardContentLayout = ({ children }) => {
     axios
       .get(url)
       .then((response) => {
-        console.log(response);
-        // setTableData(response.data);
+       
+        setTableData(response.data);
       })
       .catch((error) => {
         console.error("Error fetching department data:", error);
@@ -459,7 +443,6 @@ const DashboardContentLayout = ({ children }) => {
       </Menu.Item>
     </Menu>
   );
-  console.log(activeProd, "activeProd");
   const prodMenu = (
     <Menu>
       <Menu.Item key="0">
@@ -500,39 +483,8 @@ const DashboardContentLayout = ({ children }) => {
 
           // Show notification using Ant Design
           const key = `open${Date.now()}`;
-          //   api.open({
-          //     message: message.notification,
-          //     // description: message.notification,
-          //     onClose: close,
-          //     duration: 5000,
-          //     showProgress: true,
-          // pauseOnHover:true,
-          // icon: (
-
-          //   <ExclamationCircleOutlined
-          //     style={{
-          //       color: '#ec522d',
-          //     }}
-          //   />
-          // ),
-          //     style: { whiteSpace: 'pre-line' },  // Added style for new line character
-          //     btn: (
-          //       <Space>
-          //         <Button type="primary" size="small" onClick={() => api.destroy(key)} style={{color:"#ec522d"}}>
-          //     Close
-          //   </Button>
-          //         {/* <Button type="link" size="small" onClick={() => api.destroy()}>
-          //           Destroy All
-          //         </Button> */}
-          //         <Button type="primary" size="large"  style={{fontSize:"1rem",backgroundColor:"#ec522d"}} onClick={() => api.destroy()}>
-          //          <Link to="/insights">View All Errors </Link>
-          //         </Button>
-          //       </Space>
-          //     ),
-          //   });
           api.open({
             message: message.notification,
-            // description: message.notification,
             onClose: close,
             duration: 5000,
             showProgress: true,
@@ -597,12 +549,10 @@ const DashboardContentLayout = ({ children }) => {
     return cleanup;
   }, [api]);
 
-  
+
   const close = () => {
     console.log("Notification was closed");
   };
-  // console.log(menu, "<<<");
-
   return (
     <>
       {children && (currentUrlPath.pathname !== "/" && currentUrlPath.pathname !== "/dashboard-home") ? (
@@ -667,9 +617,9 @@ const DashboardContentLayout = ({ children }) => {
                       value={
                         selectedDate
                           ? [
-                              dayjs(selectedDate[0], "YYYY/MM/DD"),
-                              dayjs(selectedDate[1], "YYYY/MM/DD"),
-                            ]
+                            dayjs(selectedDate[0], "YYYY/MM/DD"),
+                            dayjs(selectedDate[1], "YYYY/MM/DD"),
+                          ]
                           : []
                       }
                     />
@@ -736,11 +686,10 @@ const DashboardContentLayout = ({ children }) => {
                     <Link
                       to="/insights"
                       className={`relative p-4 bg-gray-100 rounded-xl text-left group hover:text-white hover:!bg-red-500 
-                    ${
-                      notifications.length > prevNotificationLength
-                        ? "notification-change"
-                        : ""
-                    }
+                    ${notifications.length > prevNotificationLength
+                          ? "notification-change"
+                          : ""
+                        }
                   `}
                     >
                       <div className="flex justify-between items-center">

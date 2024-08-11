@@ -16,21 +16,21 @@ import MachinesParameter from './pages/MachinesParameter';
 import Camera from './pages/Camera';
 import Settings from './pages/Settings';
 import Insights from './pages/Insights';
-import Organisation from './pages/Organization';
-import Select_dashboard from './pages/SelectDashboard';
 
 const App = () => {
   const dispatch = useDispatch();
-  const { refreshToken, accessToken } = useSelector((state) => state.auth);
-  console.log(accessToken)
-
+  const authData = useSelector((state) => state.auth.authData);
+  console.log(authData)
+  const { access_token, refresh_token } = authData;
+  
   // const refreshTokenHandler = async () => {
-  //   if (!refreshToken) return;
+  //   if (!refresh_token) return;
 
   //   try {
   //     const response = await axiosInstance.post('/refresh_token/', {
-  //       refresh: refreshToken,
+  //       refresh: refresh_token,
   //     });
+  //     console.log(response)
 
   //     const { access_token, refresh_token } = response.data;
   //     dispatch(setAuthData({ access_token, refresh_token }));
@@ -39,16 +39,35 @@ const App = () => {
   //     dispatch(clearAuthData());
   //   }
   // };
+  const refreshTokenHandler = async () => {
+    const currentRefreshToken = refresh_token; // Ensure it's defined
+    if (!currentRefreshToken) return;
+  
+    try {
+      const response = await axiosInstance.post('/refresh_token/', {
+        refresh: currentRefreshToken,
+      });
+  
+      const { access_token, refresh_token } = response.data;
+      dispatch(setAuthData({ access_token, refresh_token })); 
+    } catch (error) {
+      console.error('Token refresh failed:', error);
+      dispatch(clearAuthData()); // Clear state if refresh fails
+    }
+  };
+  
 
-  // useEffect(() => {
-  //   if (accessToken) {
-  //     const interval = setInterval(() => {
-  //       refreshTokenHandler();
-  //     }, 15 * 60 * 1000); // Refresh every 15 minutes
+  useEffect(() => {
+    if (refresh_token) {
+      // Refresh the token every 15 minutes
+      const interval = setInterval(() => {
+        refreshTokenHandler();
+      }, 30 * 60 * 1000); // Refresh every 30 minutes
 
-  //     return () => clearInterval(interval);
-  //   }
-  // }, [accessToken, refreshToken, dispatch]);
+      // Clean up interval on component unmount
+      return () => clearInterval(interval);
+    }
+  }, [refresh_token, dispatch]);
 
   const router = createBrowserRouter([
     {

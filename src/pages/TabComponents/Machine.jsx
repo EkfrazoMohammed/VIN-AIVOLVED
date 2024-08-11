@@ -6,10 +6,13 @@ import { AuthToken, baseURL } from '../../API/API';
 
 import {  EditOutlined} from '@ant-design/icons';
 
-
+import { useSelector } from 'react-redux';
 const Machine = () => {
-  const localItems = localStorage.getItem("PlantData")
-  const localPlantData = JSON.parse(localItems) 
+// const localItems = localStorage.getItem('PlantData');
+  // const localPlantData = JSON.parse(localItems);
+  
+  const localPlantData = useSelector((state) => state.plant.plantData);
+  const AuthToken = useSelector((state) => state.auth.authData.access_token);
     const [tableData,setTableData]= useState()
 // Table Columns
 const columns = [
@@ -60,7 +63,6 @@ const [data,setData] = useState();
 
   // POST METHOD FOR SENDING COLOR CODE
   const handlePost = (param)=>{
-    console.log(data)
 if(data === '' || data === undefined || data === null){
   return (
     api.open({
@@ -95,7 +97,6 @@ const handleChange = useMemo(
   ()=>(typeof color === "string" ? color:color?.toHexString()),
   [color],
 );
-console.log(data)
   return (
 <>
 {contextHolder}

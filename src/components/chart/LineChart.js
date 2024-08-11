@@ -7,7 +7,6 @@ import {API, AuthToken, baseURL} from "../../API/API"
 function LineChart({ data }) {
   const { Title } = Typography;
   const [defectColors, setDefectColors] = useState({});
-  console.log(data,"<<<line")
 
   useEffect(() => {
     // Fetch defect colors from the API
@@ -33,8 +32,6 @@ function LineChart({ data }) {
   if (!data || Object.keys(data).length === 0) {
     return <div style={{fontWeight:"700",textAlign:'center'}}>NO DATA</div>; // or some other fallback UI
   }
-  console.log(defectColors,"<<<")
-  
   // Extract unique defect names from all dates
   const defectNames = [...new Set(Object.values(data).flatMap(defects => Object.keys(defects)))];
   // Sort the dates in ascending order

@@ -5,10 +5,8 @@ import TotalOverview from "./TotalOverview";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoMdArrowForward } from "react-icons/io";
-
-import { useSelector,useDispatch } from "react-redux";
 import DOMPurify from 'dompurify';
-
+import { useSelector,useDispatch } from "react-redux";
 import {
   Link,
   useNavigate,
@@ -43,14 +41,14 @@ import PieChart from "../../components/chart/PieChart";
 import MachinesParameter from "../../pages/MachinesParameterWithPagination";
 import MachinesParameterWithPagination from "../../pages/MachinesParameterWithPagination";
 import MachineParam from "../../components/chart/MachineParam";
-// import { API, baseURL, AuthToken, localPlantData } from "../../API/API";
-import { baseURL } from "../../API/API";
+import { API, baseURL, AuthToken, localPlantData } from "../../API/API";
 import ProductionVsReject from "../../components/chart/ProductionVsReject";
 import dayjs from "dayjs";
 import { Hourglass } from "react-loader-spinner";
 import { IoFilterSharp } from "react-icons/io5";
 import RealTimeManufacturingSection from "./RealTimeManufacturingSection";
 
+import { useFetchMachines, useFetchProducts, useFetchDefects, useFetchDashboardData, useFetchDefectVsMachineData } from '../../services/apiCalls';
 const DashboardContentLayout = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -80,301 +78,58 @@ const DashboardContentLayout = ({ children }) => {
   const [activeMachines, setActiveMachines] = useState([]);
   const [activeProd, setActiveProd] = useState([]);
 
+  const [defectsData, setDefectsData] = useState([]);
+
+  const [categoryDefects, setCategoryDefects] = useState([]);
+  const [filterActive, setFilterActive] = useState(false);
+
+  const [notifications, setNotifications] = useState([]);
+  const [isSocketConnected, setIsSocketConnected] = useState(false);
+  const [prevNotificationLength, setPrevNotificationLength] = useState(0);
+  const [api, contextHolder] = notification.useNotification();
   const currentUrlPath = useLocation();
 
-  const handleMachineChange = (value) => {
-    setSelectedMachine(value);
-  };
-  const handleDepartmentChange = (value) => {
-    setSelectedDepartment(value);
-  };
-  const handleProductChange = (value) => {
-    setSelectedProduct(value);
-  };
+  const { Title } = Typography;
+  const { RangePicker } = DatePicker;
 
-  // const localItems = localStorage.getItem("PlantData");
-  // let localPlantData = [];
-
-  // try {
-  //   // Parse only if localItems is not null
-  //   if (localItems) {
-  //     localPlantData = JSON.parse(localItems);
-  //   }
-  // } catch (error) {
-  //   console.error("Failed to parse PlantData from localStorage:", error);
-  // }
   const localPlantData = useSelector((state) => state.plant.plantData);
-  const AuthToken = useSelector((state) => state.auth.authData.access_token);
 
-  // Handler for date range changes
-  const handleDateRangeChange = (dates, dateStrings) => {
-    // Ensure dates and dateStrings are valid before updating state
-    if (Array.isArray(dateStrings) && dateStrings.length === 2) {
-      setSelectedDate(dateStrings);
-      setDateRange(dateStrings);
-    } else {
-      console.error("Invalid date range:", dates, dateStrings);
-    }
-  };
-
-  const resetFilter = () => {
-    // Reset data only if needed
-    initialTableData();
-    initialProductionData();
-
-    // Reset selected filters in a single setState call
-    setSelectedMachine(null);
-    setSelectedProduct(null);
-    setSelectedDate(null);
-
-    // Reset filter active state
-    setFilterActive(false);
-  };
-
-  const handleApplyFilters = () => {
-    setLoaderData(true);
-    const domain = `${baseURL}`;
-    const [fromDate, toDate] = dateRange;
-
-    const queryParams = {
-      plant_id: localPlantData.id,
-      from_date: fromDate,
-      to_date: toDate,
-      machine_id: selectedMachine,
-      department_id: selectedDepartment,
-      product_id: selectedProduct,
-      defect_id: selectedDefect,
-    };
-
-    // Filter out undefined or null values
-    const filteredQueryParams = Object.fromEntries(
-      Object.entries(queryParams).filter(
-        ([_, value]) => value !== undefined && value !== null
-      )
-    );
-
-    // Create query string
-    const queryString = new URLSearchParams(filteredQueryParams).toString();
-    const url = `${domain}dashboard/?${queryString}`;
-
-    axios
-      .get(url, {
-        headers: {
-          Authorization: `Bearer ${AuthToken}`,
-        },
-      })
-      .then((response) => {
-        setLoaderData(false);
-        const { active_products, ...filterData } = response.data;
-        setTableData(filterData);
-        setActiveProd(active_products);
-        setFilterActive(true);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        setLoaderData(false);
-      });
-  };
-
-  const getSystemStatus = () => {
-    const domain = `${baseURL}`;
-    let url = `${domain}system-status/?plant_id=${localPlantData.id}`;
-    axios
-      .get(url, {
-        headers: {
-          Authorization: `Bearer ${AuthToken}`,
-        },
-      })
-      .then((response) => {
-        setActiveMachines(
-          response.data.results.filter(
-            (machine) => machine.system_status === true
-          )
-        );
-      })
-      .catch((error) => {
-        console.error("Error fetching machine data:", error);
-      });
-  };
-
+  // Custom hooks
+  const fetchMachines = useFetchMachines(localPlantData.plant_name);
+  const fetchProducts = useFetchProducts(localPlantData.plant_name);
+  const fetchDashboardData = useFetchDashboardData(localPlantData.id);
+  const fetchDefectVsMachineData = useFetchDefectVsMachineData(localPlantData.id);
+  const fetchDefects = useFetchDefects();
   useEffect(() => {
+    
     const fetchData = async () => {
       try {
-        // Set loading to true
         setLoading(true);
-
-        // Fetching data in parallel
-        await Promise.all([
-          getDepartments(),
-          getMachines(),
-          initialDateRange(),
-          initialTableData(),
-          initialProductionData(),
-          prodApi(),
-          getSystemStatus(),
-        ]);
-      } catch (err) {
-        setError(err.message || "Failed to fetch data");
+        const machines = await fetchMachines();
+        setMachineOptions(machines);
+        const products = await fetchProducts();
+        setProductOptions(products);
+        const dashboardData = await fetchDashboardData({ plant_id: localPlantData.id });
+        setTableData(dashboardData);
+        const productionData = await fetchDefectVsMachineData();
+        setProductionData(productionData);
+        const defects = await fetchDefects();
+        setDefectsData(defects);
+      } catch (error) {
+        console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }
     };
-
+    
     fetchData();
-  }, []); // Add dependencies
-
-  const getMachines = () => {
-    const domain = `${baseURL}`;
-    let url = `${domain}machine/?plant_name=${localPlantData.plant_name}`;
-    axios
-      .get(url, {
-        headers: {
-          Authorization: `Bearer ${AuthToken}`,
-        },
-      })
-      .then((response) => {
-        const formattedMachines = response.data.results.map((machine) => ({
-          id: machine.id,
-          name: machine.name,
-        }));
-        setMachineOptions(formattedMachines);
-      })
-      .catch((error) => {
-        console.error("Error fetching machine data:", error);
-      });
-  };
-
-  const getDepartments = () => {
-    const domain = `${baseURL}`;
-    let url = `${domain}department/?plant_name=${localPlantData.plant_name}`;
-    axios
-      .get(url, {
-        headers: {
-          Authorization: ` Bearer ${AuthToken}`,
-        },
-      })
-      .then((response) => {
-        const formattedDepartment = response.data.results.map((department) => ({
-          id: department.id,
-          name: department.name,
-        }));
-        setDepartmentOptions(formattedDepartment);
-      })
-      .catch((error) => {
-        console.error("Error fetching department data:", error);
-      });
-  };
-  const initialDateRange = () => {
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - 7); // 7 days ago
-    const formattedStartDate = startDate.toISOString().slice(0, 10);
-    // Format startDate as YYYY-MM-DD
-
-    const endDate = new Date(); // Today's date
-    const formattedEndDate = endDate.toISOString().slice(0, 10); // Format endDate as YYYY-MM-DD
-
-    setDateRange([formattedStartDate, formattedEndDate]);
-  };
-
-  const [filterActive, setFilterActive] = useState(false);
-
-  const initialTableData = () => {
-    setLoaderData(true);
-
-    const domain = baseURL;
-    const [fromDate, toDate] = [startDate, endDate].map((date) =>
-      date.toISOString().slice(0, 10)
-    ); // Format dates as YYYY-MM-DD
-    const url = `${domain}dashboard/?plant_id=${localPlantData.id}`;
-    // const url = `${domain}dashboard/`;
-
-    axios
-      .get(url, {
-        headers: {
-          Authorization: ` Bearer ${AuthToken}`,
-        },
-      })
-      .then((response) => {
-        setLoaderData(false);
-        const { active_products, ...datesData } = response.data;
-        setTableData(datesData);
-        setActiveProd(active_products);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        setLoaderData(false);
-      });
-  };
-
-  // console.log(Object.keys(tableData).filter(res=>res !== "active_products"),"<<<tabledata")
-
-  const initialProductionData = () => {
-    const domain = baseURL;
-    // const [fromDate, toDate] = [startDate, endDate].map(date => date.toISOString().slice(0, 10)); // Format dates as YYYY-MM-DD
-    const url = `${domain}defct-vs-machine/?plant_id=${localPlantData.id}`;
-    // const url = `${domain}dashboard/`;
-    axios
-      .get(url, {
-        headers: {
-          Authorization: ` Bearer ${AuthToken}`,
-        },
-      })
-      .then((response) => {
-        setProductionData(response.data.data_last_7_days);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  };
-  const [alertData, setAlertData] = useState(null);
-
-  const prodApi = () => {
-    const domain = `${baseURL}`;
-    const url = `${domain}product/?plant_name=${localPlantData.plant_name}`;
-    axios
-      .get(url, {
-        headers: {
-          Authorization: `Bearer ${AuthToken}`,
-        },
-      })
-      .then((res) => {
-        setAlertData(res.data.results);
-        setProductOptions(res.data.results);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
-  const { Title } = Typography;
-  const { RangePicker } = DatePicker;
-  const [categoryDefects, setCategoryDefects] = useState([]);
-  // Function to categorize defects
-  const categorizeDefects = (data) => {
-    const categories = {};
-
-    // Iterate through each date in the tableData
-    Object.keys(data).forEach((date) => {
-      const defects = data[date];
-
-      // Iterate through each defect in the current date
-      Object.keys(defects).forEach((defect) => {
-        if (!categories[defect]) {
-          categories[defect] = 0;
-        }
-
-        // Accumulate the defect value for the category
-        categories[defect] += defects[defect];
-      });
-    });
-
-    return categories;
-  };
+  }, []);
+  
 
   useEffect(() => {
-    const categorizedData = categorizeDefects(tableData);
+    const categorizedData = categorizeDefects(defectsData);
     setCategoryDefects(categorizedData);
-  }, [tableData]);
+  }, [defectsData]);
 
   const [selectedCheckboxMachine, setSelectedCheckboxMachine] = useState([]);
   const handleMachineCheckBoxChange = (checkedValues) => {
@@ -390,12 +145,133 @@ const DashboardContentLayout = ({ children }) => {
     axios
       .get(url)
       .then((response) => {
-       
-        setTableData(response.data);
+        console.log(response);
+        // setTableData(response.data);
       })
       .catch((error) => {
         console.error("Error fetching department data:", error);
       });
+  };
+
+  useEffect(() => {
+    const initializeWebSocket = () => {
+      const socket = new WebSocket(`wss://hul.aivolved.in/ws/notifications/${localPlantData.id}/`);
+
+      socket.onopen = () => {
+        console.log(`WebSocket connection established ${localPlantData.id}`);
+        setIsSocketConnected(true);
+      };
+
+      socket.onmessage = (event) => {
+        const message = JSON.parse(event.data);
+        setNotifications((prevNotifications) => {
+          const newNotifications = [...prevNotifications, message.notification];
+
+          api.open({
+            message: message.notification,
+            duration: 5000,
+            showProgress: true,
+            pauseOnHover: true,
+            key: `open${Date.now()}`,
+            stack: 2,
+            icon: <ExclamationCircleOutlined style={{ color: "#fff" }} />,
+            style: { whiteSpace: "pre-line" },
+            btn: (
+              <Space>
+                <Button
+                  type="link"
+                  size="small"
+                  onClick={() => api.destroy(`open${Date.now()}`)}
+                  style={{ color: "#fff" }}
+                >
+                  Close
+                </Button>
+                <Button
+                  type="primary"
+                  size="large"
+                  style={{ fontSize: "1rem", backgroundColor: "#fff", color: "orangered" }}
+                >
+                  <Link to="/insights">View All Errors</Link>
+                </Button>
+              </Space>
+            ),
+          });
+
+          return newNotifications;
+        });
+      };
+
+      socket.onclose = () => {
+        console.log("WebSocket connection closed");
+        setIsSocketConnected(false);
+      };
+
+      socket.onerror = (error) => {
+        console.error("WebSocket error:", error);
+        setIsSocketConnected(false);
+      };
+
+      return () => {
+        socket.close();
+      };
+    };
+
+    const cleanup = initializeWebSocket();
+    return cleanup;
+  }, [api, localPlantData.id]);
+
+  const handleMachineChange = value => setSelectedMachine(value);
+  const handleDepartmentChange = value => setSelectedDepartment(value);
+  const handleProductChange = value => setSelectedProduct(value);
+  const handleDateRangeChange = (dates, dateStrings) => setDateRange(dateStrings);
+  const resetFilter = () => {
+    
+
+    // Reset selected filters in a single setState call
+    setSelectedMachine(null);
+    setSelectedProduct(null);
+    setSelectedDate(null);
+
+    // Reset filter active state
+    setFilterActive(false);
+  };
+  const handleApplyFilters = async () => {
+    setLoading(true);
+    const queryParams = {
+      plant_id: localPlantData.id,
+      from_date: dateRange[0],
+      to_date: dateRange[1],
+      machine_id: selectedMachine,
+      department_id: selectedDepartment,
+      product_id: selectedProduct,
+    };
+    try {
+      const data = await fetchDashboardData(queryParams)();
+      setTableData(data);
+    } catch (error) {
+      console.error("Error applying filters:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResetFilters = () => {
+    setDateRange([dayjs().subtract(7, 'day').format('YYYY-MM-DD'), dayjs().format('YYYY-MM-DD')]);
+    setSelectedMachine(null);
+    setSelectedDepartment(null);
+    setSelectedProduct(null);
+    handleApplyFilters();
+  };
+
+  const categorizeDefects = (data) => {
+    return data.reduce((acc, item) => {
+      const { category, defect } = item;
+      if (!acc[category]) {
+        acc[category] = [];
+      }
+      acc[category].push(defect);
+      return acc;
+    }, {});
   };
 
   const menu = (
@@ -461,10 +337,7 @@ const DashboardContentLayout = ({ children }) => {
       </Menu.Item>
     </Menu>
   );
-  const [notifications, setNotifications] = useState([]);
-  const [isSocketConnected, setIsSocketConnected] = useState(false);
-  const [prevNotificationLength, setPrevNotificationLength] = useState(0);
-  const [api, contextHolder] = notification.useNotification();
+
 
   useEffect(() => {
     const initializeWebSocket = () => {
@@ -696,9 +569,9 @@ const DashboardContentLayout = ({ children }) => {
                         <span>Insights</span>
                         <NotificationOutlined />
                       </div>
-                      {/* <div className="text-[40px] text-gray-600 font-bold group-hover:text-white">
+                      <div className="text-[40px] text-gray-600 font-bold group-hover:text-white">
                     0
-                  </div> */}
+                  </div>
                       <IoMdArrowForward className="absolute bottom-5 right-5 text-lg" />
                     </Link>
                   </div>
@@ -726,5 +599,7 @@ const DashboardContentLayout = ({ children }) => {
     </>
   );
 };
+
+
 
 export default DashboardContentLayout;

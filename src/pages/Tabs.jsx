@@ -66,7 +66,6 @@ const handleChange = useMemo(
   [color],
 );
 const handlePost = ()=>{
-  console.log(data)
 if(data === '' || data === undefined || data === null){
 return (
   api.open({
@@ -79,7 +78,6 @@ return (
     "name": data,
     "color_code": handleChange
   }
-  console.log(urlparam)
   const PostData = async()=>{
     const res = await axios.post(`${baseURL}${urlparam}/`,payload)
     try{

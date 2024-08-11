@@ -2,15 +2,19 @@ import React ,{useMemo, useState,useEffect} from 'react';
 import {Button, Select ,Space, Card, Col, Row ,ColorPicker,Table, Tag, Form, Input, Radio, notification, Descriptions } from 'antd';
 import { Switch } from 'antd';
 import axios from "axios";
-import { API, AuthToken, baseURL, localPlantData } from '../../API/API';
+import { useSelector } from 'react-redux';
+// import {API, AuthToken, baseURL, localPlantData} from "./../API/API"
+import {baseURL} from "../../API/API"
 
 import {  EditOutlined} from '@ant-design/icons';
 import Alerts from './Settings';
 
-
 const Alert = () => {
-  const localItems = localStorage.getItem("PlantData")
-  const localPlantData = JSON.parse(localItems) 
+ // const localItems = localStorage.getItem('PlantData');
+  // const localPlantData = JSON.parse(localItems);
+  
+  const localPlantData = useSelector((state) => state.plant.plantData);
+  const AuthToken = useSelector((state) => state.auth.authData.access_token);
 
     const [tableData,setTableData]=useState([])
 // Table Columns
@@ -44,10 +48,6 @@ useEffect(()=>{
     .catch(err=> console.log(err))
     
     },[]);
-
-
-
-console.log(tableData,"<<<")
 
   const [api, contextHolder] = notification.useNotification();
 
@@ -96,7 +96,6 @@ const handleChange = useMemo(
   ()=>(typeof color === "string" ? color:color?.toHexString()),
   [color],
 );
-console.log(data)
   return (
 <>
 {contextHolder}

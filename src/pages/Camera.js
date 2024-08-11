@@ -3,21 +3,18 @@ import axios from "axios";
 import {Button, Select ,Space, Card, Col, Row ,Typography} from 'antd';
 import "../index.css"
 import {RightOutlined ,LeftOutlined} from '@ant-design/icons';
-import { AuthToken,baseURL } from "../API/API";
+import { useSelector } from "react-redux";
+import {baseURL} from "./../API/API"
 import { Puff} from "react-loader-spinner"
 const { Title } = Typography;
-
-
+// import {API, AuthToken, baseURL, localPlantData} from "./../API/API"
 const Camera = () => {
-  const localItems = localStorage.getItem("PlantData")
-  const localPlantData = JSON.parse(localItems) 
-
+  // const localItems = localStorage.getItem("PlantData")
+  // const localPlantData = JSON.parse(localItems) 
+  const localPlantData = useSelector((state) => state.plant.plantData);
+  const AuthToken = useSelector((state) => state.auth.authData.access_token);
     const [camera, setCamera]= useState()
-    console.log(camera)
-
-
- 
-
+  
     // const data = Array(12).fill({
     //   title: "Machine 1",
     //   cameras: ["Camera 1", "Camera 2"]

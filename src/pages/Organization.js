@@ -59,8 +59,7 @@ useEffect(()=>{
 
       .then((res) => {
         setOrganization(res.data.results);
-        console.log(res.data)
-      })
+       })
       .catch((err) => {
         console.log(err);
       });
@@ -108,8 +107,6 @@ useEffect(()=>{
     setError((prev)=>({...prev,imageError:""}))
 
   }
-console.log(formData)
-console.log(error)
 if(error.imageError !== "" || error.nameError !== "" || formData.organization_name === "" || formData.organization_logo === ""){
    return
   }

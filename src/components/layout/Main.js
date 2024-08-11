@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Layout, Drawer, Affix } from "antd";
+import { useSelector,useDispatch } from "react-redux";
 import Sidenav from "./Sidenav";
 import Header from "./Header";
 import SideMenu from "../common/SideMenu";
@@ -17,9 +18,8 @@ function Main({ children }) {
   const [sidenavType, setSidenavType] = useState("transparent");
   const [fixed, setFixed] = useState(false);
 
-  const localData = localStorage.getItem("PlantData");
-  const PlantName = JSON.parse(localData);
-
+  const plantName=useSelector((state)=>state.plant.plantData.plant_name);
+  
   const openDrawer = () => setVisible(!visible);
   const handleSidenavType = (type) => setSidenavType(type);
   const handleSidenavColor = (color) => setSidenavColor(color);
@@ -105,7 +105,7 @@ function Main({ children }) {
           </Affix>
         ) : ( */}
         <TopHeader
-          clientName={PlantName?.plant_name}
+          clientName={plantName}
           clientLogoImgUrl={
             "https://xtemko.stripocdn.email/content/guids/CABINET_d8f211887c57378d14d80cfb73c09f4b2db394a5cf71f6e0cdda10e02f8c454f/images/vin_logo.jpeg"
           }

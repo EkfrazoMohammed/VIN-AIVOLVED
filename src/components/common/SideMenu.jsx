@@ -114,7 +114,7 @@ const SideMenu = () => {
         <div className="menu-items-w h-full flex flex-col flex-1 justify-between">
           <ul className="menu-list list-none py-3 px-3 flex flex-col gap-2">
             <li className="text-[13px] font-normal">
-              <div className="mb-1 menu-category-name"> Min</div>
+              {/* <div className="mb-1 menu-category-name"> Min</div> */}
               <ul className="text-[15px] font-normal">
                 <li className="menu-item">
                   <Link

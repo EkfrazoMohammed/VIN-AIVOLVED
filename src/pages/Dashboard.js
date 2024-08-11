@@ -199,7 +199,6 @@ function Dashboard() {
         },
       })
       .then((response) => {
-        console.log(response);
         const formattedMachines = response.data.results.map((machine) => ({
           id: machine.id,
           name: machine.name,
@@ -305,7 +304,6 @@ function Dashboard() {
         },
       })
       .then((res) => {
-        console.log(res.data, "prod");
         setAlertData(res.data.results);
         setProductOptions(res.data.results);
       })
@@ -378,8 +376,8 @@ function Dashboard() {
     axios
       .get(url)
       .then((response) => {
-        console.log(response);
-        // setTableData(response.data);
+        // console.log(response);
+        setTableData(response.data);
       })
       .catch((error) => {
         console.error("Error fetching department data:", error);
@@ -431,7 +429,6 @@ function Dashboard() {
       </Menu.Item>
     </Menu>
   );
-  console.log(activeProd, "activeProd");
   const prodMenu = (
     <Menu>
       <Menu.Item key="0">
@@ -571,7 +568,6 @@ function Dashboard() {
   const close = () => {
     console.log("Notification was closed");
   };
-  console.log(menu, "<<<");
   return (
     <>
       {contextHolder}

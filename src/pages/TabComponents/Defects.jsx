@@ -2,11 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { Button, Modal, Select, Table, Form, Input, ColorPicker, notification, Row, Col } from 'antd';
 import axios from 'axios';
 import { EditOutlined, ReloadOutlined } from '@ant-design/icons';
-import { baseURL, AuthToken } from '../../API/API';
-
+import { useSelector } from 'react-redux';
+// import {API, AuthToken, baseURL, localPlantData} from "./../API/API"
+import { baseURL } from "../../API/API"
 const Defects = () => {
-  const localItems = localStorage.getItem('PlantData');
-  const localPlantData = JSON.parse(localItems);
+  // const localItems = localStorage.getItem('PlantData');
+  // const localPlantData = JSON.parse(localItems);
+  
+  const localPlantData = useSelector((state) => state.plant.plantData);
+  const AuthToken = useSelector((state) => state.auth.authData.access_token);
   const [modalOpen, setModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editData, setEditData] = useState(null);
@@ -49,12 +53,12 @@ const Defects = () => {
     },
   ];
 
-  const handleEdit = async(record) => {
+  const handleEdit = async (record) => {
     await setEditData(record);
     await setColor(record.color_code);
     await setEditModalOpen(true);
   };
-  
+
 
   const fetchData = async () => {
     const url = `${baseURL}defect/?plant_name=${localPlantData.plant_name}`;
@@ -80,7 +84,6 @@ const Defects = () => {
     setTableData(filteredData);
   };
   const [data, setData] = useState("")
-  console.log(data)
   const handlePost = async () => {
     // const data = form.getFieldValue('name');
     if (!data) {
@@ -195,7 +198,7 @@ const Defects = () => {
           <Button key="cancel" onClick={() => setModalOpen(false)}>
             Cancel
 
-            
+
           </Button>,
           <Button key="submit" type="primary" style={{ background: '#EC522D', color: '#fff' }} onClick={handlePost}>
             Create Defects
@@ -229,7 +232,7 @@ const Defects = () => {
         title="Edit Defect"
         onCancel={() => setEditModalOpen(false)}
         footer={[
-          <Button key="cancel" onClick={() => {setEditModalOpen(false)}}>
+          <Button key="cancel" onClick={() => { setEditModalOpen(false) }}>
             Cancel
           </Button>,
           <Button key="submit" type="primary" style={{ background: '#EC522D', color: '#fff' }} onClick={handlePut}>
@@ -242,10 +245,10 @@ const Defects = () => {
             <Form form={form} size="large" layout="vertical" >
               <Form.Item name="name" label="Defects Name" rules={[{ required: true, message: 'Please enter defect name' }]}>
                 <Input placeholder="Enter Defect Name" value={editData?.name} />
-                <input type="text" value={editData?.name} style={{display:'none'}} />
+                <input type="text" value={editData?.name} style={{ display: 'none' }} />
               </Form.Item>
               <Form.Item label="Select Color">
-                <ColorPicker value={color} onChange={(color) => setColor(color.toHexString())}showText={(color) => <span>{color.toHexString()}</span>} />
+                <ColorPicker value={color} onChange={(color) => setColor(color.toHexString())} showText={(color) => <span>{color.toHexString()}</span>} />
               </Form.Item>
             </Form>
           </Col>

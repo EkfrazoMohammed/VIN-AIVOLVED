@@ -60,7 +60,6 @@ const Insights = () => {
   const handleMachineChange = value => {
     setSelectedMachine(value);
   };
-  console.log(tableData,",,,,")
 
   const handleDepartmentChange = value => {
     setSelectedDepartment(value);
@@ -68,7 +67,6 @@ const Insights = () => {
 
   const handleDateRangeChange = (dates, dateStrings) => {
     if (dateStrings) {
-      console.log(dateStrings)
       setDateRange(dateStrings);
     } else {
       console.error('Invalid date range:', dates,dateStrings);
