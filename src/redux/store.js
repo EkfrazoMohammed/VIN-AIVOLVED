@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
+import storage from 'redux-persist/lib/storage/session'; // Use sessionStorage
 import authReducer from './slices/authSlice';
 import plantReducer from './slices/plantSlice';
 
