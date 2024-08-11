@@ -23,23 +23,7 @@ const App = () => {
   console.log(authData)
   const { access_token, refresh_token } = authData;
   
-  // const refreshTokenHandler = async () => {
-  //   if (!refresh_token) return;
-
-  //   try {
-  //     const response = await axiosInstance.post('/refresh_token/', {
-  //       refresh: refresh_token,
-  //     });
-  //     console.log(response)
-
-  //     const { access_token, refresh_token } = response.data;
-  //     dispatch(setAuthData({ access_token, refresh_token }));
-  //   } catch (error) {
-  //     console.error('Token refresh failed:', error);
-  //     dispatch(clearAuthData());
-  //   }
-  // };
-  const refreshTokenHandler = async () => {
+   const refreshTokenHandler = async () => {
     const currentRefreshToken = refresh_token; // Ensure it's defined
     if (!currentRefreshToken) return;
   
