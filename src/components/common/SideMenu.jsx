@@ -11,14 +11,16 @@ import { MdSignalWifiStatusbarConnectedNoInternet1 } from "react-icons/md";
 import { CiSettings } from "react-icons/ci";
 import { IoMdLogOut } from "react-icons/io";
 import { Button, Modal, notification } from "antd";
-import { baseURL,AuthToken } from "../../API/API";
+import { baseURL, AuthToken } from "../../API/API";
 import axios from "axios";
 import CurrentTime from "./CurrentTime";
-// style
+import { useDispatch, useSelector } from 'react-redux';
+import { clearAuthData } from '../../redux/slices/authSlice';
 const linkStyle =
   "sidemenu-link h-[45px] no-underline flex justify-start items-center px-3 rounded-[3px] gap-2";
 
 const SideMenu = () => {
+  const dispatch = useDispatch()
   const [modal1Open, setModal1Open] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -63,20 +65,19 @@ const SideMenu = () => {
       ),
     });
   };
+
   const handleLogout = async () => {
     setModal1Open(false);
-  
     await openNotification();
-  
     localStorage.clear();
-  
     await logout();
-  
+    dispatch(clearAuthData())
     navigate("/login");
   };
+
   return (
     <>
-    {contextHolder}
+      {contextHolder}
       <Modal
         title={
           <div
@@ -191,7 +192,7 @@ const SideMenu = () => {
                 </li>
                 <li className="menu-item">
                   <Link
-                    onClick={()=>setModal1Open(true)} 
+                    onClick={() => setModal1Open(true)}
                     className={`${linkStyle} ${isActive("/logout")}`}
                   >
                     <IoMdLogOut />
