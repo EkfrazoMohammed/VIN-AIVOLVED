@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
 import ReactApexChart from "react-apexcharts";
 import { Typography } from "antd";
+import { useSelector } from "react-redux";
 import axios from "axios";
 import { createGlobalStyle } from "styled-components";
-import {API, AuthToken, baseURL} from "../../API/API"
+import {baseURL} from "../../API/API"
 function LineChart({ data }) {
   const { Title } = Typography;
   const [defectColors, setDefectColors] = useState({});
-
+  const localPlantData = useSelector((state) => state.plant.plantData);
+  const AuthToken = useSelector((state) => state.auth.authData.access_token);
   useEffect(() => {
     // Fetch defect colors from the API
     axios.get(`${baseURL}defect/`,{

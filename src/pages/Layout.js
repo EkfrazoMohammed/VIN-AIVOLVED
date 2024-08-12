@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Login from "./Auth/Login";
 import Main from "../components/layout/Main";
 export default function Layout() {
-  const token = useSelector((state) => state.auth.accessToken); // Get token from authSlice
+  const token = useSelector((state) => state.auth.authData.access_token); // Get token from authSlice
   const plantData = useSelector((state) => state.plant.plantData); // Get PlantData from plantSlice
   
   const [auth, setAuth] = useState(false);
