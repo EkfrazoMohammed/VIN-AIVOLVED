@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import axiosInstance from '../../API/axiosInstance'; // Ensure this is correctly imported
 import { setAuthData } from '../../redux/slices/authSlice'; // Import the setAuthData action
+import ApiCall from "../../API/Apicall"
 
 const Login = () => {
   const navigate = useNavigate();
@@ -42,12 +43,12 @@ const Login = () => {
     // Proceed with login if no errors
     if (loginPayload.email_or_phone && loginPayload.password && !error.UserError && !error.PasswordError) {
       try {
-        const res = await axiosInstance.post('/login/', loginPayload);
+        const res = await ApiCall.post('/login/', loginPayload);
         if (res.status === 200) {
-          const { access_token, refresh_token, user_id,first_name,last_name,user_name,is_superuser } = res.data;
-        let myuser={
-          user_id,first_name,last_name,user_name,is_superuser
-        }
+          const { access_token, refresh_token, user_id, first_name, last_name, user_name, is_superuser } = res.data;
+          let myuser = {
+            user_id, first_name, last_name, user_name, is_superuser
+          }
           dispatch(setAuthData({ access_token, refresh_token, myuser }));
           openNotification("success", "Login Successful");
           navigate("/Plant");

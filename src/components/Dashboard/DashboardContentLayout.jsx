@@ -6,7 +6,7 @@ import { ExclamationCircleOutlined } from "@ant-design/icons";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoMdArrowForward } from "react-icons/io";
 
-import { useSelector,useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import DOMPurify from 'dompurify';
 
 import {
@@ -50,8 +50,10 @@ import dayjs from "dayjs";
 import { Hourglass } from "react-loader-spinner";
 import { IoFilterSharp } from "react-icons/io5";
 import RealTimeManufacturingSection from "./RealTimeManufacturingSection";
+import useApiInterceptor from "../../hooks/useInterceptor";
 
 const DashboardContentLayout = ({ children }) => {
+  const apiCall = useApiInterceptor()
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -116,6 +118,7 @@ const DashboardContentLayout = ({ children }) => {
       console.error("Invalid date range:", dates, dateStrings);
     }
   };
+
 
   const resetFilter = () => {
     // Reset data only if needed
@@ -285,15 +288,20 @@ const DashboardContentLayout = ({ children }) => {
     const [fromDate, toDate] = [startDate, endDate].map((date) =>
       date.toISOString().slice(0, 10)
     ); // Format dates as YYYY-MM-DD
-    const url = `${domain}dashboard/?plant_id=${localPlantData.id}`;
+    // const url = `${domain}dashboard/?plant_id=${localPlantData.id}`;
     // const url = `${domain}dashboard/`;
 
-    axios
-      .get(url, {
-        headers: {
-          Authorization: ` Bearer ${AuthToken}`,
-        },
-      })
+    // axios
+    //   .get(url, {
+    //     headers: {
+    //       Authorization: ` Bearer ${AuthToken}`,
+    //     },
+    //   })
+    apiCall.get(`dashboard/?plant_id=${localPlantData.id}`, {
+      headers: {
+        Authorization: `Bearer ${'dhdhdhdh'}`
+      }
+    })
       .then((response) => {
         setLoaderData(false);
         const { active_products, ...datesData } = response.data;
@@ -390,7 +398,7 @@ const DashboardContentLayout = ({ children }) => {
     axios
       .get(url)
       .then((response) => {
-       
+
         setTableData(response.data);
       })
       .catch((error) => {

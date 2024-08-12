@@ -20,38 +20,39 @@ import ProtectedRoute from "./hooks/protectedRoutes"
 const App = () => {
   const dispatch = useDispatch();
   const authData = useSelector((state) => state.auth.authData);
-  console.log(authData)
+
   const { access_token, refresh_token } = authData;
 
-  const refreshTokenHandler = async () => {
-    const currentRefreshToken = refresh_token; // Ensure it's defined
-    if (!currentRefreshToken) return;
+  // const refreshTokenHandler = async () => {
+  //   const currentRefreshToken = refresh_token; // Ensure it's defined
+  //   if (!currentRefreshToken) return;
 
-    try {
-      const response = await axiosInstance.post('/refresh_token/', {
-        refresh: currentRefreshToken,
-      });
+  //   try {
+  //     const response = await axiosInstance.post('/refresh_token/', {
+  //       refresh: currentRefreshToken,
+  //     });
 
-      const { access_token, refresh_token } = response.data;
-      dispatch(setAuthData({ access_token, refresh_token }));
-    } catch (error) {
-      console.error('Token refresh failed:', error);
-      dispatch(clearAuthData()); // Clear state if refresh fails
-    }
-  };
+  //     const { access_token, refresh_token } = response.data;
+  //     dispatch(setAuthData({ access_token, refresh_token }));
+  //   } catch (error) {
+  //     console.error('Token refresh failed:', error);
+  //     dispatch(clearAuthData()); // Clear state if refresh fails
+  //   }
+  // };
 
 
-  useEffect(() => {
-    if (refresh_token) {
-      // Refresh the token every 15 minutes
-      const interval = setInterval(() => {
-        refreshTokenHandler();
-      }, 30 * 60 * 1000); // Refresh every 30 minutes
+  // useEffect(() => {
+  //   if (refresh_token) {
+  //     // Refresh the token every 15 minutes
+  //     const interval = setInterval(() => {
+  //       refreshTokenHandler();
+  //     }, 30 * 60 * 1000); // Refresh every 30 minutes
 
-      // Clean up interval on component unmount
-      return () => clearInterval(interval);
-    }
-  }, [refresh_token, dispatch]);
+  //     // Clean up interval on component unmount
+  //     return () => clearInterval(interval);
+  //   }
+  // }, [refresh_token, dispatch]);
+
 
   const router = createBrowserRouter([
     {
@@ -78,6 +79,8 @@ const App = () => {
         </ProtectedRoute>
       ),
     },]);
+
+
 
   return (
     <>

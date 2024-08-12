@@ -14,10 +14,10 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-   
+
     setAuthData(state, action) {
       const { access_token, refresh_token, user } = action.payload;
-      state.authData = action.payload; 
+      state.authData = action.payload;
     },
     clearAuthData(state) {
       state.authData = [];

@@ -10,7 +10,6 @@ export default function Layout() {
     <>
 
       <ProtectedRoute>
-
         <Main>
           <Outlet />
         </Main>
