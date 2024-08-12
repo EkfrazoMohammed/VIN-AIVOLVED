@@ -16,11 +16,11 @@ import MachinesParameter from './pages/MachinesParameter';
 import Camera from './pages/Camera';
 import Settings from './pages/Settings';
 import Insights from './pages/Insights';
-import ProtectedRoute from './hooks/protectedRoutes';
-
+import ProtectedRoute from "./hooks/protectedRoutes"
 const App = () => {
   const dispatch = useDispatch();
   const authData = useSelector((state) => state.auth.authData);
+  console.log(authData)
   const { access_token, refresh_token } = authData;
 
   const refreshTokenHandler = async () => {
@@ -53,33 +53,31 @@ const App = () => {
     }
   }, [refresh_token, dispatch]);
 
-  const protectedRoutes = [
-    { path: "", element: <Dashboard /> },
-    { path: 'dashboard-home', element: <Dashboard /> },
-    { path: 'reports', element: <Reports /> },
-    { path: 'ai-smart-view', element: <AiSmartView /> },
-    { path: 'machine-parameter', element: <MachinesParameter /> },
-    { path: 'system-status', element: <Camera /> },
-    { path: 'settings', element: <Settings /> },
-    { path: 'insights', element: <Insights /> },
-  ]
-
-
   const router = createBrowserRouter([
     {
       path: '/',
       element: <Layout />,
       children: [
-        ...protectedRoutes.map(route => ({
-          ...route,
-          element: <ProtectedRoute element={route.element} />,
-        })),
+        { path: '', element: <Dashboard /> },
+        { path: 'dashboard-home', element: <Dashboard /> },
+        { path: 'reports', element: <Reports /> },
+        { path: 'ai-smart-view', element: <AiSmartView /> },
+        { path: 'machine-parameter', element: <MachinesParameter /> },
+        { path: 'system-status', element: <Camera /> },
+        { path: 'settings', element: <Settings /> },
+        { path: 'insights', element: <Insights /> },
       ],
     },
     { path: '/login', element: <Login /> },
     { path: '/resetPassword', element: <ResetPassword /> },
-    { path: '/plant', element: <ProtectedRoute element={Plant} /> },
-  ]);
+    {
+      path: '/plant',
+      element: (
+        <ProtectedRoute>
+          <Plant />
+        </ProtectedRoute>
+      ),
+    },]);
 
   return (
     <>

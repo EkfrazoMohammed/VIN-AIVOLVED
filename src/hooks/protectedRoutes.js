@@ -1,19 +1,12 @@
-import React from 'react';
-import { Navigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector } from "react-redux";
+import { Navigate } from "react-router-dom";
 
-const ProtectedRoute = ({ element }) => {
+export default function ProtectedRoute({ children }) {
     const token = useSelector((state) => state.auth.authData.access_token); // Get token from authSlice
-    const plantData = useSelector((state) => state.plant.plantData); // Get PlantData from plantSlice
-    console.log(token, element, "<<<")
-
+    console.log(token, "<<<")
     if (!token) {
-        // If the user is not authenticated, redirect them to the login page
-        return <Navigate to="/login" replace />;
+        return <Navigate to="/login" />;
     }
 
-
-    return element;
-};
-
-export default ProtectedRoute;
+    return children;
+}
