@@ -16,30 +16,31 @@ import MachinesParameter from './pages/MachinesParameter';
 import Camera from './pages/Camera';
 import Settings from './pages/Settings';
 import Insights from './pages/Insights';
+import ProtectedRoute from './hooks/protectedRoutes';
 
 const App = () => {
   const dispatch = useDispatch();
   const authData = useSelector((state) => state.auth.authData);
   console.log(authData)
   const { access_token, refresh_token } = authData;
-  
-   const refreshTokenHandler = async () => {
+
+  const refreshTokenHandler = async () => {
     const currentRefreshToken = refresh_token; // Ensure it's defined
     if (!currentRefreshToken) return;
-  
+
     try {
       const response = await axiosInstance.post('/refresh_token/', {
         refresh: currentRefreshToken,
       });
-  
+
       const { access_token, refresh_token } = response.data;
-      dispatch(setAuthData({ access_token, refresh_token })); 
+      dispatch(setAuthData({ access_token, refresh_token }));
     } catch (error) {
       console.error('Token refresh failed:', error);
       dispatch(clearAuthData()); // Clear state if refresh fails
     }
   };
-  
+
 
   useEffect(() => {
     if (refresh_token) {
@@ -53,19 +54,27 @@ const App = () => {
     }
   }, [refresh_token, dispatch]);
 
+  const protectedRoutes = [
+    { path: "", element: <Dashboard /> },
+    { path: 'dashboard-home', element: <Dashboard /> },
+    { path: 'reports', element: <Reports /> },
+    { path: 'ai-smart-view', element: <AiSmartView /> },
+    { path: 'machine-parameter', element: <MachinesParameter /> },
+    { path: 'system-status', element: <Camera /> },
+    { path: 'settings', element: <Settings /> },
+    { path: 'insights', element: <Insights /> },
+  ]
+
+
   const router = createBrowserRouter([
     {
       path: '/',
       element: <Layout />,
       children: [
-        { path: '', element: <Dashboard /> },
-        { path: 'dashboard-home', element: <Dashboard /> },
-        { path: 'reports', element: <Reports /> },
-        { path: 'ai-smart-view', element: <AiSmartView /> },
-        { path: 'machine-parameter', element: <MachinesParameter /> },
-        { path: 'system-status', element: <Camera /> },
-        { path: 'settings', element: <Settings /> },
-        { path: 'insights', element: <Insights /> },
+        ...protectedRoutes.map(route => ({
+          ...route,
+          element: <ProtectedRoute element={route.element} />,
+        })),
       ],
     },
     { path: '/login', element: <Login /> },
