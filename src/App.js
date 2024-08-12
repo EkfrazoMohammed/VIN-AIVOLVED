@@ -21,7 +21,6 @@ import ProtectedRoute from './hooks/protectedRoutes';
 const App = () => {
   const dispatch = useDispatch();
   const authData = useSelector((state) => state.auth.authData);
-  console.log(authData)
   const { access_token, refresh_token } = authData;
 
   const refreshTokenHandler = async () => {
@@ -79,7 +78,7 @@ const App = () => {
     },
     { path: '/login', element: <Login /> },
     { path: '/resetPassword', element: <ResetPassword /> },
-    { path: '/plant', element: <Plant /> }, // Changed to lowercase for consistency
+    { path: '/plant', element: <ProtectedRoute element={Plant} /> },
   ]);
 
   return (
