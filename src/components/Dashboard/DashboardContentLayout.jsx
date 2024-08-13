@@ -7,7 +7,7 @@ import { IoIosArrowDown } from "react-icons/io";
 import { IoMdArrowForward } from "react-icons/io";
 
 import { useSelector, useDispatch } from "react-redux";
-import DOMPurify from 'dompurify';
+import DOMPurify from "dompurify";
 
 import {
   Link,
@@ -50,9 +50,10 @@ import { Hourglass } from "react-loader-spinner";
 import { IoFilterSharp } from "react-icons/io5";
 import RealTimeManufacturingSection from "./RealTimeManufacturingSection";
 import useApiInterceptor from "../../hooks/useInterceptor";
+import axiosInstance from "../../API/axiosInstance";
 
 const DashboardContentLayout = ({ children }) => {
-  const apiCall = useApiInterceptor()
+  const apiCall = useApiInterceptor();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -94,10 +95,10 @@ const DashboardContentLayout = ({ children }) => {
   };
 
   const localPlantData = useSelector((state) => state.plant.plantData[0]);
-  console.log("localPlantData==>>>>>", localPlantData);
   const plantName = localPlantData ? localPlantData.plant_name : "";
-  const accessToken = useSelector((state) => state.auth.authData[0].accessToken);
-  
+  const accessToken = useSelector(
+    (state) => state.auth.authData[0].accessToken
+  );
 
   // Handler for date range changes
   const handleDateRangeChange = (dates, dateStrings) => {
@@ -109,7 +110,6 @@ const DashboardContentLayout = ({ children }) => {
       console.error("Invalid date range:", dates, dateStrings);
     }
   };
-
 
   const resetFilter = () => {
     // Reset data only if needed
@@ -126,12 +126,13 @@ const DashboardContentLayout = ({ children }) => {
   };
 
   const handleApplyFilters = () => {
-    setLoaderData(true);
+    setLoaderData(true); // Set loading state to true
     const domain = `${baseURL}`;
-    const [fromDate, toDate] = dateRange;
+    const [fromDate, toDate] = dateRange; // Destructure the date range
 
+    // Construct query parameters
     const queryParams = {
-      plant_id: localPlantData.id,
+      plant_id: localPlantData.id, // Ensure localPlantData is valid
       from_date: fromDate,
       to_date: toDate,
       machine_id: selectedMachine,
@@ -140,33 +141,36 @@ const DashboardContentLayout = ({ children }) => {
       defect_id: selectedDefect,
     };
 
-    // Filter out undefined or null values
+    // Filter out undefined or null values from query parameters
     const filteredQueryParams = Object.fromEntries(
       Object.entries(queryParams).filter(
         ([_, value]) => value !== undefined && value !== null
       )
     );
 
-    // Create query string
+    // Create the query string
     const queryString = new URLSearchParams(filteredQueryParams).toString();
-    const url = `${domain}dashboard/?${queryString}`;
+    const url = `dashboard/?${queryString}`; // Complete URL with query string
 
-    axios
+    // Make the API call using axiosInstance
+    axiosInstance
       .get(url, {
         headers: {
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `Bearer ${accessToken}`, // Include authorization token
         },
       })
       .then((response) => {
-        setLoaderData(false);
-        const { active_products, ...filterData } = response.data;
+        setLoaderData(false); // Stop loading
+        const { active_products, ...filterData } = response.data; // Destructure response
+
+        // Update state with fetched data
         setTableData(filterData);
         setActiveProd(active_products);
         setFilterActive(true);
       })
       .catch((error) => {
-        console.error("Error:", error);
-        setLoaderData(false);
+        console.error("Error:", error); // Log error
+        setLoaderData(false); // Stop loading in case of error
       });
   };
 
@@ -288,11 +292,12 @@ const DashboardContentLayout = ({ children }) => {
     //       Authorization: ` Bearer ${AuthToken}`,
     //     },
     //   })
-    apiCall.get(`dashboard/?plant_id=${localPlantData?.id}`, {
-      headers: {
-        Authorization: `Bearer ${'dhdhdhdh'}`
-      }
-    })
+    apiCall
+      .get(`dashboard/?plant_id=${localPlantData?.id}`, {
+        headers: {
+          Authorization: `Bearer ${"dhdhdhdh"}`,
+        },
+      })
       .then((response) => {
         setLoaderData(false);
         const { active_products, ...datesData } = response.data;
@@ -389,7 +394,6 @@ const DashboardContentLayout = ({ children }) => {
     axios
       .get(url)
       .then((response) => {
-
         setTableData(response.data);
       })
       .catch((error) => {
@@ -548,18 +552,17 @@ const DashboardContentLayout = ({ children }) => {
     return cleanup;
   }, [api]);
 
-
   const close = () => {
     console.log("Notification was closed");
   };
   return (
     <>
-      {children && (currentUrlPath.pathname !== "/" && currentUrlPath.pathname !== "/dashboard-home") ? (
+      {children &&
+      currentUrlPath.pathname !== "/" &&
+      currentUrlPath.pathname !== "/dashboard-home" ? (
         children
       ) : (
         <>
-
-      
           <div className="dx-row flex  pb-4 gap-3">
             <TotalOverview />
             <div className="overview-container w-9/12 h-[257px] flex flex-col justify-between p-3 rounded-md border-2">
@@ -618,9 +621,9 @@ const DashboardContentLayout = ({ children }) => {
                       value={
                         selectedDate
                           ? [
-                            dayjs(selectedDate[0], "YYYY/MM/DD"),
-                            dayjs(selectedDate[1], "YYYY/MM/DD"),
-                          ]
+                              dayjs(selectedDate[0], "YYYY/MM/DD"),
+                              dayjs(selectedDate[1], "YYYY/MM/DD"),
+                            ]
                           : []
                       }
                     />
@@ -687,10 +690,11 @@ const DashboardContentLayout = ({ children }) => {
                     <Link
                       to="/insights"
                       className={`relative p-4 bg-gray-100 rounded-xl text-left group hover:text-white hover:!bg-red-500 
-                    ${notifications.length > prevNotificationLength
-                          ? "notification-change"
-                          : ""
-                        }
+                    ${
+                      notifications.length > prevNotificationLength
+                        ? "notification-change"
+                        : ""
+                    }
                   `}
                     >
                       <div className="flex justify-between items-center">
