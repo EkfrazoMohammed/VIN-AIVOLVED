@@ -10,6 +10,19 @@ import { setPlantData } from "../redux/slices/plantSlice"; // Import setPlantDat
 import useApiInterceptor from "../hooks/useInterceptor";
 
 import { useNavigate } from 'react-router-dom';
+
+const settings = {
+  dots: false,
+  infinite: true,
+  slidesToShow: 3,
+  slidesToScroll: 1,
+  vertical: true,
+  verticalSwiping: false,
+  autoplay: true,
+  speed: 1500,
+  autoplaySpeed: 1,
+};
+
 const Plant = () => {
   // const api = useApiInterceptor()
   const [plant, setPlant] = useState([]);
@@ -17,55 +30,92 @@ const Plant = () => {
   const [error, setError] = useState(null); 
   const navigate = useNavigate();
 
-  
-
-  const settings = {
-    dots: false,
-    infinite: true,
-    slidesToShow: 3,
-    slidesToScroll: 1,
-    vertical: true,
-    verticalSwiping: false,
-    autoplay: true,
-    speed: 1500,
-    autoplaySpeed: 1,
-  };
-
   const axiosInstance = useAxiosInstance();
   const dispatch = useDispatch();
+  const accessToken = useSelector((state) => state.auth.authData[0].accessToken);
+
+
+  const handleStorage = (plantData) => {
+    if (plantData && Array.isArray(plantData) && plantData.length > 0) {
+      dispatch(setPlantData(plantData)); // Dispatch valid plant data to Redux
+      navigate('/dashboard-home'); // Navigate to dashboard
+    } else {
+      console.error('Invalid or empty plant data:', plantData); // Handle invalid data
+    }
+  };
 
 
   useEffect(() => {
-    const fetchPlants = async () => {
-      setLoader(true); // Start loading
+    const fetchPlantData = async () => {
       try {
-        const res = await axiosInstance.get(`/plant/`);
-        console.log("plant==>",res);
-        
-        if (res.data.results) {
-          setPlant(res.data.results);
+        if (!accessToken) {
+          console.error("Authorization token is missing");
+          return;
+        }
+  
+        const res = await axiosInstance.get(`/plant/`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        const { results } = res.data;
+  
+        if (results) {
+          setPlant(results);
+          handleStorage(results);
+          console.log("results==>", results);
+          
         } else {
-          setPlant([]); // Handle case with no results
+          console.warn("No results found in the response");
         }
       } catch (err) {
-        console.error(err);
-        setError("Failed to fetch plants. Please try again later."); // Set error state
+        console.error("Error fetching plant data:", err);
+        if (err.response && err.response.data.code === "token_not_valid") {
+          console.error("Token is invalid or expired.");
+          // Handle token refresh logic here, or redirect to login
+        } else {
+          console.error("Error:", err.message || "Unknown error occurred");
+        }
       } finally {
-        setLoader(false); // Stop loading
+        setLoader(false);
       }
     };
+  
+    fetchPlantData();
+  }, [accessToken, axiosInstance]);
+  
 
-    fetchPlants(); // Call the function to fetch plants
-  }, []); // Include axiosInstance as a dependency
+  // useEffect(() => {
+  //   const fetchPlants = async () => {
+  //     setLoader(true); // Start loading
+  //     try {
+  //       const res = await axiosInstance.get(`/plant/`);
+  //       console.log("plant==>",res);
+        
+  //       if (res.data.results) {
+  //         setPlant(res.data.results);
+  //       } else {
+  //         setPlant([]); 
+  //       }
+  //     } catch (err) {
+  //       console.error(err);
+  //       setError("Failed to fetch plants. Please try again later."); // Set error state
+  //     } finally {
+  //       setLoader(false);
+  //     }
+  //   };
 
-  const handleStorage = (plantData) => {
-    if (plantData) {
-      dispatch(setPlantData(plantData)); // Dispatch plant data to Redux
-      navigate('/dashboard-home'); // Navigate to dashboard if plantData is valid
-    } else {
-      console.error('Invalid plant data:', plantData); // Handle cases where plantData is not valid
-    }
-  };
+  //   fetchPlants(); 
+  // }, []); 
+
+  // const handleStorage = (plantData) => {
+  //   if (plantData) {
+  //     dispatch(setPlantData(plantData)); // Dispatch plant data to Redux
+  //     navigate('/dashboard-home'); // Navigate to dashboard if plantData is valid
+  //   } else {
+  //     console.error('Invalid plant data:', plantData); // Handle cases where plantData is not valid
+  //   }
+  // };
 
 
   return (

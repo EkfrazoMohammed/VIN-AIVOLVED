@@ -200,7 +200,7 @@ const DashboardContentLayout = ({ children }) => {
 
         // Fetching data in parallel
         await Promise.all([
-          getDepartments(),
+          // getDepartments(),
           getMachines(),
           initialDateRange(),
           initialTableData(),
@@ -239,26 +239,26 @@ const DashboardContentLayout = ({ children }) => {
       });
   };
 
-  const getDepartments = () => {
-    const domain = `${baseURL}`;
-    let url = `${domain}department/?plant_name=${localPlantData.plant_name}`;
-    axios
-      .get(url, {
-        headers: {
-          Authorization: ` Bearer ${AuthToken}`,
-        },
-      })
-      .then((response) => {
-        const formattedDepartment = response.data.results.map((department) => ({
-          id: department.id,
-          name: department.name,
-        }));
-        setDepartmentOptions(formattedDepartment);
-      })
-      .catch((error) => {
-        console.error("Error fetching department data:", error);
-      });
-  };
+  // const getDepartments = () => {
+  //   const domain = `${baseURL}`;
+  //   let url = `${domain}department/?plant_name=${localPlantData.plant_name}`;
+  //   axios
+  //     .get(url, {
+  //       headers: {
+  //         Authorization: ` Bearer ${AuthToken}`,
+  //       },
+  //     })
+  //     .then((response) => {
+  //       const formattedDepartment = response.data.results.map((department) => ({
+  //         id: department.id,
+  //         name: department.name,
+  //       }));
+  //       setDepartmentOptions(formattedDepartment);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching department data:", error);
+  //     });
+  // };
   const initialDateRange = () => {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - 7); // 7 days ago

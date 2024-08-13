@@ -42,8 +42,7 @@ import LineChart from "../../components/chart/LineChart";
 import PieChart from "../../components/chart/PieChart";
 import MachinesParameter from "../../pages/MachinesParameterWithPagination";
 import MachinesParameterWithPagination from "../../pages/MachinesParameterWithPagination";
-import MachineParam from "../../components/chart/MachineParam";
-// import { API, baseURL, AuthToken, localPlantData } from "../../API/API";
+// import MachineParam from "../../components/chart/MachineParam";
 import { baseURL } from "../../API/API";
 import ProductionVsReject from "../../components/chart/ProductionVsReject";
 import dayjs from "dayjs";
@@ -94,19 +93,11 @@ const DashboardContentLayout = ({ children }) => {
     setSelectedProduct(value);
   };
 
-  // const localItems = localStorage.getItem("PlantData");
-  // let localPlantData = [];
-
-  // try {
-  //   // Parse only if localItems is not null
-  //   if (localItems) {
-  //     localPlantData = JSON.parse(localItems);
-  //   }
-  // } catch (error) {
-  //   console.error("Failed to parse PlantData from localStorage:", error);
-  // }
   const localPlantData = useSelector((state) => state.plant.plantData[0]);
-  const AuthToken = useSelector((state) => state.auth.authData.access_token);
+  console.log("localPlantData==>>>>>", localPlantData);
+  const plantName = localPlantData ? localPlantData.plant_name : "";
+  const accessToken = useSelector((state) => state.auth.authData[0].accessToken);
+  
 
   // Handler for date range changes
   const handleDateRangeChange = (dates, dateStrings) => {
@@ -163,7 +154,7 @@ const DashboardContentLayout = ({ children }) => {
     axios
       .get(url, {
         headers: {
-          Authorization: `Bearer ${AuthToken}`,
+          Authorization: `Bearer ${accessToken}`,
         },
       })
       .then((response) => {
@@ -185,7 +176,7 @@ const DashboardContentLayout = ({ children }) => {
     axios
       .get(url, {
         headers: {
-          Authorization: `Bearer ${AuthToken}`,
+          Authorization: `Bearer ${accessToken}`,
         },
       })
       .then((response) => {
@@ -224,15 +215,15 @@ const DashboardContentLayout = ({ children }) => {
     };
 
     fetchData();
-  }, []); // Add dependencies
+  }, []);
 
   const getMachines = () => {
     const domain = `${baseURL}`;
-    let url = `${domain}machine/?plant_name=${localPlantData.plant_name}`;
+    let url = `${domain}machine/?plant_name=${plantName}`;
     axios
       .get(url, {
         headers: {
-          Authorization: `Bearer ${AuthToken}`,
+          Authorization: `Bearer ${accessToken}`,
         },
       })
       .then((response) => {
@@ -249,11 +240,11 @@ const DashboardContentLayout = ({ children }) => {
 
   const getDepartments = () => {
     const domain = `${baseURL}`;
-    let url = `${domain}department/?plant_name=${localPlantData.plant_name}`;
+    let url = `${domain}department/?plant_name=${plantName}`;
     axios
       .get(url, {
         headers: {
-          Authorization: ` Bearer ${AuthToken}`,
+          Authorization: ` Bearer ${accessToken}`,
         },
       })
       .then((response) => {
@@ -297,7 +288,7 @@ const DashboardContentLayout = ({ children }) => {
     //       Authorization: ` Bearer ${AuthToken}`,
     //     },
     //   })
-    apiCall.get(`dashboard/?plant_id=${localPlantData.id}`, {
+    apiCall.get(`dashboard/?plant_id=${localPlantData?.id}`, {
       headers: {
         Authorization: `Bearer ${'dhdhdhdh'}`
       }
@@ -324,7 +315,7 @@ const DashboardContentLayout = ({ children }) => {
     axios
       .get(url, {
         headers: {
-          Authorization: ` Bearer ${AuthToken}`,
+          Authorization: ` Bearer ${accessToken}`,
         },
       })
       .then((response) => {
@@ -338,11 +329,11 @@ const DashboardContentLayout = ({ children }) => {
 
   const prodApi = () => {
     const domain = `${baseURL}`;
-    const url = `${domain}product/?plant_name=${localPlantData.plant_name}`;
+    const url = `${domain}product/?plant_name=${localPlantData.plantName}`;
     axios
       .get(url, {
         headers: {
-          Authorization: `Bearer ${AuthToken}`,
+          Authorization: `Bearer ${accessToken}`,
         },
       })
       .then((res) => {
@@ -567,6 +558,8 @@ const DashboardContentLayout = ({ children }) => {
         children
       ) : (
         <>
+
+      
           <div className="dx-row flex  pb-4 gap-3">
             <TotalOverview />
             <div className="overview-container w-9/12 h-[257px] flex flex-col justify-between p-3 rounded-md border-2">

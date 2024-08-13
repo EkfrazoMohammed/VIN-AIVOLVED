@@ -12,7 +12,7 @@ const Departments = () => {
   // const localItems = localStorage.getItem("PlantData")
   // const localPlantData = JSON.parse(localItems) 
 
-  const localPlantData = useSelector((state) => state.plant.plantData);
+  const localPlantData = useSelector((state) => state.plant.plantData[0]);
   const AuthToken = useSelector((state) => state.auth.authData.access_token);
     const [tableData,setTableData]= useState()
 // Table Columns

@@ -12,10 +12,10 @@
 // }
 
 // src/components/ProtectedRoute.js
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Outlet, Navigate, useLocation } from 'react-router-dom';
-import { validateToken } from '../redux/actions/authActions';
+// import { validateToken } from '../redux/actions/authActions';
 
 const ProtectedRoutes = () => {
   const dispatch = useDispatch();

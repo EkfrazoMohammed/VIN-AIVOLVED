@@ -1,11 +1,17 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  plantData: [],
+  plantData: [
+    {
+      id: null,
+      is_active: false,
+      plant_name: "",
+    },
+  ],
 };
 
 const plantSlice = createSlice({
-  name: 'plant',
+  name: "plant",
   initialState,
   reducers: {
     setPlantData: (state, action) => {

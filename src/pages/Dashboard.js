@@ -33,6 +33,7 @@ import { API, baseURL, AuthToken, localPlantData } from "./../API/API";
 import ProductionVsReject from "../components/chart/ProductionVsReject";
 import dayjs from "dayjs";
 import { Hourglass } from "react-loader-spinner";
+import { useSelector } from "react-redux";
 
 
 
@@ -76,8 +77,11 @@ function Dashboard() {
 
   const navigate = useNavigate();
 
-  const localItems = localStorage.getItem("PlantData");
-  const localPlantData = JSON.parse(localItems);
+  // const localItems = localStorage.getItem("PlantData");
+  // const localPlantData = JSON.parse(localItems);
+  const localPlantData = useSelector((state) => state.plant.plantData[0]);
+  
+  // const AuthToken = useSelector((state) => state.auth.authData.access_token);
 
   const handleDateRangeChange = (dates, dateStrings) => {
     if (dateStrings) {
