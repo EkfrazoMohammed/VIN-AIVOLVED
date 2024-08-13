@@ -1,11 +1,6 @@
-import React, { useEffect } from 'react';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { setAuthData, clearAuthData } from './redux/slices/authSlice';
-import { ToastContainer } from 'react-toastify';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
-import axiosInstance from './API/axiosInstance'; // Ensure this is correctly configured
-import Layout from './pages/Layout';
 import Login from './pages/Auth/Login';
 import ResetPassword from './pages/Auth/ResetPassword';
 import Plant from './pages/Plant';
@@ -16,77 +11,30 @@ import MachinesParameter from './pages/MachinesParameter';
 import Camera from './pages/Camera';
 import Settings from './pages/Settings';
 import Insights from './pages/Insights';
-import ProtectedRoute from "./hooks/protectedRoutes"
+import ProtectedRoutes from './hooks/protectedRoutes';
+import NotFound from './pages/PageNotFound';
+
 const App = () => {
-  const dispatch = useDispatch();
-  const authData = useSelector((state) => state.auth.authData);
-
-  const { access_token, refresh_token } = authData;
-
-  // const refreshTokenHandler = async () => {
-  //   const currentRefreshToken = refresh_token; // Ensure it's defined
-  //   if (!currentRefreshToken) return;
-
-  //   try {
-  //     const response = await axiosInstance.post('/refresh_token/', {
-  //       refresh: currentRefreshToken,
-  //     });
-
-  //     const { access_token, refresh_token } = response.data;
-  //     dispatch(setAuthData({ access_token, refresh_token }));
-  //   } catch (error) {
-  //     console.error('Token refresh failed:', error);
-  //     dispatch(clearAuthData()); // Clear state if refresh fails
-  //   }
-  // };
-
-
-  // useEffect(() => {
-  //   if (refresh_token) {
-  //     // Refresh the token every 15 minutes
-  //     const interval = setInterval(() => {
-  //       refreshTokenHandler();
-  //     }, 30 * 60 * 1000); // Refresh every 30 minutes
-
-  //     // Clean up interval on component unmount
-  //     return () => clearInterval(interval);
-  //   }
-  // }, [refresh_token, dispatch]);
-
-
-  const router = createBrowserRouter([
-    {
-      path: '/',
-      element: <Layout />,
-      children: [
-        { path: '', element: <Dashboard /> },
-        { path: 'dashboard-home', element: <Dashboard /> },
-        { path: 'reports', element: <Reports /> },
-        { path: 'ai-smart-view', element: <AiSmartView /> },
-        { path: 'machine-parameter', element: <MachinesParameter /> },
-        { path: 'system-status', element: <Camera /> },
-        { path: 'settings', element: <Settings /> },
-        { path: 'insights', element: <Insights /> },
-      ],
-    },
-    { path: '/login', element: <Login /> },
-    { path: '/resetPassword', element: <ResetPassword /> },
-    {
-      path: '/plant',
-      element: (
-        <ProtectedRoute>
-          <Plant />
-        </ProtectedRoute>
-      ),
-    },]);
-
-
-
   return (
-    <>
-      <RouterProvider router={router} />
-      <ToastContainer />
-    </>
+    <Router>
+        <Routes>
+          <Route path="*" element={<NotFound />} />
+          <Route path="/" element={<Login />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/resetPassword" element={<ResetPassword />} />
+          <Route element={<ProtectedRoutes />}>
+            <Route path="/dashboard-home" element={<Dashboard />} />
+            <Route path="/plant" element={<Plant />} />
+            <Route path="/reports" element={<Reports />} />
+            <Route path="/machine-parameter" element={<MachinesParameter />} />
+            <Route path="/ai-smart-view" element={<AiSmartView />} />
+            <Route path="/insights" element={<Insights />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/system-status" element={<Camera />} />
+          </Route>
+          
+        </Routes>
+    </Router>
   );
 };
 

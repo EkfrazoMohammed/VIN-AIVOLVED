@@ -35,7 +35,7 @@ const useApiInterceptor = () => {
 
                         // Update the tokens in Redux state
                         // { access_token, refresh_token, user }
-                        dispatch(setAuthData({ access_token: access, refresh_token: refreshToken }));
+                        // dispatch(setAuthData({ access_token: access, refresh_token: refreshToken }));
 
                         // Update the Authorization header for future requests
                         ApiCall.defaults.headers.common['Authorization'] = `Bearer ${access}`;

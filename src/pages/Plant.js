@@ -11,12 +11,13 @@ import useApiInterceptor from "../hooks/useInterceptor";
 
 import { useNavigate } from 'react-router-dom';
 const Plant = () => {
-
-  const api = useApiInterceptor()
-
-
+  // const api = useApiInterceptor()
   const [plant, setPlant] = useState([]);
   const [loader, setLoader] = useState(true);
+  const [error, setError] = useState(null); 
+  const navigate = useNavigate();
+
+  
 
   const settings = {
     dots: false,
@@ -35,21 +36,29 @@ const Plant = () => {
 
 
   useEffect(() => {
-    api.get(`/plant/`)
-      .then((res) => {
+    const fetchPlants = async () => {
+      setLoader(true); // Start loading
+      try {
+        const res = await axiosInstance.get(`/plant/`);
+        console.log("plant==>",res);
+        
         if (res.data.results) {
-          setLoader(false);
+          setPlant(res.data.results);
+        } else {
+          setPlant([]); // Handle case with no results
         }
-        setPlant(res.data.results);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
+      } catch (err) {
+        console.error(err);
+        setError("Failed to fetch plants. Please try again later."); // Set error state
+      } finally {
+        setLoader(false); // Stop loading
+      }
+    };
 
-  const navigate = useNavigate();
+    fetchPlants(); // Call the function to fetch plants
+  }, []); // Include axiosInstance as a dependency
+
   const handleStorage = (plantData) => {
-
     if (plantData) {
       dispatch(setPlantData(plantData)); // Dispatch plant data to Redux
       navigate('/dashboard-home'); // Navigate to dashboard if plantData is valid
@@ -110,6 +119,7 @@ const Plant = () => {
               <div className="mytab-content p-2 flex gap-2  min-w-[40vw] flex-col">
                 <h3 className="text-black text-xl font-bold">Plants</h3>
                 <h5>Choose Plants</h5>
+                {error ?<h5 className="text-red-500">Unable to fetch data.</h5>  : ""}
 
                 {plant.length > 0 && (
                   <Row gutter={[24, 24]} className="plant-row">

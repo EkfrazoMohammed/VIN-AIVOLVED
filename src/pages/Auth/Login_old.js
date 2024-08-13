@@ -4,7 +4,7 @@ import { Card, Col, Input, Checkbox, notification } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import axiosInstance from '../../API/axiosInstance'; // Ensure this is correctly imported
-import { signInFailure, signInSuccess } from '../../redux/slices/authSlice'; // Import the setAuthData action
+import { setAuthData, signInFailure, signInSuccess } from '../../redux/slices/authSlice'; // Import the setAuthData action
 // import ApiCall from "../../API/Apicall"
 
 const Login = () => {
@@ -32,7 +32,6 @@ const Login = () => {
 
   const loginPost = async () => {
     setError({ UserError: "", PasswordError: "" });
-    setLoading(true);
   
     // Validate email or mobile number
     const validateInput = (input) => {
@@ -41,44 +40,45 @@ const Login = () => {
       return emailPattern.test(input) || mobilePattern.test(input);
     };
   
-    let hasError = false;
-  
     // Validate inputs
     if (!loginPayload.email_or_phone) {
       setError(prev => ({ ...prev, UserError: "*Email / Mobile Number is required" }));
-      hasError = true;
     } else if (!validateInput(loginPayload.email_or_phone)) {
       setError(prev => ({ ...prev, UserError: "*Please enter a valid Email or Mobile Number" }));
-      hasError = true;
     }
   
     if (!loginPayload.password) {
       setError(prev => ({ ...prev, PasswordError: "*Password is required" }));
-      hasError = true;
     }
-  
-    if (hasError) {
-      setLoading(false);
-      return;
-    }
+
+    setLoading(true);
   
     // Proceed with login if no errors
-    try {
-      const res = await axiosInstance.post('/login/', loginPayload);
-      const { access_token, refresh_token } = res.data;
-  
-      dispatch(signInSuccess({ accessToken: access_token, refreshToken: refresh_token }));
-      openNotification("success", "Login Successful==>");
-      navigate("/plant");
+    if (loginPayload.email_or_phone && loginPayload.password && !error.UserError && !error.PasswordError) {
+      try {
+        // const res = await ApiCall.post('/login/', loginPayload);
+        const res = await axiosInstance.post('/login/', loginPayload);
+        const data = res.data;
+        console.log("login res", res);
 
-    } catch (error) {
-      // Dispatch failure action
-      dispatch(signInFailure(error.response?.data));
-  
-      // Notify error
-      openNotification("error", error.response?.data?.detail || "Invalid Credentials");
-    } finally {
-      setLoading(false);
+        if (res.status !== 200) {
+          dispatch(signInFailure(data));
+          openNotification("error", error.response?.data?.detail || "Invalid Credentials");
+          return;
+        }
+        dispatch(signInSuccess({accessToken: data.access_token ,  refreshToken: data.refresh_token}));
+         openNotification("success", "Login Successful");
+          navigate("/Plant");
+        // if (res.status === 200) {
+        //   const { access_token, refresh_token, user_id, first_name, last_name, user_name, is_superuser } = res.data;
+        //   let myuser = { user_id, first_name, last_name, user_name, is_superuser };
+        //   // dispatch(setAuthData({ access_token, refresh_token, myuser }));
+        //   openNotification("success", "Login Successful");
+        //   navigate("/Plant");
+        // }
+      } catch (error) {
+        openNotification("error", error.response?.data?.detail || "Invalid Credentials");
+      }
     }
   };
   

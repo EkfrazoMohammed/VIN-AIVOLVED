@@ -105,7 +105,7 @@ const DashboardContentLayout = ({ children }) => {
   // } catch (error) {
   //   console.error("Failed to parse PlantData from localStorage:", error);
   // }
-  const localPlantData = useSelector((state) => state.plant.plantData);
+  const localPlantData = useSelector((state) => state.plant.plantData[0]);
   const AuthToken = useSelector((state) => state.auth.authData.access_token);
 
   // Handler for date range changes

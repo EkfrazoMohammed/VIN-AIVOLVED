@@ -15,7 +15,7 @@ import { baseURL, AuthToken } from "../../API/API";
 import axios from "axios";
 import CurrentTime from "./CurrentTime";
 import { useDispatch, useSelector } from 'react-redux';
-import { clearAuthData } from '../../redux/slices/authSlice';
+import { clearAuthData, signOut } from '../../redux/slices/authSlice';
 const linkStyle =
   "sidemenu-link h-[45px] no-underline flex justify-start items-center px-3 rounded-[3px] gap-2";
 
@@ -71,7 +71,7 @@ const SideMenu = () => {
     await openNotification();
     localStorage.clear();
     await logout();
-    dispatch(clearAuthData())
+    dispatch(signOut());
     navigate("/login");
   };
 
