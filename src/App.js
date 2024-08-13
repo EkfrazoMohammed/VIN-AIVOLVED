@@ -19,11 +19,10 @@ const App = () => {
     <Router>
         <Routes>
           <Route path="*" element={<NotFound />} />
-          <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
           <Route path="/resetPassword" element={<ResetPassword />} />
           <Route element={<ProtectedRoutes />}>
-            <Route path="/dashboard-home" element={<Dashboard />} />
+            <Route path="/" element={<Dashboard />} />
             <Route path="/plant" element={<Plant />} />
             <Route path="/reports" element={<Reports />} />
             <Route path="/machine-parameter" element={<MachinesParameter />} />
@@ -32,7 +31,6 @@ const App = () => {
             <Route path="/settings" element={<Settings />} />
             <Route path="/system-status" element={<Camera />} />
           </Route>
-          
         </Routes>
     </Router>
   );

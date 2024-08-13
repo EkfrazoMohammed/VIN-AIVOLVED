@@ -12,16 +12,19 @@
 // }
 
 // src/components/ProtectedRoute.js
-import React, { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { Outlet, Navigate, useLocation } from 'react-router-dom';
+import React, { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { Outlet, Navigate, useLocation } from "react-router-dom";
+import Layout from "../pages/Layout";
 // import { validateToken } from '../redux/actions/authActions';
 
 const ProtectedRoutes = () => {
   const dispatch = useDispatch();
   const location = useLocation();
-  const token = useSelector(state => state.auth.accessToken);
-  const isAuthenticated = useSelector(state => state.auth.authData[0].isAuthenticated);
+  const token = useSelector((state) => state.auth.accessToken);
+  const isAuthenticated = useSelector(
+    (state) => state.auth.authData[0].isAuthenticated
+  );
   const [loading, setLoading] = useState(true);
 
   // useEffect(() => {
@@ -42,8 +45,13 @@ const ProtectedRoutes = () => {
   //   return <div>Loading...</div>;
   // }
 
-  return isAuthenticated ? <Outlet /> : <Navigate to="/login" />;
+  return isAuthenticated ? (
+    <Layout>
+      <Outlet />
+    </Layout>
+  ) : (
+    <Navigate to="/login" />
+  );
 };
 
 export default ProtectedRoutes;
-

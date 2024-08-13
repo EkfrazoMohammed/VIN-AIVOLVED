@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Layout, Drawer, Affix } from "antd";
-import { useSelector,useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import Sidenav from "./Sidenav";
 import Header from "./Header";
 import SideMenu from "../common/SideMenu";
@@ -18,8 +18,9 @@ function Main({ children }) {
   const [sidenavType, setSidenavType] = useState("transparent");
   const [fixed, setFixed] = useState(false);
 
-  const plantName=useSelector((state)=>state.plant.plantData.plant_name);
-  
+  const localPlantData = useSelector((state) => state.plant.plantData[0]);
+  const plantName = localPlantData.plant_name;
+
   const openDrawer = () => setVisible(!visible);
   const handleSidenavType = (type) => setSidenavType(type);
   const handleSidenavColor = (color) => setSidenavColor(color);

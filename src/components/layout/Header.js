@@ -39,6 +39,7 @@ import { NavLink, Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import avtar from "../../assets/images/team-2.jpg";
 import { baseURL,AuthToken } from "../../API/API";
+import { useSelector } from "react-redux";
 const ButtonContainer = styled.div`
   .ant-btn-primary {
     background-color: #ec522d;
@@ -261,8 +262,12 @@ function Header({
 }) {
   const { Title, Text } = Typography;
   const navigate = useNavigate()
-const localData =  localStorage.getItem("PlantData");
-const PlantName = JSON.parse(localData)
+// const localData =  localStorage.getItem("PlantData");
+// const PlantName = JSON.parse(localData)
+const localPlantData = useSelector((state) => state.plant.plantData[0]);
+const PlantName =localPlantData.plant_name ;
+// console.log("plantData///",PlantName);
+
 
 
   const [refreshTokens, setrefreshTokens] = useState(() => 
