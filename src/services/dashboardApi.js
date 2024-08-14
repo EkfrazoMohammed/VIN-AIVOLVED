@@ -156,6 +156,62 @@ export const getSystemStatus = (plantId, token) => {
       console.error("Error fetching machine data:", error);
     });
 };
+const isEmptyDashboardResponse = (data) => {
+  // Check if data is just an empty active_products array
+  return data && data.active_products && Array.isArray(data.active_products) && data.active_products.length === 0
+    && Object.keys(data).length === 1;
+};
+
+// export const initialDashboardData = (plantId, token) => {
+//   const domain = `${baseURL}`;
+//   const url = `${domain}dashboard/?plant_id=${plantId}`;
+
+//   axios
+//     .get(url, {
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//       },
+//     })
+//     .then((response) => {
+//       const { active_products, ...datesData } = response.data;
+
+//       if (isEmptyDashboardResponse(response.data)) {
+//         store.dispatch(getDashboardFailure(null));
+//       } else {
+//         store.dispatch(getDashboardSuccess({ datesData, activeProducts: active_products }));
+//       }
+//     })
+//     .catch((error) => {
+//       console.error("Error fetching machine data:", error);
+//       store.dispatch(getDashboardFailure(error.message));
+//     });
+// };
+
+
+// export const initialDashboardData = (plantId, token) => {
+//   const domain = `${baseURL}`;
+//   const url = `${domain}dashboard/?plant_id=${plantId}`;
+
+//   axios
+//     .get(url, {
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//       },
+//     })
+//     .then((response) => {
+//       const { active_products, ...datesData } = response.data;
+
+//       if (isEmptyDashboardResponse(response.data)) {
+//         store.dispatch(getDashboardFailure('No meaningful data available.'));
+//       } else {
+//         store.dispatch(getDashboardSuccess({ datesData, activeProducts: active_products }));
+//       }
+//     })
+//     .catch((error) => {
+//       console.error("Error fetching dashboard data:", error);
+//       store.dispatch(getDashboardFailure(error.message));
+//     });
+// };
 
 export const initialDashboardData = (plantId, token) => {
   const domain = `${baseURL}`;
@@ -169,13 +225,15 @@ export const initialDashboardData = (plantId, token) => {
     })
     .then((response) => {
       const { active_products, ...datesData } = response.data;
-      // Ensure datesData is structured correctly
-      store.dispatch(
-        getDashboardSuccess({ datesData, activeProducts: active_products })
-      );
+
+      if (isEmptyDashboardResponse(response.data)) {
+        store.dispatch(getDashboardFailure('No meaningful data available.'));
+      } else {
+        store.dispatch(getDashboardSuccess({ datesData, activeProducts: active_products }));
+      }
     })
     .catch((error) => {
-      console.error("Error fetching machine data:", error);
+      console.error("Error fetching dashboard data:", error);
       store.dispatch(getDashboardFailure(error.message));
     });
 };

@@ -7,12 +7,12 @@ import { IoIosArrowDown } from "react-icons/io";
 import { IoMdArrowForward } from "react-icons/io";
 
 import { useSelector, useDispatch } from "react-redux";
-import {initialDashboardData, getMachines,getSystemStatus,getDepartments ,initialDpmuData,initialProductionData,getProducts} from "../../services/dashboardApi";
+import { initialDashboardData, getMachines, getSystemStatus, getDepartments, initialDpmuData, initialProductionData, getProducts } from "../../services/dashboardApi";
 import DOMPurify from "dompurify";
-import {setSelectedMachine} from "../../redux/slices/machineSlice"
-import {setSelectedProduct} from "../../redux/slices/productSlice"
-import {getDashboardSuccess,getDashboardFailure,setActiveDashboardData} from "../../redux/slices/dashboardSlice"
-import {Link,useNavigate,useNavigation,useLocation} from "react-router-dom";
+import { setSelectedMachine } from "../../redux/slices/machineSlice"
+import { setSelectedProduct } from "../../redux/slices/productSlice"
+import { getDashboardSuccess, getDashboardFailure } from "../../redux/slices/dashboardSlice"
+import { Link, useNavigate, useNavigation, useLocation } from "react-router-dom";
 import axios from "axios";
 import {
   Card,
@@ -51,18 +51,18 @@ const DashboardContentLayout = ({ children }) => {
   const apiCall = useApiInterceptor();
   const dispatch = useDispatch();
 
-    const localPlantData = useSelector((state) => state.plant.plantData[1]);
-    const accessToken = useSelector((state) => state.auth.authData[0].accessToken);
-    const machines=useSelector((state) => state.machine.machinesData)
-    const activeMachines=useSelector((state) => state.machine.activeMachines)
-    const dpmuChartData=useSelector((state) => state.dpmu.dpmuData)
-    const productionVsDefectChartData=useSelector((state) => state.productVsDefect.productvsdefectData)
-    const productsData=useSelector((state) => state.product.productsData)
-    const selectedMachineRedux = useSelector((state) => state.machine.selectedMachine);
-    const selectedProductRedux = useSelector((state) => state.product.selectedProduct);
-    const tableDataRedux = useSelector((state) => state.dashboard.datesData);
-    const tableDataReduxActive = useSelector((state) => state.dashboard.activeProducts)
-  
+  const localPlantData = useSelector((state) => state.plant.plantData[1]);
+  const accessToken = useSelector((state) => state.auth.authData[0].accessToken);
+  const machines = useSelector((state) => state.machine.machinesData)
+  const activeMachines = useSelector((state) => state.machine.activeMachines)
+  const dpmuChartData = useSelector((state) => state.dpmu.dpmuData)
+  const productionVsDefectChartData = useSelector((state) => state.productVsDefect.productvsdefectData)
+  const productsData = useSelector((state) => state.product.productsData)
+  const selectedMachineRedux = useSelector((state) => state.machine.selectedMachine);
+  const selectedProductRedux = useSelector((state) => state.product.selectedProduct);
+  const tableDataRedux = useSelector((state) => state.dashboard.datesData);
+  const tableDataReduxActive = useSelector((state) => state.dashboard.activeProducts)
+
   const [loading, setLoading] = useState(true);
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - 7);
@@ -86,9 +86,8 @@ const DashboardContentLayout = ({ children }) => {
   };
 
   const handleProductChange = (value) => {
-    console.log(value)
     dispatch(setSelectedProduct(Number(value))); // Dispatching action    
-  
+
   };
 
   // Handler for date range changes
@@ -105,9 +104,9 @@ const DashboardContentLayout = ({ children }) => {
   const resetFilter = () => {
     // Reset data only if needed
     // initialTableData();
-    initialDashboardData(localPlantData.id,accessToken);
-    initialDpmuData(localPlantData.id,accessToken);
-    initialProductionData(localPlantData.id,accessToken);
+    initialDashboardData(localPlantData.id, accessToken);
+    initialDpmuData(localPlantData.id, accessToken);
+    initialProductionData(localPlantData.id, accessToken);
     dispatch(setSelectedMachine(null)); // Dispatching action
     dispatch(setSelectedProduct(null)); // Dispatching action
     setSelectedDate(null);
@@ -149,15 +148,7 @@ const DashboardContentLayout = ({ children }) => {
       })
       .then((response) => {
 
-        const { active_products, ...filterData } = response.data; // Destructure response
-
-        // Update state with fetched data
-        // setTableData(filterData);
-        dispatch(getDashboardSuccess(filterData))
-        
-    dispatch(setActiveDashboardData(active_products));
-        
-        // setActiveProd(active_products);
+        dispatch(getDashboardSuccess(response.data))
         setFilterActive(true);
       })
       .catch((error) => {
@@ -166,7 +157,7 @@ const DashboardContentLayout = ({ children }) => {
       });
   };
 
- 
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -177,16 +168,16 @@ const DashboardContentLayout = ({ children }) => {
         // Fetching data in parallel
         await Promise.all([
 
-          getMachines(localPlantData.plant_name,accessToken),
-          getDepartments(localPlantData.plant_name,accessToken),
-          initialDpmuData(localPlantData.id,accessToken),
-          getProducts(localPlantData.plant_name,accessToken),
+          getMachines(localPlantData.plant_name, accessToken),
+          getDepartments(localPlantData.plant_name, accessToken),
+          initialDpmuData(localPlantData.id, accessToken),
+          getProducts(localPlantData.plant_name, accessToken),
           initialDateRange(),
           // initialTableData(),
-          initialDashboardData(localPlantData.id,accessToken),
-          initialProductionData(localPlantData.id,accessToken),
-          
-          getSystemStatus(localPlantData.id,accessToken),
+          initialDashboardData(localPlantData.id, accessToken),
+          initialProductionData(localPlantData.id, accessToken),
+
+          getSystemStatus(localPlantData.id, accessToken),
         ]);
       } catch (err) {
         console.log(err.message || "Failed to fetch data")
@@ -232,9 +223,7 @@ const DashboardContentLayout = ({ children }) => {
   };
 
   useEffect(() => {
-    console.log(tableDataRedux)
     const categorizedData = categorizeDefects(tableDataRedux);
-    console.log(categorizedData)
     setCategoryDefects(categorizedData);
   }, [tableDataRedux]);
 
@@ -403,7 +392,7 @@ const DashboardContentLayout = ({ children }) => {
         setIsSocketConnected(false); // Update connection status
       };
 
-      return () => {socket.close();};
+      return () => { socket.close(); };
     };
 
     const cleanup = initializeWebSocket();
@@ -416,8 +405,8 @@ const DashboardContentLayout = ({ children }) => {
   return (
     <>
       {children &&
-      currentUrlPath.pathname !== "/" &&
-      currentUrlPath.pathname !== "/dashboard-home" ? (
+        currentUrlPath.pathname !== "/" &&
+        currentUrlPath.pathname !== "/dashboard-home" ? (
         children
       ) : (
         <>
@@ -479,9 +468,9 @@ const DashboardContentLayout = ({ children }) => {
                       value={
                         selectedDate
                           ? [
-                              dayjs(selectedDate[0], "YYYY/MM/DD"),
-                              dayjs(selectedDate[1], "YYYY/MM/DD"),
-                            ]
+                            dayjs(selectedDate[0], "YYYY/MM/DD"),
+                            dayjs(selectedDate[1], "YYYY/MM/DD"),
+                          ]
                           : []
                       }
                     />
@@ -548,11 +537,10 @@ const DashboardContentLayout = ({ children }) => {
                     <Link
                       to="/insights"
                       className={`relative p-4 bg-gray-100 rounded-xl text-left group hover:text-white hover:!bg-red-500 
-                    ${
-                      notifications.length > prevNotificationLength
-                        ? "notification-change"
-                        : ""
-                    }
+                    ${notifications.length > prevNotificationLength
+                          ? "notification-change"
+                          : ""
+                        }
                   `}
                     >
                       <div className="flex justify-between items-center">

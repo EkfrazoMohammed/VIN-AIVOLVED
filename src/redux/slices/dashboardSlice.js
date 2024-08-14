@@ -10,15 +10,15 @@ const dashboardSlice = createSlice({
   },
   reducers: {
     getDashboardSuccess: (state, action) => {
-      state.datesData = action.payload.datesData;
-      state.activeProducts = action.payload.activeProducts;
-     
+      state.datesData = action.payload.datesData || {};
+      state.activeProducts = action.payload.activeProducts || [];
+      state.error = null; // Clear any previous errors
     },
     getDashboardFailure: (state, action) => {
-
-      state.error = action.payload;
+      state.datesData = {};
+      state.activeProducts = [];
+      state.error = action.payload; // Set the error message
     },
-   
   },
 });
 
