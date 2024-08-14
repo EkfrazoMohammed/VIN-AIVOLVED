@@ -18,12 +18,10 @@ const dashboardSlice = createSlice({
 
       state.error = action.payload;
     },
-    setActiveDashboardData: (state, action) => {
-      state.activeProducts = action.payload;
-    },
+   
   },
 });
 
-export const { getDashboardSuccess, getDashboardFailure, setActiveDashboardData } = dashboardSlice.actions;
+export const { getDashboardSuccess, getDashboardFailure } = dashboardSlice.actions;
 
 export default dashboardSlice.reducer;

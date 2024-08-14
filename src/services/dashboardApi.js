@@ -22,7 +22,6 @@ import {
 
 import {
   getDashboardSuccess,
-  setActiveDashboardData,
   getDashboardFailure,
 } from "../redux/slices/dashboardSlice";
 
@@ -158,33 +157,10 @@ export const getSystemStatus = (plantId, token) => {
     });
 };
 
-// export const initialDashboardData = (plantId, token) => {
-//   const domain = `${baseURL}`;
-//   let url = `${domain}dashboard/?plant_id=${plantId}`;
-//   axios
-//     .get(url, {
-//       headers: {
-//         Authorization: `Bearer ${token}`,
-//       },
-//     })
-//     .then((response) => {
-//       const { active_products, ...datesData } = response.data;
-//       console.log(response.data)
-//       console.log(datesData)
-//       store.dispatch(getDashboardSuccess(...datesData));
-//       store.dispatch(setActiveDashboardData(active_products));
-//     })
-//     .catch((error) => {
-//       console.error("Error fetching machine data:", error);
-//       store.dispatch(getDashboardFailure());
-//     });
-// };
-
-
 export const initialDashboardData = (plantId, token) => {
   const domain = `${baseURL}`;
   const url = `${domain}dashboard/?plant_id=${plantId}`;
-  
+
   axios
     .get(url, {
       headers: {
@@ -194,7 +170,9 @@ export const initialDashboardData = (plantId, token) => {
     .then((response) => {
       const { active_products, ...datesData } = response.data;
       // Ensure datesData is structured correctly
-      store.dispatch(getDashboardSuccess({ datesData, activeProducts: active_products }));
+      store.dispatch(
+        getDashboardSuccess({ datesData, activeProducts: active_products })
+      );
     })
     .catch((error) => {
       console.error("Error fetching machine data:", error);
