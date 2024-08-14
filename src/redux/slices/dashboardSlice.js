@@ -1,31 +1,29 @@
-import { createSlice } from "@reduxjs/toolkit";
-
-const initialState = {
-  dashboardData: [],
-  activeDashboardData:[],
-  loading: true,
-};
+// dashboardSlice.js
+import { createSlice } from '@reduxjs/toolkit';
 
 const dashboardSlice = createSlice({
-  name: "dashboard",
-  initialState,
+  name: 'dashboard',
+  initialState: {
+    datesData: {},
+    activeProducts: [],
+    error: null,
+  },
   reducers: {
     getDashboardSuccess: (state, action) => {
-      state.dashboardData = action.payload;
-      state.activeDashboardData = [];
-      state.loading = false;
+      state.datesData = action.payload.datesData;
+      state.activeProducts = action.payload.activeProducts;
+     
+    },
+    getDashboardFailure: (state, action) => {
+
+      state.error = action.payload;
     },
     setActiveDashboardData: (state, action) => {
-      state.activeDashboardData =action.payload;
-    },
-    getDashboardFailure: (state) => {
-      state.dashboardData = [];
-      state.activeDashboardData = [];
-      state.loading = false;
+      state.activeProducts = action.payload;
     },
   },
 });
 
-export const { getDashboardSuccess, setActiveDashboardData,getDashboardFailure } = dashboardSlice.actions;
+export const { getDashboardSuccess, getDashboardFailure, setActiveDashboardData } = dashboardSlice.actions;
 
 export default dashboardSlice.reducer;

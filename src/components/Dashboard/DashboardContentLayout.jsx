@@ -60,8 +60,9 @@ const DashboardContentLayout = ({ children }) => {
     const productsData=useSelector((state) => state.product.productsData)
     const selectedMachineRedux = useSelector((state) => state.machine.selectedMachine);
     const selectedProductRedux = useSelector((state) => state.product.selectedProduct);
-    const tableDataRedux = useSelector((state) => state.dashboard.dashboardData);
-  // console.log(tableDataRedux)
+    const tableDataRedux = useSelector((state) => state.dashboard.datesData);
+    const tableDataReduxActive = useSelector((state) => state.dashboard.activeProducts)
+  
   const [loading, setLoading] = useState(true);
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - 7);
@@ -156,7 +157,7 @@ const DashboardContentLayout = ({ children }) => {
         
     dispatch(setActiveDashboardData(active_products));
         
-        setActiveProd(active_products);
+        // setActiveProd(active_products);
         setFilterActive(true);
       })
       .catch((error) => {
@@ -218,28 +219,22 @@ const DashboardContentLayout = ({ children }) => {
   // Function to categorize defects
   const categorizeDefects = (data) => {
     const categories = {};
-
-    // Iterate through each date in the tableData
     Object.keys(data).forEach((date) => {
       const defects = data[date];
-
-      // Iterate through each defect in the current date
       Object.keys(defects).forEach((defect) => {
         if (!categories[defect]) {
           categories[defect] = 0;
         }
-
-        // Accumulate the defect value for the category
         categories[defect] += defects[defect];
       });
     });
-
     return categories;
   };
 
   useEffect(() => {
     console.log(tableDataRedux)
     const categorizedData = categorizeDefects(tableDataRedux);
+    console.log(categorizedData)
     setCategoryDefects(categorizedData);
   }, [tableDataRedux]);
 
@@ -315,7 +310,7 @@ const DashboardContentLayout = ({ children }) => {
     <Menu>
       <Menu.Item key="0">
         <Checkbox.Group style={{ display: "block" }}>
-          {Object.values(activeProd).map((prod) => (
+          {Object.values(tableDataReduxActive).map((prod) => (
             <div
               key={prod.id}
               style={{ display: "flex", flexDirection: "column" }}
@@ -544,7 +539,7 @@ const DashboardContentLayout = ({ children }) => {
                       <Dropdown overlay={prodMenu} trigger={["click"]}>
                         <div className="number" style={{ cursor: "pointer" }}>
                           <div className="text-[35px] text-gray-500 font-semibold bg-white rounded mt-3 px-2 flex items-center justify-between">
-                            {Object.keys(activeProd).length}
+                            {Object.keys(tableDataReduxActive).length}
                             <IoIosArrowDown className="text-[18px]" />
                           </div>
                         </div>
