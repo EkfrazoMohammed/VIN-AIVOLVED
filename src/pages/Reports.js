@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
 import { Table, Select, DatePicker, Button, Image, Tag } from "antd";
 import * as XLSX from "xlsx";
 import axiosInstance from "../API/axiosInstance";
@@ -8,21 +7,16 @@ import { DownloadOutlined } from "@ant-design/icons";
 import { Hourglass } from "react-loader-spinner";
 import dayjs from "dayjs";
 import { toast } from "react-toastify";
-import { useDispatch } from "react-redux";
+import { useSelector,useDispatch } from "react-redux";
+import { initialDashboardData, getDefects,getMachines, getSystemStatus, getDepartments, initialDpmuData, initialProductionData, getProducts } from "./../services/dashboardApi";
+import { reportApi } from "./../services/reportsApi";
+import {
+  setSelectedDefect,
+} from "../redux/slices/defectSlice"; // Import the actions
+
 import { getReportData, updatePage } from ".././redux/slices/reportSlice";
-
-// REPORTS API CALLING
-import { reportApi } from "../services/reportsApi";
-
-
-
-
-
-// import {API, AuthToken, baseURL, localPlantData} from "./../API/API"
-// import { baseURL } from "./../API/API";
-// import moment from "moment";
-// import useApiInterceptor from "../hooks/useInterceptor";
-// const { RangePicker } = DatePicker;
+import { setSelectedMachine } from "../redux/slices/machineSlice"
+import { setSelectedProduct } from "../redux/slices/productSlice"
 
 const columns = [
   {
@@ -89,55 +83,29 @@ const Reports = () => {
   const dispatch = useDispatch()
   const reportData = useSelector((state) => state.report.reportData);
   const pagination = useSelector((state) => state.report.pagination);
-  const localPlantData = useSelector((state) => state.plant.plantData);
-  const plantName = localPlantData ? localPlantData.plant_name : "";
+  const localPlantData = useSelector((state) => state.plant.plantData[0]);
   const accessToken = useSelector(
     (state) => state.auth.authData[0].accessToken
   );
+  const machines = useSelector((state) => state.machine.machinesData)
+  const defectsData = useSelector((state) => state.defect.defectsData)
+  const productsData = useSelector((state) => state.product.productsData)
+  const selectedMachineRedux = useSelector((state) => state.machine.selectedMachine);
+  const selectedProductRedux = useSelector((state) => state.product.selectedProduct);
+  const selectedDefectRedux = useSelector((state) => state.defect.selectedDefect);
 
 
   const dateFormat = "YYYY/MM/DD";
   const location = useLocation();
 
-
-  const defectProp = location?.state?.clickedVal[0]?.name || null;
-  const defectId = location?.state?.clickedVal[0]?.id || null;
-
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - 7); // 7 days ago
-  const formattedStartDate = startDate.toISOString().slice(0, 10); // Format startDate as YYYY-MM-DD
   const endDate = new Date(); // Today's date
-  const formattedEndDate = endDate.toISOString().slice(0, 10); // Format endDate as YYYY-MM-DD
-
-  const [selectedMachine, setSelectedMachine] = useState(null);
-  const [selectedDepartment, setSelectedDepartment] = useState(null);
-  const [selectedDefect, setselectedDefect] = useState(defectId || null);
-  const [selectedProduct, setselectedProduct] = useState(null);
   const [dateRange, setDateRange] = useState();
   const [tableData, setTableData] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
   const { RangePicker } = DatePicker;
-  const [machineOptions, setMachineOptions] = useState([]);
-  const [defectsOptions, setDefectsOptions] = useState([]);
   const [filterActive, setfilterActive] = useState(false);
-  const [notifications, setNotifications] = useState([]);
-  const [isSocketConnected, setIsSocketConnected] = useState(false);
-  const [prevNotificationLength, setPrevNotificationLength] = useState(0);
-
-
-
-  const [productOptions, setProductOptions] = useState([]);
-
-  const [plantTableDetail, setPlantTableDetail] = useState([
-    {
-      product: "",
-      defect: "",
-      machine: "",
-      department: "",
-      recorded_date_time: "",
-      image: "",
-    },
-  ]);
 
   const [loader, setLoader] = useState(false);
 
@@ -163,18 +131,18 @@ const Reports = () => {
     }));
   };
 
-  const handleProductChange = (value) => {
-    setselectedProduct(value);
-  };
-
+  
   const handleDefectChange = (value) => {
-    setselectedDefect(value);
-
+    dispatch(setSelectedDefect(Number(value)))
   };
+
   const handleMachineChange = (value) => {
-    setSelectedMachine(value);
-
+    dispatch(setSelectedMachine(Number(value))); // Dispatching action    
   };
+
+  const handleProductChange = (value) => {
+    dispatch(setSelectedProduct(Number(value))); // Dispatching action    
+  }
 
 
 
@@ -195,10 +163,10 @@ const Reports = () => {
       plant_id: localPlantData?.id || undefined,
       from_date: dateRange?.[0] || undefined,
       to_date: dateRange?.[1] || undefined,
-      machine_id: selectedMachine || undefined,
-      department_id: selectedDepartment || undefined,
-      product_id: selectedProduct || undefined,
-      defect_id: selectedDefect || undefined,
+      machine_id: selectedMachineRedux || undefined,
+
+      product_id: selectedProductRedux || undefined,
+      defect_id: selectedDefectRedux || undefined,
     });
 
     // Construct the final URL
@@ -227,129 +195,10 @@ const Reports = () => {
         setLoader(false); // Ensure loader is stopped in case of error
       });
   };
-
-
-
-  const getMachines = () => {
-    if (!plantName) {
-      console.error("Plant name is missing");
-      return;
-    }
-
-    const url = `machine/?plant_name=${plantName}`;
-
-    axiosInstance
-      .get(url, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
-      .then((response) => {
-        const formattedMachines = response.data.results.map((machine) => ({
-          id: machine.id,
-          name: machine.name,
-        }));
-        setMachineOptions(formattedMachines);
-      })
-      .catch((error) => {
-        console.error("Error fetching machine data:", error);
-      });
-  };
-
-  const getDefects = () => {
-    const url = `defect/?plant_name=${plantName}`;
-    axiosInstance
-      .get(url, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
-      .then((response) => {
-        const formattedDefects = response.data.results.map((defect) => ({
-          id: defect.id,
-          name: defect.name,
-        }));
-
-        console.log("getDefects response:", response);
-
-        setDefectsOptions(formattedDefects);
-      })
-      .catch((error) => {
-        console.error("Error fetching defect data:", error);
-      });
-  };
-
-  const [departmentOptions, setDepartmentOptions] = useState([]);
-
-  const getDepartments = () => {
-    const url = `department/?plant_name=${plantName}`;
-    axiosInstance
-      .get(url, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
-      .then((response) => {
-        const formattedDepartment = response.data.results.map((department) => ({
-          id: department.id,
-          name: department.name,
-        }));
-        setDepartmentOptions(formattedDepartment);
-      })
-      .catch((error) => {
-        console.error("Error fetching department data:", error);
-      });
-  };
-
-  const initialTableData = () => {
-    setLoader(true);
-    axiosInstance
-      .get(`machine/?plant_name=${plantName}`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
-      .then((response) => {
-        const { results, total_count, page_size } = response.data;
-
-        setTableData(results);
-        setLoader(false);
-
-      })
-      .catch((error) => {
-        console.error("Error fetching table data:", error);
-        setLoader(false);
-      });
-  };
-
-  const prodApi = () => {
-    const url = `product/?plant_name=${plantName}`;
-
-    axiosInstance
-      .get(url, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
-      .then((res) => {
-        setProductOptions(res.data.results);
-      })
-      .catch((err) => {
-        console.error("Error fetching product data:", err);
-      });
-  };
+  console.log(localPlantData)
 
   useEffect(() => {
-    getDepartments();
-    getMachines();
-    getDefects();
-    // if (defectProp) {
-    //   handleApplyFilters(pagination.current, pagination.pageSize);
-    // } else {
-    //   initialTableData(pagination.current, pagination.pageSize);
-    // }
-    // initialDateRange()
-    prodApi();
+    getDefects(localPlantData?.plant_name,accessToken) 
   }, []);
 
   const downloadExcel = () => {
@@ -383,92 +232,14 @@ const Reports = () => {
     }, 0);
   };
 
-  // const handleTableChange = (pagination) => {
-  //   dispatch(updatePage({
-  //     current: pagination.current,
-  //   }));
-  // };
-
-  // const handleTableChange = (pagination) => {
-  //   setPagination({
-  //     ...pagination,
-  //     pageSize: pagination.pageSize,
-  //   });
-
-  //   if (filterActive) {
-  //     handleApplyFilters(pagination.current, pagination.pageSize);
-  //   } else {
-  //     initialTableData(pagination.current, pagination.pageSize);
-  //   }
-  // };
-
-  const initializeWebSocket = () => {
-    const socket = new WebSocket(`wss://hul.aivolved.in/ws/notifications/`);
-
-    socket.onopen = () => {
-      console.log("WebSocket connection established");
-      setIsSocketConnected(true); // Update connection status
-    };
-
-    socket.onmessage = (event) => {
-      const message = JSON.parse(event.data);
-      setNotifications((prevNotifications) => {
-        const newNotifications = [...prevNotifications, message.notification];
-        // toast.error(message.notification); // Display toast notification
-        toast.error(message.notification, {
-          position: "top-right",
-          // autoClose: false,
-          autoClose: 10000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-          style: { whiteSpace: "pre-line" }, // Added style for new line character
-          // transition: Bounce,
-        }); // Display toast notification with 5 seconds duration
-        return newNotifications;
-      });
-    };
-
-    socket.onclose = () => {
-      console.log("WebSocket connection closed");
-      setIsSocketConnected(false); // Update connection status
-    };
-
-    socket.onerror = (error) => {
-      console.error("WebSocket error:", error);
-      setIsSocketConnected(false); // Update connection status
-    };
-
-    return () => {
-      socket.close();
-    };
-  };
-
-  useEffect(() => {
-    const cleanupWebSocket = initializeWebSocket();
-    return cleanupWebSocket;
-  }, []);
-
-  useEffect(() => {
-    if (notifications.length > prevNotificationLength) {
-      setPrevNotificationLength(notifications.length);
-    }
-  }, [notifications]);
 
   const resetFilter = () => {
-    // initialTableData(pagination.current, pagination.pageSize);
+
     setfilterActive(false);
-    setselectedDefect(null);
-    setSelectedMachine(null);
-    setselectedProduct(null);
     setSelectedDate(null);
-    // setPagination({
-    //   ...pagination,
-    //   current: 1,
-    // });
+    dispatch(setSelectedMachine(null)); // Dispatching action    
+    dispatch(setSelectedProduct(null)); // Dispatching action 
+
   };
 
   return (
@@ -484,16 +255,16 @@ const Reports = () => {
             style={{ minWidth: "200px", marginRight: "10px" }}
             showSearch
             placeholder="Select Machine"
-            value={selectedMachine} // Set default value to 1 if selectedMachine is null
+            value={selectedMachineRedux} // Set default value to 1 if selectedMachine is null
             onChange={handleMachineChange}
             size="large"
-            filterOption={(input, machineOptions) =>
-              (machineOptions.children ?? "")
+            filterOption={(input, machines) =>
+              (machines.children ?? "")
                 .toLowerCase()
                 .includes(input.toLowerCase())
             }
           >
-            {machineOptions.map((machine) => (
+            {machines.map((machine) => (
               <Select.Option key={machine.id} value={machine.id}>
                 {machine.name}
               </Select.Option>
@@ -505,18 +276,17 @@ const Reports = () => {
             showSearch
             placeholder="Select Product"
             onChange={handleProductChange}
-            value={selectedProduct}
+            value={selectedProductRedux}
             size="large"
-            filterOption={(input, productOptions) =>
-              // ( productOptions.children ?? "".toLowerCase() ).includes(input.toLowerCase() )
-              (productOptions.children ?? "")
+            filterOption={(input, productsData) =>
+              (productsData.children ?? "")
                 .toLowerCase()
                 .includes(input.toLowerCase())
             }
           >
-            {productOptions.map((department) => (
-              <Select.Option key={department.id} value={department.id}>
-                {department.name}
+            {productsData.map((prod) => (
+              <Select.Option key={prod.id} value={prod.id}>
+                {prod.name}
               </Select.Option>
             ))}
           </Select>
@@ -525,18 +295,18 @@ const Reports = () => {
             showSearch
             placeholder="Select Defect"
             onChange={handleDefectChange}
-            value={selectedDefect}
+            // value={selectedDefectRedux}
             size="large"
-            filterOption={(input, defectsOptions) =>
+            filterOption={(input, defectsData) =>
               // ( productOptions.children ?? "".toLowerCase() ).includes(input.toLowerCase() )
-              (defectsOptions.children ?? "")
+              (defectsData.children ?? "")
                 .toLowerCase()
                 .includes(input.toLowerCase())
             }
           >
-            {defectsOptions.map((department) => (
-              <Select.Option key={department.id} value={department.id}>
-                {department.name}
+            {defectsData.map((defect) => (
+              <Select.Option key={defect.id} value={defect.id}>
+                {defect.name}
               </Select.Option>
             ))}
           </Select>

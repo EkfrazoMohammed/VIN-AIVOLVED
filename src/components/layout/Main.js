@@ -18,13 +18,10 @@ function Main({ children }) {
   const [sidenavType, setSidenavType] = useState("transparent");
   const [fixed, setFixed] = useState(false);
 
-  const localPlantData = useSelector((state) => state.plant.plantData);
+  const localPlantData = useSelector((state) => state.plant.plantData[0]);
   const plantName = localPlantData?.plant_name;
 
-  const openDrawer = () => setVisible(!visible);
-  const handleSidenavType = (type) => setSidenavType(type);
-  const handleSidenavColor = (color) => setSidenavColor(color);
-  const handleFixedNavbar = (type) => setFixed(type);
+
 
   let { pathname } = useLocation();
   pathname = pathname.replace("/", "");

@@ -52,8 +52,8 @@ import axiosInstance from "../../API/axiosInstance";
 const DashboardContentLayout = ({ children }) => {
   const apiCall = useApiInterceptor();
   const dispatch = useDispatch();
+  const localPlantData = useSelector((state) => state?.plant?.plantData[0]);
 
-  const localPlantData = useSelector((state) => state.plant.plantData[1]);
   const accessToken = useSelector((state) => state.auth.authData[0].accessToken);
   const machines = useSelector((state) => state.machine.machinesData)
   const activeMachines = useSelector((state) => state.machine.activeMachines)
@@ -89,13 +89,9 @@ const DashboardContentLayout = ({ children }) => {
 
   const handleProductChange = (value) => {
     dispatch(setSelectedProduct(Number(value))); // Dispatching action    
-
-  const localPlantData = useSelector((state) => state.plant.plantData);
-  const plantName = localPlantData ? localPlantData.plant_name : "";
-  const accessToken = useSelector(
-    (state) => state.auth.authData[0].accessToken
-  );
-  };
+  }
+ 
+  
 
   // Handler for date range changes
   const handleDateRangeChange = (dates, dateStrings) => {
@@ -107,10 +103,11 @@ const DashboardContentLayout = ({ children }) => {
       console.error("Invalid date range:", dates, dateStrings);
     }
   };
-
+  useEffect(() => {
+    console.log(localPlantData?.id)
+    // window.location.reload()
+    },[localPlantData])
   const resetFilter = () => {
-    // Reset data only if needed
-    // initialTableData();
     initialDashboardData(localPlantData.id, accessToken);
     initialDpmuData(localPlantData.id, accessToken);
     initialProductionData(localPlantData.id, accessToken);
@@ -326,86 +323,6 @@ const DashboardContentLayout = ({ children }) => {
   const [prevNotificationLength, setPrevNotificationLength] = useState(0);
   const [api, contextHolder] = notification.useNotification();
 
-  useEffect(() => {
-    const initializeWebSocket = () => {
-      const socket = new WebSocket(
-        `wss://hul.aivolved.in/ws/notifications/${localPlantData.id}/`
-      );
-      socket.onopen = () => {
-        console.log(`WebSocket connection established ${localPlantData.id}`);
-        setIsSocketConnected(true); // Update connection status
-      };
-
-      socket.onmessage = (event) => {
-        const message = JSON.parse(event.data);
-        setNotifications((prevNotifications) => {
-          const newNotifications = [...prevNotifications, message.notification];
-
-          // Show notification using Ant Design
-          const key = `open${Date.now()}`;
-          api.open({
-            message: message.notification,
-            onClose: close,
-            duration: 5000,
-            showProgress: true,
-            pauseOnHover: true,
-            key,
-            stack: 2,
-            icon: (
-              <ExclamationCircleOutlined
-                style={{
-                  color: "#fff",
-                }}
-              />
-            ),
-            style: { whiteSpace: "pre-line" }, // Added style for new line character
-            btn: (
-              <Space>
-                <Button
-                  type="link"
-                  size="small"
-                  onClick={() => api.destroy(key)}
-                  style={{ color: "#fff" }}
-                >
-                  Close
-                </Button>
-
-                <Button
-                  type="primary"
-                  size="large"
-                  style={{
-                    fontSize: "1rem",
-                    backgroundColor: "#fff",
-                    color: "orangered",
-                  }}
-                  onClick={() => api.destroy()}
-                >
-                  <Link to="/insights">View All Errors </Link>
-                </Button>
-              </Space>
-            ),
-          });
-
-          return newNotifications;
-        });
-      };
-
-      socket.onclose = () => {
-        console.log("WebSocket connection closed");
-        setIsSocketConnected(false); // Update connection status
-      };
-
-      socket.onerror = (error) => {
-        console.error("WebSocket error:", error);
-        setIsSocketConnected(false); // Update connection status
-      };
-
-      return () => { socket.close(); };
-    };
-
-    const cleanup = initializeWebSocket();
-    return cleanup;
-  }, [api]);
 
   const close = () => {
     console.log("Notification was closed");

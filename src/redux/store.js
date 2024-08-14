@@ -5,15 +5,14 @@ import storage from "redux-persist/lib/storage/session"; // session Storage
 import { encryptTransform } from "redux-persist-transform-encrypt";
 import authReducer from "./slices/authSlice";
 import plantReducer from './slices/plantSlice';
-
-import plantReducer from "./slices/plantSlice";
 import dashboardReducer from "./slices/dashboardSlice";
 import machineReducer from "./slices/machineSlice";
 import productReducer from "./slices/productSlice";
 import departmentReducer from "./slices/departmentSlice";
 import dpmuReducer from "./slices/dpmuSlice";
 import productVsDefectReducer from "./slices/productvsDefectSlice";
-
+import reportReducer from "./slices/reportSlice"
+import defectReducer from "./slices/defectSlice"
 // Encryption Configuration
 const encryptor = encryptTransform({
   secretKey: process.env.REACT_APP_ENCRYPTION_KEY || "V!N_P0ND!", // Ensure secret key is set in .env
@@ -73,6 +72,11 @@ const reportPersistConfig = {
   storage,
   transforms: [encryptor],
 };
+const defectPersistConfig = {
+  key: 'defect',
+  storage,
+  transforms: [encryptor],
+};
 
 
 // Combine reducers
@@ -86,6 +90,7 @@ const rootReducer = {
   department: persistReducer(departmentPersistConfig, departmentReducer),
   dpmu: persistReducer(dpmuPersistConfig, dpmuReducer),
   productVsDefect: persistReducer(productVsDefectPersistConfig,productVsDefectReducer),
+  defect: persistReducer(defectPersistConfig,defectReducer),
 };
 
 // Configure the store

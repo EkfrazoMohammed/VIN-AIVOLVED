@@ -14,6 +14,12 @@ import {
   getProductFailure,
 } from "../redux/slices/productSlice"; // Import the actions
 
+import {
+  getDefectSuccess,
+  getDefectFailure,
+  setSelectedDefect,
+} from "../redux/slices/defectSlice"; // Import the actions
+
 import { getDpmuSuccess, getDpmuFailure } from "../redux/slices/dpmuSlice"; // Import the actions
 import {
   getProductVsDefectSuccess,
@@ -98,6 +104,27 @@ export const getProducts = (plantName, token) => {
       store.dispatch(getProductFailure());
     });
 };
+export const getDefects = (plantName, token) => {
+  console.log(plantName)
+  const domain = `${baseURL}`;
+  let url = `${domain}defect/?plant_name=${plantName}`;
+  axios
+    .get(url, {
+      headers: {
+        Authorization: ` Bearer ${token}`,
+      },
+    })
+    .then((response) => {
+      const formattedDefects = response.data.results;
+      store.dispatch(getDefectSuccess(formattedDefects));
+      
+    })
+    .catch((error) => {
+      console.error("Error fetching department data:", error);
+      // Dispatch action to update Redux state
+      store.dispatch(getDefectFailure());
+    });
+};
 
 export const initialDpmuData = (plantId, token) => {
   const domain = baseURL;
@@ -157,61 +184,10 @@ export const getSystemStatus = (plantId, token) => {
     });
 };
 const isEmptyDashboardResponse = (data) => {
-  // Check if data is just an empty active_products array
   return data && data.active_products && Array.isArray(data.active_products) && data.active_products.length === 0
     && Object.keys(data).length === 1;
 };
 
-// export const initialDashboardData = (plantId, token) => {
-//   const domain = `${baseURL}`;
-//   const url = `${domain}dashboard/?plant_id=${plantId}`;
-
-//   axios
-//     .get(url, {
-//       headers: {
-//         Authorization: `Bearer ${token}`,
-//       },
-//     })
-//     .then((response) => {
-//       const { active_products, ...datesData } = response.data;
-
-//       if (isEmptyDashboardResponse(response.data)) {
-//         store.dispatch(getDashboardFailure(null));
-//       } else {
-//         store.dispatch(getDashboardSuccess({ datesData, activeProducts: active_products }));
-//       }
-//     })
-//     .catch((error) => {
-//       console.error("Error fetching machine data:", error);
-//       store.dispatch(getDashboardFailure(error.message));
-//     });
-// };
-
-
-// export const initialDashboardData = (plantId, token) => {
-//   const domain = `${baseURL}`;
-//   const url = `${domain}dashboard/?plant_id=${plantId}`;
-
-//   axios
-//     .get(url, {
-//       headers: {
-//         Authorization: `Bearer ${token}`,
-//       },
-//     })
-//     .then((response) => {
-//       const { active_products, ...datesData } = response.data;
-
-//       if (isEmptyDashboardResponse(response.data)) {
-//         store.dispatch(getDashboardFailure('No meaningful data available.'));
-//       } else {
-//         store.dispatch(getDashboardSuccess({ datesData, activeProducts: active_products }));
-//       }
-//     })
-//     .catch((error) => {
-//       console.error("Error fetching dashboard data:", error);
-//       store.dispatch(getDashboardFailure(error.message));
-//     });
-// };
 
 export const initialDashboardData = (plantId, token) => {
   const domain = `${baseURL}`;
