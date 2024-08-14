@@ -7,6 +7,7 @@ import { Hourglass } from "react-loader-spinner";
 import LoaderIcon from "../LoaderIcon";
 
 function StackChart({ data }) {
+  console.log(data)
   const { Title } = Typography;
   const [defectColors, setDefectColors] = useState({});
 

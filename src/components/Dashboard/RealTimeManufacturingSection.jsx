@@ -6,22 +6,12 @@ export default function RealTimeManufacturingSection({
   categoryDefects,
   productionData,
 }) {
-  // const data = {
-  //   labels: ["2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023"],
-  //   datasets: [
-  //     {
-  //       label: "Defects",
-  //       data: [46, 48, 50, 48, 47, 47, 49, 50],
-  //       backgroundColor: "rgba(54, 162, 235, 0.6)",
-  //     },
-  //   ],
-  // };
-  const data = {
-    labels: productionData.map((item) => item.date),
+ const data = {
+    labels: productionData.map((item) => item.date_time),
     datasets: [
       {
-        label: "Total Production",
-        data: productionData.map((item) => parseInt(item.total_production, 10)),
+        label: "date_time",
+        data: productionData.map((item) => parseInt(item.defect_percentage, 10)),
         backgroundColor: "#ffe3b3",
       },
     ],
