@@ -3,10 +3,14 @@ import ReactApexChart from "react-apexcharts";
 import { Typography } from "antd";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { AuthToken, baseURL } from "../../API/API";
+import {  baseURL } from "../../API/API";
 import LoaderIcon from "../LoaderIcon";
 
+import { useSelector, useDispatch } from "react-redux";
+
 function PieChart({ data, selectedDate }) {
+  const accessToken = useSelector((state) => state.auth.authData[0].accessToken);
+    
   const navigate = useNavigate();
   const { Title } = Typography;
   const [defectColors, setDefectColors] = useState({});
@@ -18,7 +22,7 @@ function PieChart({ data, selectedDate }) {
     axios
       .get(`${baseURL}defect/`, {
         headers: {
-          Authorization: `Bearer ${AuthToken}`,
+          Authorization: `Bearer ${accessToken}`,
         },
       })
       .then((response) => {

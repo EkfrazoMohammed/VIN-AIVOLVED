@@ -2,11 +2,13 @@ import React, { useState, useEffect } from "react";
 import ReactApexChart from "react-apexcharts";
 import { Typography } from "antd";
 import axios from "axios";
-import { AuthToken, baseURL } from "../../API/API";
-import { Hourglass } from "react-loader-spinner";
+import {  baseURL } from "../../API/API";
 import LoaderIcon from "../LoaderIcon";
 
+import { useSelector, useDispatch } from "react-redux";
 function StackChart({ data }) {
+  const accessToken = useSelector((state) => state.auth.authData[0].accessToken);
+  
   const { Title } = Typography;
   const [defectColors, setDefectColors] = useState({});
 
@@ -15,7 +17,7 @@ function StackChart({ data }) {
     axios
       .get(`${baseURL}defect/`, {
         headers: {
-          Authorization: `Bearer ${AuthToken}`,
+          Authorization: `Bearer ${accessToken}`,
         },
       })
       .then((response) => {

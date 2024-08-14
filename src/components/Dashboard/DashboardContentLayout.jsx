@@ -7,14 +7,12 @@ import { IoIosArrowDown } from "react-icons/io";
 import { IoMdArrowForward } from "react-icons/io";
 
 import { useSelector, useDispatch } from "react-redux";
+import { initialDashboardData, getMachines, getSystemStatus, getDepartments, initialDpmuData, initialProductionData, getProducts } from "../../services/dashboardApi";
 import DOMPurify from "dompurify";
-
-import {
-  Link,
-  useNavigate,
-  useNavigation,
-  useLocation,
-} from "react-router-dom";
+import { setSelectedMachine } from "../../redux/slices/machineSlice"
+import { setSelectedProduct } from "../../redux/slices/productSlice"
+import { getDashboardSuccess, getDashboardFailure } from "../../redux/slices/dashboardSlice"
+import { Link, useNavigate, useNavigation, useLocation } from "react-router-dom";
 import axios from "axios";
 import {
   Card,
@@ -38,13 +36,12 @@ import {
   NotificationOutlined,
 } from "@ant-design/icons";
 import StackChart from "../../components/chart/StackChart";
-import LineChart from "../../components/chart/LineChart";
 import PieChart from "../../components/chart/PieChart";
-import MachinesParameter from "../../pages/MachinesParameterWithPagination";
-import MachinesParameterWithPagination from "../../pages/MachinesParameterWithPagination";
+
 // import MachineParam from "../../components/chart/MachineParam";
-import { AuthToken, baseURL } from "../../API/API";
+
 import ProductionVsReject from "../../components/chart/ProductionVsReject";
+import { baseURL } from "../../API/API";
 import dayjs from "dayjs";
 import { Hourglass } from "react-loader-spinner";
 import { IoFilterSharp } from "react-icons/io5";
@@ -54,51 +51,51 @@ import axiosInstance from "../../API/axiosInstance";
 
 const DashboardContentLayout = ({ children }) => {
   const apiCall = useApiInterceptor();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const dispatch = useDispatch();
 
+  const localPlantData = useSelector((state) => state.plant.plantData[1]);
+  const accessToken = useSelector((state) => state.auth.authData[0].accessToken);
+  const machines = useSelector((state) => state.machine.machinesData)
+  const activeMachines = useSelector((state) => state.machine.activeMachines)
+  const dpmuChartData = useSelector((state) => state.dpmu.dpmuData)
+  const productionVsDefectChartData = useSelector((state) => state.productVsDefect.productvsdefectData)
+  const productsData = useSelector((state) => state.product.productsData)
+  const selectedMachineRedux = useSelector((state) => state.machine.selectedMachine);
+  const selectedProductRedux = useSelector((state) => state.product.selectedProduct);
+  const tableDataRedux = useSelector((state) => state.dashboard.datesData);
+  const tableDataReduxActive = useSelector((state) => state.dashboard.activeProducts)
+
+  const [loading, setLoading] = useState(true);
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - 7);
   const formattedStartDate = startDate.toISOString().slice(0, 10);
   const endDate = new Date();
   const formattedEndDate = endDate.toISOString().slice(0, 10);
-  const dateFormat = "YYYY/MM/DD";
 
-  const [selectedMachine, setSelectedMachine] = useState(null);
-  const [selectedDepartment, setSelectedDepartment] = useState(null);
   const [selectedDefect, setSelectedDefect] = useState(null);
-  const [selectedProduct, setSelectedProduct] = useState(null);
+
   const [selectedDate, setSelectedDate] = useState(null);
-  const [loaderData, setLoaderData] = useState(false);
   const [dateRange, setDateRange] = useState([
     formattedStartDate,
     formattedEndDate,
   ]);
-  const [tableData, setTableData] = useState([]);
-  const [productionData, setProductionData] = useState([]);
-  const [machineOptions, setMachineOptions] = useState([]);
-  const [departmentOptions, setDepartmentOptions] = useState([]);
-  const [productOptions, setProductOptions] = useState([]);
-  const [activeMachines, setActiveMachines] = useState([]);
   const [activeProd, setActiveProd] = useState([]);
 
   const currentUrlPath = useLocation();
 
   const handleMachineChange = (value) => {
-    setSelectedMachine(value);
+    dispatch(setSelectedMachine(Number(value))); // Dispatching action    
   };
-  const handleDepartmentChange = (value) => {
-    setSelectedDepartment(value);
-  };
+
   const handleProductChange = (value) => {
-    setSelectedProduct(value);
-  };
+    dispatch(setSelectedProduct(Number(value))); // Dispatching action    
 
   const localPlantData = useSelector((state) => state.plant.plantData);
   const plantName = localPlantData ? localPlantData.plant_name : "";
   const accessToken = useSelector(
     (state) => state.auth.authData[0].accessToken
   );
+  };
 
   // Handler for date range changes
   const handleDateRangeChange = (dates, dateStrings) => {
@@ -113,20 +110,18 @@ const DashboardContentLayout = ({ children }) => {
 
   const resetFilter = () => {
     // Reset data only if needed
-    initialTableData();
-    initialProductionData();
-
-    // Reset selected filters in a single setState call
-    setSelectedMachine(null);
-    setSelectedProduct(null);
+    // initialTableData();
+    initialDashboardData(localPlantData.id, accessToken);
+    initialDpmuData(localPlantData.id, accessToken);
+    initialProductionData(localPlantData.id, accessToken);
+    dispatch(setSelectedMachine(null)); // Dispatching action
+    dispatch(setSelectedProduct(null)); // Dispatching action
     setSelectedDate(null);
-
-    // Reset filter active state
     setFilterActive(false);
   };
 
   const handleApplyFilters = () => {
-    setLoaderData(true); // Set loading state to true
+
     const domain = `${baseURL}`;
     const [fromDate, toDate] = dateRange; // Destructure the date range
 
@@ -135,9 +130,8 @@ const DashboardContentLayout = ({ children }) => {
       plant_id: localPlantData.id, // Ensure localPlantData is valid
       from_date: fromDate,
       to_date: toDate,
-      machine_id: selectedMachine,
-      department_id: selectedDepartment,
-      product_id: selectedProduct,
+      machine_id: selectedMachineRedux,
+      product_id: selectedProductRedux,
       defect_id: selectedDefect,
     };
 
@@ -153,47 +147,24 @@ const DashboardContentLayout = ({ children }) => {
     const url = `dashboard/?${queryString}`; // Complete URL with query string
 
     // Make the API call using axiosInstance
-    axiosInstance
+    apiCall
       .get(url, {
         headers: {
           Authorization: `Bearer ${accessToken}`, // Include authorization token
         },
       })
       .then((response) => {
-        setLoaderData(false); // Stop loading
-        const { active_products, ...filterData } = response.data; // Destructure response
 
-        // Update state with fetched data
-        setTableData(filterData);
-        setActiveProd(active_products);
+        dispatch(getDashboardSuccess(response.data))
         setFilterActive(true);
       })
       .catch((error) => {
         console.error("Error:", error); // Log error
-        setLoaderData(false); // Stop loading in case of error
+
       });
   };
 
-  const getSystemStatus = () => {
-    const domain = `${baseURL}`;
-    let url = `${domain}system-status/?plant_id=${localPlantData.id}`;
-    axios
-      .get(url, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
-      .then((response) => {
-        setActiveMachines(
-          response.data.results.filter(
-            (machine) => machine.system_status === true
-          )
-        );
-      })
-      .catch((error) => {
-        console.error("Error fetching machine data:", error);
-      });
-  };
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -203,16 +174,20 @@ const DashboardContentLayout = ({ children }) => {
 
         // Fetching data in parallel
         await Promise.all([
-          getDepartments(),
-          getMachines(),
+
+          getMachines(localPlantData.plant_name, accessToken),
+          getDepartments(localPlantData.plant_name, accessToken),
+          initialDpmuData(localPlantData.id, accessToken),
+          getProducts(localPlantData.plant_name, accessToken),
           initialDateRange(),
-          initialTableData(),
-          initialProductionData(),
-          prodApi(),
-          getSystemStatus(),
+          // initialTableData(),
+          initialDashboardData(localPlantData.id, accessToken),
+          initialProductionData(localPlantData.id, accessToken),
+
+          getSystemStatus(localPlantData.id, accessToken),
         ]);
       } catch (err) {
-        setError(err.message || "Failed to fetch data");
+        console.log(err.message || "Failed to fetch data")
       } finally {
         setLoading(false);
       }
@@ -221,47 +196,6 @@ const DashboardContentLayout = ({ children }) => {
     fetchData();
   }, []);
 
-  const getMachines = () => {
-    const domain = `${baseURL}`;
-    let url = `${domain}machine/?plant_name=${plantName}`;
-    axios
-      .get(url, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
-      .then((response) => {
-        const formattedMachines = response.data.results.map((machine) => ({
-          id: machine.id,
-          name: machine.name,
-        }));
-        setMachineOptions(formattedMachines);
-      })
-      .catch((error) => {
-        console.error("Error fetching machine data:", error);
-      });
-  };
-
-  const getDepartments = () => {
-    const domain = `${baseURL}`;
-    let url = `${domain}department/?plant_name=${plantName}`;
-    axios
-      .get(url, {
-        headers: {
-          Authorization: ` Bearer ${accessToken}`,
-        },
-      })
-      .then((response) => {
-        const formattedDepartment = response.data.results.map((department) => ({
-          id: department.id,
-          name: department.name,
-        }));
-        setDepartmentOptions(formattedDepartment);
-      })
-      .catch((error) => {
-        console.error("Error fetching department data:", error);
-      });
-  };
   const initialDateRange = () => {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - 7); // 7 days ago
@@ -276,79 +210,7 @@ const DashboardContentLayout = ({ children }) => {
 
   const [filterActive, setFilterActive] = useState(false);
 
-  const initialTableData = () => {
-    setLoaderData(true);
 
-    const domain = baseURL;
-    const [fromDate, toDate] = [startDate, endDate].map((date) =>
-      date.toISOString().slice(0, 10)
-    ); // Format dates as YYYY-MM-DD
-    // const url = `${domain}dashboard/?plant_id=${localPlantData.id}`;
-    // const url = `${domain}dashboard/`;
-
-    // axios
-    //   .get(url, {
-    //     headers: {
-    //       Authorization: ` Bearer ${AuthToken}`,
-    //     },
-    //   })
-    apiCall
-      .get(`dashboard/?plant_id=${localPlantData?.id}`, {
-        headers: {
-          Authorization: `Bearer ${AuthToken}`,
-        },
-      })
-      .then((response) => {
-        setLoaderData(false);
-        const { active_products, ...datesData } = response.data;
-        setTableData(datesData);
-        setActiveProd(active_products);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        setLoaderData(false);
-      });
-  };
-
-  // console.log(Object.keys(tableData).filter(res=>res !== "active_products"),"<<<tabledata")
-
-  const initialProductionData = () => {
-    const domain = baseURL;
-    // const [fromDate, toDate] = [startDate, endDate].map(date => date.toISOString().slice(0, 10)); // Format dates as YYYY-MM-DD
-    const url = `${domain}defct-vs-machine/?plant_id=${localPlantData.id}`;
-    // const url = `${domain}dashboard/`;
-    axios
-      .get(url, {
-        headers: {
-          Authorization: ` Bearer ${accessToken}`,
-        },
-      })
-      .then((response) => {
-        setProductionData(response.data.data_last_7_days);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  };
-  const [alertData, setAlertData] = useState(null);
-
-  const prodApi = () => {
-    const domain = `${baseURL}`;
-    const url = `${domain}product/?plant_name=${localPlantData.plantName}`;
-    axios
-      .get(url, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
-      .then((res) => {
-        setAlertData(res.data.results);
-        setProductOptions(res.data.results);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
 
   const { Title } = Typography;
   const { RangePicker } = DatePicker;
@@ -356,29 +218,22 @@ const DashboardContentLayout = ({ children }) => {
   // Function to categorize defects
   const categorizeDefects = (data) => {
     const categories = {};
-
-    // Iterate through each date in the tableData
     Object.keys(data).forEach((date) => {
       const defects = data[date];
-
-      // Iterate through each defect in the current date
       Object.keys(defects).forEach((defect) => {
         if (!categories[defect]) {
           categories[defect] = 0;
         }
-
-        // Accumulate the defect value for the category
         categories[defect] += defects[defect];
       });
     });
-
     return categories;
   };
 
   useEffect(() => {
-    const categorizedData = categorizeDefects(tableData);
+    const categorizedData = categorizeDefects(tableDataRedux);
     setCategoryDefects(categorizedData);
-  }, [tableData]);
+  }, [tableDataRedux]);
 
   const [selectedCheckboxMachine, setSelectedCheckboxMachine] = useState([]);
   const handleMachineCheckBoxChange = (checkedValues) => {
@@ -394,9 +249,11 @@ const DashboardContentLayout = ({ children }) => {
     axios
       .get(url)
       .then((response) => {
-        setTableData(response.data);
+        dispatch(getDashboardSuccess(response.data))
+        // setTableData(response.data);
       })
       .catch((error) => {
+        getDashboardFailure();
         console.error("Error fetching department data:", error);
       });
   };
@@ -450,7 +307,7 @@ const DashboardContentLayout = ({ children }) => {
     <Menu>
       <Menu.Item key="0">
         <Checkbox.Group style={{ display: "block" }}>
-          {Object.values(activeProd).map((prod) => (
+          {Object.values(tableDataReduxActive).map((prod) => (
             <div
               key={prod.id}
               style={{ display: "flex", flexDirection: "column" }}
@@ -543,9 +400,7 @@ const DashboardContentLayout = ({ children }) => {
         setIsSocketConnected(false); // Update connection status
       };
 
-      return () => {
-        socket.close();
-      };
+      return () => { socket.close(); };
     };
 
     const cleanup = initializeWebSocket();
@@ -576,7 +431,7 @@ const DashboardContentLayout = ({ children }) => {
                       className="dx-default-select select-machines"
                       showSearch
                       placeholder="Select Machine"
-                      value={selectedMachine}
+                      value={selectedMachineRedux}
                       onChange={handleMachineChange}
                       filterOption={(input, machineOptions) =>
                         (machineOptions?.children ?? "")
@@ -584,7 +439,7 @@ const DashboardContentLayout = ({ children }) => {
                           .includes(input.toLowerCase())
                       }
                     >
-                      {machineOptions.map((machine) => (
+                      {machines.map((machine) => (
                         <Select.Option key={machine.id} value={machine.id}>
                           {machine.name}
                         </Select.Option>
@@ -595,14 +450,14 @@ const DashboardContentLayout = ({ children }) => {
                       showSearch
                       placeholder="Select Products"
                       onChange={handleProductChange}
-                      value={selectedProduct}
-                      filterOption={(input, productOptions) =>
-                        (productOptions?.children ?? "")
+                      value={selectedProductRedux}
+                      filterOption={(input, productsData) =>
+                        (productsData?.children ?? "")
                           .toLowerCase()
                           .includes(input.toLowerCase())
                       }
                     >
-                      {productOptions.map((department) => (
+                      {productsData.map((department) => (
                         <Select.Option
                           key={department.id}
                           value={department.id}
@@ -681,7 +536,7 @@ const DashboardContentLayout = ({ children }) => {
                       <Dropdown overlay={prodMenu} trigger={["click"]}>
                         <div className="number" style={{ cursor: "pointer" }}>
                           <div className="text-[35px] text-gray-500 font-semibold bg-white rounded mt-3 px-2 flex items-center justify-between">
-                            {Object.keys(activeProd).length}
+                            {Object.keys(tableDataReduxActive).length}
                             <IoIosArrowDown className="text-[18px]" />
                           </div>
                         </div>
@@ -700,9 +555,6 @@ const DashboardContentLayout = ({ children }) => {
                         <span>Insights</span>
                         <NotificationOutlined />
                       </div>
-                      {/* <div className="text-[40px] text-gray-600 font-bold group-hover:text-white">
-                    0
-                  </div> */}
                       <IoMdArrowForward className="absolute bottom-5 right-5 text-lg" />
                     </Link>
                   </div>
@@ -714,16 +566,16 @@ const DashboardContentLayout = ({ children }) => {
           <RealTimeManufacturingSection
             loading={loading}
             categoryDefects={categoryDefects}
-            productionData={productionData}
+            productionData={dpmuChartData}
           />
           <div className="production-defect-report-container flex">
-            <ProductAndDefect loading={loading} chartData={productionData} />
+            <ProductAndDefect loading={loading} chartData={productionVsDefectChartData} />
           </div>
           <DefectsReport
             loading={loading}
-            chartData={tableData}
-            chart1={<StackChart data={tableData} />}
-            chart2={<PieChart data={tableData} selectedDate={selectedDate} />}
+            chartData={tableDataRedux}
+            chart1={<StackChart data={tableDataRedux} />}
+            chart2={<PieChart data={tableDataRedux} selectedDate={selectedDate} />}
           />
         </>
       )}
