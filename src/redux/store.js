@@ -1,8 +1,11 @@
+
 import { configureStore } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage/session"; // session Storage
 import { encryptTransform } from "redux-persist-transform-encrypt";
 import authReducer from "./slices/authSlice";
+import plantReducer from './slices/plantSlice';
+
 import plantReducer from "./slices/plantSlice";
 import dashboardReducer from "./slices/dashboardSlice";
 import machineReducer from "./slices/machineSlice";
@@ -19,6 +22,7 @@ const encryptor = encryptTransform({
     console.error("Encryption error:", error);
   },
 });
+
 
 // Persist Configurations for each slice
 const authPersistConfig = {
@@ -64,11 +68,18 @@ const dashboardPersistConfig = {
   storage,
   transforms: [encryptor],
 };
+const reportPersistConfig = {
+  key: 'report',
+  storage,
+  transforms: [encryptor],
+};
+
 
 // Combine reducers
 const rootReducer = {
   auth: persistReducer(authPersistConfig, authReducer),
   plant: persistReducer(plantPersistConfig, plantReducer),
+  report: persistReducer(reportPersistConfig, reportReducer),
   dashboard: persistReducer(dashboardPersistConfig,dashboardReducer),
   machine: persistReducer(machinePersistConfig, machineReducer),
   product: persistReducer(productPersistConfig, productReducer),

@@ -39,6 +39,8 @@ import StackChart from "../../components/chart/StackChart";
 import PieChart from "../../components/chart/PieChart";
 
 // import MachineParam from "../../components/chart/MachineParam";
+
+import ProductionVsReject from "../../components/chart/ProductionVsReject";
 import { baseURL } from "../../API/API";
 import dayjs from "dayjs";
 import { Hourglass } from "react-loader-spinner";
@@ -88,6 +90,11 @@ const DashboardContentLayout = ({ children }) => {
   const handleProductChange = (value) => {
     dispatch(setSelectedProduct(Number(value))); // Dispatching action    
 
+  const localPlantData = useSelector((state) => state.plant.plantData);
+  const plantName = localPlantData ? localPlantData.plant_name : "";
+  const accessToken = useSelector(
+    (state) => state.auth.authData[0].accessToken
+  );
   };
 
   // Handler for date range changes
@@ -202,6 +209,7 @@ const DashboardContentLayout = ({ children }) => {
   };
 
   const [filterActive, setFilterActive] = useState(false);
+
 
 
   const { Title } = Typography;

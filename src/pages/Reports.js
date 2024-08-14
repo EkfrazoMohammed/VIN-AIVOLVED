@@ -1,13 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { useSelector  } from "react-redux";
+import { useSelector } from "react-redux";
 import { Table, Select, DatePicker, Button, Image, Tag } from "antd";
 import * as XLSX from "xlsx";
 import axiosInstance from "../API/axiosInstance";
 import { DownloadOutlined } from "@ant-design/icons";
 import { Hourglass } from "react-loader-spinner";
 import dayjs from "dayjs";
-import {toast } from "react-toastify";
+import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { getReportData, updatePage } from ".././redux/slices/reportSlice";
+
+// REPORTS API CALLING
+import { reportApi } from "../services/reportsApi";
+
+
+
+
+
 // import {API, AuthToken, baseURL, localPlantData} from "./../API/API"
 // import { baseURL } from "./../API/API";
 // import moment from "moment";
@@ -70,14 +80,26 @@ const locale = {
   },
 };
 
+
+
 const Reports = () => {
-  const dateFormat = "YYYY/MM/DD";
-  const location = useLocation();
-  const localPlantData = useSelector((state) => state.plant.plantData[0]);
+
+
+  // REDUX CALLING
+  const dispatch = useDispatch()
+  const reportData = useSelector((state) => state.report.reportData);
+  const pagination = useSelector((state) => state.report.pagination);
+  const localPlantData = useSelector((state) => state.plant.plantData);
   const plantName = localPlantData ? localPlantData.plant_name : "";
   const accessToken = useSelector(
     (state) => state.auth.authData[0].accessToken
   );
+
+
+  const dateFormat = "YYYY/MM/DD";
+  const location = useLocation();
+
+
   const defectProp = location?.state?.clickedVal[0]?.name || null;
   const defectId = location?.state?.clickedVal[0]?.id || null;
 
@@ -101,13 +123,9 @@ const Reports = () => {
   const [notifications, setNotifications] = useState([]);
   const [isSocketConnected, setIsSocketConnected] = useState(false);
   const [prevNotificationLength, setPrevNotificationLength] = useState(0);
-  const [pagination, setPagination] = useState({
-    current: 1,
-    pageSize: 10,
-    total: 0,
-    position: ["topRight"],
-    showSizeChanger: true,
-  });
+
+
+
   const [productOptions, setProductOptions] = useState([]);
 
   const [plantTableDetail, setPlantTableDetail] = useState([
@@ -123,31 +141,42 @@ const Reports = () => {
 
   const [loader, setLoader] = useState(false);
 
+  useEffect(() => {
+    reportApi({ plantId: 3, pageSize: pagination.pageSize, Authtoken: accessToken, pageNumber: pagination.current })
+      .then(res => {
+        const { page_size, total_count, results } = res;
+        dispatch(getReportData({
+          reportData: results,
+          current: pagination.current,
+          pageSize: pagination.pageSize,
+          total: total_count,
+        }));
+      })
+      .catch(err => console.error(err));
+  }, [pagination.current, pagination.pageSize, accessToken]);
+
+
+  const handleTableChange = (pagination) => {
+    dispatch(updatePage({
+      current: pagination.current,
+      pageSize: pagination.pageSize,
+    }));
+  };
+
   const handleProductChange = (value) => {
     setselectedProduct(value);
-    setPagination({
-      ...pagination,
-      current: 1,
-    });
   };
+
   const handleDefectChange = (value) => {
     setselectedDefect(value);
-    setPagination({
-      ...pagination,
-      current: 1,
-    });
+
   };
   const handleMachineChange = (value) => {
     setSelectedMachine(value);
-    setPagination({
-      ...pagination,
-      current: 1,
-    });
+
   };
 
-  const handleDepartmentChange = (value) => {
-    setSelectedDepartment(value);
-  };
+
 
   const handleDateRangeChange = (dates, dateStrings) => {
     if (dateStrings) {
@@ -192,12 +221,6 @@ const Reports = () => {
         setLoader(false);
         setfilterActive(true);
 
-        setPagination({
-          ...pagination,
-          current: page,
-          pageSize: page_size,
-          total: total_count,
-        });
       })
       .catch((error) => {
         console.error("Error fetching filtered reports data:", error);
@@ -291,12 +314,7 @@ const Reports = () => {
 
         setTableData(results);
         setLoader(false);
-        setPagination({
-          ...pagination,
-          current: 1,
-          pageSize: page_size,
-          total: total_count,
-        });
+
       })
       .catch((error) => {
         console.error("Error fetching table data:", error);
@@ -325,11 +343,11 @@ const Reports = () => {
     getDepartments();
     getMachines();
     getDefects();
-    if (defectProp) {
-      handleApplyFilters(pagination.current, pagination.pageSize);
-    } else {
-      initialTableData(pagination.current, pagination.pageSize);
-    }
+    // if (defectProp) {
+    //   handleApplyFilters(pagination.current, pagination.pageSize);
+    // } else {
+    //   initialTableData(pagination.current, pagination.pageSize);
+    // }
     // initialDateRange()
     prodApi();
   }, []);
@@ -365,19 +383,24 @@ const Reports = () => {
     }, 0);
   };
 
- 
+  // const handleTableChange = (pagination) => {
+  //   dispatch(updatePage({
+  //     current: pagination.current,
+  //   }));
+  // };
 
-  const handleTableChange = (pagination) => {
-    setPagination({
-      ...pagination,
-      pageSize: pagination.pageSize,
-    });
-    if (filterActive) {
-      handleApplyFilters(pagination.current, pagination.pageSize);
-    } else {
-      initialTableData(pagination.current, pagination.pageSize);
-    }
-  };
+  // const handleTableChange = (pagination) => {
+  //   setPagination({
+  //     ...pagination,
+  //     pageSize: pagination.pageSize,
+  //   });
+
+  //   if (filterActive) {
+  //     handleApplyFilters(pagination.current, pagination.pageSize);
+  //   } else {
+  //     initialTableData(pagination.current, pagination.pageSize);
+  //   }
+  // };
 
   const initializeWebSocket = () => {
     const socket = new WebSocket(`wss://hul.aivolved.in/ws/notifications/`);
@@ -436,16 +459,16 @@ const Reports = () => {
   }, [notifications]);
 
   const resetFilter = () => {
-    initialTableData(pagination.current, pagination.pageSize);
+    // initialTableData(pagination.current, pagination.pageSize);
     setfilterActive(false);
     setselectedDefect(null);
     setSelectedMachine(null);
     setselectedProduct(null);
     setSelectedDate(null);
-    setPagination({
-      ...pagination,
-      current: 1,
-    });
+    // setPagination({
+    //   ...pagination,
+    //   current: 1,
+    // });
   };
 
   return (
@@ -528,9 +551,9 @@ const Reports = () => {
             value={
               selectedDate
                 ? [
-                    dayjs(selectedDate[0], dateFormat),
-                    dayjs(selectedDate[1], dateFormat),
-                  ]
+                  dayjs(selectedDate[0], dateFormat),
+                  dayjs(selectedDate[1], dateFormat),
+                ]
                 : []
             }
           />
@@ -538,7 +561,7 @@ const Reports = () => {
           <Button
             type="primary"
             onClick={() =>
-              handleApplyFilters(pagination.current, pagination.pageSize)
+              handleApplyFilters()
             }
             style={{
               fontSize: "1rem",
@@ -599,7 +622,7 @@ const Reports = () => {
         ) : (
           <Table
             columns={columns}
-            dataSource={plantTableDetail}
+            dataSource={reportData}
             // pagination={{
             //   position: ['topRight'],
             //   currentPage:2,

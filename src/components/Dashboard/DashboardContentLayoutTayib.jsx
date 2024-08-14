@@ -6,7 +6,7 @@ import { ExclamationCircleOutlined } from "@ant-design/icons";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoMdArrowForward } from "react-icons/io";
 import DOMPurify from 'dompurify';
-import { useSelector,useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import {
   Link,
   useNavigate,
@@ -101,7 +101,7 @@ const DashboardContentLayout = ({ children }) => {
   const fetchDefectVsMachineData = useFetchDefectVsMachineData(localPlantData.id);
   const fetchDefects = useFetchDefects();
   useEffect(() => {
-    
+
     const fetchData = async () => {
       try {
         setLoading(true);
@@ -121,10 +121,10 @@ const DashboardContentLayout = ({ children }) => {
         setLoading(false);
       }
     };
-    
+
     fetchData();
   }, []);
-  
+
 
   useEffect(() => {
     const categorizedData = categorizeDefects(defectsData);
@@ -225,7 +225,7 @@ const DashboardContentLayout = ({ children }) => {
   const handleProductChange = value => setSelectedProduct(value);
   const handleDateRangeChange = (dates, dateStrings) => setDateRange(dateStrings);
   const resetFilter = () => {
-    
+
 
     // Reset selected filters in a single setState call
     setSelectedMachine(null);
@@ -570,8 +570,8 @@ const DashboardContentLayout = ({ children }) => {
                         <NotificationOutlined />
                       </div>
                       <div className="text-[40px] text-gray-600 font-bold group-hover:text-white">
-                    0
-                  </div>
+                        0
+                      </div>
                       <IoMdArrowForward className="absolute bottom-5 right-5 text-lg" />
                     </Link>
                   </div>

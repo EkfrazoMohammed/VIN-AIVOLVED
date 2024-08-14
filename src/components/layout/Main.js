@@ -18,8 +18,8 @@ function Main({ children }) {
   const [sidenavType, setSidenavType] = useState("transparent");
   const [fixed, setFixed] = useState(false);
 
-  const localPlantData = useSelector((state) => state.plant.plantData[0]);
-  const plantName = localPlantData.plant_name;
+  const localPlantData = useSelector((state) => state.plant.plantData);
+  const plantName = localPlantData?.plant_name;
 
   const openDrawer = () => setVisible(!visible);
   const handleSidenavType = (type) => setSidenavType(type);
@@ -39,9 +39,8 @@ function Main({ children }) {
 
   return (
     <Layout
-      className={`layout-dashboard ${
-        pathname === "dashboard" ? "layout-profile" : ""
-      } ${pathname === "rtl" ? "layout-dashboard-rtl" : ""}`}
+      className={`layout-dashboard ${pathname === "dashboard" ? "layout-profile" : ""
+        } ${pathname === "rtl" ? "layout-dashboard-rtl" : ""}`}
     >
       <Drawer
         title={false}
@@ -51,22 +50,19 @@ function Main({ children }) {
         visible={visible}
         key={placement === "right" ? "left" : "right"}
         width={250}
-        className={`drawer-sidebar ${
-          pathname === "rtl" ? "drawer-sidebar-rtl" : ""
-        } `}
+        className={`drawer-sidebar ${pathname === "rtl" ? "drawer-sidebar-rtl" : ""
+          } `}
       >
         <Layout
-          className={`layout-dashboard ${
-            pathname === "rtl" ? "layout-dashboard-rtl" : ""
-          }`}
+          className={`layout-dashboard ${pathname === "rtl" ? "layout-dashboard-rtl" : ""
+            }`}
         >
           <Sider
             trigger={null}
             width={250}
             theme="light"
-            className={`sider-primary ant-layout-sider-primary ${
-              sidenavType === "#fff" ? "active-route" : ""
-            }`}
+            className={`sider-primary ant-layout-sider-primary ${sidenavType === "#fff" ? "active-route" : ""
+              }`}
             style={{ background: sidenavType }}
           >
             <Sidenav color={sidenavColor} />
