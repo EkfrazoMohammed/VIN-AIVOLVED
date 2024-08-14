@@ -4,6 +4,8 @@ import storage from 'redux-persist/lib/storage/session'; // session Storage
 import { encryptTransform } from 'redux-persist-transform-encrypt';
 import authReducer from './slices/authSlice';
 import plantReducer from './slices/plantSlice';
+import reportReducer from "./slices/reportSlice";
+
 // Encryption Configuration
 const encryptor = encryptTransform({
   secretKey: 'V!N_P0ND!', // Make sure to set this in your .env
@@ -12,6 +14,7 @@ const encryptor = encryptTransform({
     console.error("Encryption error:", error);
   },
 });
+
 
 // Persist Configurations for each slice
 const authPersistConfig = {
@@ -25,11 +28,18 @@ const plantPersistConfig = {
   storage,
   transforms: [encryptor],
 };
+const reportPersistConfig = {
+  key: 'report',
+  storage,
+  transforms: [encryptor],
+};
+
 
 // Combine reducers
 const rootReducer = {
   auth: persistReducer(authPersistConfig, authReducer),
   plant: persistReducer(plantPersistConfig, plantReducer),
+  report: persistReducer(reportPersistConfig, reportReducer)
 };
 
 const store = configureStore({

@@ -27,7 +27,7 @@ const Plant = () => {
   // const api = useApiInterceptor()
   const [plant, setPlant] = useState([]);
   const [loader, setLoader] = useState(true);
-  const [error, setError] = useState(null); 
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   const axiosInstance = useAxiosInstance();
@@ -38,7 +38,7 @@ const Plant = () => {
   const handleStorage = (plantData) => {
     if (plantData && Array.isArray(plantData) && plantData.length > 0) {
       dispatch(setPlantData(plantData)); // Dispatch valid plant data to Redux
-      navigate('/dashboard-home'); // Navigate to dashboard
+      navigate('/'); // Navigate to dashboard
     } else {
       console.error('Invalid or empty plant data:', plantData); // Handle invalid data
     }
@@ -52,19 +52,19 @@ const Plant = () => {
           console.error("Authorization token is missing");
           return;
         }
-  
+
         const res = await axiosInstance.get(`/plant/`, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
         });
         const { results } = res.data;
-  
+
         if (results) {
           setPlant(results);
-          handleStorage(results);
+
           console.log("results==>", results);
-          
+
         } else {
           console.warn("No results found in the response");
         }
@@ -80,10 +80,10 @@ const Plant = () => {
         setLoader(false);
       }
     };
-  
+
     fetchPlantData();
-  }, [accessToken, axiosInstance]);
-  
+  }, [accessToken]);
+
 
   // useEffect(() => {
   //   const fetchPlants = async () => {
@@ -91,7 +91,7 @@ const Plant = () => {
   //     try {
   //       const res = await axiosInstance.get(`/plant/`);
   //       console.log("plant==>",res);
-        
+
   //       if (res.data.results) {
   //         setPlant(res.data.results);
   //       } else {
@@ -169,7 +169,7 @@ const Plant = () => {
               <div className="mytab-content p-2 flex gap-2  min-w-[40vw] flex-col">
                 <h3 className="text-black text-xl font-bold">Plants</h3>
                 <h5>Choose Plants</h5>
-                {error ?<h5 className="text-red-500">Unable to fetch data.</h5>  : ""}
+                {error ? <h5 className="text-red-500">Unable to fetch data.</h5> : ""}
 
                 {plant.length > 0 && (
                   <Row gutter={[24, 24]} className="plant-row">
@@ -178,7 +178,7 @@ const Plant = () => {
                         <Card
                           hoverable
                           className="custom-card"
-                          onClick={() => handleStorage(plant)}
+                          onClick={() => handleStorage([plant])}
                         >
                           <div className="custom-card-content flex flex-col items-center">
                             {/* <img

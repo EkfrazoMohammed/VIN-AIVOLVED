@@ -43,7 +43,7 @@ import PieChart from "../../components/chart/PieChart";
 import MachinesParameter from "../../pages/MachinesParameterWithPagination";
 import MachinesParameterWithPagination from "../../pages/MachinesParameterWithPagination";
 // import MachineParam from "../../components/chart/MachineParam";
-import { baseURL } from "../../API/API";
+import { AuthToken, baseURL } from "../../API/API";
 import ProductionVsReject from "../../components/chart/ProductionVsReject";
 import dayjs from "dayjs";
 import { Hourglass } from "react-loader-spinner";
@@ -94,7 +94,7 @@ const DashboardContentLayout = ({ children }) => {
     setSelectedProduct(value);
   };
 
-  const localPlantData = useSelector((state) => state.plant.plantData[0]);
+  const localPlantData = useSelector((state) => state.plant.plantData);
   const plantName = localPlantData ? localPlantData.plant_name : "";
   const accessToken = useSelector(
     (state) => state.auth.authData[0].accessToken
@@ -295,7 +295,7 @@ const DashboardContentLayout = ({ children }) => {
     apiCall
       .get(`dashboard/?plant_id=${localPlantData?.id}`, {
         headers: {
-          Authorization: `Bearer ${"dhdhdhdh"}`,
+          Authorization: `Bearer ${AuthToken}`,
         },
       })
       .then((response) => {
@@ -558,8 +558,8 @@ const DashboardContentLayout = ({ children }) => {
   return (
     <>
       {children &&
-      currentUrlPath.pathname !== "/" &&
-      currentUrlPath.pathname !== "/dashboard-home" ? (
+        currentUrlPath.pathname !== "/" &&
+        currentUrlPath.pathname !== "/dashboard-home" ? (
         children
       ) : (
         <>
@@ -621,9 +621,9 @@ const DashboardContentLayout = ({ children }) => {
                       value={
                         selectedDate
                           ? [
-                              dayjs(selectedDate[0], "YYYY/MM/DD"),
-                              dayjs(selectedDate[1], "YYYY/MM/DD"),
-                            ]
+                            dayjs(selectedDate[0], "YYYY/MM/DD"),
+                            dayjs(selectedDate[1], "YYYY/MM/DD"),
+                          ]
                           : []
                       }
                     />
@@ -690,11 +690,10 @@ const DashboardContentLayout = ({ children }) => {
                     <Link
                       to="/insights"
                       className={`relative p-4 bg-gray-100 rounded-xl text-left group hover:text-white hover:!bg-red-500 
-                    ${
-                      notifications.length > prevNotificationLength
-                        ? "notification-change"
-                        : ""
-                    }
+                    ${notifications.length > prevNotificationLength
+                          ? "notification-change"
+                          : ""
+                        }
                   `}
                     >
                       <div className="flex justify-between items-center">
