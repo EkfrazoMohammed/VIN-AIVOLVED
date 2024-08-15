@@ -4,6 +4,7 @@ import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage/session"; // session Storage
 import { encryptTransform } from "redux-persist-transform-encrypt";
 import authReducer from "./slices/authSlice";
+import userReducer from "./slices/userSlice"
 import plantReducer from './slices/plantSlice';
 import dashboardReducer from "./slices/dashboardSlice";
 import machineReducer from "./slices/machineSlice";
@@ -26,6 +27,11 @@ const encryptor = encryptTransform({
 // Persist Configurations for each slice
 const authPersistConfig = {
   key: "auth",
+  storage,
+  transforms: [encryptor],
+};
+const userPersistConfig = {
+  key: "user",
   storage,
   transforms: [encryptor],
 };
@@ -82,6 +88,7 @@ const defectPersistConfig = {
 // Combine reducers
 const rootReducer = {
   auth: persistReducer(authPersistConfig, authReducer),
+  user: persistReducer(userPersistConfig, userReducer),
   plant: persistReducer(plantPersistConfig, plantReducer),
   report: persistReducer(reportPersistConfig, reportReducer),
   dashboard: persistReducer(dashboardPersistConfig,dashboardReducer),

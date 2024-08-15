@@ -5,7 +5,9 @@
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap");
 
-*, ::before, ::after {
+*,
+::before,
+::after {
   border-color: #fff4f4;
   margin: 0;
   padding: 0;
@@ -22,7 +24,6 @@ body :where(.css-dev-only-do-not-override-kghr11).ant-layout {
   font-family: "Nunito Sans", sans-serif;
 }
 
-
 /* body .layout-dashboard .ant-layout-content {
   margin: 75px 0 0 !important;
   padding: 20px;
@@ -36,13 +37,13 @@ body .ant-layout {
   background: #ffffff;
 }
 
-::-webkit-scrollbar{
+::-webkit-scrollbar {
   width: 5px;
 }
-::-webkit-scrollbar-thumb{
+::-webkit-scrollbar-thumb {
   background-color: #ff3180;
 }
-::-webkit-scrollbar-track{
+::-webkit-scrollbar-track {
   background-color: #cfcfcf;
 }
 code {
@@ -316,43 +317,39 @@ label::after {
 /* custom select */
 .dx-default-select {
   height: 100%;
-
 }
 .dx-default-date-range.ant-picker,
-.dx-default-select .ant-select-selector{
+.dx-default-select .ant-select-selector {
   height: 100%;
-
 }
 .ant-picker .ant-picker-range,
-.dx-default-select.select-machines .ant-select-selector{
+.dx-default-select.select-machines .ant-select-selector {
   background-color: #e5e7eb !important;
-
 }
 .dx-default-date-range.ant-picker .ant-picker-input input::placeholder,
-.dx-default-select .ant-select-selector .ant-select-selection-placeholder{
+.dx-default-select .ant-select-selector .ant-select-selection-placeholder {
   color: #585858 !important;
 }
 /* ui enhancement */
 /* side menu */
 /* ui enhancement end */
-.logo-w span{
+.logo-w span {
   color: #ffffff;
 }
-.logo-w{
+.logo-w {
   filter: brightness(100);
 }
-.client-name-w{
+.client-name-w {
   color: #f80759;
 }
-.section-title{
+.section-title {
   font-size: 20px;
   font-weight: 600;
   position: relative;
   height: 45px;
   color: #707070;
-
 }
-.section-title-overlay{
+.section-title-overlay {
   position: absolute;
   top: 50%;
   left: 0;
@@ -360,55 +357,56 @@ label::after {
   transform: translateY(-50%);
   background-color: #ffffff;
   z-index: 2;
-
 }
-.section-title:after{
+.section-title:after {
   content: "";
-	display: block;
-	height: 1px;
-	width: 100%;
-	background-color: #d3d3d3;
+  display: block;
+  height: 1px;
+  width: 100%;
+  background-color: #d3d3d3;
   position: absolute;
   top: 50%;
   left: 0px;
   transform: translateY(-50%);
   z-index: 0;
 }
-.menu-items-w .menu-category-name{
+.menu-items-w .menu-category-name {
   color: #e4e4e4 !important;
 }
-.sidemenu-link{
+.sidemenu-link {
   color: #e4e4e4 !important;
 }
-.sidemenu-link:hover{
-  color: #003253 !important;
+.sidemenu-link:hover {
+  color: #a7fcff !important;
 }
 .ant-btn,
-.sidemenu-link.active{
-  /* background: linear-gradient(90deg, #cfd9df6b 0%, #ffffff8c 100%); !important */
-  background-color: #e6e6e6 !important;
-  color: #4d4d4d !important;
-
+.sidemenu-link.active {
+  /* background: linear-gradient(90deg, #ff3c006b 0%, #ff00008c 100%); */
+  background-color: #f50909;
+  /* background-color: #e6e6e6 !important; */
+  color: #ffffff !important;
+  height: 42px;
 }
 
-.sidemenu-container{
-  background:linear-gradient(-45deg, #ee7752, #8a274d, #970254, #c92a02);
+.sidemenu-container {
+  /* background: linear-gradient(-45deg, #fd2003, #cf0754, #970254, #f10707); */
+  background-color: #ad3737;
 }
 
-.overview-container.dashboard-data{
-  background: linear-gradient(-45deg, #ee7752, #8a274d, #c92a02, #0096b1);
-	background-size: 400% 400%;
-	animation: gradient 15s ease infinite;
+.overview-container.dashboard-data {
+  background: linear-gradient(-45deg, #ee7752, #8a274d, #ff5125, #0096b1);
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
 }
 
 @keyframes gradient {
-	0% {
-		background-position: 0% 50%;
-	}
-	50% {
-		background-position: 100% 50%;
-	}
-	100% {
-		background-position: 0% 50%;
-	}
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }

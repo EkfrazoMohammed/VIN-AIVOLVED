@@ -77,8 +77,6 @@ const locale = {
 
 
 const Reports = () => {
-
-
   // REDUX CALLING
   const dispatch = useDispatch()
   const reportData = useSelector((state) => state.report.reportData);

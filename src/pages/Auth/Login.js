@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import axiosInstance from '../../API/axiosInstance'; // Ensure this is correctly imported
 import { signInFailure, signInSuccess } from '../../redux/slices/authSlice'; // Import the setAuthData action
+import { userSignInSuccess } from '../../redux/slices/userSlice'; // Import the setAuthData action
 // import ApiCall from "../../API/Apicall"
 
 const Login = () => {
@@ -66,10 +67,9 @@ const Login = () => {
     try {
       const res = await axiosInstance.post('/login/', loginPayload);
       const { access_token, refresh_token, user_id, is_superuser, first_name, last_name, user_name} = res.data;
-      console.log("res.data", res.data);
-      
-  
-      dispatch(signInSuccess({ accessToken: access_token, refreshToken: refresh_token, userId: user_id,userName: user_name , firstName: first_name, lastName: last_name,  isSuperUser: is_superuser, }));
+      console.log("Dispatching userSignInSuccess with: ", {userId: user_id, userName: user_name , firstName: first_name, lastName: last_name,  isSuperUser: is_superuser});
+      dispatch(signInSuccess({ accessToken: access_token, refreshToken: refresh_token }));
+      dispatch(userSignInSuccess({userId: user_id, userName: user_name , firstName: first_name, lastName: last_name,  isSuperUser: is_superuser}))
       openNotification("success", "Login Successful==>");
       navigate("/plant");
 

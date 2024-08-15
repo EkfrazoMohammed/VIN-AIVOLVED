@@ -417,42 +417,42 @@ const DashboardContentLayout = ({ children }) => {
                     )}
                   </div>
                   <div className="grid grid-cols-4 gap-4 h-[150px]">
-                    <div className="p-4 bg-gray-100 rounded-xl text-left">
-                      <div className="flex justify-between items-center">
+                    <div className=" bg-gray-100 rounded-xl text-left flex flex-col">
+                      <div className="flex justify-between items-center p-3 flex-1 text-lg w-full gap-3">
                         <span>Active Machines</span>
                         <VideoCameraOutlined />
                       </div>
-                      <Dropdown overlay={menu} trigger={["click"]}>
+                      <Dropdown overlay={menu} trigger={["click"]} className="h-[70px] text-[35px] text-gray-500 font-semibold bg-gray-200 p-3">
                         <div className="number" style={{ cursor: "pointer" }}>
-                          <div className="text-[35px] text-gray-500 font-semibold bg-white rounded mt-3 px-2 flex items-center justify-between">
+                          <div className=" flex items-center justify-between">
                             {activeMachines.length}
                             <IoIosArrowDown className="text-[18px]" />
                           </div>
                         </div>
                       </Dropdown>
                     </div>
-                    <div className="p-4 bg-gray-100 rounded-xl text-left">
-                      <div className="flex justify-between items-center">
+                    <div className="bg-gray-100 rounded-xl text-left flex flex-col">
+                      <div className="flex justify-between items-center p-3 flex-1 text-lg w-full gap-3">
                         <span>Defect Classification</span>
                         <BugOutlined />
                       </div>
-                      <Dropdown overlay={defectMenu} trigger={["click"]}>
+                      <Dropdown overlay={defectMenu} trigger={["click"]} className="h-[70px] text-[35px] text-gray-500 font-semibold bg-gray-200 p-3">
                         <div className="number" style={{ cursor: "pointer" }}>
-                          <div className="text-[35px] text-gray-500 font-semibold bg-white rounded mt-3 px-2 flex items-center justify-between">
+                          <div className="flex items-center justify-between">
                             {Object.keys(categoryDefects).length}
                             <IoIosArrowDown className="text-[18px]" />
                           </div>
                         </div>
                       </Dropdown>
                     </div>
-                    <div className="p-4 bg-gray-100 rounded-xl text-left">
-                      <div className="flex justify-between items-center">
+                    <div className="bg-gray-100 rounded-xl text-left flex flex-col">
+                      <div className="flex justify-between items-center p-3 flex-1 text-lg w-full gap-3">
                         <span>No. of SKU</span>
                         <AlertOutlined />
                       </div>
-                      <Dropdown overlay={prodMenu} trigger={["click"]}>
+                      <Dropdown overlay={prodMenu} trigger={["click"]} className="h-[70px] text-[35px] text-gray-500 font-semibold bg-gray-200 p-3">
                         <div className="number" style={{ cursor: "pointer" }}>
-                          <div className="text-[35px] text-gray-500 font-semibold bg-white rounded mt-3 px-2 flex items-center justify-between">
+                          <div className="flex items-center justify-between">
                             {Object.keys(tableDataReduxActive).length}
                             <IoIosArrowDown className="text-[18px]" />
                           </div>
@@ -461,14 +461,14 @@ const DashboardContentLayout = ({ children }) => {
                     </div>
                     <Link
                       to="/insights"
-                      className={`relative p-4 bg-gray-100 rounded-xl text-left group hover:text-white hover:!bg-red-500 
+                      className={`relative bg-gray-100 rounded-xl text-left flex flex-col group hover:text-white hover:!bg-red-500 
                     ${notifications.length > prevNotificationLength
                           ? "notification-change"
                           : ""
                         }
                   `}
                     >
-                      <div className="flex justify-between items-center">
+                      <div className="flex justify-between items-center p-3 flex-1 text-lg w-full gap-3">
                         <span>Insights</span>
                         <NotificationOutlined />
                       </div>
