@@ -17,9 +17,13 @@ const productvsdefectSlice = createSlice({
       state.productvsdefectData = [];
       state.loading = false;
     },
+    productVsDefectSignout: (state) => {
+      state.productvsdefectData = [];
+      state.loading = false;
+    },
   },
 });
 
-export const { getProductVsDefectSuccess, getProductVsDefectFailure } = productvsdefectSlice.actions;
+export const { getProductVsDefectSuccess, getProductVsDefectFailure,productVsDefectSignout } = productvsdefectSlice.actions;
 
 export default productvsdefectSlice.reducer;

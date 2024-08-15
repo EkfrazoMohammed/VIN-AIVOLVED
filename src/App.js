@@ -10,7 +10,7 @@ import AiSmartView from "./pages/AiSmartView";
 import Dashboard from "./pages/Dashboard";
 import MachinesParameter from "./pages/MachinesParameter";
 import Camera from "./pages/Camera";
-import Settings from "./pages/Settings";
+import SettingsContainer from "./pages/SettingsContainer";
 import Insights from "./pages/Insights";
 import ProtectedRoutes from "./hooks/protectedRoutes";
 import NotFound from "./pages/PageNotFound";
@@ -38,7 +38,7 @@ const App = () => {
           <Route path="/machine-parameter" element={<MachinesParameter />} />
           <Route path="/ai-smart-view" element={<AiSmartView />} />
           <Route path="/insights" element={<Insights />} />
-          <Route path="/settings" element={<Settings />} />
+          <Route path="/settings" element={<SettingsContainer />} />
           <Route path="/system-status" element={<Camera />} />
         </Route>
       </Routes>

@@ -19,9 +19,14 @@ const dashboardSlice = createSlice({
       state.activeProducts = [];
       state.error = action.payload; // Set the error message
     },
+    dashboardSignout: (state, action) => {
+      state.datesData = {};
+      state.activeProducts = [];
+      state.error = action.payload; // Set the error message
+    },
   },
 });
 
-export const { getDashboardSuccess, getDashboardFailure } = dashboardSlice.actions;
+export const { getDashboardSuccess, getDashboardFailure,dashboardSignout } = dashboardSlice.actions;
 
 export default dashboardSlice.reducer;

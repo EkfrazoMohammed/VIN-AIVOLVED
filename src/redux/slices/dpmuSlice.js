@@ -17,9 +17,13 @@ const dpmuSlice = createSlice({
       state.dpmuData = [];
       state.loading = false;
     },
+    dpmuSignout: (state) => {
+      state.dpmuData = [];
+      state.loading = false;
+    },
   },
 });
 
-export const { getDpmuSuccess, getDpmuFailure } = dpmuSlice.actions;
+export const { getDpmuSuccess, getDpmuFailure,dpmuSignout } = dpmuSlice.actions;
 
 export default dpmuSlice.reducer;

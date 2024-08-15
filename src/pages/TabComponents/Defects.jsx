@@ -5,21 +5,24 @@ import { EditOutlined, ReloadOutlined } from '@ant-design/icons';
 import { useSelector } from 'react-redux';
 // import {API, AuthToken, baseURL, localPlantData} from "./../API/API"
 import { baseURL } from "../../API/API"
-const Defects = () => {
-  // const localItems = localStorage.getItem('PlantData');
-  // const localPlantData = JSON.parse(localItems);
-  
+import { initialDashboardData, getDefects,getMachines, getSystemStatus, getDepartments, initialDpmuData, initialProductionData, getProducts } from "../../services/dashboardApi";
+
+const Defects = ({defectsdata}) => {
   const localPlantData = useSelector((state) => state.plant.plantData);
   const AuthToken = useSelector((state) => state.auth.authData.access_token);
   const [modalOpen, setModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editData, setEditData] = useState(null);
-  const [tableData, setTableData] = useState([]);
+  // const reduxDefectData = data
+  const [tableData, setTableData] = useState(defectsdata);
   const [selectedValue, setSelectedValue] = useState(null);
   const [color, setColor] = useState('#1677ff');
   const [form] = Form.useForm();
   const [notificationApi, contextHolder] = notification.useNotification();
 
+  useEffect(() => {
+    getDefects(localPlantData?.plant_name,AuthToken) 
+  }, []);
   const columns = [
     {
       title: 'ID',
@@ -59,25 +62,6 @@ const Defects = () => {
     await setEditModalOpen(true);
   };
 
-
-  const fetchData = async () => {
-    const url = `${baseURL}defect/?plant_name=${localPlantData.plant_name}`;
-    try {
-      const res = await axios.get(url, {
-        headers: {
-          Authorization: `Bearer ${AuthToken}`,
-        },
-      });
-      setTableData(res.data.results);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
   const handleDefectChange = (value) => {
     setSelectedValue(value);
     const filteredData = tableData.filter((item) => value === item.id);
@@ -111,7 +95,7 @@ const Defects = () => {
         message: 'Defect created',
         placement: 'top',
       });
-      fetchData();
+
       setModalOpen(false);
     } catch (err) {
       console.log(err);
@@ -145,7 +129,6 @@ const Defects = () => {
         message: 'Defect updated',
         placement: 'top',
       });
-      fetchData();
       setEditModalOpen(false);
     } catch (err) {
       console.log(err);
@@ -153,8 +136,9 @@ const Defects = () => {
   };
 
   const handleRefresh = () => {
+    window.location.reload()
+    setTableData(defectsdata)
     setSelectedValue(null);
-    fetchData();
   };
 
   return (

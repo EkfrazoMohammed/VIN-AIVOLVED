@@ -23,9 +23,14 @@ const productSlice = createSlice({
       state.loading = false;
       state.selectedProduct=null;
     },
+    productSignout: (state) => {
+      state.productsData = [];
+      state.loading = false;
+      state.selectedProduct=null;
+    },
   },
 });
 
-export const { getProductSuccess, getProductFailure,setSelectedProduct } = productSlice.actions;
+export const { getProductSuccess, getProductFailure,setSelectedProduct,productSignout } = productSlice.actions;
 
 export default productSlice.reducer;

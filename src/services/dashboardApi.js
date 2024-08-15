@@ -181,6 +181,7 @@ export const getSystemStatus = (plantId, token) => {
     })
     .catch((error) => {
       console.error("Error fetching machine data:", error);
+      store.dispatch(setActiveMachines([]));     
     });
 };
 const isEmptyDashboardResponse = (data) => {
