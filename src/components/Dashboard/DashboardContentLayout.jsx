@@ -7,7 +7,7 @@ import { IoIosArrowDown } from "react-icons/io";
 import { IoMdArrowForward } from "react-icons/io";
 
 import { useSelector, useDispatch } from "react-redux";
-import { initialDashboardData, getMachines, getSystemStatus, getDepartments, initialDpmuData, initialProductionData, getProducts } from "../../services/dashboardApi";
+import { initialDashboardData,getDefects, getMachines, getSystemStatus, getDepartments, initialDpmuData, initialProductionData, getProducts } from "../../services/dashboardApi";
 import DOMPurify from "dompurify";
 import { setSelectedMachine } from "../../redux/slices/machineSlice"
 import { setSelectedProduct } from "../../redux/slices/productSlice"
@@ -181,6 +181,7 @@ const DashboardContentLayout = ({ children }) => {
           initialDashboardData(localPlantData.id, accessToken),
           initialProductionData(localPlantData.id, accessToken),
 
+          getDefects(localPlantData.plant_name, accessToken),
           getSystemStatus(localPlantData.id, accessToken),
         ]);
       } catch (err) {
