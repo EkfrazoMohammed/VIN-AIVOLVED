@@ -24,9 +24,14 @@ const defectSlice = createSlice({
       state.selectedDefect=null;
       state.loading = false;
     },
+    defectSignout: (state) => {
+      state.defectsData = [];
+      state.selectedDefect=null;
+      state.loading = false;
+    },
   },
 });
 
-export const { getDefectSuccess, getDefectFailure,setSelectedDefect } = defectSlice.actions;
+export const { getDefectSuccess, getDefectFailure,setSelectedDefect,defectSignout } = defectSlice.actions;
 
 export default defectSlice.reducer;

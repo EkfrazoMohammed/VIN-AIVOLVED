@@ -15,7 +15,17 @@ import { baseURL, AuthToken } from "../../API/API";
 import axios from "axios";
 import CurrentTime from "./CurrentTime";
 import { useDispatch, useSelector } from 'react-redux';
-import { clearAuthData, signOut } from '../../redux/slices/authSlice';
+import { signOut } from '../../redux/slices/authSlice';
+import { dashboardSignout } from "../../redux/slices/dashboardSlice";
+import { defectSignout } from "../../redux/slices/defectSlice";
+import { departmentSignout } from "../../redux/slices/departmentSlice";
+import { dpmuSignout } from "../../redux/slices/dpmuSlice";
+import { machineSignout } from "../../redux/slices/machineSlice";
+import { plantSignOut } from "../../redux/slices/plantSlice";
+import { productSignout } from "../../redux/slices/productSlice";
+import { productVsDefectSignout } from "../../redux/slices/productvsDefectSlice";
+import { reportSignout } from "../../redux/slices/reportSlice";
+import { userSignOut } from "../../redux/slices/userSlice";
 const linkStyle =
   "sidemenu-link h-[45px] no-underline flex justify-start items-center px-3 rounded-[3px] gap-2";
 
@@ -66,13 +76,41 @@ const SideMenu = () => {
     });
   };
 
+  const clearReduxData = () => {
+    dispatch(signOut());
+    dispatch(dashboardSignout());
+    dispatch(defectSignout());
+    dispatch(departmentSignout());
+    dispatch(dpmuSignout());
+    dispatch(machineSignout());
+    dispatch(plantSignOut());
+    dispatch(productSignout());
+    dispatch(productVsDefectSignout());
+    dispatch(reportSignout());
+    dispatch(userSignOut());
+  }
+  const clearSessionandLocalStorage = () => {
+    sessionStorage.removeItem("persist:auth");
+    sessionStorage.removeItem("persist:user");
+    sessionStorage.removeItem("persist:plant");
+    sessionStorage.removeItem("persist:report");
+    sessionStorage.removeItem("persist:dashboard");
+    sessionStorage.removeItem("persist:machine");
+    sessionStorage.removeItem("persist:product");
+    sessionStorage.removeItem("persist:department");
+    sessionStorage.removeItem("persist:dpmu");
+    sessionStorage.removeItem("persist:productVsDefect");
+    sessionStorage.removeItem("persist:defect");
+  }
   const handleLogout = async () => {
     setModal1Open(false);
+    navigate("/login");
     await openNotification();
     localStorage.clear();
+    clearSessionandLocalStorage();
+    sessionStorage.clear();
     await logout();
-    dispatch(signOut());
-    navigate("/login");
+    clearReduxData();
   };
 
   return (

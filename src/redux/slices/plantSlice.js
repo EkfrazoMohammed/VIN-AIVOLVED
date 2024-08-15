@@ -17,8 +17,18 @@ const plantSlice = createSlice({
     setPlantData: (state, action) => {
       state.plantData = action.payload;
     },
+    clearPlantData: (state, action) => {
+      state.plantData[0].id= null;
+      state.plantData[0].is_active= false;
+      state.plantData[0].plant_name='';
+    },
+    plantSignOut: (state, action) => {
+      state.plantData[0].id= null;
+      state.plantData[0].is_active= false;
+      state.plantData[0].plant_name='';
+    },
   },
 });
 
-export const { setPlantData } = plantSlice.actions;
+export const { setPlantData,clearPlantData,plantSignOut } = plantSlice.actions;
 export default plantSlice.reducer;

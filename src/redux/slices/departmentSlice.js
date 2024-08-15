@@ -17,9 +17,13 @@ const departmentSlice = createSlice({
       state.departmentsData = [];
       state.loading = false;
     },
+    departmentSignout: (state) => {
+      state.departmentsData = [];
+      state.loading = false;
+    },
   },
 });
 
-export const { getDepartmentSuccess, getDepartmentFailure } = departmentSlice.actions;
+export const { getDepartmentSuccess, getDepartmentFailure,departmentSignout } = departmentSlice.actions;
 
 export default departmentSlice.reducer;

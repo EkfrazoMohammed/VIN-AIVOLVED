@@ -29,9 +29,15 @@ const machineSlice = createSlice({
       state.selectedMachine=null;
       state.loading = false;
     },
+    machineSignout: (state) => {
+      state.machinesData = [];
+      state.activeMachines = [];
+      state.selectedMachine=null;
+      state.loading = false;
+    },
   },
 });
 
-export const { getMachineSuccess, getMachineFailure,setSelectedMachine,setActiveMachines } = machineSlice.actions;
+export const { getMachineSuccess, getMachineFailure,setSelectedMachine,setActiveMachines,machineSignout } = machineSlice.actions;
 
 export default machineSlice.reducer;
