@@ -6,6 +6,8 @@ const initialState = {
       isAuthenticated: false,
       accessToken: null,
       refreshToken: null,
+      isSuperUser: false,
+      userId: null,
     }
   ],
   loading: false,

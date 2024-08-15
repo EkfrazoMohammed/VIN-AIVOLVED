@@ -65,9 +65,11 @@ const Login = () => {
     // Proceed with login if no errors
     try {
       const res = await axiosInstance.post('/login/', loginPayload);
-      const { access_token, refresh_token } = res.data;
+      const { access_token, refresh_token, user_id, is_superuser, first_name, last_name, user_name} = res.data;
+      console.log("res.data", res.data);
+      
   
-      dispatch(signInSuccess({ accessToken: access_token, refreshToken: refresh_token }));
+      dispatch(signInSuccess({ accessToken: access_token, refreshToken: refresh_token, userId: user_id,userName: user_name , firstName: first_name, lastName: last_name,  isSuperUser: is_superuser, }));
       openNotification("success", "Login Successful==>");
       navigate("/plant");
 
