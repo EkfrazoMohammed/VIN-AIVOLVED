@@ -11,9 +11,7 @@ import { Hourglass } from "react-loader-spinner";
 import "../assets/styles/ai-smart.css";
 import { useSelector } from "react-redux";
 import axiosInstance from "../API/axiosInstance";
-import gridBg from "../assets/images/grid-bg.jpg"
-
-
+import gridBg from "../assets/images/grid-bg.jpg";
 
 const AiSmartView = () => {
   const localPlantData = useSelector((state) => state.plant.plantData[0]);
@@ -25,11 +23,13 @@ const AiSmartView = () => {
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const sliderRef = useRef(null);
   const [loader, setLoader] = useState(false);
+  const [imageThumbPageCount, setImageThumbPageCount] = useState(null);
   const [pagination, setPagination] = useState({
     currentPage: 1,
     pageSize: 10,
     totalPages: 0,
   });
+
   const [nextFourIndexes, setNextFourIndexes] = useState([]);
 
   useEffect(() => {
@@ -50,11 +50,11 @@ const AiSmartView = () => {
   }, [selectedDefect, pagination.currentPage]);
 
   useEffect(() => {
-    const updateNextFourIndexes = () => {
+    const updateThumbImages = () => {
       const arry = [];
       for (
         let i = currentSlideIndex + 1;
-        i <= currentSlideIndex + 4 && i < defectImages.length;
+        i <= currentSlideIndex + 8 && i < defectImages.length;
         i++
       ) {
         arry.push(i);
@@ -62,7 +62,9 @@ const AiSmartView = () => {
       setNextFourIndexes(arry);
     };
 
-    updateNextFourIndexes();
+    // console.log("sliderRef.current", sliderRef.current);
+    
+    updateThumbImages();
   }, [currentSlideIndex, defectImages]);
 
   const aiViewAPi = () => {
@@ -70,7 +72,7 @@ const AiSmartView = () => {
       setLoader(true);
       axiosInstance
         .get(
-          `$ai-smart/?plant_id=${localPlantData.id}&page=${pagination.currentPage}&defect_id=${selectedDefect.id}`,
+          `ai-smart/?plant_id=${localPlantData.id}&page=${pagination.currentPage}&defect_id=${selectedDefect.id}`,
           {
             headers: {
               Authorization: `Bearer ${AuthToken}`,
@@ -115,71 +117,48 @@ const AiSmartView = () => {
     }));
   };
 
-  const handleNext = () => {
-    if (currentSlideIndex < defectImages.length - 1) {
-      sliderRef.current.slickNext();
-    } else if (pagination.currentPage < pagination.totalPages) {
-      setPagination((prev) => ({
-        ...prev,
-        currentPage: prev.currentPage + 1,
-      }));
-    }
-  };
-
-  const handlePrev = () => {
-    if (currentSlideIndex > 0) {
-      sliderRef.current.slickPrev();
-    } else if (pagination.currentPage > 1) {
-      setPagination((prev) => ({
-        ...prev,
-        currentPage: prev.currentPage - 1,
-      }));
-    }
-  };
 
   const settings = {
     dots: false,
+    adaptiveHeight: true,
     infinite: false,
+    lazyLoad: true,
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
     afterChange: (index) => setCurrentSlideIndex(index),
+    customPaging: function (slider, i) {
+      console.log("slider", slider);
+      return  (i + 1) + '/' + slider.slideCount;
+  }
   };
 
-  const renderNextFourImages = () => {
+  const sideThumbImages = () => {
     return nextFourIndexes.map((index) => (
-      <div
-        key={index}
-        className="d-flex justify-content-center"
-        style={{ alignItems: "center" }}
-      >
-        <LazyLoad height={80} offset={100}>
-          {/* GLOBAL  */}
-          <img
-            src={`${defectImages[index].image}`}
-            alt={`Defect ${index + 1}`}
-            style={{
-              width: "80px",
-              height: "80px",
-              objectFit: "cover",
-              margin: "5px",
-            }}
-          />
-          {/* LOCAL DASHBOARD */}
-          {/* <img src={`http://localhost:8000${defectImages[index].image}`} alt={`Defect ${index + 1}`} style={{ width: '80px', height: '80px',objectFit:"cover" ,margin: '5px' }} /> */}
-        </LazyLoad>
+      <div key={index} className="w-full h-[80px] bg-black border-2 border-red-500">
+        <img
+          src={`${defectImages[index]?.image}`}
+          alt={`Defect ${index + 1}`}
+          className="w-full h-full object-contain"
+          loading="lazy"
+        />
+        {/* LOCAL DASHBOARD */}
+        {/* <img src={`http://localhost:8000${defectImages[index].image}`} alt={`Defect ${index + 1}`} style={{ width: '80px', height: '80px',objectFit:"cover" ,margin: '5px' }} /> */}
       </div>
     ));
   };
-
+  // style={{backgroundImage:`url(${gridBg})`}}
   return (
     <div className="flex min-h-[calc(100vh-120px)] gap-2">
-      <div style={{backgroundImage:`url(${gridBg})`}} className={`defect-image-container flex w-9/12 border p-2 rounded-md bg-cover bg-center`}>
+      <div
+        className={`defect-image-container flex w-9/12 h-[calc(100vh-113px)] border rounded-md object-cover bg-center bg-cover justify-center items-center`}
+        style={{ backgroundImage: `url(${gridBg})` }}
+      >
         {loader ? (
           <div
             className=""
             style={{
-              height: "60vh",
+              height: "100%",
               width: "100%",
               display: "flex",
               justifyContent: "center",
@@ -202,17 +181,37 @@ const AiSmartView = () => {
         ) : (
           <>
             {errorMessage ? (
-              <p
-              className="text-lg text-white"
-              >
-                {errorMessage}
-              </p>
+              <p className="text-lg text-white">{errorMessage}</p>
             ) : selectedDefect ? (
               <>
-                <div className="AISmartContainer">
-                  <div className="AISmartContainer-top">
-                    <div>
-                      <strong>Machine:</strong>{" "}
+                <div className="AISmartContainer flex flex-col bg-gray-200 w-full h-full">
+                  <div className="slider-container w-full min-h-[calc(100%-100px)] p-2">
+                    <Slider {...settings} ref={sliderRef}>
+                      {defectImages
+                        ? defectImages.map((imageData, index) => (
+                            <div key={index}>
+                              <img
+                                src={`${
+                                  imageData.image ? imageData.image : ""
+                                }`}
+                                alt={`Defect ${index + 1}`}
+                                className="ai-smart-slider-img"
+                                style={{
+                                  width: "100%",
+                                  height: "auto",
+                                  margin: "0 auto",
+                                  maxWidth: "500px",
+                                }}
+                                loading="lazy"
+                              />
+                            </div>
+                          ))
+                        : null}
+                    </Slider>
+                  </div>
+                  <div className="h-[100px] py-4 px-3 text-xl">
+                    <div className="">
+                      <span className="font-bold ">Machine:</span>{" "}
                       {defectImages[currentSlideIndex]?.machine_name}{" "}
                     </div>
                     <div>
@@ -221,64 +220,6 @@ const AiSmartView = () => {
                         .split("T")
                         .join(" ")}
                     </div>
-                  </div>
-                  <Slider {...settings} ref={sliderRef}>
-                    {defectImages.map((imageData, index) => (
-                      <div
-                        key={index}
-                        className="ai-view-image_container d-flex justify-content-center vh-100"
-                      >
-                        <LazyLoad height={200} offset={100}>
-                          <img
-                            src={`${imageData.image}`}
-                            alt={`Defect ${index + 1}`}
-                            style={{
-                              width: "100%",
-                              height: "auto",
-                              margin: "0 auto",
-                              maxWidth: "500px",
-                            }}
-                          />
-                          {/* <img src={`http://localhost:8000${imageData.image}`} alt={`Defect ${index + 1}`} style={{ width: '100%', height: '55vh',margin:"0 auto",maxWidth:'900px' }} /> */}
-                        </LazyLoad>
-                      </div>
-                    ))}
-                  </Slider>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      marginTop: "10px",
-                    }}
-                  >
-                    {renderNextFourImages()}
-                  </div>
-                  <button
-                    className="prev-button btn btn-primary"
-                    style={{
-                      backgroundColor: "rgb(236, 82, 45)",
-                      border: "none",
-                      outline: "none",
-                    }}
-                    onClick={handlePrev}
-                  >
-                    <LeftOutlined />
-                  </button>
-                  <button
-                    className="next-button btn btn-primary"
-                    style={{
-                      backgroundColor: "rgb(236, 82, 45)",
-                      border: "none",
-                      outline: "none",
-                    }}
-                    onClick={handleNext}
-                  >
-                    <RightOutlined />
-                  </button>
-                  <div className="pagination-controls">
-                    <span>
-                      Page {pagination.currentPage} of {pagination.totalPages}
-                    </span>
                   </div>
                 </div>
               </>
@@ -291,7 +232,7 @@ const AiSmartView = () => {
                   alignItems: "center",
                   fontSize: "2rem",
                   fontWeight: "600",
-                  color: "white"
+                  color: "white",
                 }}
               >
                 Please select a defect to display images.
@@ -302,7 +243,6 @@ const AiSmartView = () => {
       </div>
       <div className="filter-side-menu-container w-3/12 flex flex-col justify-start items-center bg-gray-200 rounded pt-3">
         <div className="filter-dropdown w-full p-2">
-
           <div className="text-md mb-1">Select Defect Type:</div>
           <Select
             showSearch
@@ -323,6 +263,16 @@ const AiSmartView = () => {
               </Select.Option>
             ))}
           </Select>
+        </div>
+        <div className="next-img-title w-full text-left p-2">Next Images</div>
+        <div className="grid grid-cols-2 gap-2 w-full p-2">
+          {sideThumbImages()}
+        </div>
+        <div className="pagination-controls">
+          <span>
+            {/* Page {pagination.currentPage} of {pagination.totalPages} */}
+            {/* Page: {defectImages.length / 8} of {defectImages.length} */}
+          </span>
         </div>
       </div>
     </div>

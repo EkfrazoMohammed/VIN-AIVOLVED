@@ -68,7 +68,7 @@ const SideMenu = () => {
 
   const handleLogout = async () => {
     setModal1Open(false);
-    await openNotification();
+    openNotification();
     localStorage.clear();
     await logout();
     dispatch(signOut());
@@ -108,7 +108,7 @@ const SideMenu = () => {
         </div>
       </Modal>
       <div className="sidemenu-container flex flex-col min-h-screen w-[270px] fixed left-0 border-r-2">
-        <div className="logo-w h-[75px] flex items-center gap-3 border-b-2 py-3 px-3">
+        <div className="logo-w h-[75px] flex items-center gap-3 border-b-2 py-3 px-3 bg-white">
           <img src={aiLogo} alt="" className="w-[60px]" />
           <span className="font-bold text-xl">AiVolved</span>
         </div>

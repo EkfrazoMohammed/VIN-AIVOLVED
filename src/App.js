@@ -32,8 +32,8 @@ const App = () => {
           }
         />
         <Route element={<ProtectedRoutes />}>
-          <Route path="/" element={<Dashboard />} />
           <Route path="/plant" element={<Plant />} />
+          <Route path="/" element={<Dashboard />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/machine-parameter" element={<MachinesParameter />} />
           <Route path="/ai-smart-view" element={<AiSmartView />} />

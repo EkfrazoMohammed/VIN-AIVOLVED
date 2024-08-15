@@ -19,9 +19,9 @@ import Layout from "../pages/Layout";
 // import { validateToken } from '../redux/actions/authActions';
 
 const ProtectedRoutes = () => {
-  const dispatch = useDispatch();
-  const location = useLocation();
-  const token = useSelector((state) => state.auth.accessToken);
+  // const dispatch = useDispatch();
+  // const location = useLocation();
+  // const token = useSelector((state) => state.auth.accessToken);
   const isAuthenticated = useSelector(
     (state) => state.auth.authData[0].isAuthenticated
   );

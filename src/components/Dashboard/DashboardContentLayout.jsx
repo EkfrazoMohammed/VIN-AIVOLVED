@@ -257,7 +257,7 @@ const DashboardContentLayout = ({ children }) => {
 
   const menu = (
     <Menu selectable={true}>
-      <Menu.Item key="0">
+      <Menu.Item>
         <Checkbox.Group
           style={{ display: "block" }}
           value={selectedCheckboxMachine}
@@ -284,7 +284,7 @@ const DashboardContentLayout = ({ children }) => {
   );
   const defectMenu = (
     <Menu>
-      <Menu.Item key="0">
+      <Menu.Item>
         <Checkbox.Group style={{ display: "block" }}>
           {Object.keys(categoryDefects).map((defect) => (
             <div
@@ -302,7 +302,7 @@ const DashboardContentLayout = ({ children }) => {
   );
   const prodMenu = (
     <Menu>
-      <Menu.Item key="0">
+      <Menu.Item>
         <Checkbox.Group style={{ display: "block" }}>
           {Object.values(tableDataReduxActive).map((prod) => (
             <div
@@ -417,42 +417,42 @@ const DashboardContentLayout = ({ children }) => {
                     )}
                   </div>
                   <div className="grid grid-cols-4 gap-4 h-[150px]">
-                    <div className=" bg-gray-100 rounded-xl text-left flex flex-col">
-                      <div className="flex justify-between items-center p-3 flex-1 text-lg w-full gap-3">
+                    <div className=" bg-gray-100 rounded-xl text-left flex flex-col ">
+                      <div className="flex justify-between items-center px-3 flex-1 text-lg w-full gap-2">
                         <span>Active Machines</span>
                         <VideoCameraOutlined />
                       </div>
-                      <Dropdown overlay={menu} trigger={["click"]} className="h-[70px] text-[35px] text-gray-500 font-semibold bg-gray-200 p-3">
+                      <Dropdown overlay={menu} trigger={["click"]} className="flex items-center h-[70px] text-[28px] text-gray-500 font-semibold bg-white border rounded-lg px-3 py-2">
                         <div className="number" style={{ cursor: "pointer" }}>
-                          <div className=" flex items-center justify-between">
+                          <div className=" flex items-center justify-between w-full">
                             {activeMachines.length}
                             <IoIosArrowDown className="text-[18px]" />
                           </div>
                         </div>
                       </Dropdown>
                     </div>
-                    <div className="bg-gray-100 rounded-xl text-left flex flex-col">
-                      <div className="flex justify-between items-center p-3 flex-1 text-lg w-full gap-3">
+                    <div className="bg-gray-100 rounded-xl text-left flex flex-col ">
+                      <div className="flex justify-between items-center px-3 flex-1 text-lg w-full gap-2">
                         <span>Defect Classification</span>
                         <BugOutlined />
                       </div>
-                      <Dropdown overlay={defectMenu} trigger={["click"]} className="h-[70px] text-[35px] text-gray-500 font-semibold bg-gray-200 p-3">
+                      <Dropdown overlay={defectMenu} trigger={["click"]} className="flex items-center h-[70px] text-[28px] text-gray-500 font-semibold bg-white border rounded-lg px-3 py-2">
                         <div className="number" style={{ cursor: "pointer" }}>
-                          <div className="flex items-center justify-between">
+                          <div className="flex items-center justify-between w-full">
                             {Object.keys(categoryDefects).length}
                             <IoIosArrowDown className="text-[18px]" />
                           </div>
                         </div>
                       </Dropdown>
                     </div>
-                    <div className="bg-gray-100 rounded-xl text-left flex flex-col">
-                      <div className="flex justify-between items-center p-3 flex-1 text-lg w-full gap-3">
+                    <div className="bg-gray-100 rounded-xl text-left flex flex-col ">
+                      <div className="flex justify-between items-center px-3 flex-1 text-lg w-full gap-2">
                         <span>No. of SKU</span>
                         <AlertOutlined />
                       </div>
-                      <Dropdown overlay={prodMenu} trigger={["click"]} className="h-[70px] text-[35px] text-gray-500 font-semibold bg-gray-200 p-3">
+                      <Dropdown overlay={prodMenu} trigger={["click"]} className="flex items-center h-[70px] text-[28px] text-gray-500 font-semibold bg-white border rounded-lg px-3 py-2">
                         <div className="number" style={{ cursor: "pointer" }}>
-                          <div className="flex items-center justify-between">
+                          <div className="flex items-center justify-between w-full">
                             {Object.keys(tableDataReduxActive).length}
                             <IoIosArrowDown className="text-[18px]" />
                           </div>
@@ -468,7 +468,7 @@ const DashboardContentLayout = ({ children }) => {
                         }
                   `}
                     >
-                      <div className="flex justify-between items-center p-3 flex-1 text-lg w-full gap-3">
+                      <div className="flex justify-between items-center p-3 flex-1 text-lg wi">
                         <span>Insights</span>
                         <NotificationOutlined />
                       </div>

@@ -54,14 +54,11 @@ code {
 .AISmartContainer-top {
   display: flex;
   gap: 1rem;
-  margin: 0.3rem 0;
 }
 
 .AISmartContainer {
   border: 2px solid #eee;
   border-radius: 5px;
-  margin: 0.5rem;
-  padding: 0.5rem;
 }
 
 .machineParameterContainer {
@@ -334,10 +331,10 @@ label::after {
 /* side menu */
 /* ui enhancement end */
 .logo-w span {
-  color: #ffffff;
+  /* color: #ffffff; */
 }
 .logo-w {
-  filter: brightness(100);
+  /* filter: brightness(100); */
 }
 .client-name-w {
   color: #f80759;
@@ -409,4 +406,34 @@ label::after {
   100% {
     background-position: 0% 50%;
   }
+}
+
+
+.AISmartContainer .slick-slider,
+.AISmartContainer .slick-list * {
+  height: 100% !important;
+}
+
+.AISmartContainer .slick-list .ai-smart-slider-img {
+  object-fit: contain;
+}
+.AISmartContainer .slick-arrow {
+  display: block;
+  background: red;
+  z-index: 10;
+  position: absolute;
+  top: 80%;
+  display: block !important;
+  width: 100px;
+  height: 30px;
+  border-radius: 4px;
+}
+.AISmartContainer .slick-arrow:hover{
+  background: red;
+}
+.AISmartContainer .slick-arrow.slick-next {
+  right: -11px;
+}
+.AISmartContainer .slick-arrow.slick-prev {
+  left: -11px;
 }
