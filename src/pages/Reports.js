@@ -100,15 +100,14 @@ const Reports = () => {
   startDate.setDate(startDate.getDate() - 7); // 7 days ago
   const endDate = new Date(); // Today's date
   const [dateRange, setDateRange] = useState();
-  const [tableData, setTableData] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
   const { RangePicker } = DatePicker;
   const [filterActive, setfilterActive] = useState(false);
 
   const [loader, setLoader] = useState(false);
 
-  useEffect(() => {
-    reportApi({ plantId: 3, pageSize: pagination.pageSize, Authtoken: accessToken, pageNumber: pagination.current })
+  const initialReportData=()=>{
+    reportApi({ plantId:localPlantData?.id, pageSize: pagination.pageSize, Authtoken: accessToken, pageNumber: pagination.current })
       .then(res => {
         const { page_size, total_count, results } = res;
         dispatch(getReportData({
@@ -119,6 +118,9 @@ const Reports = () => {
         }));
       })
       .catch(err => console.error(err));
+  }
+  useEffect(() => {
+    initialReportData()
   }, [pagination.current, pagination.pageSize, accessToken]);
 
 
@@ -155,20 +157,27 @@ const Reports = () => {
 
   const handleApplyFilters = (page, pageSize) => {
     // Initialize URLSearchParams
-    const params = new URLSearchParams({
+    const params = {
       page: 1,
       page_size: pageSize,
       plant_id: localPlantData?.id || undefined,
       from_date: dateRange?.[0] || undefined,
       to_date: dateRange?.[1] || undefined,
       machine_id: selectedMachineRedux || undefined,
-
       product_id: selectedProductRedux || undefined,
       defect_id: selectedDefectRedux || undefined,
-    });
+    };
+// Filter out undefined or null values from query parameters
+const filteredQueryParams = Object.fromEntries(
+  Object.entries(params).filter(
+    ([_, value]) => value !== undefined && value !== null
+  )
+);
 
+// Create the query string
+const queryString = new URLSearchParams(filteredQueryParams).toString();
     // Construct the final URL
-    const url = `reports/?${params.toString()}`;
+    const url = `reports/?${queryString}`;
 
     // Set loader to true before making the API call
     setLoader(true);
@@ -183,7 +192,12 @@ const Reports = () => {
       .then((response) => {
         const { results, total_count, page_size } = response.data;
 
-        setTableData(results);
+        dispatch(getReportData({
+          reportData: results,
+          current: pagination.current,
+          pageSize: pagination.pageSize,
+          total: total_count,
+        }));
         setLoader(false);
         setfilterActive(true);
 
@@ -201,7 +215,7 @@ const Reports = () => {
 
   const downloadExcel = () => {
     // Convert JSON to Excel
-    const ws = XLSX.utils.json_to_sheet(tableData);
+    const ws = XLSX.utils.json_to_sheet(reportData);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
 
@@ -237,7 +251,7 @@ const Reports = () => {
     setSelectedDate(null);
     dispatch(setSelectedMachine(null)); // Dispatching action    
     dispatch(setSelectedProduct(null)); // Dispatching action 
-
+    initialReportData()
   };
 
   return (
@@ -403,7 +417,6 @@ const Reports = () => {
             onChange={handleTableChange}
           />
         )}
-        {/* <Table columns={columns} dataSource={tableData}  style={{margin:"1rem 0",fontSize:"1.5rem"}}/> */}
       </div>
     </>
   );
