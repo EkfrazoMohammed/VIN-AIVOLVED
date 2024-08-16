@@ -80,9 +80,10 @@ const Alerts = () => {
         "email": data.email,
         "employee_id": data.employee_id
       }
+      const pay = { "first_name": "tayib", "last_name": "tayib", "phone_number": 8550895486, "email": "mohammed@ekfrazo.in", "employee_id": "AI2002" }
 
-      console.log(payload)
-      const encryptedPayload = encryptAES(payload)
+      console.log(pay)
+      const encryptedPayload = encryptAES(pay)
       console.log(encryptedPayload)
       // if (data.employee_id !== "" && data.first_name !== "" && data.last_name !== "" && data.phone_number !== "" && data.email !== "" && error.fistName === "" && error.lastName === "" && error.email === "" && error.Phone === "" && error.employee_id === "") {
       //   setLoading(true)
