@@ -7,7 +7,7 @@ import { setAuthData } from "../redux/slices/authSlice";
 const useApiInterceptor = () => {
 
     const dispatch = useDispatch();
-    const refreshToken = useSelector((state) => state.auth.authData.refresh_token);
+    const refreshToken = useSelector((state) => state.auth.authData[0].refreshToken);
     const accessToken = useSelector((state) => state.auth.authData.access_token);
     const [refresh, setRefresh] = useState(false);
 
@@ -31,15 +31,15 @@ const useApiInterceptor = () => {
                             refresh: refreshToken,
                         });
 
-                        const { access } = response.data;
+                        const { access_token } = response.data;
 
                         // Update the tokens in Redux state
                         // { access_token, refresh_token, user }
                         // dispatch(setAuthData({ access_token: access, refresh_token: refreshToken }));
 
                         // Update the Authorization header for future requests
-                        ApiCall.defaults.headers.common['Authorization'] = `Bearer ${access}`;
-                        originalRequest.headers['Authorization'] = `Bearer ${access}`;
+                        ApiCall.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
+                        originalRequest.headers['Authorization'] = `Bearer ${access_token}`;
 
                         return ApiCall(originalRequest);
                     } catch (refreshError) {

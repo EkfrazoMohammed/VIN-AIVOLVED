@@ -7,7 +7,7 @@ import { IoIosArrowDown } from "react-icons/io";
 import { IoMdArrowForward } from "react-icons/io";
 
 import { useSelector, useDispatch } from "react-redux";
-import { initialDashboardData,getDefects, getMachines, getSystemStatus, getDepartments, initialDpmuData, initialProductionData, getProducts } from "../../services/dashboardApi";
+import { initialDashboardData, getMachines, getSystemStatus, getDepartments, initialDpmuData, initialProductionData, getProducts } from "../../services/dashboardApi";
 import DOMPurify from "dompurify";
 import { setSelectedMachine } from "../../redux/slices/machineSlice"
 import { setSelectedProduct } from "../../redux/slices/productSlice"
@@ -50,7 +50,7 @@ import useApiInterceptor from "../../hooks/useInterceptor";
 import axiosInstance from "../../API/axiosInstance";
 
 const DashboardContentLayout = ({ children }) => {
-  const apiCall = useApiInterceptor();
+  const apiCallInterceptor = useApiInterceptor();
   const dispatch = useDispatch();
   const localPlantData = useSelector((state) => state?.plant?.plantData[0]);
 
@@ -90,8 +90,8 @@ const DashboardContentLayout = ({ children }) => {
   const handleProductChange = (value) => {
     dispatch(setSelectedProduct(Number(value))); // Dispatching action    
   }
- 
-  
+
+
 
   // Handler for date range changes
   const handleDateRangeChange = (dates, dateStrings) => {
@@ -106,11 +106,11 @@ const DashboardContentLayout = ({ children }) => {
   useEffect(() => {
     console.log(localPlantData?.id)
     // window.location.reload()
-    },[localPlantData])
+  }, [localPlantData])
   const resetFilter = () => {
-    initialDashboardData(localPlantData.id, accessToken);
+    initialDashboardData(localPlantData.id, accessToken, apiCallInterceptor);
     initialDpmuData(localPlantData.id, accessToken);
-    initialProductionData(localPlantData.id, accessToken);
+    initialProductionData(localPlantData.id, accessToken, apiCallInterceptor);
     dispatch(setSelectedMachine(null)); // Dispatching action
     dispatch(setSelectedProduct(null)); // Dispatching action
     setSelectedDate(null);
@@ -144,7 +144,7 @@ const DashboardContentLayout = ({ children }) => {
     const url = `dashboard/?${queryString}`; // Complete URL with query string
 
     // Make the API call using axiosInstance
-    apiCall
+    apiCallInterceptor
       .get(url, {
         headers: {
           Authorization: `Bearer ${accessToken}`, // Include authorization token
@@ -172,17 +172,16 @@ const DashboardContentLayout = ({ children }) => {
         // Fetching data in parallel
         await Promise.all([
 
-          getMachines(localPlantData.plant_name, accessToken),
-          getDepartments(localPlantData.plant_name, accessToken),
-          initialDpmuData(localPlantData.id, accessToken),
-          getProducts(localPlantData.plant_name, accessToken),
+          getMachines(localPlantData.plant_name, accessToken, apiCallInterceptor),
+          getDepartments(localPlantData.plant_name, accessToken, apiCallInterceptor),
+          initialDpmuData(localPlantData.id, accessToken, apiCallInterceptor),
+          getProducts(localPlantData.plant_name, accessToken, apiCallInterceptor),
           initialDateRange(),
           // initialTableData(),
-          initialDashboardData(localPlantData.id, accessToken),
-          initialProductionData(localPlantData.id, accessToken),
+          initialDashboardData(localPlantData.id, accessToken, apiCallInterceptor),
+          initialProductionData(localPlantData.id, accessToken, apiCallInterceptor),
 
-          getDefects(localPlantData.plant_name, accessToken),
-          getSystemStatus(localPlantData.id, accessToken),
+          getSystemStatus(localPlantData.id, accessToken, apiCallInterceptor),
         ]);
       } catch (err) {
         console.log(err.message || "Failed to fetch data")

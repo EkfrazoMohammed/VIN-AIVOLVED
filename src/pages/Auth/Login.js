@@ -6,6 +6,8 @@ import { useDispatch } from 'react-redux';
 import axiosInstance from '../../API/axiosInstance'; // Ensure this is correctly imported
 import { signInFailure, signInSuccess } from '../../redux/slices/authSlice'; // Import the setAuthData action
 import { userSignInSuccess } from '../../redux/slices/userSlice'; // Import the setAuthData action
+// import { decrypTion, encrypTion } from '../../redux/middleware/queryParamUtils';
+import { encryptAES } from '../../redux/middleware/encryptPayloadUtils';
 // import ApiCall from "../../API/Apicall"
 
 const Login = () => {
@@ -31,19 +33,20 @@ const Login = () => {
   };
 
 
+
   const loginPost = async () => {
     setError({ UserError: "", PasswordError: "" });
     setLoading(true);
-  
+
     // Validate email or mobile number
     const validateInput = (input) => {
       const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
       const mobilePattern = /^\+?[0-9]{8,15}$/;
       return emailPattern.test(input) || mobilePattern.test(input);
     };
-  
+
     let hasError = false;
-  
+
     // Validate inputs
     if (!loginPayload.email_or_phone) {
       setError(prev => ({ ...prev, UserError: "*Email / Mobile Number is required" }));
@@ -52,38 +55,40 @@ const Login = () => {
       setError(prev => ({ ...prev, UserError: "*Please enter a valid Email or Mobile Number" }));
       hasError = true;
     }
-  
+
     if (!loginPayload.password) {
       setError(prev => ({ ...prev, PasswordError: "*Password is required" }));
       hasError = true;
     }
-  
+
     if (hasError) {
       setLoading(false);
       return;
     }
-  
+
     // Proceed with login if no errors
+
     try {
-      const res = await axiosInstance.post('/login/', loginPayload);
-      const { access_token, refresh_token, user_id, is_superuser, first_name, last_name, user_name} = res.data;
-      console.log("Dispatching userSignInSuccess with: ", {userId: user_id, userName: user_name , firstName: first_name, lastName: last_name,  isSuperUser: is_superuser});
+      const encryTedData = encryptAES(JSON.stringify(loginPayload))
+      const res = await axiosInstance.post('/login/', { data: encryTedData });
+      const { access_token, refresh_token, user_id, is_superuser, first_name, last_name, user_name } = res.data;
+      console.log("Dispatching userSignInSuccess with: ", { userId: user_id, userName: user_name, firstName: first_name, lastName: last_name, isSuperUser: is_superuser });
       dispatch(signInSuccess({ accessToken: access_token, refreshToken: refresh_token }));
-      dispatch(userSignInSuccess({userId: user_id, userName: user_name , firstName: first_name, lastName: last_name,  isSuperUser: is_superuser}))
+      dispatch(userSignInSuccess({ userId: user_id, userName: user_name, firstName: first_name, lastName: last_name, isSuperUser: is_superuser }))
       openNotification("success", "Login Successful==>");
       navigate("/plant");
 
     } catch (error) {
       // Dispatch failure action
       dispatch(signInFailure(error.response?.data));
-  
+
       // Notify error
       openNotification("error", error.response?.data?.detail || "Invalid Credentials");
     } finally {
       setLoading(false);
     }
   };
-  
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -96,6 +101,7 @@ const Login = () => {
       setError(prev => ({ ...prev, PasswordError: "" }));
     }
   };
+
 
 
   return (
@@ -144,7 +150,7 @@ const Login = () => {
                 onClick={loginPost}
                 className='w-full'
               >
-                {loading? "Logging in..." : "Login" }
+                {loading ? "Logging in..." : "Login"}
               </button>
             </div>
           </div>

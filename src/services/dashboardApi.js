@@ -1,5 +1,6 @@
 import axios from "axios";
 import store from "../redux/store"; // Import the store
+import useApiInterceptor from "../hooks/useInterceptor";
 import {
   getMachineSuccess,
   getMachineFailure,
@@ -30,19 +31,26 @@ import {
   getDashboardSuccess,
   getDashboardFailure,
 } from "../redux/slices/dashboardSlice";
+import { encryptAES } from "../redux/middleware/cryptoUtils";
+
 
 export const baseURL =
   process.env.REACT_APP_API_BASE_URL || "https://huldev.aivolved.in/api/";
 
-export const getMachines = (plantName, token) => {
+export const getMachines = (plantName, token, apiCallInterceptor) => {
+
+
   const domain = `${baseURL}`;
-  let url = `${domain}machine/?plant_name=${plantName}`;
-  axios
-    .get(url, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
+  // let url = `${domain}machine/?plant_name=${plantName}`;
+  let url = `machine/?plant_name=${plantName}`;
+
+  // axios
+  //   .get(url, {
+  //     headers: {
+  //       Authorization: `Bearer ${token}`,
+  //     },
+  //   })
+  apiCallInterceptor.get(url)
     .then((response) => {
       const formattedMachines = response.data.results.map((machine) => ({
         id: machine.id,
@@ -58,15 +66,16 @@ export const getMachines = (plantName, token) => {
     });
 };
 
-export const getDepartments = (plantName, token) => {
+export const getDepartments = (plantName, token, apiCallInterceptor) => {
   const domain = `${baseURL}`;
-  let url = `${domain}department/?plant_name=${plantName}`;
-  axios
-    .get(url, {
-      headers: {
-        Authorization: ` Bearer ${token}`,
-      },
-    })
+  let url = `department/?plant_name=${plantName}`;
+  // axios
+  //   .get(url, {
+  //     headers: {
+  //       Authorization: ` Bearer ${token}`,
+  //     },
+  //   })
+  apiCallInterceptor.get(url)
     .then((response) => {
       const formattedDepartment = response.data.results.map((department) => ({
         id: department.id,
@@ -83,15 +92,16 @@ export const getDepartments = (plantName, token) => {
     });
 };
 
-export const getProducts = (plantName, token) => {
+export const getProducts = (plantName, token, apiCallInterceptor) => {
   const domain = `${baseURL}`;
-  let url = `${domain}product/?plant_name=${plantName}`;
-  axios
-    .get(url, {
-      headers: {
-        Authorization: ` Bearer ${token}`,
-      },
-    })
+  let url = `product/?plant_name=${plantName}`;
+  // axios
+  //   .get(url, {
+  //     headers: {
+  //       Authorization: ` Bearer ${token}`,
+  //     },
+  //   })
+  apiCallInterceptor.get(url)
     .then((response) => {
       const formattedProduct = response.data.results;
       // Dispatch action to update Redux state
@@ -104,20 +114,20 @@ export const getProducts = (plantName, token) => {
       store.dispatch(getProductFailure());
     });
 };
-export const getDefects = (plantName, token) => {
-  console.log(plantName)
+export const getDefects = (plantName, token, apiCallInterceptor) => {
   const domain = `${baseURL}`;
-  let url = `${domain}defect/?plant_name=${plantName}`;
-  axios
-    .get(url, {
-      headers: {
-        Authorization: ` Bearer ${token}`,
-      },
-    })
+  let url = `defect/?plant_name=${plantName}`;
+  // axios
+  //   .get(url, {
+  //     headers: {
+  //       Authorization: ` Bearer ${token}`,
+  //     },
+  //   })
+  apiCallInterceptor.get(url)
     .then((response) => {
       const formattedDefects = response.data.results;
       store.dispatch(getDefectSuccess(formattedDefects));
-      
+
     })
     .catch((error) => {
       console.error("Error fetching department data:", error);
@@ -126,15 +136,16 @@ export const getDefects = (plantName, token) => {
     });
 };
 
-export const initialDpmuData = (plantId, token) => {
+export const initialDpmuData = (plantId, token, apiCallInterceptor) => {
   const domain = baseURL;
-  const url = `${domain}params_graph/?plant_id=${plantId}`;
-  axios
-    .get(url, {
-      headers: {
-        Authorization: ` Bearer ${token}`,
-      },
-    })
+  const url = `params_graph/?plant_id=${plantId}`;
+  // axios
+  //   .get(url, {
+  //     headers: {
+  //       Authorization: ` Bearer ${token}`,
+  //     },
+  //   })
+  apiCallInterceptor.get(url)
     .then((response) => {
       store.dispatch(getDpmuSuccess(response.data.results));
       // return response.data.data_last_7_days;
@@ -145,15 +156,17 @@ export const initialDpmuData = (plantId, token) => {
     });
 };
 
-export const initialProductionData = (plantId, token) => {
+export const initialProductionData = (plantId, token, apiCallInterceptor) => {
+
   const domain = baseURL;
-  const url = `${domain}defct-vs-machine/?plant_id=${plantId}`;
-  axios
-    .get(url, {
-      headers: {
-        Authorization: ` Bearer ${token}`,
-      },
-    })
+  const url = `defct-vs-machine/?plant_id=${plantId}`;
+  // axios
+  //   .get(url, {
+  //     headers: {
+  //       Authorization: ` Bearer ${token}`,
+  //     },
+  //   })
+  apiCallInterceptor.get(url)
     .then((response) => {
       store.dispatch(getProductVsDefectSuccess(response.data.data_last_7_days));
       // return response.data.data_last_7_days;
@@ -164,15 +177,16 @@ export const initialProductionData = (plantId, token) => {
     });
 };
 
-export const getSystemStatus = (plantId, token) => {
+export const getSystemStatus = (plantId, token, apiCallInterceptor) => {
   const domain = `${baseURL}`;
   let url = `${domain}system-status/?plant_id=${plantId}`;
-  axios
-    .get(url, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
+  // axios
+  //   .get(url, {
+  //     headers: {
+  //       Authorization: `Bearer ${token}`,
+  //     },
+  //   })
+  apiCallInterceptor.get(url)
     .then((response) => {
       let activeMachines = response.data.results.filter(
         (machine) => machine.system_status === true
@@ -181,7 +195,7 @@ export const getSystemStatus = (plantId, token) => {
     })
     .catch((error) => {
       console.error("Error fetching machine data:", error);
-      store.dispatch(setActiveMachines([]));     
+      store.dispatch(setActiveMachines([]));
     });
 };
 const isEmptyDashboardResponse = (data) => {
@@ -190,16 +204,17 @@ const isEmptyDashboardResponse = (data) => {
 };
 
 
-export const initialDashboardData = (plantId, token) => {
+export const initialDashboardData = (plantId, token, apiCallInterceptor) => {
   const domain = `${baseURL}`;
-  const url = `${domain}dashboard/?plant_id=${plantId}`;
-
-  axios
-    .get(url, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
+  // const url = `${domain}dashboard/?plant_id=${plantId}`;
+  const url = `dashboard/?plant_id=${plantId}`;
+  // axios
+  //   .get(url, {
+  //     headers: {
+  //       Authorization: `Bearer ${token}`,
+  //     },
+  //   })
+  apiCallInterceptor.get(url)
     .then((response) => {
       const { active_products, ...datesData } = response.data;
 

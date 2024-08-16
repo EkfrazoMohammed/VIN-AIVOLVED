@@ -11,6 +11,7 @@ import useApiInterceptor from "../hooks/useInterceptor";
 
 import { useNavigate } from 'react-router-dom';
 
+
 const settings = {
   dots: false,
   infinite: true,
@@ -24,7 +25,7 @@ const settings = {
 };
 
 const Plant = () => {
-  // const api = useApiInterceptor()
+  const apiCallInterceptor = useApiInterceptor()
   const [plant, setPlant] = useState([]);
   const [loader, setLoader] = useState(true);
   const [error, setError] = useState(null);
@@ -52,19 +53,16 @@ const Plant = () => {
           console.error("Authorization token is missing");
           return;
         }
-
-        const res = await axiosInstance.get(`/plant/`, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-        const { results } = res.data;
+        // const res = await axiosInstance.get(`/plant/`, {
+        //   headers: {
+        //     Authorization: `Bearer ${accessToken}`,
+        //   },
+        // });
+        const res = await apiCallInterceptor.get(`/plant/`)
+        const { results } = res.data
 
         if (results) {
           setPlant(results);
-
-          console.log("results==>", results);
-
         } else {
           console.warn("No results found in the response");
         }

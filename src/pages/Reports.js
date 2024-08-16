@@ -7,8 +7,8 @@ import { DownloadOutlined } from "@ant-design/icons";
 import { Hourglass } from "react-loader-spinner";
 import dayjs from "dayjs";
 import { toast } from "react-toastify";
-import { useSelector,useDispatch } from "react-redux";
-import { initialDashboardData, getDefects,getMachines, getSystemStatus, getDepartments, initialDpmuData, initialProductionData, getProducts } from "./../services/dashboardApi";
+import { useSelector, useDispatch } from "react-redux";
+import { initialDashboardData, getDefects, getMachines, getSystemStatus, getDepartments, initialDpmuData, initialProductionData, getProducts } from "./../services/dashboardApi";
 import { reportApi } from "./../services/reportsApi";
 import {
   setSelectedDefect,
@@ -16,7 +16,8 @@ import {
 
 import { getReportData, updatePage } from ".././redux/slices/reportSlice";
 import { setSelectedMachine } from "../redux/slices/machineSlice"
-import { setSelectedProduct } from "../redux/slices/productSlice"
+import { setSelectedProduct } from "../redux/slices/productSlice";
+import useApiInterceptor from "../hooks/useInterceptor";
 
 const columns = [
   {
@@ -77,6 +78,10 @@ const locale = {
 
 
 const Reports = () => {
+  // INTERCEPTOR API CALLING
+  const apiCallInterceptor = useApiInterceptor()
+
+
   // REDUX CALLING
   const dispatch = useDispatch()
   const reportData = useSelector((state) => state.report.reportData);
@@ -100,27 +105,25 @@ const Reports = () => {
   startDate.setDate(startDate.getDate() - 7); // 7 days ago
   const endDate = new Date(); // Today's date
   const [dateRange, setDateRange] = useState();
+  const [tableData, setTableData] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
   const { RangePicker } = DatePicker;
   const [filterActive, setfilterActive] = useState(false);
 
   const [loader, setLoader] = useState(false);
 
-  const initialReportData=()=>{
-    reportApi({ plantId:localPlantData?.id, pageSize: pagination.pageSize, Authtoken: accessToken, pageNumber: pagination.current })
+  useEffect(() => {
+    reportApi(localPlantData?.id, pagination.pageSize, accessToken, pagination.current, apiCallInterceptor,)
       .then(res => {
-        const { page_size, total_count, results } = res;
+        const { total_pages, results } = res;
         dispatch(getReportData({
           reportData: results,
           current: pagination.current,
           pageSize: pagination.pageSize,
-          total: total_count,
+          total: total_pages,
         }));
       })
       .catch(err => console.error(err));
-  }
-  useEffect(() => {
-    initialReportData()
   }, [pagination.current, pagination.pageSize, accessToken]);
 
 
@@ -131,7 +134,7 @@ const Reports = () => {
     }));
   };
 
-  
+
   const handleDefectChange = (value) => {
     dispatch(setSelectedDefect(Number(value)))
   };
@@ -157,7 +160,7 @@ const Reports = () => {
 
   const handleApplyFilters = (page, pageSize) => {
     // Initialize URLSearchParams
-    const params = {
+    const params = new URLSearchParams({
       page: 1,
       page_size: pageSize,
       plant_id: localPlantData?.id || undefined,
@@ -166,18 +169,26 @@ const Reports = () => {
       machine_id: selectedMachineRedux || undefined,
       product_id: selectedProductRedux || undefined,
       defect_id: selectedDefectRedux || undefined,
-    };
-// Filter out undefined or null values from query parameters
-const filteredQueryParams = Object.fromEntries(
-  Object.entries(params).filter(
-    ([_, value]) => value !== undefined && value !== null
-  )
-);
+    });
 
-// Create the query string
-const queryString = new URLSearchParams(filteredQueryParams).toString();
+    const queryParams = {
+      plant_id: localPlantData?.id, // Ensure localPlantData is valid
+      from_date: dateRange?.[0],
+      to_date: dateRange?.[1],
+      machine_id: selectedMachineRedux,
+      product_id: selectedProductRedux,
+      defect_id: selectedDefectRedux,
+    };
+
+    const filteredQueryParams = Object.fromEntries(
+      Object.entries(params).filter(
+        ([_, value]) => value !== undefined && value !== null
+      )
+    );
+
+
     // Construct the final URL
-    const url = `reports/?${queryString}`;
+    const url = `reports/?${filteredQueryParams.toString()}`;
 
     // Set loader to true before making the API call
     setLoader(true);
@@ -191,13 +202,9 @@ const queryString = new URLSearchParams(filteredQueryParams).toString();
       })
       .then((response) => {
         const { results, total_count, page_size } = response.data;
+        console.log(results, "<<<")
 
-        dispatch(getReportData({
-          reportData: results,
-          current: pagination.current,
-          pageSize: pagination.pageSize,
-          total: total_count,
-        }));
+        setTableData(results);
         setLoader(false);
         setfilterActive(true);
 
@@ -210,12 +217,12 @@ const queryString = new URLSearchParams(filteredQueryParams).toString();
   console.log(localPlantData)
 
   useEffect(() => {
-    getDefects(localPlantData?.plant_name,accessToken) 
+    getDefects(localPlantData?.plant_name, accessToken, apiCallInterceptor)
   }, []);
 
   const downloadExcel = () => {
     // Convert JSON to Excel
-    const ws = XLSX.utils.json_to_sheet(reportData);
+    const ws = XLSX.utils.json_to_sheet(tableData);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
 
@@ -251,7 +258,7 @@ const queryString = new URLSearchParams(filteredQueryParams).toString();
     setSelectedDate(null);
     dispatch(setSelectedMachine(null)); // Dispatching action    
     dispatch(setSelectedProduct(null)); // Dispatching action 
-    initialReportData()
+
   };
 
   return (
@@ -417,6 +424,7 @@ const queryString = new URLSearchParams(filteredQueryParams).toString();
             onChange={handleTableChange}
           />
         )}
+        {/* <Table columns={columns} dataSource={tableData}  style={{margin:"1rem 0",fontSize:"1.5rem"}}/> */}
       </div>
     </>
   );
