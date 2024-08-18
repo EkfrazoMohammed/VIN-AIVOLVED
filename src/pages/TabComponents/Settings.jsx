@@ -7,22 +7,20 @@ import { EditOutlined } from '@ant-design/icons';
 import { baseURL } from '../../API/API';
 import { ColorRing } from 'react-loader-spinner'
 import { useSelector } from 'react-redux';
-import { encryptAES, decryptAES } from '../../redux/middleware/cryptoUtils';
+import { encryptAES, decryptAES } from '../../redux/middleware/encryptPayloadUtils'
 
 
 const Alerts = () => {
-
+  const accessToken = useSelector((state) => state.auth.authData[0].accessToken);
   const currentUserData = useSelector((state) => (state.user.userData[0]))
   const [api, contextHolder] = notification.useNotification();
   const [loading, setLoading] = useState(false)
   const [modal2Open, setModal2Open] = useState(false);
-  const initialState = {
-    first_name: "",
-    last_name: "",
-    phone_number: "",
-    email: "",
-    employee_id: ""
-  };
+const headersOb={
+  headers: {
+    Authorization: `Bearer ${accessToken}`,
+  },
+}
   const [data, setData] = useState({
     first_name: "",
     last_name: "",
@@ -82,26 +80,40 @@ const Alerts = () => {
       }
 
       console.log(payload)
-      const encryptedPayload = encryptAES(payload)
-      console.log(encryptedPayload)
-      // if (data.employee_id !== "" && data.first_name !== "" && data.last_name !== "" && data.phone_number !== "" && data.email !== "" && error.fistName === "" && error.lastName === "" && error.email === "" && error.Phone === "" && error.employee_id === "") {
-      //   setLoading(true)
-      //   // Encryption Configuration
-      //   // const postRequest = await axios.post(`${baseURL}user/`, payload)
-      //   // if (postRequest) {
-      //   //   openNotification({ status: "success", message: "User Created Successfully" });
-      //   //   setLoading(false)
-      //   //   setModal2Open(false)
-      //   //   setData(initialState)
-      //   // }
+      const encryTedData = encryptAES(JSON.stringify(payload))
+      console.log(encryTedData)
+      const usersPayload={
+        "data":`${encryTedData}`
+      }
+      if (data.employee_id !== "" && data.first_name !== "" && data.last_name !== "" && data.phone_number !== "" && data.email !== "" && error.fistName === "" && error.lastName === "" && error.email === "" && error.Phone === "" && error.employee_id === "") {
+        setLoading(true)
+        // Encryption Configuration
+        // import axiosInstance from '../../API/axiosInstance'; // Ensure this is correctly imported
+        const postRequest = await axios.post(`${baseURL}user/`, usersPayload,headersOb)
+        if (postRequest) {
+          console.log(postRequest.response.data.message)
+          
+          setLoading(false)
+          setModal2Open(false)
+          setData({
+            first_name: "",
+            last_name: "",
+            phone_number: "",
+            email: "",
+            employee_id: ""
+          })
+        }
 
-      // } else {
-      //   setLoading(false)
-      //   console.log("ERROR")
-      // }
+      } else {
+        setLoading(false)
+        console.log("ERROR")
+      }
     } catch (error) {
       setLoading(false)
       console.log(error)
+      if(error.response.status === 400){
+        openNotification({ status: "error", message: error.response.data.message });
+      }
       // openNotification({ status: "error", message: `unable to add user` });
     }
   }
