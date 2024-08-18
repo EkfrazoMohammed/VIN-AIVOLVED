@@ -70,7 +70,7 @@ const AiSmartView = () => {
       setLoader(true);
       axiosInstance
         .get(
-          `$ai-smart/?plant_id=${localPlantData.id}&page=${pagination.currentPage}&defect_id=${selectedDefect.id}`,
+          `ai-smart/?plant_id=${localPlantData.id}&page=${pagination.currentPage}&defect_id=${selectedDefect.id}`,
           {
             headers: {
               Authorization: `Bearer ${AuthToken}`,
