@@ -15,7 +15,7 @@ import Insights from "./pages/Insights";
 import ProtectedRoutes from "./hooks/protectedRoutes";
 import NotFound from "./pages/PageNotFound";
 import ResetPasswordRoute from "./hooks/resetPasswordRoute";
-
+import ProtectedRouteForPlant from "./hooks/protectedRouteForPlant";
 const App = () => {
   return (
     <Router>
@@ -23,17 +23,21 @@ const App = () => {
         <Route path="*" element={<NotFound />} />
         <Route path="/login" element={<Login />} />
         <Route path="/reset-password-email" element={<ResetPasswordEmail />} />
+        {/* <Route path="/plant" element={<Plant />} /> */}
         <Route
-          path="/reset-password"
+          path="/reset-password/:id"
           element={
             <ResetPasswordRoute>
               <ResetPasswordNewPassword />
             </ResetPasswordRoute>
           }
         />
+           {/* Protected Route for Plant page, outside of Layout */}
+           <Route element={<ProtectedRouteForPlant />}>
+          <Route path="/plant" element={<Plant />} />
+        </Route>
         <Route element={<ProtectedRoutes />}>
           <Route path="/" element={<Dashboard />} />
-          <Route path="/plant" element={<Plant />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/machine-parameter" element={<MachinesParameter />} />
           <Route path="/ai-smart-view" element={<AiSmartView />} />

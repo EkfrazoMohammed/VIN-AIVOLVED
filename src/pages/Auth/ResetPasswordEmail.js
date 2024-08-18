@@ -1,84 +1,29 @@
 import React, { useState } from "react";
-import { Card, Col, Row, message } from "antd";
+import { Card, Col, notification } from "antd";
 import axios from "axios";
 import { baseURL } from "../../API/API";
-import { Button, notification } from "antd";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeftOutlined } from "@ant-design/icons";
+import { encryptAES } from "../../redux/middleware/encryptPayloadUtils";
 
-const ResetPassword = () => {
+const ResetPasswordEmail = () => {
   const navigate = useNavigate();
   const [api, contextHolder] = notification.useNotification();
 
-  const [resetPayload, setresetPayload] = useState({
+  const [resetPayload, setResetPayload] = useState({
     email: "",
-    new_password: "",
-    confirm_password: "",
   });
 
   const [error, setError] = useState({
     emailError: "",
-    newPassError: "",
-    confPassError: "",
   });
-  const [userData, setuserdata] = useState();
-  const [toggleEmail, setToggleEmail] = useState(true);
-
   const openNotification = (param) => {
     const { status, message } = param;
 
     api[status]({
       message: message || "",
-      //   description:
-      //     'I will never close automatically. This is a purposely very very long description that has many many characters and words.',
-      duration: 0,
+      duration: 3, // Notification will auto-close after 3 seconds
     });
-  };
-
-  const resetPost = async () => {
-    try {
-      if (resetPayload.new_password === "") {
-        setError((prev) => ({ ...prev, newPassError: "Password is empty" }));
-      }
-      if (resetPayload.confirm_password === "") {
-        setError((prev) => ({
-          ...prev,
-          confPassError: "Confirm Password is empty",
-        }));
-      }
-
-      if (
-        resetPayload.new_password !== "" ||
-        resetPayload.confirm_password !== "" ||
-        resetPayload.email !== ""
-      ) {
-        const payload = {
-          new_password: resetPayload.new_password,
-          confirm_password: resetPayload.confirm_password,
-        };
-        const res = await axios.post(
-          `${baseURL}reset_password/?email=${resetPayload.email}`,
-          payload
-        );
-        if (res.status == 200) {
-          openNotification({
-            status: "success",
-            message: "Reset Password Successful",
-          });
-          setTimeout(() => {
-            navigate("/login");
-          }, 2000);
-        }
-      }
-    } catch (error) {
-      console.log();
-      if (error.response.status == 400) {
-        openNotification({
-          status: "error",
-          message: error.response.data.email[0],
-        });
-      }
-    }
   };
 
   const handleChange = (e) => {
@@ -87,42 +32,53 @@ const ResetPassword = () => {
     if (name === "email") {
       setError((prev) => ({ ...prev, emailError: "" }));
     }
-    if (name === "new_password") {
-      setError((prev) => ({ ...prev, newPassError: "" }));
-    }
-    if (name === "confirm_password") {
-      setError((prev) => ({ ...prev, newPassError: "" }));
-    }
 
-    setresetPayload((prev) => ({ ...prev, [name]: value }));
+    setResetPayload((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const validateEmail = (email) => {
+    // Basic email validation regex
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   };
 
   const confirmEmail = async () => {
     try {
       if (resetPayload.email === "") {
         setError((prev) => ({ ...prev, emailError: "Email not entered" }));
-      }
-      if (resetPayload.email !== "") {
-        const res = await axios.get(`${baseURL}user/`);
-        const userData = await res.data.results.filter(
-          (item) => item.email === resetPayload.email
-        );
-        if (userData.length > 0) {
-          setToggleEmail(false);
-        } else {
+      } else if (!validateEmail(resetPayload.email)) {
+        setError((prev) => ({ ...prev, emailError: "Invalid email format" }));
+      } else {
+        const payload={
+          email: resetPayload.email,
+        }
+      const encryTedData = encryptAES(JSON.stringify(payload))
+        const res = await axios.post(`${baseURL}reset-password/`, {"data":encryTedData});
+        
+        if (res.status === 200) {
+          openNotification({
+            status: "success",
+            message: "Reset link sent to your email",
+          });
+       } else {
           openNotification({
             status: "error",
-            message: "Email is not Registered",
+            message: "Email is not registered",
           });
         }
       }
-    } catch (error) {}
+    } catch (error) {
+      openNotification({
+        status: "error",
+        message: "An error occurred. Please try again.",
+      });
+    }
   };
+
   return (
     <>
       {contextHolder}
       <div
-        className=""
         style={{
           background: "#faf5f5",
           height: "100vh",
@@ -138,21 +94,20 @@ const ResetPassword = () => {
             bordered={false}
             style={{ padding: "2rem", borderRadius: "25px" }}
           >
-            <div className="">
+            <div>
               <img
                 src="https://aivolved.in/wp-content/uploads/2022/11/ai-logo.png"
                 style={{ height: "80px" }}
-                alt=""
+                alt="AI Logo"
               />
             </div>
-            <p className="">
+            <p>
               <ArrowLeftOutlined
                 style={{ fontSize: "1.5rem", cursor: "pointer" }}
                 onClick={() => navigate("/login")}
               />
             </p>
             <div
-              className=""
               style={{
                 display: "flex",
                 flexDirection: "column",
@@ -162,7 +117,7 @@ const ResetPassword = () => {
               <h2 style={{ margin: "0.5rem 0" }}>Enter Email</h2>
               <p>Reset link will be sent to the respective email id</p>
               <input
-                type="text"
+                type="email"
                 style={{
                   height: "1.5rem",
                   width: "100%",
@@ -174,9 +129,9 @@ const ResetPassword = () => {
                 name="email"
                 placeholder="Email id"
                 onChange={handleChange}
-                helperText={error.emailError}
+                value={resetPayload.email}
               />
-              {error.emailError ? (
+              {error.emailError && (
                 <span
                   style={{
                     color: "red",
@@ -186,11 +141,9 @@ const ResetPassword = () => {
                 >
                   *{error.emailError}
                 </span>
-              ) : (
-                ""
               )}
             </div>
-            <h2 className="">
+            <h2>
               <button
                 style={{
                   padding: "1rem",
@@ -200,6 +153,7 @@ const ResetPassword = () => {
                   color: "#fff",
                   fontWeight: "600",
                   fontSize: "1rem",
+                  cursor: "pointer",
                 }}
                 onClick={confirmEmail}
               >
@@ -213,4 +167,4 @@ const ResetPassword = () => {
   );
 };
 
-export default ResetPassword;
+export default ResetPasswordEmail;

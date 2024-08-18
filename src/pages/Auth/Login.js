@@ -8,7 +8,7 @@ import { signInFailure, signInSuccess } from '../../redux/slices/authSlice'; // 
 import { userSignInSuccess } from '../../redux/slices/userSlice'; // Import the setAuthData action
 // import { decrypTion, encrypTion } from '../../redux/middleware/queryParamUtils';
 import { encryptAES } from '../../redux/middleware/encryptPayloadUtils';
-// import ApiCall from "../../API/Apicall"
+import {Link} from 'react-router-dom'
 
 const Login = () => {
   const [loading, setLoading] = useState(false);
@@ -153,6 +153,10 @@ const Login = () => {
                 {loading ? "Logging in..." : "Login"}
               </button>
             </div>
+
+            <Link to="/reset-password-email" className="flex items-center justify-center text-center">
+              forgot password ?
+            </Link>
           </div>
         </Card>
       </Col>

@@ -1,13 +1,25 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link,useParams } from "react-router-dom";
+import axiosInstance from "../../API/axiosInstance"; 
+import { encryptAES } from "../../redux/middleware/encryptPayloadUtils";
 
+import { Card, Col, notification } from "antd";
 const PasswordResetForm = () => {
+  const { id } = useParams(); // Capture the identifier from the route
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccessMessage] = useState(false);
+  const [api] = notification.useNotification();
+  const openNotification = (param) => {
+    const { status, message } = param;
 
-  const handleSubmit = (e) => {
+    api[status]({
+      message: message || "",
+      duration: 3, // Notification will auto-close after 3 seconds
+    });
+  };
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Reset error state
@@ -19,14 +31,30 @@ const PasswordResetForm = () => {
       return;
     }
 
-    // Call your API to reset the password
-    // axios.post('/api/reset-password', { password })
-    //   .then(response => {
-    //     // Handle success
-    //   })
-    //   .catch(err => {
-    //     // Handle error
-    //   });
+    try {
+      // Call your API to reset the password
+      const payload={
+       "new_password":password,
+      "confirm_password":confirmPassword
+      }
+    const encryTedData = encryptAES(JSON.stringify(payload))
+      const response = await axiosInstance.put(`reset-password/${id}/`, { data:encryTedData });
+      // Handle success
+      if (response.status === 200) {
+        setSuccessMessage(true);
+        openNotification({
+          status: "success",
+          message: "Password updated successfully",
+        });
+      }
+    } catch (err) {
+      // Handle error
+      setError("Failed to reset password. Please try again.");
+      openNotification({
+        status: "error",
+        message: "Password not updated ",
+      });
+    }
   };
 
   return (
