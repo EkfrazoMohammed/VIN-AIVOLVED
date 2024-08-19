@@ -140,18 +140,18 @@ export const getDefects = (plantName, token, apiCallInterceptor) => {
 };
 
 export const getAiSmartView = async (plantId, token, apiCallInterceptor, currentPage, defectId) => {
-  console.log('getAiSmartView');
   const encryptedPlantId = encryptAES(plantId);
-  const encryptedDefectId = encryptAES(defectId);
+  cons
+  t encryptedDefectId = encryptAES(defectId);
   const url = `ai-smart/?plant_id=${encryptedPlantId}&page=${currentPage}&defect_id=${encryptedDefectId}`;
-  
+
   try {
-      const response = await apiCallInterceptor.get(url);  // Await the promise
-      console.log(response.data);
-      return response.data.results;  // Return the data
+    const response = await apiCallInterceptor.get(url);  // Await the promise
+    console.log(response.data);
+    return response.data.results;  // Return the data
   } catch (error) {
-      console.error("Error fetching AI Smart View data:", error);
-      throw error;  // Rethrow error to be caught by the calling function
+    console.error("Error fetching AI Smart View data:", error);
+    throw error;  // Rethrow error to be caught by the calling function
   }
 };
 
@@ -192,6 +192,8 @@ export const initialProductionData = (plantId, token, apiCallInterceptor) => {
 
 export const getSystemStatus = (plantId, token, apiCallInterceptor) => {
   const domain = `${baseURL}`;
+  const encryptedPlantId = encryptAES(plantId);
+
   let url = `${domain}system-status/?plant_id=${plantId}`;
   // axios
   //   .get(url, {
