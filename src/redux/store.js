@@ -14,6 +14,7 @@ import dpmuReducer from "./slices/dpmuSlice";
 import productVsDefectReducer from "./slices/productvsDefectSlice";
 import reportReducer from "./slices/reportSlice"
 import defectReducer from "./slices/defectSlice"
+import aismartviewReducer from "./slices/aismartviewSlice"
 // Encryption Configuration
 const encryptor = encryptTransform({
   secretKey: process.env.REACT_APP_ENCRYPTION_KEY || "V!N_P0ND!", // Ensure secret key is set in .env
@@ -83,6 +84,11 @@ const defectPersistConfig = {
   storage,
   transforms: [encryptor],
 };
+const aismartviewPersistConfig = {
+  key: 'aismartview',
+  storage,
+  transforms: [encryptor],
+};
 
 
 // Combine reducers
@@ -98,6 +104,7 @@ const rootReducer = {
   dpmu: persistReducer(dpmuPersistConfig, dpmuReducer),
   productVsDefect: persistReducer(productVsDefectPersistConfig,productVsDefectReducer),
   defect: persistReducer(defectPersistConfig,defectReducer),
+  aismartview: persistReducer(aismartviewPersistConfig, aismartviewReducer),
 };
 
 // Configure the store
