@@ -5,9 +5,13 @@ import { EditOutlined, ReloadOutlined } from '@ant-design/icons';
 import { useSelector } from 'react-redux';
 // import {API, AuthToken, baseURL, localPlantData} from "./../API/API"
 import { baseURL } from "../../API/API"
-import { initialDashboardData, getDefects,getMachines, getSystemStatus, getDepartments, initialDpmuData, initialProductionData, getProducts } from "../../services/dashboardApi";
+import { initialDashboardData, getDefects, getMachines, getSystemStatus, getDepartments, initialDpmuData, initialProductionData, getProducts } from "../../services/dashboardApi";
+import useApiInterceptor from '../../hooks/useInterceptor';
 
-const Defects = ({defectsdata}) => {
+const Defects = ({ defectsdata }) => {
+
+  const apiCallInterceptor = useApiInterceptor();
+
   const localPlantData = useSelector((state) => state.plant.plantData);
   const AuthToken = useSelector((state) => state.auth.authData.access_token);
   const [modalOpen, setModalOpen] = useState(false);
@@ -21,7 +25,7 @@ const Defects = ({defectsdata}) => {
   const [notificationApi, contextHolder] = notification.useNotification();
 
   useEffect(() => {
-    getDefects(localPlantData?.plant_name,AuthToken) 
+    getDefects(localPlantData?.plant_name, AuthToken, apiCallInterceptor)
   }, []);
   const columns = [
     {

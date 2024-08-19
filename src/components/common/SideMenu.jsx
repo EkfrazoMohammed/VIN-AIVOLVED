@@ -26,10 +26,13 @@ import { productSignout } from "../../redux/slices/productSlice";
 import { productVsDefectSignout } from "../../redux/slices/productvsDefectSlice";
 import { reportSignout } from "../../redux/slices/reportSlice";
 import { userSignOut } from "../../redux/slices/userSlice";
+import useApiInterceptor from "../../hooks/useInterceptor";
+import { encryptAES } from "../../redux/middleware/encryptPayloadUtils";
 const linkStyle =
   "sidemenu-link h-[45px] no-underline flex justify-start items-center px-3 rounded-[3px] gap-2";
 
 const SideMenu = () => {
+  const apiCall = useApiInterceptor()
   const dispatch = useDispatch()
   const [modal1Open, setModal1Open] = useState(false);
   const location = useLocation();
@@ -37,10 +40,13 @@ const SideMenu = () => {
 
   const localData = localStorage.getItem("PlantData");
   const PlantName = JSON.parse(localData);
+  const refreshToken = useSelector((state) => state.auth.authData[0].refreshToken);
 
-  const [refreshTokens, setrefreshTokens] = useState(
-    () => JSON.parse(localStorage.getItem("refreshToken")) || null
-  );
+
+
+  // const [refreshTokens, setrefreshTokens] = useState(
+  //   () => JSON.parse(localStorage.getItem("refreshToken")) || null
+  // );
 
   const isActive = (path) => {
     return location.pathname === path ||
@@ -49,11 +55,12 @@ const SideMenu = () => {
       : "text-grey-500";
   };
   const logout = async () => {
+    const encryTedToken = encryptAES(JSON.stringify({ refresh_token: refreshToken }))
     try {
-      await axios.post(
-        `${baseURL}logout/`,
+      await apiCall.post(
+        `logout/`,
         {
-          refresh_token: refreshTokens,
+          data: encryTedToken,
         },
         {
           headers: {

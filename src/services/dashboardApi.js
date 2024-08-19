@@ -141,15 +141,11 @@ export const getDefects = (plantName, token, apiCallInterceptor) => {
     });
 };
 
-export const getAiSmartView = async (plantId, token, apiCallInterceptor, currentPage, defectId) => {
- 
+export const getAiSmartView = async (plantId, token, apiCallInterceptor, currentPage, defectId) => { 
   // Encrypt the values and then URL encode them
   const encryptedPlantId = encodeURIComponent(encryptAES(JSON.stringify(plantId)));
   const encryptedDefectId = encodeURIComponent(encryptAES(JSON.stringify(defectId)));
-
-
 const url = `ai-smart/?plant_id=${encryptedPlantId}&defect_id=${encryptedDefectId}`;
- 
   try {
     const response = await apiCallInterceptor.get(url);
     const formattedDefects = response.data.results;
@@ -199,6 +195,8 @@ export const initialProductionData = (plantId, token, apiCallInterceptor) => {
 
 export const getSystemStatus = (plantId, token, apiCallInterceptor) => {
   const domain = `${baseURL}`;
+  const encryptedPlantId = encryptAES(plantId);
+
   let url = `${domain}system-status/?plant_id=${plantId}`;
   apiCallInterceptor.get(url)
     .then((response) => {
