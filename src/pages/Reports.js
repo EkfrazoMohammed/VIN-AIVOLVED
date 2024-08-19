@@ -112,26 +112,35 @@ const Reports = () => {
 
   const [loader, setLoader] = useState(false);
 
-  useEffect(() => {
-    reportApi(localPlantData?.id, pagination.pageSize, accessToken, pagination.current, apiCallInterceptor,)
+
+
+  const initialReportData = () => {
+    reportApi(localPlantData?.id, pagination.pageSize, accessToken, pagination.current, apiCallInterceptor)
       .then(res => {
-        const { total_pages, results } = res;
+        const { page_size, total_count, results } = res;
         dispatch(getReportData({
           reportData: results,
           current: pagination.current,
           pageSize: pagination.pageSize,
-          total: total_pages,
+          total: total_count,
         }));
       })
       .catch(err => console.error(err));
+  }
+  useEffect(() => {
+    initialReportData()
   }, [pagination.current, pagination.pageSize, accessToken]);
 
 
+
+
   const handleTableChange = (pagination) => {
+
     dispatch(updatePage({
       current: pagination.current,
       pageSize: pagination.pageSize,
     }));
+
   };
 
 
@@ -160,7 +169,7 @@ const Reports = () => {
 
   const handleApplyFilters = (page, pageSize) => {
     // Initialize URLSearchParams
-    const params = new URLSearchParams({
+    const params = {
       page: 1,
       page_size: pageSize,
       plant_id: localPlantData?.id || undefined,
@@ -169,26 +178,18 @@ const Reports = () => {
       machine_id: selectedMachineRedux || undefined,
       product_id: selectedProductRedux || undefined,
       defect_id: selectedDefectRedux || undefined,
-    });
-
-    const queryParams = {
-      plant_id: localPlantData?.id, // Ensure localPlantData is valid
-      from_date: dateRange?.[0],
-      to_date: dateRange?.[1],
-      machine_id: selectedMachineRedux,
-      product_id: selectedProductRedux,
-      defect_id: selectedDefectRedux,
     };
-
+    // Filter out undefined or null values from query parameters
     const filteredQueryParams = Object.fromEntries(
       Object.entries(params).filter(
         ([_, value]) => value !== undefined && value !== null
       )
     );
 
-
+    // Create the query string
+    const queryString = new URLSearchParams(filteredQueryParams).toString();
     // Construct the final URL
-    const url = `reports/?${filteredQueryParams.toString()}`;
+    const url = `reports/?${queryString}`;
 
     // Set loader to true before making the API call
     setLoader(true);
@@ -202,9 +203,13 @@ const Reports = () => {
       })
       .then((response) => {
         const { results, total_count, page_size } = response.data;
-        console.log(results, "<<<")
 
-        setTableData(results);
+        dispatch(getReportData({
+          reportData: results,
+          current: pagination.current,
+          pageSize: pagination.pageSize,
+          total: total_count,
+        }));
         setLoader(false);
         setfilterActive(true);
 
@@ -214,7 +219,6 @@ const Reports = () => {
         setLoader(false); // Ensure loader is stopped in case of error
       });
   };
-  console.log(localPlantData)
 
   useEffect(() => {
     getDefects(localPlantData?.plant_name, accessToken, apiCallInterceptor)
@@ -258,7 +262,7 @@ const Reports = () => {
     setSelectedDate(null);
     dispatch(setSelectedMachine(null)); // Dispatching action    
     dispatch(setSelectedProduct(null)); // Dispatching action 
-
+    initialReportData()
   };
 
   return (

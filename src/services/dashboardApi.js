@@ -1,6 +1,8 @@
 import axios from "axios";
 import store from "../redux/store"; // Import the store
 import useApiInterceptor from "../hooks/useInterceptor";
+import { decryptAES, encryptAES } from "../redux/middleware/encryptPayloadUtils";
+
 import {
   getMachineSuccess,
   getMachineFailure,
@@ -31,25 +33,18 @@ import {
   getDashboardSuccess,
   getDashboardFailure,
 } from "../redux/slices/dashboardSlice";
-import { encryptAES } from "../redux/middleware/cryptoUtils";
 
 
 export const baseURL =
   process.env.REACT_APP_API_BASE_URL || "https://huldev.aivolved.in/api/";
 
+
 export const getMachines = (plantName, token, apiCallInterceptor) => {
-
-
+  const encryptedData = encryptAES(plantName)
   const domain = `${baseURL}`;
   // let url = `${domain}machine/?plant_name=${plantName}`;
-  let url = `machine/?plant_name=${plantName}`;
+  let url = `machine/?plant_name=${encryptedData}`;
 
-  // axios
-  //   .get(url, {
-  //     headers: {
-  //       Authorization: `Bearer ${token}`,
-  //     },
-  //   })
   apiCallInterceptor.get(url)
     .then((response) => {
       const formattedMachines = response.data.results.map((machine) => ({
@@ -67,8 +62,10 @@ export const getMachines = (plantName, token, apiCallInterceptor) => {
 };
 
 export const getDepartments = (plantName, token, apiCallInterceptor) => {
+  const encryptedData = encryptAES(plantName)
+
   const domain = `${baseURL}`;
-  let url = `department/?plant_name=${plantName}`;
+  let url = `department/?plant_name=${encryptedData}`;
   // axios
   //   .get(url, {
   //     headers: {
@@ -93,8 +90,9 @@ export const getDepartments = (plantName, token, apiCallInterceptor) => {
 };
 
 export const getProducts = (plantName, token, apiCallInterceptor) => {
-  const domain = `${baseURL}`;
-  let url = `product/?plant_name=${plantName}`;
+  const encryptedData = encryptAES(plantName)
+
+  let url = `product/?plant_name=${encryptedData}`;
   // axios
   //   .get(url, {
   //     headers: {
@@ -115,8 +113,9 @@ export const getProducts = (plantName, token, apiCallInterceptor) => {
     });
 };
 export const getDefects = (plantName, token, apiCallInterceptor) => {
-  const domain = `${baseURL}`;
-  let url = `defect/?plant_name=${plantName}`;
+  const encryptedData = encryptAES(plantName)
+
+  let url = `defect/?plant_name=${encryptedData}`;
   // axios
   //   .get(url, {
   //     headers: {
@@ -137,7 +136,6 @@ export const getDefects = (plantName, token, apiCallInterceptor) => {
 };
 
 export const initialDpmuData = (plantId, token, apiCallInterceptor) => {
-  const domain = baseURL;
   const url = `params_graph/?plant_id=${plantId}`;
   // axios
   //   .get(url, {

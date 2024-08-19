@@ -13,19 +13,14 @@ export const encryptAES = (plaintext) => {
     return encrypted.toString();
 };
 
+export const decryptAES = (encryptedData) => {
+    console.log(encryptedData)
+    const decrypted = CryptoJS.AES.decrypt(encryptedData, AES_KEY, {
+        mode: CryptoJS.mode.ECB,
+        padding: CryptoJS.pad.Pkcs7
+    });
+    return CryptoJS.enc.Utf8.stringify(decrypted);
 
-const decryptAES = (key, encryptedData) => {
-    try {
-        const decrypted = CryptoJS.AES.decrypt(encryptedData, key, {
-            mode: CryptoJS.mode.ECB,
-            padding: CryptoJS.pad.Pkcs7
-        });
-
-        return CryptoJS.enc.Utf8.stringify(decrypted);
-    } catch (error) {
-        console.error('Error during decryption:', error);
-        return null;
-    }
 };
 
 

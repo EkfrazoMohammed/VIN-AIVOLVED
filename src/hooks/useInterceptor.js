@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ApiCall from "../API/Apicall";
-import { setAuthData } from "../redux/slices/authSlice";
-
+import { signInSuccess } from "../redux/slices/authSlice";
+import { encryptAES } from "../redux/middleware/encryptPayloadUtils";
 
 const useApiInterceptor = () => {
 
@@ -25,10 +25,11 @@ const useApiInterceptor = () => {
                         originalRequest._retry = true;
                         setRefresh(true);
                     }
+                    const encryptedData = encryptAES(JSON.stringify({ refresh_token: refreshToken }))
 
                     try {
                         const response = await ApiCall.post('refresh_token/', {
-                            refresh: refreshToken,
+                            "data": encryptedData,
                         });
 
                         const { access_token } = response.data;
@@ -36,6 +37,8 @@ const useApiInterceptor = () => {
                         // Update the tokens in Redux state
                         // { access_token, refresh_token, user }
                         // dispatch(setAuthData({ access_token: access, refresh_token: refreshToken }));
+
+                        dispatch(signInSuccess({ accessToken: access_token, refreshToken: refreshToken }));
 
                         // Update the Authorization header for future requests
                         ApiCall.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;

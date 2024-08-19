@@ -38,10 +38,13 @@ import { useSelector } from "react-redux";
 
 
 function Dashboard() {
+
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - 7);
+
   const formattedStartDate = startDate.toISOString().slice(0, 10);
   const endDate = new Date();
+
   const formattedEndDate = endDate.toISOString().slice(0, 10);
   const dateFormat = "YYYY/MM/DD";
 
@@ -73,14 +76,14 @@ function Dashboard() {
     setSelectedProduct(value);
   };
 
-  const handleChange = (value) => {};
+  const handleChange = (value) => { };
 
   const navigate = useNavigate();
 
   // const localItems = localStorage.getItem("PlantData");
   // const localPlantData = JSON.parse(localItems);
   const localPlantData = useSelector((state) => state.plant.plantData[0]);
-  
+
   // const AuthToken = useSelector((state) => state.auth.authData.access_token);
 
   const handleDateRangeChange = (dates, dateStrings) => {
@@ -638,9 +641,9 @@ function Dashboard() {
               value={
                 selectedDate
                   ? [
-                      dayjs(selectedDate[0], dateFormat),
-                      dayjs(selectedDate[1], dateFormat),
-                    ]
+                    dayjs(selectedDate[0], dateFormat),
+                    dayjs(selectedDate[1], dateFormat),
+                  ]
                   : []
               }
             />
@@ -759,11 +762,10 @@ function Dashboard() {
             <Link to="/insights">
               <Card
                 bordered={false}
-                className={`criclebox notification-change ${
-                  notifications.length > prevNotificationLength
+                className={`criclebox notification-change ${notifications.length > prevNotificationLength
                     ? "notification-change"
                     : ""
-                }`}
+                  }`}
                 style={{ minHeight: "180px" }}
               >
                 {/* <Card bordered={false} className={`criclebox ${notifications.length > prevNotificationLength ? 'notification-change' : ''}`}> */}

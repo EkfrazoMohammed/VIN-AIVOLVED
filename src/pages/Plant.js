@@ -10,6 +10,8 @@ import { setPlantData } from "../redux/slices/plantSlice"; // Import setPlantDat
 import useApiInterceptor from "../hooks/useInterceptor";
 
 import { useNavigate } from 'react-router-dom';
+import { encryptAES } from "../redux/middleware/encryptPayloadUtils";
+import axios from "axios";
 
 
 const settings = {
@@ -25,21 +27,22 @@ const settings = {
 };
 
 const Plant = () => {
+
   const apiCallInterceptor = useApiInterceptor()
   const [plant, setPlant] = useState([]);
   const [loader, setLoader] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const axiosInstance = useAxiosInstance();
   const dispatch = useDispatch();
   const accessToken = useSelector((state) => state.auth.authData[0].accessToken);
+
 
 
   const handleStorage = (plantData) => {
     if (plantData && Array.isArray(plantData) && plantData.length > 0) {
       dispatch(setPlantData(plantData)); // Dispatch valid plant data to Redux
-      navigate('/'); // Navigate to dashboard
+      navigate('/');
     } else {
       console.error('Invalid or empty plant data:', plantData); // Handle invalid data
     }
@@ -53,11 +56,7 @@ const Plant = () => {
           console.error("Authorization token is missing");
           return;
         }
-        // const res = await axiosInstance.get(`/plant/`, {
-        //   headers: {
-        //     Authorization: `Bearer ${accessToken}`,
-        //   },
-        // });
+
         const res = await apiCallInterceptor.get(`/plant/`)
         const { results } = res.data
 

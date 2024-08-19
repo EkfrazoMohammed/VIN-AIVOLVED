@@ -109,7 +109,7 @@ const DashboardContentLayout = ({ children }) => {
   }, [localPlantData])
   const resetFilter = () => {
     initialDashboardData(localPlantData.id, accessToken, apiCallInterceptor);
-    initialDpmuData(localPlantData.id, accessToken);
+    initialDpmuData(localPlantData.id, accessToken, apiCallInterceptor);
     initialProductionData(localPlantData.id, accessToken, apiCallInterceptor);
     dispatch(setSelectedMachine(null)); // Dispatching action
     dispatch(setSelectedProduct(null)); // Dispatching action

@@ -1,14 +1,14 @@
 // src/pages/Auth/Login.js
-import React, { useState } from 'react';
-import { Card, Col, Input, Checkbox, notification } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Card, Col, Input, Checkbox, notification, message } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import axiosInstance from '../../API/axiosInstance'; // Ensure this is correctly imported
 import { signInFailure, signInSuccess } from '../../redux/slices/authSlice'; // Import the setAuthData action
 import { userSignInSuccess } from '../../redux/slices/userSlice'; // Import the setAuthData action
 // import { decrypTion, encrypTion } from '../../redux/middleware/queryParamUtils';
-import { encryptAES } from '../../redux/middleware/encryptPayloadUtils';
-import {Link} from 'react-router-dom'
+import { encryptAES, decryptAES } from '../../redux/middleware/encryptPayloadUtils';
+import { Link } from 'react-router-dom'
 
 const Login = () => {
   const [loading, setLoading] = useState(false);
@@ -31,6 +31,9 @@ const Login = () => {
       duration: 2,
     });
   };
+
+
+
 
 
 
@@ -70,24 +73,30 @@ const Login = () => {
 
     try {
       const encryTedData = encryptAES(JSON.stringify(loginPayload))
+
       const res = await axiosInstance.post('/login/', { data: encryTedData });
-      const { access_token, refresh_token, user_id, is_superuser, first_name, last_name, user_name } = res.data;
-      console.log("Dispatching userSignInSuccess with: ", { userId: user_id, userName: user_name, firstName: first_name, lastName: last_name, isSuperUser: is_superuser });
+
+      const decrypt = await decryptAES(res.data.response)
+
+      const { access_token, refresh_token, user_id, is_superuser, first_name, last_name, user_name, message } = JSON.parse(decrypt);
       dispatch(signInSuccess({ accessToken: access_token, refreshToken: refresh_token }));
       dispatch(userSignInSuccess({ userId: user_id, userName: user_name, firstName: first_name, lastName: last_name, isSuperUser: is_superuser }))
-      openNotification("success", "Login Successful==>");
+      openNotification("success", message);
       navigate("/plant");
 
     } catch (error) {
       // Dispatch failure action
       dispatch(signInFailure(error.response?.data));
-
+      console.log(error)
       // Notify error
-      openNotification("error", error.response?.data?.detail || "Invalid Credentials");
+      openNotification("error", error.response?.data?.message
+        || "Invalid Credentialsaa");
     } finally {
       setLoading(false);
     }
   };
+
+
 
 
   const handleChange = (e) => {
