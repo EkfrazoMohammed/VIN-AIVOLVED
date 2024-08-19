@@ -35,18 +35,6 @@ const AiSmartView = () => {
   const pagination = useSelector((state) => state.aismartview.pagination);
   const defectsData = useSelector((state) => state.defect.defectsData);
   const sliderRef = useRef(null);
-    
-
-// Decrypting each data
-// Decrypting each data
-const decryptedDataArray = aismartviewData.map(data => ({
-    image: decryptAES(data.image),
-    recorded_date_time: decryptAES(data.recorded_date_time),
-    machine_name: decryptAES(data.machine_name)
-}));
-
-console.log(decryptedDataArray);
-
   useEffect(() => {
     const fetchData = async () => {
       dispatch(setLoading(true));
@@ -63,7 +51,6 @@ console.log(decryptedDataArray);
         dispatch(setLoading(false));
       }
     };
-
     fetchData();
   }, [localPlantData.plant_name, AuthToken, apiCallInterceptor, dispatch]);
 

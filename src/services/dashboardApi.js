@@ -149,7 +149,6 @@ const url = `ai-smart/?plant_id=${encryptedPlantId}&defect_id=${encryptedDefectI
   try {
     const response = await apiCallInterceptor.get(url);
     const formattedDefects = response.data.results;
-    console.log(formattedDefects);
     return formattedDefects; // Return the data to be used in the calling function
   } catch (error) {
     console.error("Error fetching AI Smart View data:", error);
