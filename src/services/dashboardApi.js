@@ -1,7 +1,9 @@
+//services/dashboardApi.js
+
 import axios from "axios";
 import store from "../redux/store"; // Import the store
 import useApiInterceptor from "../hooks/useInterceptor";
-import { decryptAES, encryptAES } from "../redux/middleware/encryptPayloadUtils";
+import { decryptAES, decryptAESInt, encryptAES,encryptAESInt } from "../redux/middleware/encryptPayloadUtils";
 
 import {
   getMachineSuccess,
@@ -139,21 +141,22 @@ export const getDefects = (plantName, token, apiCallInterceptor) => {
     });
 };
 
-export const getAiSmartView = async (plantId, token, apiCallInterceptor, currentPage, defectId) => {
-  const encryptedPlantId = encryptAES(plantId);
-  cons
-  t encryptedDefectId = encryptAES(defectId);
-  const url = `ai-smart/?plant_id=${encryptedPlantId}&page=${currentPage}&defect_id=${encryptedDefectId}`;
-
+export const getAiSmartView = async (plantId, token, apiCallInterceptor, currentPage, defectId) => { 
+  // Encrypt the values and then URL encode them
+  const encryptedPlantId = encodeURIComponent(encryptAES(JSON.stringify(plantId)));
+  const encryptedDefectId = encodeURIComponent(encryptAES(JSON.stringify(defectId)));
+const url = `ai-smart/?plant_id=${encryptedPlantId}&defect_id=${encryptedDefectId}`;
   try {
-    const response = await apiCallInterceptor.get(url);  // Await the promise
-    console.log(response.data);
-    return response.data.results;  // Return the data
+    const response = await apiCallInterceptor.get(url);
+    const formattedDefects = response.data.results;
+    console.log(formattedDefects);
+    return formattedDefects; // Return the data to be used in the calling function
   } catch (error) {
     console.error("Error fetching AI Smart View data:", error);
-    throw error;  // Rethrow error to be caught by the calling function
+    throw error; // Rethrow the error to be caught by the calling function
   }
 };
+
 
 
 
@@ -195,12 +198,6 @@ export const getSystemStatus = (plantId, token, apiCallInterceptor) => {
   const encryptedPlantId = encryptAES(plantId);
 
   let url = `${domain}system-status/?plant_id=${plantId}`;
-  // axios
-  //   .get(url, {
-  //     headers: {
-  //       Authorization: `Bearer ${token}`,
-  //     },
-  //   })
   apiCallInterceptor.get(url)
     .then((response) => {
       let activeMachines = response.data.results.filter(

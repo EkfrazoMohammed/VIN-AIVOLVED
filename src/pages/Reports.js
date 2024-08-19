@@ -260,7 +260,7 @@ const Reports = () => {
     const encryptedUrl = Object.fromEntries(
       Object.entries(filteredQueryParams).map(([key, val]) => {
         if (key !== "page" && key !== "page_size" && key !== "plant_id") {
-          return [key, encryptAES(val)]
+          return [key, encryptAES(JSON.stringify(val))]
         }
         return [key, val];
       })
