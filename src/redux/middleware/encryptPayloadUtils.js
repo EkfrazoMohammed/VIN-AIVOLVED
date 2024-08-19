@@ -14,7 +14,6 @@ export const encryptAES = (plaintext) => {
 };
 
 export const decryptAES = (encryptedData) => {
-    console.log(encryptedData)
     const decrypted = CryptoJS.AES.decrypt(encryptedData, AES_KEY, {
         mode: CryptoJS.mode.ECB,
         padding: CryptoJS.pad.Pkcs7

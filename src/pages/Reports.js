@@ -18,6 +18,7 @@ import { getReportData, updatePage } from ".././redux/slices/reportSlice";
 import { setSelectedMachine } from "../redux/slices/machineSlice"
 import { setSelectedProduct } from "../redux/slices/productSlice";
 import useApiInterceptor from "../hooks/useInterceptor";
+import { decryptAES, encryptAES } from "../redux/middleware/encryptPayloadUtils";
 
 const columns = [
   {
@@ -27,6 +28,17 @@ const columns = [
     id: "alert_name",
     sorter: (a, b) => a.product.localeCompare(b.product),
     sortDirections: ["ascend", "descend", "cancel"],
+    render: (text) => {
+      const decrypData = decryptAES(text)
+      return (
+
+        <>
+          {
+            decrypData ? <div >{decrypData}</div> : null
+          }
+        </>
+      )
+    },
   },
   {
     title: "Defect Name",
@@ -34,6 +46,17 @@ const columns = [
     key: "defect_name",
     sorter: (a, b) => a.defect.localeCompare(b.defect),
     sortDirections: ["ascend", "descend", "cancel"],
+    render: (text) => {
+      const decrypData = decryptAES(text)
+      return (
+
+        <>
+          {
+            decrypData ? <div >{decrypData}</div> : null
+          }
+        </>
+      )
+    },
   },
   {
     title: "Machine Name",
@@ -41,6 +64,17 @@ const columns = [
     key: "machine_name",
     sorter: (a, b) => a.machine.localeCompare(b.machine),
     sortDirections: ["ascend", "descend", "cancel"],
+    render: (text) => {
+      const decrypData = decryptAES(text)
+      return (
+
+        <>
+          {
+            decrypData ? <div >{decrypData}</div> : null
+          }
+        </>
+      )
+    },
   },
   {
     title: "Department Name",
@@ -48,21 +82,49 @@ const columns = [
     key: "department_name",
     sorter: (a, b) => a.department.localeCompare(b.department),
     sortDirections: ["ascend", "descend", "cancel"],
+    render: (text) => {
+      const decrypData = decryptAES(text)
+      return (
+
+        <>
+          {
+            decrypData ? <div >{decrypData}</div> : null
+          }
+        </>
+      )
+    },
   },
   {
     title: "Recorded Date Time",
     dataIndex: "recorded_date_time",
     key: "recorded_date_time",
-    // render: (text) => <a>{text.split("T").join(" , ")}</a>,
+    render: (text) => {
+      const decrypData = decryptAES(text)
+      return (
+
+        <>
+          {
+            decrypData ? <div >{decrypData}</div> : null
+          }
+        </>
+      )
+    },
   },
   {
     title: "Image",
     dataIndex: "image",
     key: "image",
-    render: (image_b64) =>
-      image_b64 ? (
-        <Image src={image_b64} alt="Defect Image" width={50} />
-      ) : null,
+    render: (image_b64) => {
+
+      const decrypData = decryptAES(image_b64)
+      return (
+        <>{
+          image_b64 ? (
+            <Image src={decrypData} alt="Defect Image" width={50} />
+          ) : null}
+        </>
+      )
+    }
   },
 ];
 
@@ -115,6 +177,7 @@ const Reports = () => {
 
 
   const initialReportData = () => {
+    setLoader(true)
     reportApi(localPlantData?.id, pagination.pageSize, accessToken, pagination.current, apiCallInterceptor)
       .then(res => {
         const { page_size, total_count, results } = res;
@@ -124,8 +187,13 @@ const Reports = () => {
           pageSize: pagination.pageSize,
           total: total_count,
         }));
+        setLoader(false)
       })
-      .catch(err => console.error(err));
+      .catch(err => {
+        console.error(err)
+        setLoader(false)
+
+      });
   }
   useEffect(() => {
     initialReportData()
@@ -168,11 +236,14 @@ const Reports = () => {
   };
 
   const handleApplyFilters = (page, pageSize) => {
+
+
+
     // Initialize URLSearchParams
     const params = {
       page: 1,
       page_size: pageSize,
-      plant_id: localPlantData?.id || undefined,
+      plant_id: encryptAES(JSON.stringify(localPlantData?.id)) || undefined,
       from_date: dateRange?.[0] || undefined,
       to_date: dateRange?.[1] || undefined,
       machine_id: selectedMachineRedux || undefined,
@@ -186,8 +257,18 @@ const Reports = () => {
       )
     );
 
+    const encryptedUrl = Object.fromEntries(
+      Object.entries(filteredQueryParams).map(([key, val]) => {
+        if (key !== "page" && key !== "page_size" && key !== "plant_id") {
+          return [key, encryptAES(val)]
+        }
+        return [key, val];
+      })
+    );
+
+
     // Create the query string
-    const queryString = new URLSearchParams(filteredQueryParams).toString();
+    const queryString = new URLSearchParams(encryptedUrl).toString();
     // Construct the final URL
     const url = `reports/?${queryString}`;
 
@@ -262,6 +343,7 @@ const Reports = () => {
     setSelectedDate(null);
     dispatch(setSelectedMachine(null)); // Dispatching action    
     dispatch(setSelectedProduct(null)); // Dispatching action 
+    dispatch(setSelectedDefect(null)); // Dispatching action 
     initialReportData()
   };
 
@@ -318,7 +400,7 @@ const Reports = () => {
             showSearch
             placeholder="Select Defect"
             onChange={handleDefectChange}
-            // value={selectedDefectRedux}
+            value={selectedDefectRedux}
             size="large"
             filterOption={(input, defectsData) =>
               // ( productOptions.children ?? "".toLowerCase() ).includes(input.toLowerCase() )

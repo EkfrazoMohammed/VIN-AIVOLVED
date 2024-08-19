@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import ApiCall from "../API/Apicall";
 import { signInSuccess } from "../redux/slices/authSlice";
 import { encryptAES } from "../redux/middleware/encryptPayloadUtils";
+import axios from "axios";
 
 const useApiInterceptor = () => {
 
@@ -28,8 +29,8 @@ const useApiInterceptor = () => {
                     const encryptedData = encryptAES(JSON.stringify({ refresh_token: refreshToken }))
 
                     try {
-                        const response = await ApiCall.post('refresh_token/', {
-                            "data": encryptedData,
+                        const response = await axios.post('https://huldev.aivolved.in/api/refresh_token/', {
+                            data: encryptedData,
                         });
 
                         const { access_token } = response.data;
