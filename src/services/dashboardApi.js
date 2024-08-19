@@ -34,6 +34,15 @@ import {
   getDashboardFailure,
 } from "../redux/slices/dashboardSlice";
 
+import {
+  setAismartviewData,
+  setSelectedDefectAismartview,
+  setErrorMessage,
+  setLoading,
+  setLoader,
+  updatePagination,
+  setCurrentSlideIndex, // Export the action
+} from "../redux/slices/aismartviewSlice"
 
 export const baseURL =
   process.env.REACT_APP_API_BASE_URL || "https://huldev.aivolved.in/api/";
@@ -116,12 +125,7 @@ export const getDefects = (plantName, token, apiCallInterceptor) => {
   const encryptedData = encryptAES(plantName)
 
   let url = `defect/?plant_name=${encryptedData}`;
-  // axios
-  //   .get(url, {
-  //     headers: {
-  //       Authorization: ` Bearer ${token}`,
-  //     },
-  //   })
+
   apiCallInterceptor.get(url)
     .then((response) => {
       const formattedDefects = response.data.results;
@@ -135,18 +139,29 @@ export const getDefects = (plantName, token, apiCallInterceptor) => {
     });
 };
 
+export const getAiSmartView = async (plantId, token, apiCallInterceptor, currentPage, defectId) => {
+  console.log('getAiSmartView');
+  const encryptedPlantId = encryptAES(plantId);
+  const encryptedDefectId = encryptAES(defectId);
+  const url = `ai-smart/?plant_id=${encryptedPlantId}&page=${currentPage}&defect_id=${encryptedDefectId}`;
+  
+  try {
+      const response = await apiCallInterceptor.get(url);  // Await the promise
+      console.log(response.data);
+      return response.data.results;  // Return the data
+  } catch (error) {
+      console.error("Error fetching AI Smart View data:", error);
+      throw error;  // Rethrow error to be caught by the calling function
+  }
+};
+
+
+
 export const initialDpmuData = (plantId, token, apiCallInterceptor) => {
   const url = `params_graph/?plant_id=${plantId}`;
-  // axios
-  //   .get(url, {
-  //     headers: {
-  //       Authorization: ` Bearer ${token}`,
-  //     },
-  //   })
   apiCallInterceptor.get(url)
     .then((response) => {
       store.dispatch(getDpmuSuccess(response.data.results));
-      // return response.data.data_last_7_days;
     })
     .catch((error) => {
       console.error("Error:", error);
