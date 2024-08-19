@@ -410,3 +410,7 @@ label::after {
     background-position: 0% 50%;
   }
 }
+
+.slick-prev,.slick-next,.slick-prev:hover:before, .slick-prev:focus:before, .slick-next:hover:before, .slick-next:focus:before {
+  opacity: 0 !important;
+}
