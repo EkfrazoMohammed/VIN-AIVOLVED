@@ -54,33 +54,30 @@ import {
 export const baseURL =
   process.env.REACT_APP_API_BASE_URL || "https://huldev.aivolved.in/api/";
 
-export const getMachines = (plantName, token, apiCallInterceptor) => {
-  const encryptedPlantName = encodeURIComponent(
-    encryptAES(JSON.stringify(plantName))
-  );
-  let url = `machine/?plant_name=${encryptedPlantName}`;
-
-  apiCallInterceptor
-    .get(url)
-    .then((response) => {
-      const formattedMachines = response.data.results.map((machine) => ({
-        id: machine.id,
-        name: machine.name,
-      }));
-      // Dispatch action to update Redux state
-      store.dispatch(getMachineSuccess(formattedMachines));
-    })
-    .catch((error) => {
-      console.error("Error fetching machine data:", error);
-      // Dispatch action to handle failure
-      store.dispatch(getMachineFailure());
-    });
-};
+  export const getMachines = (plantName, token, apiCallInterceptor) => {
+    let encryptedPlantName = encryptAES(plantName).replace(/^"|"$/g, '');
+    encryptedPlantName = decodeURIComponent(encryptedPlantName); 
+    let url = `machine/?plant_name=${encryptedPlantName}`;
+    apiCallInterceptor
+      .get(url)
+      .then((response) => {
+        const formattedMachines = response.data.results.map((machine) => ({
+          id: machine.id,
+          name: machine.name,
+        }));
+        // Dispatch action to update Redux state
+        store.dispatch(getMachineSuccess(formattedMachines));
+      })
+      .catch((error) => {
+        console.error("Error fetching machine data:", error);
+        // Dispatch action to handle failure
+        store.dispatch(getMachineFailure());
+      });
+  }; 
 
 export const getDepartments = (plantName, token, apiCallInterceptor) => {
-  const encryptedPlantName = encodeURIComponent(
-    encryptAES(JSON.stringify(plantName))
-  );
+    let encryptedPlantName = encryptAES(plantName).replace(/^"|"$/g, '');
+    encryptedPlantName = decodeURIComponent(encryptedPlantName); 
   let url = `department/?plant_name=${encryptedPlantName}`;
   apiCallInterceptor
     .get(url)
@@ -101,17 +98,9 @@ export const getDepartments = (plantName, token, apiCallInterceptor) => {
 };
 
 export const getProducts = (plantName, token, apiCallInterceptor) => {
-  const encryptedPlantName = encodeURIComponent(
-    encryptAES(JSON.stringify(plantName))
-  );
-
+  let encryptedPlantName = encryptAES(plantName).replace(/^"|"$/g, '');
+  encryptedPlantName = decodeURIComponent(encryptedPlantName); 
   let url = `product/?plant_name=${encryptedPlantName}`;
-  // axios
-  //   .get(url, {
-  //     headers: {
-  //       Authorization: ` Bearer ${token}`,
-  //     },
-  //   })
   apiCallInterceptor
     .get(url)
     .then((response) => {
@@ -127,9 +116,8 @@ export const getProducts = (plantName, token, apiCallInterceptor) => {
     });
 };
 export const getDefects = (plantName, token, apiCallInterceptor) => {
-  const encryptedPlantName = encodeURIComponent(
-    encryptAES(JSON.stringify(plantName))
-  );
+  let encryptedPlantName = encryptAES(plantName).replace(/^"|"$/g, '');
+  encryptedPlantName = decodeURIComponent(encryptedPlantName); 
 
   let url = `defect/?plant_name=${encryptedPlantName}`;
 
