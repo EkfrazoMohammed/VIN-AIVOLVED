@@ -3,7 +3,12 @@
 import axios from "axios";
 import store from "../redux/store"; // Import the store
 import useApiInterceptor from "../hooks/useInterceptor";
-import { decryptAES, decryptAESInt, encryptAES,encryptAESInt } from "../redux/middleware/encryptPayloadUtils";
+import {
+  decryptAES,
+  decryptAESInt,
+  encryptAES,
+  encryptAESInt,
+} from "../redux/middleware/encryptPayloadUtils";
 
 import {
   getMachineSuccess,
@@ -44,19 +49,19 @@ import {
   setLoader,
   updatePagination,
   setCurrentSlideIndex, // Export the action
-} from "../redux/slices/aismartviewSlice"
+} from "../redux/slices/aismartviewSlice";
 
 export const baseURL =
   process.env.REACT_APP_API_BASE_URL || "https://huldev.aivolved.in/api/";
 
-
 export const getMachines = (plantName, token, apiCallInterceptor) => {
-  const encryptedData = encryptAES(plantName)
-  const domain = `${baseURL}`;
-  // let url = `${domain}machine/?plant_name=${plantName}`;
-  let url = `machine/?plant_name=${encryptedData}`;
+  const encryptedPlantName = encodeURIComponent(
+    encryptAES(JSON.stringify(plantName))
+  );
+  let url = `machine/?plant_name=${encryptedPlantName}`;
 
-  apiCallInterceptor.get(url)
+  apiCallInterceptor
+    .get(url)
     .then((response) => {
       const formattedMachines = response.data.results.map((machine) => ({
         id: machine.id,
@@ -73,17 +78,12 @@ export const getMachines = (plantName, token, apiCallInterceptor) => {
 };
 
 export const getDepartments = (plantName, token, apiCallInterceptor) => {
-  const encryptedData = encryptAES(plantName)
-
-  const domain = `${baseURL}`;
-  let url = `department/?plant_name=${encryptedData}`;
-  // axios
-  //   .get(url, {
-  //     headers: {
-  //       Authorization: ` Bearer ${token}`,
-  //     },
-  //   })
-  apiCallInterceptor.get(url)
+  const encryptedPlantName = encodeURIComponent(
+    encryptAES(JSON.stringify(plantName))
+  );
+  let url = `department/?plant_name=${encryptedPlantName}`;
+  apiCallInterceptor
+    .get(url)
     .then((response) => {
       const formattedDepartment = response.data.results.map((department) => ({
         id: department.id,
@@ -101,16 +101,19 @@ export const getDepartments = (plantName, token, apiCallInterceptor) => {
 };
 
 export const getProducts = (plantName, token, apiCallInterceptor) => {
-  const encryptedData = encryptAES(plantName)
+  const encryptedPlantName = encodeURIComponent(
+    encryptAES(JSON.stringify(plantName))
+  );
 
-  let url = `product/?plant_name=${encryptedData}`;
+  let url = `product/?plant_name=${encryptedPlantName}`;
   // axios
   //   .get(url, {
   //     headers: {
   //       Authorization: ` Bearer ${token}`,
   //     },
   //   })
-  apiCallInterceptor.get(url)
+  apiCallInterceptor
+    .get(url)
     .then((response) => {
       const formattedProduct = response.data.results;
       // Dispatch action to update Redux state
@@ -124,15 +127,17 @@ export const getProducts = (plantName, token, apiCallInterceptor) => {
     });
 };
 export const getDefects = (plantName, token, apiCallInterceptor) => {
-  const encryptedData = encryptAES(plantName)
+  const encryptedPlantName = encodeURIComponent(
+    encryptAES(JSON.stringify(plantName))
+  );
 
-  let url = `defect/?plant_name=${encryptedData}`;
+  let url = `defect/?plant_name=${encryptedPlantName}`;
 
-  apiCallInterceptor.get(url)
+  apiCallInterceptor
+    .get(url)
     .then((response) => {
       const formattedDefects = response.data.results;
       store.dispatch(getDefectSuccess(formattedDefects));
-
     })
     .catch((error) => {
       console.error("Error fetching department data:", error);
@@ -141,11 +146,21 @@ export const getDefects = (plantName, token, apiCallInterceptor) => {
     });
 };
 
-export const getAiSmartView = async (plantId, token, apiCallInterceptor, currentPage, defectId) => { 
+export const getAiSmartView = async (
+  plantId,
+  token,
+  apiCallInterceptor,
+  currentPage,
+  defectId
+) => {
   // Encrypt the values and then URL encode them
-  const encryptedPlantId = encodeURIComponent(encryptAES(JSON.stringify(plantId)));
-  const encryptedDefectId = encodeURIComponent(encryptAES(JSON.stringify(defectId)));
-const url = `ai-smart/?plant_id=${encryptedPlantId}&defect_id=${encryptedDefectId}`;
+  const encryptedPlantId = encodeURIComponent(
+    encryptAES(JSON.stringify(plantId))
+  );
+  const encryptedDefectId = encodeURIComponent(
+    encryptAES(JSON.stringify(defectId))
+  );
+  const url = `ai-smart/?plant_id=${encryptedPlantId}&defect_id=${encryptedDefectId}`;
   try {
     const response = await apiCallInterceptor.get(url);
     const formattedDefects = response.data.results;
@@ -156,12 +171,13 @@ const url = `ai-smart/?plant_id=${encryptedPlantId}&defect_id=${encryptedDefectI
   }
 };
 
-
-
-
 export const initialDpmuData = (plantId, token, apiCallInterceptor) => {
-  const url = `params_graph/?plant_id=${plantId}`;
-  apiCallInterceptor.get(url)
+  const encryptedPlantId = encodeURIComponent(
+    encryptAES(JSON.stringify(plantId))
+  );
+  const url = `params_graph/?plant_id=${encryptedPlantId}`;
+  apiCallInterceptor
+    .get(url)
     .then((response) => {
       store.dispatch(getDpmuSuccess(response.data.results));
     })
@@ -172,16 +188,12 @@ export const initialDpmuData = (plantId, token, apiCallInterceptor) => {
 };
 
 export const initialProductionData = (plantId, token, apiCallInterceptor) => {
-
-  const domain = baseURL;
-  const url = `defct-vs-machine/?plant_id=${plantId}`;
-  // axios
-  //   .get(url, {
-  //     headers: {
-  //       Authorization: ` Bearer ${token}`,
-  //     },
-  //   })
-  apiCallInterceptor.get(url)
+  const encryptedPlantId = encodeURIComponent(
+    encryptAES(JSON.stringify(plantId))
+  );
+  const url = `defct-vs-machine/?plant_id=${encryptedPlantId}`;
+  apiCallInterceptor
+    .get(url)
     .then((response) => {
       store.dispatch(getProductVsDefectSuccess(response.data.data_last_7_days));
       // return response.data.data_last_7_days;
@@ -194,10 +206,13 @@ export const initialProductionData = (plantId, token, apiCallInterceptor) => {
 
 export const getSystemStatus = (plantId, token, apiCallInterceptor) => {
   const domain = `${baseURL}`;
-  const encryptedPlantId = encryptAES(plantId);
+  const encryptedPlantId = encodeURIComponent(
+    encryptAES(JSON.stringify(plantId))
+  );
 
-  let url = `${domain}system-status/?plant_id=${plantId}`;
-  apiCallInterceptor.get(url)
+  let url = `${domain}system-status/?plant_id=${encryptedPlantId}`;
+  apiCallInterceptor
+    .get(url)
     .then((response) => {
       let activeMachines = response.data.results.filter(
         (machine) => machine.system_status === true
@@ -210,29 +225,32 @@ export const getSystemStatus = (plantId, token, apiCallInterceptor) => {
     });
 };
 const isEmptyDashboardResponse = (data) => {
-  return data && data.active_products && Array.isArray(data.active_products) && data.active_products.length === 0
-    && Object.keys(data).length === 1;
+  return (
+    data &&
+    data.active_products &&
+    Array.isArray(data.active_products) &&
+    data.active_products.length === 0 &&
+    Object.keys(data).length === 1
+  );
 };
 
-
 export const initialDashboardData = (plantId, token, apiCallInterceptor) => {
-  const domain = `${baseURL}`;
-  // const url = `${domain}dashboard/?plant_id=${plantId}`;
-  const url = `dashboard/?plant_id=${plantId}`;
-  // axios
-  //   .get(url, {
-  //     headers: {
-  //       Authorization: `Bearer ${token}`,
-  //     },
-  //   })
-  apiCallInterceptor.get(url)
+ 
+  const encryptedPlantId = encodeURIComponent(
+    encryptAES(JSON.stringify(plantId))
+  );
+  const url = `dashboard/?plant_id=${encryptedPlantId}`;
+  apiCallInterceptor
+    .get(url)
     .then((response) => {
       const { active_products, ...datesData } = response.data;
 
       if (isEmptyDashboardResponse(response.data)) {
-        store.dispatch(getDashboardFailure('No meaningful data available.'));
+        store.dispatch(getDashboardFailure("No meaningful data available."));
       } else {
-        store.dispatch(getDashboardSuccess({ datesData, activeProducts: active_products }));
+        store.dispatch(
+          getDashboardSuccess({ datesData, activeProducts: active_products })
+        );
       }
     })
     .catch((error) => {
