@@ -1,5 +1,6 @@
 // In aisSmartViewSlice.js
 import { createSlice } from "@reduxjs/toolkit";
+import { act } from "react";
 
 const aismartviewSlice = createSlice({
     name: "aismartview",
@@ -13,32 +14,38 @@ const aismartviewSlice = createSlice({
             totalPages: 1,
             pageSize: 10,
         },
-        currentSlideIndex: 0, // Add this line
+        currentSlideIndex: 0, // Add this line,
+        prev: null,
+        next: null
     },
     reducers: {
         setAismartviewData: (state, action) => {
-            state.aismartviewData = action.payload.aismartviewData;
-            state.pagination.pageSize = action.payload.pageSize;
-            state.pagination.totalPages = action.payload.totalPages;
+            state.aismartviewData = action.payload.aismartviewData.results;
+            state.pagination.pageSize = action.payload.aismartviewData.page_size;
+            state.pagination.totalPages = action.payload.aismartviewData.total_pages;
+            state.prev = action.payload.aismartviewData.previous;
+            state.next = action.payload.aismartviewData.next;
         },
         setSelectedDefectAismartview: (state, action) => {
+            console.log(action.payload)
             state.selectedDefect = action.payload;
         },
-        setErrorMessage: (state, action) =>  {
+        setErrorMessage: (state, action) => {
             state.errorMessage = action.payload;
         },
-        setLoading: (state, action) =>  {
+        setLoading: (state, action) => {
             state.loader = action.payload;
         },
-        setLoader: (state, action) =>  {
+        setLoader: (state, action) => {
             state.loader = action.payload;
         },
-        updatePagination: (state, action) =>  {
+        updatePagination: (state, action) => {
             state.pagination.currentPage = action.payload.currentPage;
             state.pagination.pageSize = action.payload.pageSize;
         },
-        setCurrentSlideIndex: (state, action) =>  { // Add this reducer
+        setCurrentSlideIndex: (state, action) => { // Add this reducer
             state.currentSlideIndex = action.payload;
+            console.log(action.payload)
         },
     },
 });

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Slider from "react-slick";
 import LazyLoad from "react-lazyload";
@@ -22,19 +22,29 @@ import {
 } from "../redux/slices/aismartviewSlice";
 
 import { getDefects, getAiSmartView } from "../services/dashboardApi";
+import { useLocation } from "react-router-dom";
+import axios from "axios";
 
 const AiSmartView = () => {
+
+  const location = useLocation()
+
   const dispatch = useDispatch();
   const apiCallInterceptor = useApiInterceptor();
   const localPlantData = useSelector((state) => state.plant.plantData[0]);
   const AuthToken = useSelector((state) => state.auth.authData[0].accessToken);
   const aismartviewData = useSelector((state) => state.aismartview.aismartviewData);
-  const selectedDefect = useSelector((state) => state.aismartview.selectedDefectAismartview);
+  const selectedDefect = useSelector((state) => state.aismartview.selectedDefect);
   const currentSlideIndex = useSelector((state) => state.aismartview.currentSlideIndex);
   const loader = useSelector((state) => state.aismartview.loader);
   const pagination = useSelector((state) => state.aismartview.pagination);
+  const next = useSelector((state) => state.aismartview.next);
+  const prev = useSelector((state) => state.aismartview.prev);
   const defectsData = useSelector((state) => state.defect.defectsData);
   const sliderRef = useRef(null);
+
+
+
   useEffect(() => {
     const fetchData = async () => {
       dispatch(setLoading(true));
@@ -54,15 +64,17 @@ const AiSmartView = () => {
     fetchData();
   }, [localPlantData.plant_name, AuthToken, apiCallInterceptor, dispatch]);
 
+
+
   const handleDefectChange = async (value) => {
     const selectedId = value;
     const defect = defectsData.find((defect) => defect.id === selectedId);
     dispatch(setSelectedDefectAismartview(defect));
     dispatch(updatePagination({ currentPage: 1, pageSize: pagination.pageSize }));
-  
+
     try {
       dispatch(setLoading(true));
-      const aiSmartViewData = await getAiSmartView(localPlantData.id, AuthToken, apiCallInterceptor, 1, selectedId);
+      const aiSmartViewData = await getAiSmartView(localPlantData.id, AuthToken, apiCallInterceptor, pagination.currentPage, selectedId);
       dispatch(setAismartviewData({ aismartviewData: aiSmartViewData }));
     } catch (error) {
       dispatch(setErrorMessage(error.message || "Failed to fetch AI Smart View data"));
@@ -71,20 +83,37 @@ const AiSmartView = () => {
     }
   };
 
-  const handleNext = () => {
-    if (pagination.currentPage < pagination.totalPages) {
-      dispatch(updatePagination({ currentPage: pagination.currentPage + 1, pageSize: pagination.pageSize }));
+
+
+
+  const handleNext = async () => {
+
+    if (currentSlideIndex === pagination?.pageSize - 1) {
+      await dispatch(updatePagination({ currentPage: pagination.currentPage + 1, pageSize: pagination.pageSize }));
+      const aiSmartViewData = await getAiSmartView(localPlantData.id, AuthToken, apiCallInterceptor, pagination.currentPage, selectedDefect.id);
+      dispatch(setCurrentSlideIndex(0))
+      dispatch(setAismartviewData({ aismartviewData: aiSmartViewData }));
+
     } else if (sliderRef.current) {
       sliderRef.current.slickNext();
     }
-  };
 
-  const handlePrev = () => {
-    if (pagination.currentPage > 1) {
-      dispatch(updatePagination({ currentPage: pagination.currentPage - 1, pageSize: pagination.pageSize }));
+  };
+  useEffect(() => {
+    dispatch(setAismartviewData({ aismartviewData: [] }))
+  }, [window.location.Pathname])
+
+
+  const handlePrev = async () => {
+    if (currentSlideIndex === 0 && pagination.currentPage !== 1) {
+      await dispatch(updatePagination({ currentPage: pagination.currentPage - 1, pageSize: pagination.pageSize }));
+      const aiSmartViewData = await getAiSmartView(localPlantData.id, AuthToken, apiCallInterceptor, pagination.currentPage, selectedDefect.id);
+      dispatch(setCurrentSlideIndex(0))
+      dispatch(setAismartviewData({ aismartviewData: aiSmartViewData }));
     } else if (sliderRef.current) {
       sliderRef.current.slickPrev();
     }
+    sliderRef.current.slickPrev();
   };
 
   const settings = {
@@ -98,9 +127,9 @@ const AiSmartView = () => {
 
   return (
     <div className="flex min-h-[calc(100vh-120px)] gap-2">
-      
-  
-         <div
+
+
+      <div
         style={{ backgroundImage: `url(${gridBg})` }}
         className="defect-image-container  w-9/12 border p-2 rounded-md bg-cover bg-center flex flex-col"
       >
@@ -128,7 +157,7 @@ const AiSmartView = () => {
           </div>
         ) : (
           <>
-            {selectedDefect !==null && aismartviewData.length>0? (
+            {selectedDefect !== null && aismartviewData?.length > 0 ? (
               <>
                 <div className="AISmartContainer">
                   <div className="AISmartContainer-top">
@@ -143,30 +172,37 @@ const AiSmartView = () => {
                   </div>
                   <Slider {...settings} ref={sliderRef} className="max-w-[100vh]">
                     {aismartviewData?.map((item, index) => (
-                      <div key={index} className="aismart-item">
-                        {/* <LazyLoad height={400} offset={100}> */}
-                        <img
-                        src={decryptAES(item.image)}
-                        alt={`Slide ${index}`}
-                        style={{ maxHeight: "70vh", width:'40vw',display: "block", margin: "0 auto" }}
-/>
+                      <>
 
-                        {/* </LazyLoad> */}
-                      </div>
+
+
+                        <div key={index} className="aismart-item">
+                          {/* <LazyLoad height={400} offset={100}> */}
+                          <img
+                            src={decryptAES(item.image)}
+                            alt={`Slide ${index}`}
+                            style={{ maxHeight: "70vh", width: '40vw', display: "block", margin: "0 auto" }}
+                          />
+
+                          {/* </LazyLoad> */}
+                        </div>
+
+                      </>
+
                     ))}
                   </Slider>
                 </div>
                 <div className="flex items-center justify-between mt-4">
                   <button
                     onClick={handlePrev}
-                    disabled={pagination.currentPage <= pagination.totalPages}
+                    // disabled={currentSlideIndex === 0}
                     className="bg-[#f50909] text-white py-2 px-4 rounded"
                   >
                     <LeftOutlined />
                   </button>
                   <button
-                    onClick={handleNext}
-                    disabled={pagination.currentPage >= pagination.totalPages}
+                    onClick={(i) => handleNext(i)}
+                    // disabled={currentSlideIndex === 10}
                     className="bg-[#f50909] text-white py-2 px-4 rounded"
                   >
                     <RightOutlined />

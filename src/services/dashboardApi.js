@@ -54,30 +54,30 @@ import {
 export const baseURL =
   process.env.REACT_APP_API_BASE_URL || "https://huldev.aivolved.in/api/";
 
-  export const getMachines = (plantName, token, apiCallInterceptor) => {
-    let encryptedPlantName = encryptAES(plantName).replace(/^"|"$/g, '');
-    encryptedPlantName = decodeURIComponent(encryptedPlantName); 
-    let url = `machine/?plant_name=${encryptedPlantName}`;
-    apiCallInterceptor
-      .get(url)
-      .then((response) => {
-        const formattedMachines = response.data.results.map((machine) => ({
-          id: machine.id,
-          name: machine.name,
-        }));
-        // Dispatch action to update Redux state
-        store.dispatch(getMachineSuccess(formattedMachines));
-      })
-      .catch((error) => {
-        console.error("Error fetching machine data:", error);
-        // Dispatch action to handle failure
-        store.dispatch(getMachineFailure());
-      });
-  }; 
+export const getMachines = (plantName, token, apiCallInterceptor) => {
+  let encryptedPlantName = encryptAES(plantName).replace(/^"|"$/g, '');
+  encryptedPlantName = decodeURIComponent(encryptedPlantName);
+  let url = `machine/?plant_name=${encryptedPlantName}`;
+  apiCallInterceptor
+    .get(url)
+    .then((response) => {
+      const formattedMachines = response.data.results.map((machine) => ({
+        id: machine.id,
+        name: machine.name,
+      }));
+      // Dispatch action to update Redux state
+      store.dispatch(getMachineSuccess(formattedMachines));
+    })
+    .catch((error) => {
+      console.error("Error fetching machine data:", error);
+      // Dispatch action to handle failure
+      store.dispatch(getMachineFailure());
+    });
+};
 
 export const getDepartments = (plantName, token, apiCallInterceptor) => {
-    let encryptedPlantName = encryptAES(plantName).replace(/^"|"$/g, '');
-    encryptedPlantName = decodeURIComponent(encryptedPlantName); 
+  let encryptedPlantName = encryptAES(plantName).replace(/^"|"$/g, '');
+  encryptedPlantName = decodeURIComponent(encryptedPlantName);
   let url = `department/?plant_name=${encryptedPlantName}`;
   apiCallInterceptor
     .get(url)
@@ -99,7 +99,7 @@ export const getDepartments = (plantName, token, apiCallInterceptor) => {
 
 export const getProducts = (plantName, token, apiCallInterceptor) => {
   let encryptedPlantName = encryptAES(plantName).replace(/^"|"$/g, '');
-  encryptedPlantName = decodeURIComponent(encryptedPlantName); 
+  encryptedPlantName = decodeURIComponent(encryptedPlantName);
   let url = `product/?plant_name=${encryptedPlantName}`;
   apiCallInterceptor
     .get(url)
@@ -117,7 +117,7 @@ export const getProducts = (plantName, token, apiCallInterceptor) => {
 };
 export const getDefects = (plantName, token, apiCallInterceptor) => {
   let encryptedPlantName = encryptAES(plantName).replace(/^"|"$/g, '');
-  encryptedPlantName = decodeURIComponent(encryptedPlantName); 
+  encryptedPlantName = decodeURIComponent(encryptedPlantName);
 
   let url = `defect/?plant_name=${encryptedPlantName}`;
 
@@ -148,10 +148,11 @@ export const getAiSmartView = async (
   const encryptedDefectId = encodeURIComponent(
     encryptAES(JSON.stringify(defectId))
   );
-  const url = `ai-smart/?plant_id=${encryptedPlantId}&defect_id=${encryptedDefectId}`;
+  const url = `ai-smart/?plant_id=${encryptedPlantId}&defect_id=${encryptedDefectId}&page=${currentPage}`;
   try {
     const response = await apiCallInterceptor.get(url);
-    const formattedDefects = response.data.results;
+    const formattedDefects = response.data;
+
     return formattedDefects; // Return the data to be used in the calling function
   } catch (error) {
     console.error("Error fetching AI Smart View data:", error);
@@ -223,7 +224,7 @@ const isEmptyDashboardResponse = (data) => {
 };
 
 export const initialDashboardData = (plantId, token, apiCallInterceptor) => {
- 
+
   const encryptedPlantId = encodeURIComponent(
     encryptAES(JSON.stringify(plantId))
   );
