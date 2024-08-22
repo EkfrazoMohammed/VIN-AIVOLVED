@@ -12,7 +12,8 @@ export default function RealTimeManufacturingSection({
       {
         label: "date_time",
         data: productionData.map((item) => parseInt(item.defect_percentage, 10)),
-        backgroundColor: "#ffe3b3",
+        // backgroundColor: "#ffe3b3",
+        backgroundColor: "#fae152", // New color
       },
     ],
   };
@@ -42,16 +43,16 @@ export default function RealTimeManufacturingSection({
   return (
     <div className="py-4 px-0 ">
       <h1 className="section-title  text-red-700 mb-4">
-       <span className="section-title-overlay"> Real-Time Manufacturing DPMU</span>
+       <span className="section-title-overlay font-bold" > Real-Time Manufacturing DPMU</span>
       </h1>
       <div className="flex mb-4">
         <div className="flex-grow mr-4 min-w-52">
           <div className="p-3  mb-2 border-2 rounded-md">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-lg font-bold">Total Defects</span>
+              <span className="text-lg font-semibold">Total Defects</span>
             </div>
 
-            <div className="text-4xl font-bold text-red-500">
+            <div className="text-4xl font-semibold text-red-500">
               {Object.values(categoryDefects).reduce(
                 (total, category) => total + category,
                 0
@@ -85,6 +86,7 @@ export default function RealTimeManufacturingSection({
             </ul>
           </div>
         </div>
+        
         <div className="flex-grow">
           <Bar data={data} options={options} />
         </div>

@@ -1,44 +1,98 @@
 import React, { useState } from "react";
-import { Link,useParams } from "react-router-dom";
-import axiosInstance from "../../API/axiosInstance"; 
+import { Link, useParams } from "react-router-dom";
+import axiosInstance from "../../API/axiosInstance";
 import { encryptAES } from "../../redux/middleware/encryptPayloadUtils";
+import { notification } from "antd";
+import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 
-import { Card, Col, notification } from "antd";
 const PasswordResetForm = () => {
   const { id } = useParams(); // Capture the identifier from the route
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const [success, setSuccessMessage] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
   const [api] = notification.useNotification();
+  const [error,setError] = useState("");
   const openNotification = (param) => {
     const { status, message } = param;
-
     api[status]({
       message: message || "",
       duration: 3, // Notification will auto-close after 3 seconds
     });
   };
+ 
+  const validatePassword = (password) => {
+    // Password validation criteria
+    const minLength = 8;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasDigit = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    const hasNoSpaces = !/\s/.test(password);
+
+    if (password.length < minLength || !hasUpperCase || !hasLowerCase || !hasDigit || !hasSpecialChar || !hasNoSpaces) {
+      return "Password must contain at least one special character, one number, one uppercase letter, one lowercase letter, and be at least 8 characters long.";
+    }
+    return "";
+  };
+
+
+  const handlePasswordChange = (e) => {
+    const value = e.target.value;
+    setPassword(value);
+
+    // Validate password and set error
+    const passwordError = validatePassword(value);
+    setPasswordError(passwordError);
+
+    // Check if confirm password is matching
+    if (value !== confirmPassword) {
+      setConfirmPasswordError("Passwords do not match!");
+    } else {
+      setConfirmPasswordError("");
+    }
+  };
+
+  const handleConfirmPasswordChange = (e) => {
+    const value = e.target.value;
+    setConfirmPassword(value);
+
+    // Check if confirm password is matching
+    if (password !== value) {
+      setConfirmPasswordError("Passwords do not match!");
+    } else {
+      setConfirmPasswordError("");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Reset error state
-    setError("");
-
     // Check if passwords match
     if (password !== confirmPassword) {
-      setError("Passwords do not match!");
+      setConfirmPasswordError("Passwords do not match!");
+      return;
+    }
+
+    // Validate the new password
+    const passwordValidationError = validatePassword(password);
+    if (passwordValidationError) {
+      setPasswordError(passwordValidationError);
       return;
     }
 
     try {
       // Call your API to reset the password
-      const payload={
-       "new_password":password,
-      "confirm_password":confirmPassword
-      }
-    const encryTedData = encryptAES(JSON.stringify(payload))
-      const response = await axiosInstance.put(`reset-password/${id}/`, { data:encryTedData });
+      const payload = {
+        new_password: password,
+        confirm_password: confirmPassword,
+      };
+      const encryptedData = encryptAES(JSON.stringify(payload));
+      const response = await axiosInstance.put(`reset-password/${id}/`, { data: encryptedData });
+
       // Handle success
       if (response.status === 200) {
         setSuccessMessage(true);
@@ -46,44 +100,53 @@ const PasswordResetForm = () => {
           status: "success",
           message: "Password updated successfully",
         });
+setPassword("");
+setConfirmPassword("");
+setPasswordError("");
+setConfirmPasswordError("");
       }
     } catch (err) {
       // Handle error
       setError("Failed to reset password. Please try again.");
       openNotification({
         status: "error",
-        message: "Password not updated ",
+        message: "Password not updated",
       });
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-        <div className="flex justify-center mb-4">
+    <div
+      style={{
+        background: "#faf5f5",
+        height: "100vh",
+        width: "100%",
+        overflow: "hidden",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <div className="bg-white p-6 rounded-xl w-full max-w-md">
+        <div className="flex justify-center mb-2">
           <img
             src="https://aivolved.in/wp-content/uploads/2022/11/ai-logo.png"
             alt="Logo"
-            style={{ height: "70px" }}
+            style={{ height: "60px" }}
           />
         </div>
-        <form
-          onSubmit={handleSubmit}
-          className="max-w-sm mx-auto p-4 bg-white rounded "
+        <div
+
+          className="max-w-sm mx-auto p-1 bg-white rounded"
         >
-          <h2 className="text-2xl font-bold text-center mb-4">
+          <h2 className="text-xl font-bold text-center mb-4">
             Reset Password
           </h2>
 
           {error && <div className="text-red-500 mb-4">{error}</div>}
-          {success && (
-            <div className=" mb-4">
-              <span className="text-green-500">Password reset successfully. Please login with new password.</span>
-              <Link to={"/login"} className="text-blue-500 font-bold ml-2">Login</Link>
-            </div>
-          )}
+          
 
-          <div className="mb-4">
+          <div className="mb-4 relative">
             <label
               className="block text-gray-700 text-sm font-bold mb-2"
               htmlFor="password"
@@ -92,15 +155,27 @@ const PasswordResetForm = () => {
             </label>
             <input
               id="password"
-              type="password"
+              type={passwordVisible ? "text" : "password"}
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={handlePasswordChange}
               className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
+            <button
+              type="button"
+              className="absolute inset-y-9 right-0 pr-3 flex items-center h-[20px]"
+              onClick={() => setPasswordVisible(!passwordVisible)}
+            >
+              {passwordVisible ? (
+                <EyeOutlined className="text-gray-500" />
+              ) : (
+                <EyeInvisibleOutlined className="text-gray-500" />
+              )}
+            </button>
+            {passwordError && <div className="text-red-500 mt-1">{passwordError}</div>}
           </div>
-
-          <div className="mb-4">
+          
+          <div className="mb-4 relative">
             <label
               className="block text-gray-700 text-sm font-bold mb-2"
               htmlFor="confirmPassword"
@@ -109,21 +184,51 @@ const PasswordResetForm = () => {
             </label>
             <input
               id="confirmPassword"
-              type="password"
+              type={confirmPasswordVisible ? "text" : "password"}
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              onChange={handleConfirmPasswordChange}
               className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
+            <button
+              type="button"
+              className="absolute inset-y-9 right-0 pr-3 flex items-center h-[20px]"
+              onClick={() => setConfirmPasswordVisible(!confirmPasswordVisible)}
+            >
+              {confirmPasswordVisible ? (
+                <EyeOutlined className="text-gray-500" />
+              ) : (
+                <EyeInvisibleOutlined className="text-gray-500" />
+              )}
+            </button>
+            {confirmPasswordError && <div className="text-red-500 mt-1">{confirmPasswordError}</div>}
           </div>
+{passwordError ==="" || passwordError == null || confirmPasswordError ==="" || confirmPasswordError ==null ? <>
+<button
 
-          <button
+onClick={handleSubmit}
             type="submit"
-            className="w-full bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-600 transition-colors duration-300"
+            className="w-full bg-[#ff4403] text-white font-bold py-2 px-4 rounded hover:bg-red-600 transition-colors duration-300"
           >
-            Reset Password
+            Reset Password2
           </button>
-        </form>
+</>:<>
+  <button
+            type="submit"
+            className="w-full bg-[#ff4403] text-white font-bold py-2 px-4 rounded hover:bg-red-600 transition-colors duration-300"
+          >
+            Reset Password1
+          </button>
+</>}
+
+{success && (
+            <div className="mb-4">
+              <span className="text-green-500">Password reset successfully. <br />Please login with new password.</span>
+              <Link to={"/login"} className="text-blue-500 font-bold ml-2">Login</Link>
+            </div>
+          )}
+         
+        </div>
       </div>
     </div>
   );

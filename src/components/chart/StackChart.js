@@ -110,7 +110,7 @@ function StackChart({ data }) {
   return (
     <div>
       <div>
-        <Title level={5} className="text-left"> Bar Graph for Defects</Title>
+        <Title level={5} className="text-left font-semibold"> Bar Graph for Defects</Title>
       </div>
       <ReactApexChart
         options={chartData.options}

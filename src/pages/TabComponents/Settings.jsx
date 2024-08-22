@@ -16,11 +16,11 @@ const Alerts = () => {
   const [api, contextHolder] = notification.useNotification();
   const [loading, setLoading] = useState(false)
   const [modal2Open, setModal2Open] = useState(false);
-const headersOb={
-  headers: {
-    Authorization: `Bearer ${accessToken}`,
-  },
-}
+  const headersOb = {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  }
   const [data, setData] = useState({
     first_name: "",
     last_name: "",
@@ -37,6 +37,17 @@ const headersOb={
     email: "",
     employee_id: ""
   })
+
+  const closeModalUser=()=>{
+    setModal2Open(false)
+    setData({
+      first_name: "",
+      last_name: "",
+      phone_number: "",
+      email: "",
+      employee_id: ""
+    })
+  }
   const openNotification = (param) => {
     const { status, message } = param
 
@@ -82,17 +93,17 @@ const headersOb={
       console.log(payload)
       const encryTedData = encryptAES(JSON.stringify(payload))
       console.log(encryTedData)
-      const usersPayload={
-        "data":`${encryTedData}`
+      const usersPayload = {
+        "data": `${encryTedData}`
       }
       if (data.employee_id !== "" && data.first_name !== "" && data.last_name !== "" && data.phone_number !== "" && data.email !== "" && error.fistName === "" && error.lastName === "" && error.email === "" && error.Phone === "" && error.employee_id === "") {
         setLoading(true)
         // Encryption Configuration
         // import axiosInstance from '../../API/axiosInstance'; // Ensure this is correctly imported
-        const postRequest = await axios.post(`${baseURL}user/`, usersPayload,headersOb)
+        const postRequest = await axios.post(`${baseURL}user/`, usersPayload, headersOb)
         if (postRequest) {
-          console.log(postRequest.response.data.message)
-          
+          console.log(postRequest)
+          closeModalUser()
           setLoading(false)
           setModal2Open(false)
           setData({
@@ -103,6 +114,7 @@ const headersOb={
             employee_id: ""
           })
         }
+        openNotification({ status: "success", message: "User Created Successfully!" });
 
       } else {
         setLoading(false)
@@ -111,7 +123,7 @@ const headersOb={
     } catch (error) {
       setLoading(false)
       console.log(error)
-      if(error.response.status === 400){
+      if (error.response.status === 400) {
         openNotification({ status: "error", message: error.response.data.message });
       }
       // openNotification({ status: "error", message: `unable to add user` });
@@ -145,9 +157,7 @@ const headersOb={
         setError((prev) => ({ ...prev, email: "" }))
       }
     }
-
     setData((prev) => ({ ...prev, [name]: value }))
-
   }
 
   return (
@@ -166,32 +176,25 @@ const headersOb={
       <Row gutter={24} style={{ display: 'flex', flexDirection: 'column', gap: '2rem', margin: '2rem' }} >
 
         <Col span={16} style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <div className="">
-            <h6>User ID:</h6>
+          <div className="flex flex-col gap-2">
+            <h6 className='font-bold'>User ID:</h6>
             <h6>{currentUserData?.userId}</h6>
           </div>
-          <div className="">
-            <h6>User Name:</h6>
+          <div className="flex flex-col gap-2">
+            <h6 className='font-bold'>User Name:</h6>
             <h6>{currentUserData?.userName}</h6>
           </div>
-
-          <div className="">
-            <h6>Email Id:</h6>
-            <h6></h6>
-          </div>
-
 
         </Col>
       </Row>
       <Row style={{ display: 'flex', gap: '2rem', flexDirection: 'column', marginTop: '1rem' }}>
-        <Col style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <h5 style={{ fontWeight: 650, marginBottom: 0 }}>Send email notification</h5>
+        <Col style={{ display: 'flex', alignItems: 'center', gap: '1rem' }} span={8}>
+          <h5 style={{ fontWeight: 650, marginBottom: 0 ,minWidth:"200px"}}>Send email notification</h5>
           <Switch defaultChecked />
         </Col>
-        <Col style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <h5 style={{ fontWeight: 650, marginBottom: 0 }}>Send sms notification</h5>
+        <Col style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}  span={8}>
+          <h5 style={{ fontWeight: 650, marginBottom: 0  ,minWidth:"200px"}}>Send sms notification</h5>
           <Switch defaultChecked />
-
         </Col>
       </Row>
       <Modal
@@ -199,7 +202,7 @@ const headersOb={
         centered
         open={modal2Open}
         onOk={() => setModal2Open(false)}
-        onCancel={() => setModal2Open(false)}
+        onCancel={closeModalUser}
         footer={null}
       >
         {
@@ -215,33 +218,33 @@ const headersOb={
             </div>
             :
             <>
-              <div className="" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', padding: '1rem' }}>
+              <div className="" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', padding: '1rem' , fontWeight:'600'}}>
                 <div className="">
 
-                  <Input placeholder="Enter Your First Name" type='text' name='first_name' value={data.first_name} onChange={handleChange} helper />
+                  <Input placeholder="Enter Your First Name" type='text' name='first_name' value={data.first_name} onChange={handleChange} helper className='p-2' />
                   {error.fistName ? <span style={{ fontWeight: '600', color: 'red' }}>{error.fistName}</span> : ""}
                 </div>
                 <div className="">
 
-                  <Input placeholder="Enter Your Last Name" type='text' name='last_name' value={data.last_name} onChange={handleChange} />
+                  <Input placeholder="Enter Your Last Name" type='text' name='last_name' value={data.last_name} onChange={handleChange}  className='p-2'/>
                   {error.lastName ? <span style={{ fontWeight: '600', color: 'red' }}>{error.lastName}</span> : ""}
                 </div>
 
 
                 <div className="">
 
-                  <Input placeholder="Enter Your Phone Number" type='number' name='phone_number' value={data.phone_number} onChange={handleChange} />
+                  <Input placeholder="Enter Your Phone Number" type='number' name='phone_number' value={data.phone_number} onChange={handleChange}  className='p-2'/>
                   {error.Phone ? <span style={{ fontWeight: '600', color: 'red' }}>{error.Phone}</span> : ""}
                 </div>
 
                 <div className="">
 
-                  <Input placeholder="Enter Your Email" type='email' name='email' value={data.email} onChange={handleChange} />
+                  <Input placeholder="Enter Your Email" type='email' name='email' value={data.email} onChange={handleChange}  className='p-2'/>
                   {error.email ? <span style={{ fontWeight: '600', color: 'red' }}>{error.email}</span> : ""}
                 </div>
                 <div className="">
 
-                  <Input placeholder="Enter Your Employee Id" type='text' name='employee_id' value={data.employee_id} onChange={handleChange} />
+                  <Input placeholder="Enter Your Employee Id" type='text' name='employee_id' value={data.employee_id} onChange={handleChange}  className='p-2'/>
                   {error.employee_id ? <span style={{ fontWeight: '600', color: 'red' }}>{error.employee_id}</span> : ""}
                 </div>
 

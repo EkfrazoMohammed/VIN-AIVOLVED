@@ -82,30 +82,11 @@ const ProductAndDefect = ({ chart1, chart2 }) => {
         <span className="section-title-overlay">Defects</span>
       </h1>
       <div className="flex items-center space-x-4 mb-4">
-        {/* <button className="p-2 bg-gray-200 rounded">
-        <IoFilterSharp />
-        </button>
-        <select className="p-2 bg-gray-100 rounded border">
-          <option>All Products</option>
-        </select> */}
-        {/* <div className="ml-auto space-x-2">
-          <button
-            className={`p-2 rounded ${chartType === 'bar' ? 'bg-red-500 text-white' : 'bg-gray-200'}`}
-            onClick={() => setChartType('bar')}
-          >
-            Bar
-          </button>
-          <button
-            className={`p-2 rounded ${chartType === 'pie' ? 'bg-red-500 text-white' : 'bg-gray-200'}`}
-            onClick={() => setChartType('pie')}
-          >
-            Pie
-          </button>
-        </div> */}
+      
       </div>
       <div className="flex items-center mb-4 ">
         <div className="text-lg">
-          <span className="font-bold text-red-500">Total Defects:</span>{" "}
+          <span className="font-semibold text-red-500">Total Defects:</span>{" "}
           <span className="text-red-500">333</span>
         </div>
       </div>

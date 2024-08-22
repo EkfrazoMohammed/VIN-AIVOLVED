@@ -178,13 +178,9 @@ const Plant = () => {
                           onClick={() => handleStorage([plant])}
                         >
                           <div className="custom-card-content flex flex-col items-center">
-                            {/* <img
-                            src={plant.plant_logo}
-                            alt=""
-                            className="custom-card-image"
-                          /> */}
+                          
                             <img
-                              src='https://media.licdn.com/dms/image/C4E12AQHw3bPisn1x0g/article-inline_image-shrink_1000_1488/0/1595858405291?e=1724284800&v=beta&t=mHKkjIq_LELHb3yT9Euo1vDxlSfmjlBlZwhTZPdJsDs'
+                              src='https://eimkeia.stripocdn.email/content/guids/CABINET_8270216c780e362a1fbcd636b59c67ae376eb446dc5f95e17700b638b8c3f618/images/131321hulremovebgpreview.png'
                               style={{ width: "90%", height: "90%", borderRadius: "50%", }}
                               alt=""
                             />

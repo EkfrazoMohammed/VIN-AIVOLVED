@@ -167,7 +167,7 @@ const Defects = ({ defectsdata }) => {
               </Select.Option>
             ))}
           </Select>
-          <Button onClick={handleRefresh} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Button onClick={handleRefresh} className='flex items-center justify-center' style={{ background: '#EC522D', color: '#fff' }}>
             <ReloadOutlined style={{ width: '50px' }} />
           </Button>
         </div>

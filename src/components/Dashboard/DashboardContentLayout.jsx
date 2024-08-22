@@ -341,9 +341,9 @@ const DashboardContentLayout = ({ children }) => {
               <div className="filter-lg-w">
                 <div className="inner-w">
                   <div className="flex items-center space-x-4 mb-4 h-[40px]">
-                    <button className="p-2 bg-gray-200 rounded h-full w-[40px] flex justify-center items-center">
+                    {/* <button className="p-2 bg-gray-200 rounded h-full w-[40px] flex justify-center items-center">
                       <IoFilterSharp />
-                    </button>
+                    </button> */}
                     <Select
                       className="dx-default-select select-machines"
                       showSearch

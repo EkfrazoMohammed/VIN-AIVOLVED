@@ -116,19 +116,19 @@ const Login = () => {
   return (
     <div style={{ background: '#faf5f5', height: '100vh', width: '100%', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <Col span={8} style={{ maxWidth: '500px' }}>
-        <Card bordered={false} style={{ padding: '2rem', borderRadius: '25px' }}>
-          <div>
+        <Card bordered={false} style={{ padding: '1rem', borderRadius: '25px' }}>
+          <div className='flex items-center m-auto py-2'>
             <img src="https://aivolved.in/wp-content/uploads/2022/11/ai-logo.png" alt="Logo" style={{ height: '70px' }} />
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <h3>Login</h3>
+            <h3 className='flex justify-center items-center font-semibold text-lg'>Login</h3>
             <div>
               <label style={{ fontWeight: "600", fontSize: '1rem' }}>
-                Enter Email / Mobile Number
+                Email ID / Mobile number
                 <span style={{ color: 'red', fontWeight: '900', fontSize: '1rem', marginLeft: '0.1rem' }}>*</span>
               </label>
               <Input
-                placeholder="Email/Mobile Number"
+                placeholder="Enter Email id /Mobile number"
                 className='h-[45px] pl-2 py-0'
                 name="email_or_phone"
                 onChange={handleChange}
@@ -138,7 +138,7 @@ const Login = () => {
             </div>
             <div>
               <label style={{ fontWeight: "600", fontSize: '1rem' }}>
-                Enter Password
+                Password
                 <span style={{ color: 'red', fontWeight: '900', fontSize: '1rem', marginLeft: '0.1rem' }}>*</span>
               </label>
               <Input.Password
@@ -163,8 +163,8 @@ const Login = () => {
               </button>
             </div>
 
-            <Link to="/reset-password-email" className="flex items-center justify-center text-center">
-              forgot password ?
+            <Link to="/reset-password-email" className="flex items-center justify-center text-center font-semibold text-[1rem]">
+              Forgot password ?
             </Link>
           </div>
         </Card>

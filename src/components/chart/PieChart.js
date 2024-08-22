@@ -65,7 +65,7 @@ function PieChart({ data, selectedDate }) {
   return (
     <div>
       <div>
-        <Title level={5} className="text-left">
+        <Title level={5} className="text-left semibold">
           {selectedDate
             ? `Pie Chart from ${selectedDate[0]}  to  ${selectedDate[1]}`
             : "Pie Chart for Defects (7 days)"}
@@ -93,13 +93,7 @@ function PieChart({ data, selectedDate }) {
           },
           colors: chartData.labels.map((label, index) => {
             const predefinedColors = [
-              "#FF5733",
-              "#3357FF",
-              "#000080",
-              "#00FFFF",
-              "#FFFF00",
-              "#33FF57",
-              "#3357HF",
+              "#FF5733", "#e31f09", "#3357FF"
             ];
             return (
               defectColors[label] ||

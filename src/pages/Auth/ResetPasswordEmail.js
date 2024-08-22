@@ -45,9 +45,9 @@ const ResetPasswordEmail = () => {
   const confirmEmail = async () => {
     try {
       if (resetPayload.email === "") {
-        setError((prev) => ({ ...prev, emailError: "Email not entered" }));
+        setError((prev) => ({ ...prev, emailError: "Email ID is required" }));
       } else if (!validateEmail(resetPayload.email)) {
-        setError((prev) => ({ ...prev, emailError: "Invalid email format" }));
+        setError((prev) => ({ ...prev, emailError: "Invalid Email ID" }));
       } else {
         const payload={
           email: resetPayload.email,
@@ -58,12 +58,12 @@ const ResetPasswordEmail = () => {
         if (res.status === 200) {
           openNotification({
             status: "success",
-            message: "Reset link sent to your email",
+            message: "Reset password link sent to your email",
           });
        } else {
           openNotification({
             status: "error",
-            message: "Email is not registered",
+            message: "Email ID is not registered",
           });
         }
       }
@@ -89,24 +89,24 @@ const ResetPasswordEmail = () => {
           justifyContent: "center",
         }}
       >
-        <Col span={6}>
+        <Col span={8}>
           <Card
             bordered={false}
-            style={{ padding: "2rem", borderRadius: "25px" }}
+            style={{ padding: "1rem", borderRadius: "25px" }}
           >
             <div>
-              <img
-                src="https://aivolved.in/wp-content/uploads/2022/11/ai-logo.png"
-                style={{ height: "80px" }}
-                alt="AI Logo"
-              />
-            </div>
             <p>
               <ArrowLeftOutlined
-                style={{ fontSize: "1.5rem", cursor: "pointer" }}
+               className="text-[1rem] cursor-pointer"
                 onClick={() => navigate("/login")}
               />
             </p>
+              <img
+                src="https://aivolved.in/wp-content/uploads/2022/11/ai-logo.png"
+                alt="AI Logo"
+                className="w-[65px] h-[65px] m-auto "
+              />
+            </div>
             <div
               style={{
                 display: "flex",
@@ -115,7 +115,6 @@ const ResetPasswordEmail = () => {
               }}
             >
               <h2 style={{ margin: "0.5rem 0" }}>Enter Email</h2>
-              <p>Reset link will be sent to the respective email id</p>
               <input
                 type="email"
                 style={{
@@ -130,18 +129,19 @@ const ResetPasswordEmail = () => {
                 placeholder="Email id"
                 onChange={handleChange}
                 value={resetPayload.email}
-              />
+                />
               {error.emailError && (
                 <span
-                  style={{
-                    color: "red",
-                    fontWeight: "600",
-                    fontSize: "0.8rem",
-                  }}
+                style={{
+                  color: "red",
+                  fontWeight: "600",
+                  fontSize: "0.8rem",
+                }}
                 >
                   *{error.emailError}
                 </span>
               )}
+              <p>Reset password link will be sent to the respective email id</p>
             </div>
             <h2>
               <button
