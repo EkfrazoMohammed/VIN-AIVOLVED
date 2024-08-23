@@ -8,8 +8,6 @@ import gridBg from "../assets/images/grid-bg.jpg";
 import useApiInterceptor from "../hooks/useInterceptor";
 import { decryptAES } from "../redux/middleware/encryptPayloadUtils";
 import { getDefects, getAiSmartView } from "../services/dashboardApi";
-import "slick-carousel/slick/slick.css"; 
-import "slick-carousel/slick/slick-theme.css";
 
 const AiSmartView = () => {
   const [aismartviewData, setAismartviewData] = useState([]);
@@ -87,6 +85,15 @@ const AiSmartView = () => {
     }
   };
 
+  const settingsold = {
+    dots: true,
+    infinite: false,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    afterChange: (index) => setCurrentSlideIndex(index),
+  };
+  
   const settings = {
     dots: true,
     infinite: false,
@@ -139,19 +146,18 @@ const AiSmartView = () => {
                   </div>
                 </div>
                 <Slider {...settings} ref={sliderRef} className="max-w-[100vh]">
-                    {aismartviewData?.map((item, index) => (
-                      <>
-                        <div key={index} className="aismart-item">
-                          <img
-                            src={decryptAES(item.image)}
-                            alt={`Slide ${index}`}
-                            style={{ maxHeight: "70vh", width: '40vw', display: "block", margin: "0 auto" }}
-                          />
-                        </div>
-                      </>
-                    ))}
-                  </Slider>
-                  
+                  {aismartviewData?.map((item, index) => (
+                    <>
+                      <div key={index} className="aismart-item">
+                        <img
+                          src={decryptAES(item.image)}
+                          alt={`Slide ${index}`}
+                          style={{ maxHeight: "70vh", width: '40vw', display: "block", margin: "0 auto" }}
+                        />
+                      </div>
+                    </>
+                  ))}
+                </Slider>
               </div>
               <div className="flex items-center justify-between mt-4">
                 <button
