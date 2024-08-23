@@ -102,15 +102,15 @@ const columns = [
     dataIndex: "recorded_date_time",
     key: "recorded_date_time",
     render: (text) => {
-        const decrypData = decryptAES(text);
-        const formattedDateTime = decrypData ? decrypData.replace("T", " ") : null;
-        return (
-            <>
-                {formattedDateTime ? <div>{formattedDateTime}</div> : null}
-            </>
-        );
+      const decrypData = decryptAES(text);
+      const formattedDateTime = decrypData ? decrypData.replace("T", " ") : null;
+      return (
+        <>
+          {formattedDateTime ? <div>{formattedDateTime}</div> : null}
+        </>
+      );
     },
-},
+  },
 
   {
     title: "Image",
@@ -262,11 +262,20 @@ const Reports = () => {
     const encryptedUrl = Object.fromEntries(
       Object.entries(filteredQueryParams).map(([key, val]) => {
         if (key !== "page" && key !== "page_size" && key !== "plant_id") {
-          return [key, encryptAES(JSON.stringify(val))]
+          // Encrypt values except dates
+          if (key === "from_date" || key === "to_date") {
+            // Ensure date is passed as plain string without quotes
+            return [key, encryptAES(val)];
+          }
+          return [key, encryptAES(JSON.stringify(val))];
         }
         return [key, val];
       })
     );
+
+
+
+
 
 
     // Create the query string
@@ -278,7 +287,7 @@ const Reports = () => {
     setLoader(true);
 
     // Make the API call using axiosInstance
-    axiosInstance
+    apiCallInterceptor
       .get(url, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -310,17 +319,17 @@ const Reports = () => {
   const downloadExcel = () => {
     // Prepare the table data with correct headers
     const formattedTableData = reportData.map((item) => ({
-        "Product Name": decryptAES(item.product),
-        "Defect Name": decryptAES(item.defect),
-        "Machine Name": decryptAES(item.machine),
-        "Department Name": decryptAES(item.department),
-        "Recorded Date Time": decryptAES(item.recorded_date_time).replace("T", " "),
-        // "Image": decryptAES(item.image) ,
-        "Image Link": {
-          v: decryptAES(item.image), // Displayed text
-          l: { Target: decryptAES(item.image), Tooltip: 'Click to view the image' } // Hyperlink
+      "Product Name": decryptAES(item.product),
+      "Defect Name": decryptAES(item.defect),
+      "Machine Name": decryptAES(item.machine),
+      "Department Name": decryptAES(item.department),
+      "Recorded Date Time": decryptAES(item.recorded_date_time).replace("T", " "),
+      // "Image": decryptAES(item.image) ,
+      "Image Link": {
+        v: decryptAES(item.image), // Displayed text
+        l: { Target: decryptAES(item.image), Tooltip: 'Click to view the image' } // Hyperlink
       }
-  }));
+    }));
     // Convert JSON to Excel with correct headers
     const ws = XLSX.utils.json_to_sheet(formattedTableData);
     const wb = XLSX.utils.book_new();
@@ -330,10 +339,10 @@ const Reports = () => {
     const wbout = XLSX.write(wb, { bookType: "xlsx", type: "binary" });
 
     const s2ab = (s) => {
-        const buf = new ArrayBuffer(s.length);
-        const view = new Uint8Array(buf);
-        for (let i = 0; i < s.length; i++) view[i] = s.charCodeAt(i) & 0xff;
-        return buf;
+      const buf = new ArrayBuffer(s.length);
+      const view = new Uint8Array(buf);
+      for (let i = 0; i < s.length; i++) view[i] = s.charCodeAt(i) & 0xff;
+      return buf;
     };
 
     const blob = new Blob([s2ab(wbout)], { type: "application/octet-stream" });
@@ -346,10 +355,10 @@ const Reports = () => {
     document.body.appendChild(a);
     a.click();
     setTimeout(() => {
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
     }, 0);
-};
+  };
 
 
 

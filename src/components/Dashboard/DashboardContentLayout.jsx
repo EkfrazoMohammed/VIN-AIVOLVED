@@ -48,6 +48,7 @@ import { IoFilterSharp } from "react-icons/io5";
 import RealTimeManufacturingSection from "./RealTimeManufacturingSection";
 import useApiInterceptor from "../../hooks/useInterceptor";
 import axiosInstance from "../../API/axiosInstance";
+import { encryptAES } from "../../redux/middleware/encryptPayloadUtils";
 
 const DashboardContentLayout = ({ children }) => {
   const apiCallInterceptor = useApiInterceptor();
@@ -139,8 +140,23 @@ const DashboardContentLayout = ({ children }) => {
       )
     );
 
+
+    const encryptedUrl = Object.fromEntries(
+      Object.entries(filteredQueryParams).map(([key, val]) => {
+        if (key !== "page" && key !== "page_size") {
+          // Encrypt values except dates
+          if (key === "from_date" || key === "to_date") {
+            // Ensure date is passed as plain string without quotes
+            return [key, encryptAES(val)];
+          }
+          return [key, encryptAES(JSON.stringify(val))];
+        }
+        return [key, val];
+      })
+    );
+
     // Create the query string
-    const queryString = new URLSearchParams(filteredQueryParams).toString();
+    const queryString = new URLSearchParams(encryptedUrl).toString();
     const url = `dashboard/?${queryString}`; // Complete URL with query string
 
     // Make the API call using axiosInstance
@@ -151,8 +167,8 @@ const DashboardContentLayout = ({ children }) => {
         },
       })
       .then((response) => {
-
-        dispatch(getDashboardSuccess(response.data))
+        const { active_products, ...datesData } = response.data;
+        dispatch(getDashboardSuccess({ datesData, activeProducts: active_products }))
         setFilterActive(true);
       })
       .catch((error) => {
