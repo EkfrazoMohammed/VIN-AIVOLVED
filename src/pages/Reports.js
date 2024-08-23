@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import ExcelJS from "exceljs";
+import FileSaver from "file-saver"; // for saving the file locally
 import { useLocation } from "react-router-dom";
 import { Table, Select, DatePicker, Button, Image, Tag } from "antd";
 import * as XLSX from "xlsx";
@@ -94,22 +96,22 @@ const columns = [
       )
     },
   },
+
   {
     title: "Recorded Date Time",
     dataIndex: "recorded_date_time",
     key: "recorded_date_time",
     render: (text) => {
-      const decrypData = decryptAES(text)
-      return (
-
-        <>
-          {
-            decrypData ? <div >{decrypData}</div> : null
-          }
-        </>
-      )
+        const decrypData = decryptAES(text);
+        const formattedDateTime = decrypData ? decrypData.replace("T", " ") : null;
+        return (
+            <>
+                {formattedDateTime ? <div>{formattedDateTime}</div> : null}
+            </>
+        );
     },
-  },
+},
+
   {
     title: "Image",
     dataIndex: "image",
@@ -306,19 +308,32 @@ const Reports = () => {
   }, []);
 
   const downloadExcel = () => {
-    // Convert JSON to Excel
-    const ws = XLSX.utils.json_to_sheet(tableData);
+    // Prepare the table data with correct headers
+    const formattedTableData = reportData.map((item) => ({
+        "Product Name": decryptAES(item.product),
+        "Defect Name": decryptAES(item.defect),
+        "Machine Name": decryptAES(item.machine),
+        "Department Name": decryptAES(item.department),
+        "Recorded Date Time": decryptAES(item.recorded_date_time).replace("T", " "),
+        // "Image": decryptAES(item.image) ,
+        "Image Link": {
+          v: decryptAES(item.image), // Displayed text
+          l: { Target: decryptAES(item.image), Tooltip: 'Click to view the image' } // Hyperlink
+      }
+  }));
+    // Convert JSON to Excel with correct headers
+    const ws = XLSX.utils.json_to_sheet(formattedTableData);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+    XLSX.utils.book_append_sheet(wb, ws, "Report");
 
     // Save Excel file
     const wbout = XLSX.write(wb, { bookType: "xlsx", type: "binary" });
 
     const s2ab = (s) => {
-      const buf = new ArrayBuffer(s.length);
-      const view = new Uint8Array(buf);
-      for (let i = 0; i < s.length; i++) view[i] = s.charCodeAt(i) & 0xff;
-      return buf;
+        const buf = new ArrayBuffer(s.length);
+        const view = new Uint8Array(buf);
+        for (let i = 0; i < s.length; i++) view[i] = s.charCodeAt(i) & 0xff;
+        return buf;
     };
 
     const blob = new Blob([s2ab(wbout)], { type: "application/octet-stream" });
@@ -327,14 +342,15 @@ const Reports = () => {
     // Create link and trigger download
     const a = document.createElement("a");
     a.href = url;
-    a.download = "data.xlsx";
+    a.download = "report.xlsx";
     document.body.appendChild(a);
     a.click();
     setTimeout(() => {
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
     }, 0);
-  };
+};
+
 
 
   const resetFilter = () => {

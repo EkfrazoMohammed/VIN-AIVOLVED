@@ -55,3 +55,8 @@ export const decryptAESInt = (encryptedData) => {
 };
 
 
+// // Use this function to decrypt your plantId
+// const plantId = "6bqFrMzOccpSQ9NLolXQOQ==";
+// const decryptedPlantId = decryptAESInt(plantId);
+// console.log(typeof decryptedPlantId);
+

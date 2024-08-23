@@ -114,7 +114,7 @@ const ResetPasswordEmail = () => {
                 gap: "0.5rem",
               }}
             >
-              <h2 style={{ margin: "0.5rem 0" }}>Enter Email</h2>
+              <h2 style={{ margin: "0.5rem 0",fontWeight:"600" }}>Email</h2>
               <input
                 type="email"
                 style={{
@@ -126,7 +126,7 @@ const ResetPasswordEmail = () => {
                   outline: "none",
                 }}
                 name="email"
-                placeholder="Email id"
+                placeholder="Enter Email id"
                 onChange={handleChange}
                 value={resetPayload.email}
                 />
@@ -154,6 +154,7 @@ const ResetPasswordEmail = () => {
                   fontWeight: "600",
                   fontSize: "1rem",
                   cursor: "pointer",
+                  margin:"5px"
                 }}
                 onClick={confirmEmail}
               >
