@@ -82,12 +82,12 @@ const ProductAndDefect = ({ chart1, chart2 }) => {
         <span className="section-title-overlay">Defects</span>
       </h1>
       <div className="flex items-center space-x-4 mb-4">
-      
+
       </div>
       <div className="flex items-center mb-4 ">
         <div className="text-lg">
-          <span className="font-semibold text-red-500">Total Defects:</span>{" "}
-          <span className="text-red-500">333</span>
+          {/* <span className="font-semibold text-red-500">Total Defects:</span>{" "}
+          <span className="text-red-500">333</span> */}
         </div>
       </div>
       <div className="flex w-full gap-3">
