@@ -41,16 +41,6 @@ import {
   getDashboardFailure,
 } from "../redux/slices/dashboardSlice";
 
-import {
-  setAismartviewData,
-  setSelectedDefectAismartview,
-  setErrorMessage,
-  setLoading,
-  setLoader,
-  updatePagination,
-  setCurrentSlideIndex, // Export the action
-} from "../redux/slices/aismartviewSlice";
-
 export const baseURL =
   process.env.REACT_APP_API_BASE_URL || "https://huldev.aivolved.in/api/";
 

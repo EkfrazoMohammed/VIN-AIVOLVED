@@ -2,18 +2,16 @@ import React, { useState, useEffect } from "react";
 import ReactApexChart from "react-apexcharts";
 import { Typography } from "antd";
 import axios from "axios";
-import {  baseURL } from "../../API/API";
+import { baseURL } from "../../API/API";
 import LoaderIcon from "../LoaderIcon";
+import { useSelector } from "react-redux";
 
-import { useSelector, useDispatch } from "react-redux";
 function StackChart({ data }) {
   const accessToken = useSelector((state) => state.auth.authData[0].accessToken);
-  
   const { Title } = Typography;
   const [defectColors, setDefectColors] = useState({});
 
   useEffect(() => {
-    // Fetch defect colors from the API
     axios
       .get(`${baseURL}defect/`, {
         headers: {
@@ -21,12 +19,10 @@ function StackChart({ data }) {
         },
       })
       .then((response) => {
-        // Organize the response data as an object with defect names as keys and color codes as values
         const colors = {};
         response.data.results.forEach((defect) => {
           colors[defect.name] = defect.color_code;
         });
-        // Set the defect colors state
         setDefectColors(colors);
       })
       .catch((error) => {
@@ -34,15 +30,13 @@ function StackChart({ data }) {
       });
   }, []);
 
-  // Extract unique defect names
   const defectNames = [
     ...new Set(Object.values(data).flatMap((defects) => Object.keys(defects))),
   ];
-  // Sort the dates in ascending order
   const sortedDates = Object.keys(data).sort(
     (a, b) => new Date(a) - new Date(b)
   );
-  // Prepare series data
+
   const seriesData = defectNames.map((defectName, index) => {
     return {
       name: defectName,
@@ -53,7 +47,6 @@ function StackChart({ data }) {
     };
   });
 
-  // Prepare data for the chart
   const chartData = {
     series: seriesData,
     options: {
@@ -67,21 +60,24 @@ function StackChart({ data }) {
         zoom: {
           enabled: true,
         },
+        animations: {
+          enabled: false,
+        },
       },
       xaxis: {
         type: "category",
         categories: sortedDates,
         labels: {
+          rotate: -45,
           style: {
-            fontSize: "14px",
+            fontSize: "12px",
             fontWeight: 600,
             colors: ["#8c8c8c"],
-            margin: "10px",
           },
         },
       },
       yaxis: {
-        min: 0, // Set the minimum value of y-axis to 0
+        min: 0,
         labels: {
           style: {
             fontSize: "14px",
@@ -97,27 +93,49 @@ function StackChart({ data }) {
       fill: {
         opacity: 1,
       },
+      plotOptions: {
+        bar: {
+          columnWidth: "50%",
+        },
+      },
     },
   };
 
+  const daysToShow = 7; 
+  const baseWidth = 500; 
+  const additionalWidthPerDay = 70;
+  const chartWidth =
+    sortedDates.length > daysToShow
+      ? baseWidth + (sortedDates.length - daysToShow) * additionalWidthPerDay
+      : baseWidth;
 
   if (!data || Object.keys(data).length === 0) {
-    return (
-      <LoaderIcon text={"Loading..."} />
-    );
+    return <LoaderIcon text={"Loading..."} />;
   }
 
   return (
     <div>
       <div>
-        <Title level={5} className="text-left font-semibold"> Bar Graph for Defects</Title>
+        <Title level={5} className="text-left font-semibold">
+          Bar Graph for Defects
+        </Title>
       </div>
       <ReactApexChart
-        options={chartData.options}
-        series={chartData.series}
-        type="bar"
-        height={350}
-      />
+            options={chartData.options}
+            series={chartData.series}
+            type="bar"
+            height={350}
+          />
+      {/* <div style={{ width: "100%", overflowX: "auto" }}>
+        <div style={{ minWidth: `${chartWidth}px`, width: "auto" }}>
+          <ReactApexChart
+            options={chartData.options}
+            series={chartData.series}
+            type="bar"
+            height={350}
+          />
+        </div>
+      </div> */}
     </div>
   );
 }

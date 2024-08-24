@@ -3,10 +3,10 @@ import ReactApexChart from "react-apexcharts";
 import { Typography } from "antd";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import {  baseURL } from "../../API/API";
+import { baseURL } from "../../API/API";
 import LoaderIcon from "../LoaderIcon";
 
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 function PieChart({ data, selectedDate }) {
   const accessToken = useSelector((state) => state.auth.authData[0].accessToken);
@@ -18,7 +18,6 @@ function PieChart({ data, selectedDate }) {
   const [defectData, setDefectData] = useState([]);
 
   useEffect(() => {
-    // Fetch defect colors from the API
     axios
       .get(`${baseURL}defect/`, {
         headers: {
@@ -36,7 +35,7 @@ function PieChart({ data, selectedDate }) {
       .catch((error) => {
         console.error("Error fetching defect colors:", error);
       });
-  }, []);
+  }, [accessToken]);
 
   useEffect(() => {
     if (!data || typeof data !== "object") return;
@@ -61,7 +60,6 @@ function PieChart({ data, selectedDate }) {
     return <LoaderIcon text={"Loading..."} />;
   }
 
-  let clickedVal;
   return (
     <div>
       <div>
@@ -80,27 +78,31 @@ function PieChart({ data, selectedDate }) {
               dataPointSelection: (event, chartContext, opts) => {
                 const clickedIndex = opts.dataPointIndex;
                 const clickedLabel = chartData.labels[clickedIndex];
-                clickedVal = defectData.filter(
+                const clickedVal = defectData.filter(
                   (val) => val.name === clickedLabel
                 );
-              },
-              click: (event, chartContext, opts) => {
-                if (opts?.globals?.selectedDataPoints[0]?.length > 0) {
-                  navigate(`/reports`, { state: { clickedVal } });
-                }
+                navigate(`/reports`, { state: { clickedVal } });
               },
             },
           },
           colors: chartData.labels.map((label, index) => {
-            const predefinedColors = [
-              "#FF5733", "#e31f09", "#3357FF"
-            ];
+            const predefinedColors = ["#FF5733", "#e31f09", "#3357FF"];
             return (
               defectColors[label] ||
               predefinedColors[index % predefinedColors.length]
             );
           }),
           labels: chartData.labels,
+          legend: {
+            position: "bottom",
+            horizontalAlign: "center",
+            fontSize: "14px",
+            markers: {
+              width: 10,
+              height: 10,
+              radius: 12,
+            },
+          },
           responsive: [
             {
               breakpoint: 480,
@@ -110,19 +112,6 @@ function PieChart({ data, selectedDate }) {
                 },
                 legend: {
                   position: "bottom",
-                },
-                markers: {
-                  size: 6,
-                  shape: undefined, // circle, square, line, plus, cross
-                  strokeWidth: 2,
-                  fillColors: undefined,
-                  radius: 2,
-                  customHTML: undefined,
-                  onClick: function () {
-                    return null;
-                  },
-                  offsetX: 0,
-                  offsetY: 0,
                 },
               },
             },
