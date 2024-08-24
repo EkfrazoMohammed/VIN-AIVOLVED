@@ -25,6 +25,7 @@ const reportSlice = createSlice({
             };
         },
         updatePage: (state, action) => {
+            console.log(action.payload)
             state.pagination.current = action.payload.current;
             state.pagination.pageSize = action.payload.pageSize;
         },
@@ -35,18 +36,18 @@ const reportSlice = createSlice({
             state.reportData = action.payload.reportData;
         },
         reportSignout: (state, action) => {
-            state.reportData=null;
-            state.pagination={
-        current: 1,
-        pageSize: 10,
-        total: 0,
-        position: ["topRight"],
-        showSizeChanger: true,
-    }
+            state.reportData = null;
+            state.pagination = {
+                current: 1,
+                pageSize: 10,
+                total: 0,
+                position: ["topRight"],
+                showSizeChanger: true,
+            }
         },
-        
+
     },
 });
 
-export const { getReportData, updatePage, filterData, resetFilter,reportSignout } = reportSlice.actions;
+export const { getReportData, updatePage, filterData, resetFilter, reportSignout } = reportSlice.actions;
 export default reportSlice.reducer;

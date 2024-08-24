@@ -180,6 +180,7 @@ const Reports = () => {
 
   const initialReportData = () => {
     setLoader(true)
+    console.log(pagination)
     reportApi(localPlantData?.id, pagination.pageSize, accessToken, pagination.current, apiCallInterceptor)
       .then(res => {
         const { page_size, total_count, results } = res;
@@ -198,14 +199,21 @@ const Reports = () => {
       });
   }
   useEffect(() => {
-    initialReportData()
+
+    if (filterActive) {
+      handleApplyFilters()
+    }
+    else {
+      initialReportData()
+    }
+
+
   }, [pagination.current, pagination.pageSize, accessToken]);
 
 
 
 
   const handleTableChange = (pagination) => {
-
     dispatch(updatePage({
       current: pagination.current,
       pageSize: pagination.pageSize,
@@ -360,15 +368,16 @@ const Reports = () => {
     }, 0);
   };
 
-
-
-  const resetFilter = () => {
-
+  const resetFilter = async () => {
     setfilterActive(false);
     setSelectedDate(null);
     dispatch(setSelectedMachine(null)); // Dispatching action    
     dispatch(setSelectedProduct(null)); // Dispatching action 
     dispatch(setSelectedDefect(null)); // Dispatching action 
+    dispatch(updatePage({
+      current: 1,
+      pageSize: pagination.pageSize,
+    }));
     initialReportData()
   };
 
