@@ -246,13 +246,10 @@ const Reports = () => {
   };
 
   const handleApplyFilters = (page, pageSize) => {
-
-
-
     // Initialize URLSearchParams
     const params = {
-      page: 1,
-      page_size: pageSize,
+      page: pagination.current,
+      page_size: pagination.pageSize,
       plant_id: encryptAES(JSON.stringify(localPlantData?.id)) || undefined,
       from_date: dateRange?.[0] || undefined,
       to_date: dateRange?.[1] || undefined,
