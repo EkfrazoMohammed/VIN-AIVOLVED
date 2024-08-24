@@ -198,14 +198,21 @@ const Reports = () => {
       });
   }
   useEffect(() => {
-    initialReportData()
+
+    if (filterActive) {
+      handleApplyFilters()
+    }
+    else {
+      initialReportData()
+    }
+
+
   }, [pagination.current, pagination.pageSize, accessToken]);
 
 
 
 
   const handleTableChange = (pagination) => {
-
     dispatch(updatePage({
       current: pagination.current,
       pageSize: pagination.pageSize,
@@ -362,14 +369,16 @@ const Reports = () => {
 
 
 
-  const resetFilter = () => {
-
+  const resetFilter = async () => {
     setfilterActive(false);
     setSelectedDate(null);
     dispatch(setSelectedMachine(null)); // Dispatching action    
     dispatch(setSelectedProduct(null)); // Dispatching action 
     dispatch(setSelectedDefect(null)); // Dispatching action 
-    initialReportData()
+    dispatch(updatePage({
+      current: 1,
+      pageSize: 10,
+    }));
   };
 
   return (
