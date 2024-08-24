@@ -180,6 +180,7 @@ const Reports = () => {
 
   const initialReportData = () => {
     setLoader(true)
+    console.log(pagination)
     reportApi(localPlantData?.id, pagination.pageSize, accessToken, pagination.current, apiCallInterceptor)
       .then(res => {
         const { page_size, total_count, results } = res;
@@ -367,8 +368,6 @@ const Reports = () => {
     }, 0);
   };
 
-
-
   const resetFilter = async () => {
     setfilterActive(false);
     setSelectedDate(null);
@@ -377,8 +376,9 @@ const Reports = () => {
     dispatch(setSelectedDefect(null)); // Dispatching action 
     dispatch(updatePage({
       current: 1,
-      pageSize: 10,
+      pageSize: pagination.pageSize,
     }));
+    initialReportData()
   };
 
   return (
