@@ -353,10 +353,10 @@ const DashboardContentLayout = ({ children }) => {
         <>
           <div className="dx-row flex  pb-4 gap-3">
             <TotalOverview />
-            <div className="overview-container w-9/12 h-[257px] flex flex-col justify-between p-3 rounded-md border-2">
+            <div className="overview-container w-9/12 flex flex-col justify-between p-3 rounded-md border-2">
               <div className="filter-lg-w">
                 <div className="inner-w">
-                  <div className="flex items-center space-x-4 mb-4 h-[40px]">
+                  <div className="flex flex-wrap items-start gap-2 mb-4">
                     {/* <button className="p-2 bg-gray-200 rounded h-full w-[40px] flex justify-center items-center">
                       <IoFilterSharp />
                     </button> */}
@@ -432,13 +432,13 @@ const DashboardContentLayout = ({ children }) => {
                       </Button>
                     )}
                   </div>
-                  <div className="grid grid-cols-4 gap-4 h-[150px]">
+                  <div className="grid grid-cols-4 gap-4">
                     <div className=" bg-gray-100 rounded-xl text-left flex flex-col">
                       <div className="flex justify-between items-center p-3 flex-1 text-lg w-full gap-3">
                         <span>Active Machines</span>
                         <VideoCameraOutlined />
                       </div>
-                      <Dropdown overlay={menu} trigger={["click"]} className="h-[70px] text-[35px] text-gray-500 font-semibold bg-gray-200 p-3">
+                      <Dropdown overlay={menu} trigger={["click"]} className=" text-[35px] text-gray-500 font-semibold bg-gray-200 p-3">
                         <div className="number" style={{ cursor: "pointer" }}>
                           <div className=" flex items-center justify-between">
                             {activeMachines.length}
@@ -452,7 +452,7 @@ const DashboardContentLayout = ({ children }) => {
                         <span>Defect Classification</span>
                         <BugOutlined />
                       </div>
-                      <Dropdown overlay={defectMenu} trigger={["click"]} className="h-[70px] text-[35px] text-gray-500 font-semibold bg-gray-200 p-3">
+                      <Dropdown overlay={defectMenu} trigger={["click"]} className="text-[35px] text-gray-500 font-semibold bg-gray-200 p-3">
                         <div className="number" style={{ cursor: "pointer" }}>
                           <div className="flex items-center justify-between">
                             {Object.keys(categoryDefects).length}
@@ -466,7 +466,7 @@ const DashboardContentLayout = ({ children }) => {
                         <span>No. of SKU</span>
                         <AlertOutlined />
                       </div>
-                      <Dropdown overlay={prodMenu} trigger={["click"]} className="h-[70px] text-[35px] text-gray-500 font-semibold bg-gray-200 p-3">
+                      <Dropdown overlay={prodMenu} trigger={["click"]} className="text-[35px] text-gray-500 font-semibold bg-gray-200 p-3">
                         <div className="number" style={{ cursor: "pointer" }}>
                           <div className="flex items-center justify-between">
                             {Object.keys(tableDataReduxActive).length}

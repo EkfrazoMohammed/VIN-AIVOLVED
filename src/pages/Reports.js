@@ -295,6 +295,7 @@ const Reports = () => {
 
     setLoader(true);
 
+
     apiCallInterceptor
       .get(url, {
         headers: {
