@@ -140,7 +140,6 @@ const Defects = ({ defectsdata }) => {
   };
 
   const handleRefresh = () => {
-    window.location.reload()
     setTableData(defectsdata)
     setSelectedValue(null);
   };

@@ -149,7 +149,7 @@ const Reports = () => {
   // REDUX CALLING
   const dispatch = useDispatch()
   const reportData = useSelector((state) => state.report.reportData);
-  const pagination = useSelector((state) => state.report.pagination);
+  // const pagination = useSelector((state) => state.report.pagination);
   const localPlantData = useSelector((state) => state.plant.plantData[0]);
   const accessToken = useSelector(
     (state) => state.auth.authData[0].accessToken
@@ -178,9 +178,19 @@ const Reports = () => {
 
 
 
+  // PAGINATION
+
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+    position: ["topRight"],
+    showSizeChanger: true,
+  })
+
   const initialReportData = () => {
+
     setLoader(true)
-    console.log(pagination)
     reportApi(localPlantData?.id, pagination.pageSize, accessToken, pagination.current, apiCallInterceptor)
       .then(res => {
         const { page_size, total_count, results } = res;
@@ -190,6 +200,7 @@ const Reports = () => {
           pageSize: pagination.pageSize,
           total: total_count,
         }));
+        setPagination((prev) => ({ ...prev, pageSize: page_size, total: total_count }))
         setLoader(false)
       })
       .catch(err => {
@@ -198,27 +209,29 @@ const Reports = () => {
 
       });
   }
+
   useEffect(() => {
+    if (!filterActive) {
+      initialReportData(); // fetch data without filters
+    }
+  }, [pagination.current, pagination.pageSize, accessToken, filterActive]);
 
+  // Fetch filtered data when filters are applied or pagination changes while filters are active
+  useEffect(() => {
     if (filterActive) {
-      handleApplyFilters()
+      handleApplyFilters(pagination.current); // fetch data with filters applied
     }
-    else {
-      initialReportData()
-    }
-
-
-  }, [pagination.current, pagination.pageSize, accessToken]);
+  }, [pagination.current, pagination.pageSize, accessToken, filterActive]);
 
 
 
 
-  const handleTableChange = (pagination) => {
+  const handleTableChange = (pagtn) => {
+    setPagination((prev) => ({ ...prev, current: pagtn.current, pageSize: pagtn.pageSize, }))
     dispatch(updatePage({
-      current: pagination.current,
-      pageSize: pagination.pageSize,
-    }));
-
+      current: pagtn.current,
+      pageSize: pagtn.pageSize
+    }))
   };
 
 
@@ -245,10 +258,10 @@ const Reports = () => {
     }
   };
 
-  const handleApplyFilters = (page, pageSize) => {
+  const handleApplyFilters = (page = 1) => {
     // Initialize URLSearchParams
     const params = {
-      page: pagination.current,
+      page: page, // Ensure this uses the provided page (default is 1)
       page_size: pagination.pageSize,
       plant_id: encryptAES(JSON.stringify(localPlantData?.id)) || undefined,
       from_date: dateRange?.[0] || undefined,
@@ -257,6 +270,7 @@ const Reports = () => {
       product_id: selectedProductRedux || undefined,
       defect_id: selectedDefectRedux || undefined,
     };
+
     // Filter out undefined or null values from query parameters
     const filteredQueryParams = Object.fromEntries(
       Object.entries(params).filter(
@@ -267,9 +281,7 @@ const Reports = () => {
     const encryptedUrl = Object.fromEntries(
       Object.entries(filteredQueryParams).map(([key, val]) => {
         if (key !== "page" && key !== "page_size" && key !== "plant_id") {
-          // Encrypt values except dates
           if (key === "from_date" || key === "to_date") {
-            // Ensure date is passed as plain string without quotes
             return [key, encryptAES(val)];
           }
           return [key, encryptAES(JSON.stringify(val))];
@@ -278,20 +290,11 @@ const Reports = () => {
       })
     );
 
-
-
-
-
-
-    // Create the query string
     const queryString = new URLSearchParams(encryptedUrl).toString();
-    // Construct the final URL
     const url = `reports/?${queryString}`;
 
-    // Set loader to true before making the API call
     setLoader(true);
 
-    // Make the API call using axiosInstance
     apiCallInterceptor
       .get(url, {
         headers: {
@@ -303,13 +306,20 @@ const Reports = () => {
 
         dispatch(getReportData({
           reportData: results,
-          current: pagination.current,
+          current: page,
           pageSize: pagination.pageSize,
           total: total_count,
         }));
+
+        setPagination((prev) => ({
+          ...prev,
+          current: page, // Update current page
+          pageSize: page_size,
+          total: total_count,
+        }));
+
         setLoader(false);
         setfilterActive(true);
-
       })
       .catch((error) => {
         console.error("Error fetching filtered reports data:", error);
@@ -371,10 +381,7 @@ const Reports = () => {
     dispatch(setSelectedMachine(null)); // Dispatching action    
     dispatch(setSelectedProduct(null)); // Dispatching action 
     dispatch(setSelectedDefect(null)); // Dispatching action 
-    dispatch(updatePage({
-      current: 1,
-      pageSize: pagination.pageSize,
-    }));
+    setPagination((prev) => ({ ...prev, current: 1, pageSize: 10 }))
     initialReportData()
   };
 

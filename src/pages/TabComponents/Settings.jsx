@@ -38,7 +38,7 @@ const Alerts = () => {
     employee_id: ""
   })
 
-  const closeModalUser=()=>{
+  const closeModalUser = () => {
     setModal2Open(false)
     setData({
       first_name: "",
@@ -181,7 +181,7 @@ const Alerts = () => {
             <h6>{currentUserData?.userId}</h6>
           </div>
           <div className="flex flex-col gap-2">
-            <h6 className='font-bold'>User Name:</h6>
+            <h6 className='font-bold'>Email:</h6>
             <h6>{currentUserData?.userName}</h6>
           </div>
 
@@ -189,11 +189,11 @@ const Alerts = () => {
       </Row>
       <Row style={{ display: 'flex', gap: '2rem', flexDirection: 'column', marginTop: '1rem' }}>
         <Col style={{ display: 'flex', alignItems: 'center', gap: '1rem' }} span={8}>
-          <h5 style={{ fontWeight: 650, marginBottom: 0 ,minWidth:"200px"}}>Send email notification</h5>
+          <h5 style={{ fontWeight: 650, marginBottom: 0, minWidth: "200px" }}>Send email notification</h5>
           <Switch defaultChecked />
         </Col>
-        <Col style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}  span={8}>
-          <h5 style={{ fontWeight: 650, marginBottom: 0  ,minWidth:"200px"}}>Send sms notification</h5>
+        <Col style={{ display: 'flex', alignItems: 'center', gap: '1rem' }} span={8}>
+          <h5 style={{ fontWeight: 650, marginBottom: 0, minWidth: "200px" }}>Send sms notification</h5>
           <Switch defaultChecked />
         </Col>
       </Row>
@@ -208,17 +208,18 @@ const Alerts = () => {
         {
           loading ?
             <div className="" style={{ display: 'flex', justifyContent: 'center', width: '100%', minHeight: '250px', alignItems: 'center' }}>
+
               <ColorRing
                 height="80"
                 width="80"
                 ariaLabel="color-ring-loading"
                 wrapperClass="color-ring-wrapper"
-                colors={['#008ffb', '#008ffb', '#008ffb', '#008ffb', '#008ffb']}
+                colors={['#F55027', '#F55027', '#F55027', '#BC1C57', '#BC1C57']}
               />
             </div>
             :
             <>
-              <div className="" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', padding: '1rem' , fontWeight:'600'}}>
+              <div className="" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', padding: '1rem', fontWeight: '600' }}>
                 <div className="">
 
                   <Input placeholder="Enter Your First Name" type='text' name='first_name' value={data.first_name} onChange={handleChange} helper className='p-2' />
@@ -226,25 +227,25 @@ const Alerts = () => {
                 </div>
                 <div className="">
 
-                  <Input placeholder="Enter Your Last Name" type='text' name='last_name' value={data.last_name} onChange={handleChange}  className='p-2'/>
+                  <Input placeholder="Enter Your Last Name" type='text' name='last_name' value={data.last_name} onChange={handleChange} className='p-2' />
                   {error.lastName ? <span style={{ fontWeight: '600', color: 'red' }}>{error.lastName}</span> : ""}
                 </div>
 
 
                 <div className="">
 
-                  <Input placeholder="Enter Your Phone Number" type='number' name='phone_number' value={data.phone_number} onChange={handleChange}  className='p-2'/>
+                  <Input placeholder="Enter Your Phone Number" type='number' name='phone_number' value={data.phone_number} onChange={handleChange} className='p-2' />
                   {error.Phone ? <span style={{ fontWeight: '600', color: 'red' }}>{error.Phone}</span> : ""}
                 </div>
 
                 <div className="">
 
-                  <Input placeholder="Enter Your Email" type='email' name='email' value={data.email} onChange={handleChange}  className='p-2'/>
+                  <Input placeholder="Enter Your Email" type='email' name='email' value={data.email} onChange={handleChange} className='p-2' />
                   {error.email ? <span style={{ fontWeight: '600', color: 'red' }}>{error.email}</span> : ""}
                 </div>
                 <div className="">
 
-                  <Input placeholder="Enter Your Employee Id" type='text' name='employee_id' value={data.employee_id} onChange={handleChange}  className='p-2'/>
+                  <Input placeholder="Enter Your Employee Id" type='text' name='employee_id' value={data.employee_id} onChange={handleChange} className='p-2' />
                   {error.employee_id ? <span style={{ fontWeight: '600', color: 'red' }}>{error.employee_id}</span> : ""}
                 </div>
 

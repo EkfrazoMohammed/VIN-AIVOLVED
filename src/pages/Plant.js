@@ -178,13 +178,13 @@ const Plant = () => {
                           onClick={() => handleStorage([plant])}
                         >
                           <div className="custom-card-content flex flex-col items-center">
-                          
+
                             <img
                               src='https://eimkeia.stripocdn.email/content/guids/CABINET_8270216c780e362a1fbcd636b59c67ae376eb446dc5f95e17700b638b8c3f618/images/131321hulremovebgpreview.png'
-                              style={{ width: "90%", height: "90%", borderRadius: "50%", }}
+                              style={{ width: "100%", height: "100%", borderRadius: "50%", }}
                               alt=""
                             />
-                            <h3>{plant.plant_name}</h3>
+                            <h3 className="font-semibold text-xl">{plant.plant_name}</h3>
                           </div>
                         </Card>
                       </Col>

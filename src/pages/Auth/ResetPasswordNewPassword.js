@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import axiosInstance from "../../API/axiosInstance";
 import { encryptAES } from "../../redux/middleware/encryptPayloadUtils";
 import { notification } from "antd";
 import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
+
 
 const PasswordResetForm = () => {
   const { id } = useParams(); // Capture the identifier from the route
@@ -15,7 +16,7 @@ const PasswordResetForm = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
   const [api] = notification.useNotification();
-  const [error,setError] = useState("");
+  const [error, setError] = useState("");
   const openNotification = (param) => {
     const { status, message } = param;
     api[status]({
@@ -23,7 +24,7 @@ const PasswordResetForm = () => {
       duration: 3, // Notification will auto-close after 3 seconds
     });
   };
- 
+
   const validatePassword = (password) => {
     // Password validation criteria
     const minLength = 8;
@@ -48,12 +49,12 @@ const PasswordResetForm = () => {
     const passwordError = validatePassword(value);
     setPasswordError(passwordError);
 
-    // Check if confirm password is matching
-    if (value !== confirmPassword) {
-      setConfirmPasswordError("Passwords do not match!");
-    } else {
-      setConfirmPasswordError("");
-    }
+    // // Check if confirm password is matching
+    // if (value !== confirmPassword) {
+    //   setConfirmPasswordError("Passwords do not match!");
+    // } else {
+    //   setConfirmPasswordError("");
+    // }
   };
 
   const handleConfirmPasswordChange = (e) => {
@@ -100,10 +101,10 @@ const PasswordResetForm = () => {
           status: "success",
           message: "Password updated successfully",
         });
-setPassword("");
-setConfirmPassword("");
-setPasswordError("");
-setConfirmPasswordError("");
+        setPassword("");
+        setConfirmPassword("");
+        setPasswordError("");
+        setConfirmPasswordError("");
       }
     } catch (err) {
       // Handle error
@@ -114,6 +115,9 @@ setConfirmPasswordError("");
       });
     }
   };
+
+
+
 
   return (
     <div
@@ -127,6 +131,7 @@ setConfirmPasswordError("");
         justifyContent: "center",
       }}
     >
+
       <div className="bg-white p-6 rounded-xl w-full max-w-md">
         <div className="flex justify-center mb-2">
           <img
@@ -143,92 +148,97 @@ setConfirmPasswordError("");
             Reset Password
           </h2>
 
-          {error && <div className="text-red-500 mb-4">{error}</div>}
-          
+          {error && <div className="text-red-500 mb-4 text-sm">{error}</div>}
 
-          <div className="mb-4 relative">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="password"
-            >
-              New Password
-            </label>
-            <input
-              id="password"
-              type={passwordVisible ? "text" : "password"}
-              value={password}
-              onChange={handlePasswordChange}
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-            <button
-              type="button"
-              className="absolute inset-y-9 right-0 pr-3 flex items-center h-[20px]"
-              onClick={() => setPasswordVisible(!passwordVisible)}
-            >
-              {passwordVisible ? (
-                <EyeOutlined className="text-gray-500" />
-              ) : (
-                <EyeInvisibleOutlined className="text-gray-500" />
-              )}
-            </button>
-            {passwordError && <div className="text-red-500 mt-1">{passwordError}</div>}
-          </div>
-          
-          <div className="mb-4 relative">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="confirmPassword"
-            >
-              Confirm Password
-            </label>
-            <input
-              id="confirmPassword"
-              type={confirmPasswordVisible ? "text" : "password"}
-              value={confirmPassword}
-              onChange={handleConfirmPasswordChange}
-              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-            <button
-              type="button"
-              className="absolute inset-y-9 right-0 pr-3 flex items-center h-[20px]"
-              onClick={() => setConfirmPasswordVisible(!confirmPasswordVisible)}
-            >
-              {confirmPasswordVisible ? (
-                <EyeOutlined className="text-gray-500" />
-              ) : (
-                <EyeInvisibleOutlined className="text-gray-500" />
-              )}
-            </button>
-            {confirmPasswordError && <div className="text-red-500 mt-1">{confirmPasswordError}</div>}
-          </div>
-{passwordError ==="" || passwordError == null || confirmPasswordError ==="" || confirmPasswordError ==null ? <>
-<button
+          {
+            success ?
+              <div className="mb-4 text-center">
+                <span className="text-green-500 text-lg font-bold">Password reset successfully. <br />Please login with new password.</span>
+                <Link to={"/login"} className="text-blue-500 font-bold ml-2">Login</Link>
+              </div>
+              :
+              <>
 
-onClick={handleSubmit}
-            type="submit"
-            className="w-full bg-[#ff4403] text-white font-bold py-2 px-4 rounded hover:bg-red-600 transition-colors duration-300"
-          >
-            Reset Password2
-          </button>
-</>:<>
-  <button
-            type="submit"
-            className="w-full bg-[#ff4403] text-white font-bold py-2 px-4 rounded hover:bg-red-600 transition-colors duration-300"
-          >
-            Reset Password1
-          </button>
-</>}
+                <div className="mb-4 relative">
+                  <label
+                    className="block text-gray-700 text-sm font-bold mb-2"
+                    htmlFor="password"
+                  >
+                    New Password
+                  </label>
+                  <input
+                    id="password"
+                    type={passwordVisible ? "text" : "password"}
+                    value={password}
+                    onChange={handlePasswordChange}
+                    className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="absolute inset-y-9 right-0 pr-3 flex items-center h-[20px]"
+                    onClick={() => setPasswordVisible(!passwordVisible)}
+                  >
+                    {passwordVisible ? (
+                      <EyeOutlined className="text-gray-500" />
+                    ) : (
+                      <EyeInvisibleOutlined className="text-gray-500" />
+                    )}
+                  </button>
+                  {passwordError && <div className="text-red-500 mt-1 text-sm">{passwordError}</div>}
+                </div>
 
-{success && (
-            <div className="mb-4">
-              <span className="text-green-500">Password reset successfully. <br />Please login with new password.</span>
-              <Link to={"/login"} className="text-blue-500 font-bold ml-2">Login</Link>
-            </div>
-          )}
-         
+                <div className="mb-4 relative">
+                  <label
+                    className="block text-gray-700 text-sm font-bold mb-2"
+                    htmlFor="confirmPassword"
+                  >
+                    Confirm Password
+                  </label>
+                  <input
+                    id="confirmPassword"
+                    type={confirmPasswordVisible ? "text" : "password"}
+                    value={confirmPassword}
+                    onChange={handleConfirmPasswordChange}
+                    className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="absolute inset-y-9 right-0 pr-3 flex items-center h-[20px]"
+                    onClick={() => setConfirmPasswordVisible(!confirmPasswordVisible)}
+                  >
+                    {confirmPasswordVisible ? (
+                      <EyeOutlined className="text-gray-500" />
+                    ) : (
+                      <EyeInvisibleOutlined className="text-gray-500" />
+                    )}
+                  </button>
+                  {confirmPasswordError && <div className="text-red-500 mt-1  text-sm">{confirmPasswordError}</div>}
+                </div>
+                {passwordError === "" || passwordError == null || confirmPasswordError === "" || confirmPasswordError == null ? <>
+                  <button
+
+                    onClick={handleSubmit}
+                    type="submit"
+                    className="w-full bg-[#ff4403] text-white font-bold py-2 px-4 rounded hover:bg-red-600 transition-colors duration-300"
+                  >
+                    Reset Password2
+                  </button>
+                </> : <>
+                  <button
+                    type="submit"
+                    className="w-full bg-[#ff4403] text-white font-bold py-2 px-4 rounded hover:bg-red-600 transition-colors duration-300"
+                  >
+                    Reset Password1
+                  </button>
+                </>}
+              </>
+          }
+
+
         </div>
+
       </div>
     </div>
   );

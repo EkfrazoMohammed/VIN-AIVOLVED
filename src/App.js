@@ -32,8 +32,8 @@ const App = () => {
             </ResetPasswordRoute>
           }
         />
-           {/* Protected Route for Plant page, outside of Layout */}
-           <Route element={<ProtectedRouteForPlant />}>
+        {/* Protected Route for Plant page, outside of Layout */}
+        <Route element={<ProtectedRouteForPlant />}>
           <Route path="/plant" element={<Plant />} />
         </Route>
         <Route element={<ProtectedRoutes />}>
