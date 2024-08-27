@@ -362,6 +362,7 @@ const DashboardContentLayout = ({ children }) => {
                     </button> */}
                     <Select
                       className="dx-default-select select-machines"
+
                       showSearch
                       placeholder="Select Machine"
                       value={selectedMachineRedux}
@@ -380,6 +381,7 @@ const DashboardContentLayout = ({ children }) => {
                     </Select>
                     <Select
                       className="dx-default-select"
+                      style={{ width: "200px" }}
                       showSearch
                       placeholder="Select Products"
                       onChange={handleProductChange}
@@ -394,6 +396,7 @@ const DashboardContentLayout = ({ children }) => {
                         <Select.Option
                           key={department.id}
                           value={department.id}
+
                         >
                           {department.name}
                         </Select.Option>

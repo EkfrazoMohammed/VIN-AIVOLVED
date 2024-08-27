@@ -14,7 +14,10 @@ const CurrentTime = () => {
 
   return (
     <div>
-      <p className='w-full text-white bg-[#0000003b] p-2'>{currentDateTime.toLocaleDateString()} {currentDateTime.toLocaleTimeString()}</p>
+      <p className='w-full text-white bg-[#0000003b] text-center py-3 flex gap-3 justify-center'>
+        <span>{currentDateTime.toLocaleDateString()}</span>
+        <span>{currentDateTime.toLocaleTimeString()}</span>
+      </p>
     </div>
   );
 };

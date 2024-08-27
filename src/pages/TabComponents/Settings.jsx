@@ -60,6 +60,7 @@ const Alerts = () => {
   };
   const handlePost = async () => {
     try {
+      const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
       if (data.first_name === "") {
         setError((prev) => ({ ...prev, fistName: "*Please Enter First Name " }))
@@ -75,10 +76,14 @@ const Alerts = () => {
         setError((prev) => ({ ...prev, Phone: "*Please Enter Valid Phone Number " }))
       }
 
-
       if (data.email === "") {
         setError((prev) => ({ ...prev, email: "*Please Enter Email" }))
       }
+      else if (!emailPattern.test(data.email)) {
+        setError((prev) => ({ ...prev, email: "*Please Enter Valid Email" }))
+
+      }
+
       if (data.employee_id === "") {
         setError((prev) => ({ ...prev, employee_id: "*Please Enter Employee Id" }))
       }

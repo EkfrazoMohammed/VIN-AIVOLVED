@@ -38,12 +38,12 @@ const ProductAndDefect = ({ chartData }) => {
       {
         label: "Total Production",
         data: chartData.map((item) => item.total_production),
-        backgroundColor: "rgba(54, 162, 235, 0.6)",
+        backgroundColor: "#58f558",
       },
       {
         label: "Total Defects",
         data: chartData.map((item) => item.total_defects),
-        backgroundColor: "rgba(255, 99, 132, 0.6)",
+        backgroundColor: "#fc5347",
       },
     ],
   };
@@ -99,7 +99,7 @@ const ProductAndDefect = ({ chartData }) => {
     <div className="py-3 w-full ">
       <h1 className="section-title text-xl font-bold text-red-700 mb-4">
         <span className="section-title-overlay font-bold">
-        Production vs Defects
+          Production vs Defects
         </span>
       </h1>
       {/* <div className="flex items-center space-x-4 mb-4">
