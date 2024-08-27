@@ -1,7 +1,7 @@
 
 import { configureStore } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
-import storage from "redux-persist/lib/storage/session"; // session Storage
+import storage from "redux-persist/lib/storage/session";
 import { encryptTransform } from "redux-persist-transform-encrypt";
 import authReducer from "./slices/authSlice";
 import userReducer from "./slices/userSlice"
@@ -15,6 +15,8 @@ import productVsDefectReducer from "./slices/productvsDefectSlice";
 import reportReducer from "./slices/reportSlice"
 import defectReducer from "./slices/defectSlice"
 import aismartviewReducer from "./slices/aismartviewSlice"
+
+
 // Encryption Configuration
 const encryptor = encryptTransform({
   secretKey: process.env.REACT_APP_ENCRYPTION_KEY || "V!N_P0ND!", // Ensure secret key is set in .env
@@ -97,13 +99,13 @@ const rootReducer = {
   user: persistReducer(userPersistConfig, userReducer),
   plant: persistReducer(plantPersistConfig, plantReducer),
   report: persistReducer(reportPersistConfig, reportReducer),
-  dashboard: persistReducer(dashboardPersistConfig,dashboardReducer),
+  dashboard: persistReducer(dashboardPersistConfig, dashboardReducer),
   machine: persistReducer(machinePersistConfig, machineReducer),
   product: persistReducer(productPersistConfig, productReducer),
   department: persistReducer(departmentPersistConfig, departmentReducer),
   dpmu: persistReducer(dpmuPersistConfig, dpmuReducer),
-  productVsDefect: persistReducer(productVsDefectPersistConfig,productVsDefectReducer),
-  defect: persistReducer(defectPersistConfig,defectReducer),
+  productVsDefect: persistReducer(productVsDefectPersistConfig, productVsDefectReducer),
+  defect: persistReducer(defectPersistConfig, defectReducer),
   aismartview: persistReducer(aismartviewPersistConfig, aismartviewReducer),
 };
 

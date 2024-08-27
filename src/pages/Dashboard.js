@@ -681,6 +681,7 @@ function Dashboard() {
               bordered={false}
               className="criclebox  "
               style={{ minHeight: "180px" }}
+            // style={{ minHeight: "180px" }}
             >
               <Dropdown overlay={menu} trigger={["click"]}>
                 <div className="number" style={{ cursor: "pointer" }}>
@@ -763,8 +764,8 @@ function Dashboard() {
               <Card
                 bordered={false}
                 className={`criclebox notification-change ${notifications.length > prevNotificationLength
-                    ? "notification-change"
-                    : ""
+                  ? "notification-change"
+                  : ""
                   }`}
                 style={{ minHeight: "180px" }}
               >
