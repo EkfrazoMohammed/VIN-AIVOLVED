@@ -90,7 +90,7 @@ const Login = () => {
       console.log(error)
       // Notify error
       openNotification("error", error.response?.data?.message
-        || "Invalid Credentialsaa");
+        || "Invalid Credentials");
     } finally {
       setLoading(false);
     }

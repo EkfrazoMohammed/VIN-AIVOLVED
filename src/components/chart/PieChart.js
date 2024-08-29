@@ -10,32 +10,32 @@ import { useSelector } from "react-redux";
 
 function PieChart({ data, selectedDate }) {
   const accessToken = useSelector((state) => state.auth.authData[0].accessToken);
-    
+
   const navigate = useNavigate();
   const { Title } = Typography;
   const [defectColors, setDefectColors] = useState({});
   const [chartData, setChartData] = useState({ labels: [], series: [] });
   const [defectData, setDefectData] = useState([]);
 
-  useEffect(() => {
-    axios
-      .get(`${baseURL}defect/`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
-      .then((response) => {
-        setDefectData(response.data.results);
-        const colors = {};
-        response.data.results.forEach((defect) => {
-          colors[defect.name] = defect.color_code;
-        });
-        setDefectColors(colors);
-      })
-      .catch((error) => {
-        console.error("Error fetching defect colors:", error);
-      });
-  }, [accessToken]);
+  // useEffect(() => {
+  //   axios
+  //     .get(`${baseURL}defect/`, {
+  //       headers: {
+  //         Authorization: `Bearer ${accessToken}`,
+  //       },
+  //     })
+  //     .then((response) => {
+  //       setDefectData(response.data.results);
+  //       const colors = {};
+  //       response.data.results.forEach((defect) => {
+  //         colors[defect.name] = defect.color_code;
+  //       });
+  //       setDefectColors(colors);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching defect colors:", error);
+  //     });
+  // }, [accessToken]);
 
   useEffect(() => {
     if (!data || typeof data !== "object") return;
