@@ -565,7 +565,7 @@ const DashboardContentLayout = ({ children }) => {
                       <IoFilterSharp />
                     </button>
                     <Select
-                      className="dx-default-select select-machines"
+                      className=" select-machines min-w-[200px]"
                       showSearch
                       placeholder="Select Machine"
                       value={selectedMachine}

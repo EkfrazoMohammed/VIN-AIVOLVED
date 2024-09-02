@@ -414,3 +414,9 @@ label::after {
 .slick-prev,.slick-next,.slick-prev:hover:before, .slick-prev:focus:before, .slick-next:hover:before, .slick-next:focus:before {
   opacity: 0 !important;
 }
+:where(.css-dev-only-do-not-override-kghr11).ant-select-dropdown{
+  z-index: 1;
+}
+:where(.css-dev-only-do-not-override-kghr11).ant-picker-dropdown-range{
+  z-index: 99999 !important;
+}

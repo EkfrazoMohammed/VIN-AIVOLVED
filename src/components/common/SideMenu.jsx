@@ -17,12 +17,12 @@ import CurrentTime from "./CurrentTime";
 import { useDispatch, useSelector } from 'react-redux';
 import { signOut } from '../../redux/slices/authSlice';
 import { dashboardSignout } from "../../redux/slices/dashboardSlice";
-import { defectSignout } from "../../redux/slices/defectSlice";
+import { defectSignout, setSelectedDefect } from "../../redux/slices/defectSlice";
 import { departmentSignout } from "../../redux/slices/departmentSlice";
 import { dpmuSignout } from "../../redux/slices/dpmuSlice";
-import { machineSignout } from "../../redux/slices/machineSlice";
+import { machineSignout, setSelectedMachine } from "../../redux/slices/machineSlice";
 import { plantSignOut } from "../../redux/slices/plantSlice";
-import { productSignout } from "../../redux/slices/productSlice";
+import { productSignout, setSelectedProduct } from "../../redux/slices/productSlice";
 import { productVsDefectSignout } from "../../redux/slices/productvsDefectSlice";
 import { reportSignout } from "../../redux/slices/reportSlice";
 import { userSignOut } from "../../redux/slices/userSlice";
@@ -120,6 +120,14 @@ const SideMenu = () => {
     clearReduxData();
   };
 
+
+  const handleClick = () => {
+
+    dispatch(setSelectedMachine(null)); // Dispatching action    
+    dispatch(setSelectedDefect(null)); // Dispatching action 
+    dispatch(setSelectedProduct(null));
+  }
+
   return (
     <>
       {contextHolder}
@@ -165,6 +173,7 @@ const SideMenu = () => {
                 <li className="menu-item">
                   <Link
                     to="/"
+                    onClick={handleClick}
                     className={`${linkStyle} ${isActive("/dashboard")}`}
                   >
                     <TbLayoutDashboard />
@@ -174,6 +183,7 @@ const SideMenu = () => {
                 <li className="menu-item">
                   <Link
                     to="/reports"
+                    onClick={handleClick}
                     className={`${linkStyle} ${isActive("/reports")}`}
                   >
                     <HiOutlineDocumentReport />
@@ -183,6 +193,7 @@ const SideMenu = () => {
                 <li className="menu-item">
                   <Link
                     to="/ai-smart-view"
+                    onClick={handleClick}
                     className={`${linkStyle} ${isActive("/ai-smart-view")}`}
                   >
                     <LuView />
@@ -192,6 +203,7 @@ const SideMenu = () => {
                 <li className="menu-item">
                   <Link
                     to="/machine-parameter"
+                    onClick={handleClick}
                     className={`${linkStyle} ${isActive("/machine-parameter")}`}
                   >
                     <RiListSettingsLine />
@@ -201,6 +213,7 @@ const SideMenu = () => {
                 <li className="menu-item">
                   <Link
                     to="/system-status"
+                    onClick={handleClick}
                     className={`${linkStyle} ${isActive("/system-status")}`}
                   >
                     <MdSignalWifiStatusbarConnectedNoInternet1 />
@@ -215,6 +228,7 @@ const SideMenu = () => {
                 <li className="menu-item">
                   <Link
                     to="/plant"
+                    onClick={handleClick}
                     className={`${linkStyle} ${isActive("/plant")}`}
                   >
                     <HiFlag />
@@ -229,6 +243,7 @@ const SideMenu = () => {
                 <li className="menu-item">
                   <Link
                     to="/settings"
+                    onClick={handleClick}
                     className={`${linkStyle} ${isActive("/settings")}`}
                   >
                     <CiSettings />

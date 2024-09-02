@@ -6,7 +6,7 @@ export default function RealTimeManufacturingSection({
   categoryDefects,
   productionData,
 }) {
- const data = {
+  const data = {
     labels: productionData.map((item) => item.date_time),
     datasets: [
       {
@@ -43,7 +43,7 @@ export default function RealTimeManufacturingSection({
   return (
     <div className="py-4 px-0 ">
       <h1 className="section-title  text-red-700 mb-4">
-       <span className="section-title-overlay font-bold" > Real-Time Manufacturing DPMU</span>
+        <span className="section-title-overlay font-bold" > Real-Time Manufacturing DPMU</span>
       </h1>
       <div className="flex mb-4">
         <div className="flex-grow mr-4 min-w-52">
@@ -60,7 +60,7 @@ export default function RealTimeManufacturingSection({
             </div>
           </div>
           <div className="p-3  border-2 rounded-md max-h-[350px] overflow-auto">
-            <h2 className="text-md font-normal mb-2">Defects by types</h2>
+            <h2 className="text-lg  mb-2 font-semibold">Defects by types</h2>
             <ul>
               {loading || !categoryDefects ? (
                 <li className="flex justify-center p-2">
@@ -86,7 +86,7 @@ export default function RealTimeManufacturingSection({
             </ul>
           </div>
         </div>
-        
+
         <div className="flex-grow">
           <Bar data={data} options={options} />
         </div>

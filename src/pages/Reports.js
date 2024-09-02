@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import ExcelJS from "exceljs";
 import FileSaver from "file-saver"; // for saving the file locally
 import { useLocation } from "react-router-dom";
@@ -15,13 +15,16 @@ import { reportApi } from "./../services/reportsApi";
 import {
   setSelectedDefect,
 } from "../redux/slices/defectSlice"; // Import the actions
-
+import axios from "axios"
 import { getReportData, updatePage } from ".././redux/slices/reportSlice";
 import { setSelectedMachine } from "../redux/slices/machineSlice"
 import { setSelectedProduct } from "../redux/slices/productSlice";
 import useApiInterceptor from "../hooks/useInterceptor";
 import { decryptAES, encryptAES } from "../redux/middleware/encryptPayloadUtils";
-
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
+import { Modal } from "antd";
+import { FaSlack } from "react-icons/fa";
 const columns = [
   {
     title: "Product Name",
@@ -47,6 +50,7 @@ const columns = [
     dataIndex: "defect",
     key: "defect_name",
     sorter: (a, b) => a.defect.localeCompare(b.defect),
+
     sortDirections: ["ascend", "descend", "cancel"],
     render: (text) => {
       const decrypData = decryptAES(text)
@@ -144,7 +148,7 @@ const locale = {
 const Reports = () => {
   // INTERCEPTOR API CALLING
   const apiCallInterceptor = useApiInterceptor()
-
+  const rangePickerRef = useRef(null);
 
   // REDUX CALLING
   const dispatch = useDispatch()
@@ -175,9 +179,9 @@ const Reports = () => {
   const [filterActive, setfilterActive] = useState(false);
 
   const [loader, setLoader] = useState(false);
-
-
-
+  const [modal, setModal] = useState(false)
+  const [downloadFilterData, setDownloadFilterData] = useState()
+  const [downloadData, setDownloadData] = useState();
   // PAGINATION
 
   const [pagination, setPagination] = useState({
@@ -187,6 +191,109 @@ const Reports = () => {
     position: ["topRight"],
     showSizeChanger: true,
   })
+
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState('');
+  const [ws, setWs] = useState(null);
+
+
+
+  const handleDownload = async () => {
+    const params = {
+      plant_id: localPlantData?.id || undefined,
+      from_date: dateRange?.[0] || undefined,
+      to_date: dateRange?.[1] || undefined,
+      machine_id: selectedMachineRedux || undefined,
+      product_id: selectedProductRedux || undefined,
+      defect_id: selectedDefectRedux || undefined,
+    };
+    // Filter out undefined or null values from query parameters
+    const filteredQueryParams = Object.fromEntries(
+      Object.entries(params).filter(
+        ([_, value]) => value !== undefined && value !== null
+      )
+    );
+
+    console.log(filteredQueryParams)
+    await sendMessage(filteredQueryParams)
+
+  }
+
+
+
+  const socketConnection = () => {
+    // Create a new WebSocket connection
+    const socket = new WebSocket('wss://huldev.aivolved.in/ws/defect-image-streaming/ ');
+
+    // Set WebSocket state
+    setWs(socket);
+
+    // Connection opened
+    socket.onopen = () => {
+      console.log('Connected to WebSocket server');
+    };
+
+    // Listen for messages
+    socket.onmessage = async (event) => {
+      console.log('Message from server: ', JSON.parse(event.data));
+      const data = JSON.parse(event.data)
+      setMessages((prev) => [data.data]);
+
+    };
+
+    // Handle errors
+    socket.onerror = (error) => {
+      console.error('WebSocket error: ', error);
+    };
+
+    // Connection closed
+    socket.onclose = () => {
+      console.log('Disconnected from WebSocket server');
+    };
+
+    // Cleanup on unmount
+    return () => {
+      socket.close();
+    };
+  };
+
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (rangePickerRef.current) {
+        rangePickerRef.current.blur(); // Close the RangePicker dropdown
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [rangePickerRef]);
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      // Trigger download function after state has been updated
+      downloadAllImages();
+    }
+  }, [messages]);
+  // Send a message to the WebSocket server
+  const sendMessage = (params) => {
+    if (ws) {
+      const data = JSON.stringify(params)
+      ws.send(data);
+      setInput(''); // Clear input after sending
+      setModal(false)
+      setSelectedDate(null);
+      dispatch(setSelectedMachine(null)); // Dispatching action    
+      dispatch(setSelectedProduct(null)); // Dispatching action 
+      dispatch(setSelectedDefect(null));
+    }
+  };
+
+
+
 
   const initialReportData = () => {
 
@@ -215,6 +322,8 @@ const Reports = () => {
       initialReportData(); // fetch data without filters
     }
   }, [pagination.current, pagination.pageSize, accessToken, filterActive]);
+
+
 
   // Fetch filtered data when filters are applied or pagination changes while filters are active
   useEffect(() => {
@@ -250,6 +359,7 @@ const Reports = () => {
 
 
   const handleDateRangeChange = (dates, dateStrings) => {
+    console.log(dates, dateStrings)
     if (dateStrings) {
       setSelectedDate(dateStrings);
       setDateRange(dateStrings);
@@ -332,6 +442,58 @@ const Reports = () => {
     getDefects(localPlantData?.plant_name, accessToken, apiCallInterceptor)
   }, []);
 
+  const data = [{
+    "Cap Missing/Cap Loose - SERAC 1": [
+      "https://blr1.digitaloceanspaces.com/vin/2/2024-08-26/Crack Up/2_17_2024-08-26T11:33:37.png",
+      "https://blr1.digitaloceanspaces.com/vin/2/2024-08-26/Crack Up/2_17_2024-08-26T11:33:37.png",
+      "https://blr1.digitaloceanspaces.com/vin/2/2024-08-26/Crack Up/2_17_2024-08-26T11:33:37.png",
+      "https://blr1.digitaloceanspaces.com/vin/2/2024-08-26/Crack Up/2_17_2024-08-26T11:33:37.png",
+      "https://blr1.digitaloceanspaces.com/vin/2/2024-08-26/Crack Up/2_17_2024-08-26T11:33:37.png",
+
+    ]
+  },
+  {
+    "Missing Bottles in CLD - SERAC 1": [
+      "https://blr1.digitaloceanspaces.com/vin/2/2024-08-26/Crack Up/2_17_2024-08-26T11:33:37.png",
+      "https://blr1.digitaloceanspaces.com/vin/2/2024-08-26/Crack Up/2_17_2024-08-26T11:33:37.png",
+      "https://blr1.digitaloceanspaces.com/vin/2/2024-08-26/Crack Up/2_17_2024-08-26T11:33:37.png",
+      "https://blr1.digitaloceanspaces.com/vin/2/2024-08-26/Crack Up/2_17_2024-08-26T11:33:37.png",
+      "https://blr1.digitaloceanspaces.com/vin/2/2024-08-26/Crack Up/2_17_2024-08-26T11:33:37.png",
+
+    ]
+  },
+
+  ]
+
+
+  const downloadAllImages = async () => {
+    console.log((messages))
+    const zip = new JSZip();
+    const folder = zip.folder('VIN IMAGES'); // Single folder for all images
+
+    for (const item of messages) {
+      for (const [category, urls] of Object.entries(item)) {
+        for (let i = 0; i < urls.length; i++) {
+          const url = urls[i];
+          try {
+            const response = await axios.get(url, { responseType: 'blob' }); // Fetch the image as a blob
+            const imageBlob = response.data;
+            const extension = imageBlob.type.split('/')[1];
+            const fileName = `${category.replace(/[^a-z0-9]/gi, '_')}_${i + 1}.${extension}`; // Sanitize filename
+
+            folder.file(fileName, imageBlob); // Add image to folder
+          } catch (error) {
+            console.error(`Error fetching image ${i + 1} from category ${category}:`, error);
+          }
+        }
+      }
+    }
+
+    zip.generateAsync({ type: 'blob' }).then(content => {
+      saveAs(content, 'images.zip'); // Save the zip file
+    });
+  };
+
   const downloadExcel = () => {
     // Prepare the table data with correct headers
     const formattedTableData = reportData.map((item) => ({
@@ -386,9 +548,112 @@ const Reports = () => {
     initialReportData()
   };
 
+  const handleClickDownload = () => {
+    socketConnection();
+    setModal(true)
+  }
+
+
   return (
     <>
       {/* <ToastContainer /> */}
+
+      <Modal
+        title={<div style={{ padding: "1rem", textAlign: "center" }}>Filter To Download Images</div>}
+        centered
+        open={modal}
+        onCancel={() => setModal(false)}
+        footer={[
+          <>
+
+            <Button key="submit" type="primary" style={{ backgroundColor: "#ec522d", }} onClick={handleDownload}>Download</Button>
+
+          </>
+        ]}
+      >
+        <div className="" style={{ display: "flex", flexWrap: "wrap", gap: "2rem", justifyContent: "center" }}>
+
+          {/* <Select
+            style={{ minWidth: "200px", marginRight: "10px" }}
+            showSearch
+            placeholder="Select Machine"
+            value={selectedMachineRedux} // Set default value to 1 if selectedMachine is null
+            // onChange={(e) => handleFilterChange("Machine", e)}
+            onChange={handleMachineChange}
+            size="large"
+            filterOption={(input, machines) =>
+              (machines.children ?? "")
+                .toLowerCase()
+                .includes(input.toLowerCase())
+            }
+          >
+            {machines.map((machine) => (
+              <Select.Option key={machine.id} value={machine.id}>
+                {machine.name}
+              </Select.Option>
+            ))}
+          </Select> */}
+
+          <Select
+            style={{ minWidth: "200px", marginRight: "10px" }}
+            showSearch
+            placeholder="Select Product"
+            onChange={handleProductChange}
+            value={selectedProductRedux}
+            size="large"
+            filterOption={(input, productsData) =>
+              (productsData.children ?? "")
+                .toLowerCase()
+                .includes(input.toLowerCase())
+            }
+          >
+            {productsData.map((prod) => (
+              <Select.Option key={prod.id} value={prod.id}>
+                {prod.name}
+              </Select.Option>
+            ))}
+          </Select>
+          <Select
+            style={{ minWidth: "200px", marginRight: "10px" }}
+            showSearch
+            placeholder="Select Defect"
+            onChange={handleDefectChange}
+            value={selectedDefectRedux}
+            size="large"
+            filterOption={(input, defectsData) =>
+              // ( productOptions.children ?? "".toLowerCase() ).includes(input.toLowerCase() )
+              (defectsData.children ?? "")
+                .toLowerCase()
+                .includes(input.toLowerCase())
+            }
+          >
+            {defectsData.map((defect) => (
+              <Select.Option key={defect.id} value={defect.id}>
+                {defect.name}
+              </Select.Option>
+            ))}
+          </Select>
+
+          <RangePicker
+            // showTime
+            ref={rangePickerRef}
+            size="large"
+            style={{ marginRight: "10px" }}
+            onChange={handleDateRangeChange}
+            allowClear={false}
+            inputReadOnly={true}
+            value={
+              selectedDate
+                ? [
+                  dayjs(selectedDate[0], dateFormat),
+                  dayjs(selectedDate[1], dateFormat),
+                ]
+                : []
+            }
+          />
+        </div>
+
+      </Modal >
 
       <div className="layout-content">
         <div
@@ -505,7 +770,16 @@ const Reports = () => {
             style={{ fontSize: "1rem", backgroundColor: "#ec522d" }}
             onClick={downloadExcel}
           >
-            Download
+            Download Excel
+          </Button>
+          <Button
+            type="primary"
+            icon={<DownloadOutlined />}
+            size="large"
+            style={{ fontSize: "1rem", backgroundColor: "#ec522d" }}
+            onClick={handleClickDownload}
+          >
+            Download Images
           </Button>
         </div>
 

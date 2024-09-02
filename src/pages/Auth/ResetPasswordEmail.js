@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { encryptAES } from "../../redux/middleware/encryptPayloadUtils";
 import { ColorRing } from 'react-loader-spinner'
+import axiosInstance from "../../API/axiosInstance";
 
 const ResetPasswordEmail = () => {
   const navigate = useNavigate();
@@ -56,7 +57,7 @@ const ResetPasswordEmail = () => {
         }
         setLoading(true)
         const encryTedData = encryptAES(JSON.stringify(payload))
-        const res = await axios.post(`${baseURL}reset-password/`, { "data": encryTedData });
+        const res = await axiosInstance.post(`reset-password/`, { "data": encryTedData });
 
         if (res.status === 200) {
           setLoading(false)
@@ -136,7 +137,7 @@ const ResetPasswordEmail = () => {
                       gap: "0.5rem",
                     }}
                   >
-                    <h2 style={{ margin: "0.5rem 0", fontWeight: "700" }}>Email</h2>
+                    <h2 style={{ margin: "0.5rem 0", fontWeight: "700" }}> Email address</h2>
                     <input
                       type="email"
                       style={{
@@ -148,7 +149,7 @@ const ResetPasswordEmail = () => {
                         outline: "none",
                       }}
                       name="email"
-                      placeholder="Enter Email"
+                      placeholder="Enter  Email address"
                       onChange={handleChange}
                       value={resetPayload.email}
                     />

@@ -362,7 +362,7 @@ const DashboardContentLayout = ({ children }) => {
                     </button> */}
                     <Select
                       className="dx-default-select select-machines"
-
+                      style={{ minWidth: "150px", zIndex: 1 }}
                       showSearch
                       placeholder="Select Machine"
                       value={selectedMachineRedux}
@@ -374,14 +374,14 @@ const DashboardContentLayout = ({ children }) => {
                       }
                     >
                       {machines.map((machine) => (
-                        <Select.Option key={machine.id} value={machine.id}>
+                        <Select.Option key={machine.id} value={machine.id} style={{ zIndex: 1 }}>
                           {machine.name}
                         </Select.Option>
                       ))}
                     </Select>
                     <Select
                       className="dx-default-select"
-                      style={{ width: "200px" }}
+                      style={{ width: "200px", zIndex: 1 }}
                       showSearch
                       placeholder="Select Products"
                       onChange={handleProductChange}
@@ -405,7 +405,7 @@ const DashboardContentLayout = ({ children }) => {
 
                     <RangePicker
                       className="dx-default-date-range"
-                      style={{ marginRight: "10px", minWidth: "280px" }}
+                      style={{ marginRight: "10px", minWidth: "280px", zIndex: 1 }}
                       onChange={handleDateRangeChange}
                       allowClear={false}
                       inputReadOnly
