@@ -149,7 +149,7 @@ const Reports = () => {
   // REDUX CALLING
   const dispatch = useDispatch()
   const reportData = useSelector((state) => state.report.reportData);
-  const pagination = useSelector((state) => state.report.pagination);
+  // const pagination = useSelector((state) => state.report.pagination);
   const localPlantData = useSelector((state) => state.plant.plantData[0]);
   const accessToken = useSelector(
     (state) => state.auth.authData[0].accessToken
@@ -161,7 +161,7 @@ const Reports = () => {
   const selectedProductRedux = useSelector((state) => state.product.selectedProduct);
   // const selectedDefectRedux = useSelector((state) => state.defect.selectedDefect);
   const selectedDefectRedux = useSelector((state) => state.defect.selectedDefectReports);
-  
+
   const dateFormat = "YYYY/MM/DD";
   const location = useLocation();
   let defectProp = location?.state?.filterActive || false;
@@ -178,7 +178,19 @@ const Reports = () => {
   const [loader, setLoader] = useState(false);
   const [modal, setModal] = useState(false)
   // PAGINATION
- 
+
+  const [pagination, setPagination] = useState(
+    {
+      current: 1,
+      pageSize: 10,
+      total: 0,
+      position: ["topRight"],
+      showSizeChanger: true,
+
+    }
+  )
+
+
   const [messages, setMessages] = useState([]);
   const [ws, setWs] = useState(null);
 
@@ -287,7 +299,7 @@ const Reports = () => {
           pageSize: pagination.pageSize,
           total: total_count,
         }));
-        // setPagination((prev) => ({ ...prev, pageSize: page_size, total: total_count }))
+        setPagination((prev) => ({ ...prev, pageSize: page_size, total: total_count }))
         setLoader(false)
       })
       .catch(err => {
@@ -296,14 +308,13 @@ const Reports = () => {
 
       });
   }
-   // Fetch filtered data when filters are applied or pagination changes while filters are active
-   useEffect(() => {
-     if (filterActive) {
-
-      handleApplyFilters();
-     } else{
-      initialReportData()      
-     }    
+  // Fetch filtered data when filters are applied or pagination changes while filters are active
+  useEffect(() => {
+    if (filterActive) {
+      handleApplyFilters(pagination.current);
+    } else {
+      initialReportData()
+    }
   }, [pagination.current, pagination.pageSize, accessToken]);
 
   // useEffect(() => {
@@ -314,7 +325,7 @@ const Reports = () => {
   // }, [pagination.current, pagination.pageSize, accessToken]);
 
   const handleTableChange = (pagtn) => {
-    // setPagination((prev) => ({ ...prev, current: pagtn.current, pageSize: pagtn.pageSize, }))
+    setPagination((prev) => ({ ...prev, current: pagtn.current, pageSize: pagtn.pageSize, }))
     dispatch(updatePage({
       current: pagtn.current,
       pageSize: pagtn.pageSize
@@ -323,8 +334,8 @@ const Reports = () => {
 
 
   const handleDefectChange = (value) => {
-    console.log(value)
     dispatch(setSelectedDefectReports(Number(value)))
+
   };
 
   const handleMachineChange = (value) => {
@@ -347,9 +358,9 @@ const Reports = () => {
     }
   };
 
-  const handleApplyFilters = () => {
+  const handleApplyFilters = (page = 1) => {
     const params = {
-      page: pagination.current, // Ensure this uses the provided page (default is 1)
+      page: page, // Ensure this uses the provided page (default is 1)
       page_size: pagination.pageSize,
       plant_id: encryptAES(JSON.stringify(localPlantData?.id)) || undefined,
       from_date: dateRange?.[0] || undefined,
@@ -382,7 +393,7 @@ const Reports = () => {
     const url = `reports/?${queryString}`;
 
     setLoader(true);
-console.log(url)
+    console.log(url)
 
     apiCallInterceptor
       .get(url, {
@@ -391,7 +402,7 @@ console.log(url)
         },
       })
       .then((response) => {
-        const { results, total_count } = response.data;
+        const { results, total_count, page_size } = response.data;
 
         dispatch(getReportData({
           reportData: results,
@@ -399,8 +410,12 @@ console.log(url)
           pageSize: pagination.pageSize,
           total: total_count,
         }));
-
-        setLoader(false);
+        setPagination((prev) => ({
+          ...prev,
+          current: page, // Update current page
+          pageSize: page_size,
+          total: total_count,
+        })); setLoader(false);
         setfilterActive(true);
       })
       .catch((error) => {
@@ -495,6 +510,8 @@ console.log(url)
     dispatch(setSelectedProduct(null)); // Dispatching action 
     dispatch(setSelectedDefectReports(null)); // Dispatching action 
     initialReportData()
+    setPagination((prev) => ({ ...prev, current: 1, pageSize: 10, }))
+
   };
 
   const handleClickDownload = () => {
