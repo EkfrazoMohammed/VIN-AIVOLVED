@@ -169,6 +169,9 @@ const Reports = () => {
   const dateFormat = "YYYY/MM/DD";
   const location = useLocation();
 
+  let defectProp = location?.state?.clickedVal[0];
+
+
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - 7); // 7 days ago
   const endDate = new Date(); // Today's date
@@ -317,21 +320,35 @@ const Reports = () => {
       });
   }
 
-  useEffect(() => {
-    if (!filterActive) {
-      initialReportData(); // fetch data without filters
-    }
-  }, [pagination.current, pagination.pageSize, accessToken, filterActive]);
+
+
+  // useEffect(() => {
+
+  //   if (!filterActive && defectProp) {
+  //     handleApplyFilters(defectProp, pagination.current)
+  //   }
+  //   else if (filterActive && !defectProp) {
+  //     handleApplyFilters(pagination.current)
+  //   }
+  //   else {
+  //     initialReportData(); // fetch data without filters
+  //   }
+  // }, [pagination.current, pagination.pageSize, accessToken, filterActive]);
 
 
 
-  // Fetch filtered data when filters are applied or pagination changes while filters are active
+  // // Fetch filtered data when filters are applied or pagination changes while filters are active
   useEffect(() => {
     if (filterActive) {
-      handleApplyFilters(pagination.current); // fetch data with filters applied
+      handleApplyFilters(pagination.current);
     }
-  }, [pagination.current, pagination.pageSize, accessToken, filterActive]);
+  }, [pagination.current, pagination.pageSize, accessToken,]);
 
+  useEffect(() => {
+    if (!filterActive) {
+      initialReportData()
+    }
+  }, [pagination.current, pagination.pageSize, accessToken,]);
 
 
 
@@ -368,8 +385,8 @@ const Reports = () => {
     }
   };
 
-  const handleApplyFilters = (page = 1) => {
-    // Initialize URLSearchParams
+  const handleApplyFilters = (defect, page) => {
+
     const params = {
       page: page, // Ensure this uses the provided page (default is 1)
       page_size: pagination.pageSize,
@@ -380,6 +397,12 @@ const Reports = () => {
       product_id: selectedProductRedux || undefined,
       defect_id: selectedDefectRedux || undefined,
     };
+
+    if (defect) {
+      params.defect_id = defect.id || undefined;
+    }
+
+
 
     // Filter out undefined or null values from query parameters
     const filteredQueryParams = Object.fromEntries(
@@ -442,28 +465,7 @@ const Reports = () => {
     getDefects(localPlantData?.plant_name, accessToken, apiCallInterceptor)
   }, []);
 
-  const data = [{
-    "Cap Missing/Cap Loose - SERAC 1": [
-      "https://blr1.digitaloceanspaces.com/vin/2/2024-08-26/Crack Up/2_17_2024-08-26T11:33:37.png",
-      "https://blr1.digitaloceanspaces.com/vin/2/2024-08-26/Crack Up/2_17_2024-08-26T11:33:37.png",
-      "https://blr1.digitaloceanspaces.com/vin/2/2024-08-26/Crack Up/2_17_2024-08-26T11:33:37.png",
-      "https://blr1.digitaloceanspaces.com/vin/2/2024-08-26/Crack Up/2_17_2024-08-26T11:33:37.png",
-      "https://blr1.digitaloceanspaces.com/vin/2/2024-08-26/Crack Up/2_17_2024-08-26T11:33:37.png",
 
-    ]
-  },
-  {
-    "Missing Bottles in CLD - SERAC 1": [
-      "https://blr1.digitaloceanspaces.com/vin/2/2024-08-26/Crack Up/2_17_2024-08-26T11:33:37.png",
-      "https://blr1.digitaloceanspaces.com/vin/2/2024-08-26/Crack Up/2_17_2024-08-26T11:33:37.png",
-      "https://blr1.digitaloceanspaces.com/vin/2/2024-08-26/Crack Up/2_17_2024-08-26T11:33:37.png",
-      "https://blr1.digitaloceanspaces.com/vin/2/2024-08-26/Crack Up/2_17_2024-08-26T11:33:37.png",
-      "https://blr1.digitaloceanspaces.com/vin/2/2024-08-26/Crack Up/2_17_2024-08-26T11:33:37.png",
-
-    ]
-  },
-
-  ]
 
 
   const downloadAllImages = async () => {

@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { baseURL } from "../../API/API";
 import LoaderIcon from "../LoaderIcon";
 
+
 import { useSelector } from "react-redux";
 
 function PieChart({ data, selectedDate }) {
@@ -15,7 +16,8 @@ function PieChart({ data, selectedDate }) {
   const { Title } = Typography;
   const [defectColors, setDefectColors] = useState({});
   const [chartData, setChartData] = useState({ labels: [], series: [] });
-  const [defectData, setDefectData] = useState([]);
+  // const [defectData, setDefectData] = useState([]);
+  const defectsData = useSelector((state) => state.defect.defectsData)
 
   // useEffect(() => {
   //   axios
@@ -59,7 +61,9 @@ function PieChart({ data, selectedDate }) {
   if (!data || Object.keys(data).length === 0) {
     return <LoaderIcon text={"Loading..."} />;
   }
-
+  if (!chartData || !chartData.labels || !chartData.series) {
+    return <div>Loading chart...</div>;
+  }
   return (
     <div>
       <div>
@@ -77,11 +81,20 @@ function PieChart({ data, selectedDate }) {
             events: {
               dataPointSelection: (event, chartContext, opts) => {
                 const clickedIndex = opts.dataPointIndex;
+
+                if (clickedIndex === -1 || !chartData.labels[clickedIndex]) {
+                  console.error("Invalid data point selected");
+                  return;
+                }
+
                 const clickedLabel = chartData.labels[clickedIndex];
-                const clickedVal = defectData.filter(
+                const clickedVal = defectsData.filter(
                   (val) => val.name === clickedLabel
                 );
-                navigate(`/reports`, { state: { clickedVal } });
+                const filterActive = true
+                setTimeout(() => {
+                  navigate(`/reports`, { state: { clickedVal, filterActive } });
+                }, [500])
               },
             },
           },
