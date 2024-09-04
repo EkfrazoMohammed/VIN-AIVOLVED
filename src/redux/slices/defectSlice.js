@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   defectsData: [],
   selectedDefect: null,
+  selectedDefectReports: null,
   loading: true,
 };
 
@@ -16,8 +17,11 @@ const defectSlice = createSlice({
       state.loading = false;
     },
     setSelectedDefect: (state, action) => {
-      console.log(action.payload)
       state.selectedDefect = action.payload;
+    },
+    setSelectedDefectReports: (state, action) => {
+      console.log(action.payload);
+      state.selectedDefectReports = action.payload;
     },
 
     getDefectFailure: (state) => {
@@ -28,11 +32,18 @@ const defectSlice = createSlice({
     defectSignout: (state) => {
       state.defectsData = [];
       state.selectedDefect = null;
+      state.selectedDefectReports = null;
       state.loading = false;
     },
   },
 });
 
-export const { getDefectSuccess, getDefectFailure, setSelectedDefect, defectSignout } = defectSlice.actions;
+export const {
+  setSelectedDefectReports,
+  getDefectSuccess,
+  getDefectFailure,
+  setSelectedDefect,
+  defectSignout,
+} = defectSlice.actions;
 
 export default defectSlice.reducer;

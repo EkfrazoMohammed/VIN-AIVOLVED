@@ -5,13 +5,14 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { baseURL } from "../../API/API";
 import LoaderIcon from "../LoaderIcon";
+import {setSelectedDefectReports} from "./../../redux/slices/defectSlice"
 
-
-import { useSelector } from "react-redux";
+import {updatePage } from "./../../redux/slices/reportSlice";
+import { useSelector, useDispatch } from "react-redux";
 
 function PieChart({ data, selectedDate }) {
   const accessToken = useSelector((state) => state.auth.authData[0].accessToken);
-
+  const dispatch=useDispatch();
   const navigate = useNavigate();
   const { Title } = Typography;
   const [defectColors, setDefectColors] = useState({});
@@ -88,13 +89,28 @@ function PieChart({ data, selectedDate }) {
                 }
 
                 const clickedLabel = chartData.labels[clickedIndex];
+                // const clickedVal = defectsData.filter(
+                //   (val) => val.name === clickedLabel
+                // );
+                const filterActive = true
+                // dispatch(setSelectedDefectReports(clickedVal[0]))
+                // console.log('dispatch called',clickedVal)
                 const clickedVal = defectsData.filter(
                   (val) => val.name === clickedLabel
                 );
-                const filterActive = true
-                setTimeout(() => {
-                  navigate(`/reports`, { state: { clickedVal, filterActive } });
-                }, [500])
+                if (clickedVal.length > 0) {
+                  dispatch(setSelectedDefectReports(clickedVal[0]?.id));
+                  dispatch(updatePage({
+                    current: 1,
+                    pageSize: 10
+                  }))
+                  setTimeout(() => {
+                    navigate(`/reports`, { state: { filterActive } });
+                    // navigate(`/reports`);
+                  }, [500])
+                } else {
+                  console.error("No matching defect found");
+                }
               },
             },
           },

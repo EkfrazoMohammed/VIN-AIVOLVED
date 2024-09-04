@@ -1,10 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import ExcelJS from "exceljs";
-import FileSaver from "file-saver"; // for saving the file locally
 import { useLocation } from "react-router-dom";
 import { Table, Select, DatePicker, Button, Image, Tag } from "antd";
 import * as XLSX from "xlsx";
-import axiosInstance from "../API/axiosInstance";
 import { DownloadOutlined } from "@ant-design/icons";
 import { Hourglass } from "react-loader-spinner";
 import dayjs from "dayjs";
@@ -13,7 +10,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { initialDashboardData, getDefects, getMachines, getSystemStatus, getDepartments, initialDpmuData, initialProductionData, getProducts } from "./../services/dashboardApi";
 import { reportApi } from "./../services/reportsApi";
 import {
-  setSelectedDefect,
+  setSelectedDefectReports,
 } from "../redux/slices/defectSlice"; // Import the actions
 import axios from "axios"
 import { getReportData, updatePage } from ".././redux/slices/reportSlice";
@@ -24,7 +21,6 @@ import { decryptAES, encryptAES } from "../redux/middleware/encryptPayloadUtils"
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { Modal } from "antd";
-import { FaSlack } from "react-icons/fa";
 const columns = [
   {
     title: "Product Name",
@@ -153,7 +149,7 @@ const Reports = () => {
   // REDUX CALLING
   const dispatch = useDispatch()
   const reportData = useSelector((state) => state.report.reportData);
-  // const pagination = useSelector((state) => state.report.pagination);
+  const pagination = useSelector((state) => state.report.pagination);
   const localPlantData = useSelector((state) => state.plant.plantData[0]);
   const accessToken = useSelector(
     (state) => state.auth.authData[0].accessToken
@@ -163,43 +159,28 @@ const Reports = () => {
   const productsData = useSelector((state) => state.product.productsData)
   const selectedMachineRedux = useSelector((state) => state.machine.selectedMachine);
   const selectedProductRedux = useSelector((state) => state.product.selectedProduct);
-  const selectedDefectRedux = useSelector((state) => state.defect.selectedDefect);
-
-
+  // const selectedDefectRedux = useSelector((state) => state.defect.selectedDefect);
+  const selectedDefectRedux = useSelector((state) => state.defect.selectedDefectReports);
+  
   const dateFormat = "YYYY/MM/DD";
   const location = useLocation();
-
-  let defectProp = location?.state?.clickedVal[0];
+  let defectProp = location?.state?.filterActive || false;
 
 
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - 7); // 7 days ago
-  const endDate = new Date(); // Today's date
   const [dateRange, setDateRange] = useState();
-  const [tableData, setTableData] = useState([]);
+
   const [selectedDate, setSelectedDate] = useState(null);
   const { RangePicker } = DatePicker;
-  const [filterActive, setfilterActive] = useState(false);
+  const [filterActive, setfilterActive] = useState(defectProp);
 
   const [loader, setLoader] = useState(false);
   const [modal, setModal] = useState(false)
-  const [downloadFilterData, setDownloadFilterData] = useState()
-  const [downloadData, setDownloadData] = useState();
   // PAGINATION
-
-  const [pagination, setPagination] = useState({
-    current: 1,
-    pageSize: 10,
-    total: 0,
-    position: ["topRight"],
-    showSizeChanger: true,
-  })
-
+ 
   const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState('');
   const [ws, setWs] = useState(null);
-
-
 
   const handleDownload = async () => {
     const params = {
@@ -286,17 +267,13 @@ const Reports = () => {
     if (ws) {
       const data = JSON.stringify(params)
       ws.send(data);
-      setInput(''); // Clear input after sending
       setModal(false)
       setSelectedDate(null);
       dispatch(setSelectedMachine(null)); // Dispatching action    
       dispatch(setSelectedProduct(null)); // Dispatching action 
-      dispatch(setSelectedDefect(null));
+      dispatch(setSelectedDefectReports(null));
     }
   };
-
-
-
 
   const initialReportData = () => {
 
@@ -310,7 +287,7 @@ const Reports = () => {
           pageSize: pagination.pageSize,
           total: total_count,
         }));
-        setPagination((prev) => ({ ...prev, pageSize: page_size, total: total_count }))
+        // setPagination((prev) => ({ ...prev, pageSize: page_size, total: total_count }))
         setLoader(false)
       })
       .catch(err => {
@@ -319,41 +296,25 @@ const Reports = () => {
 
       });
   }
+   // Fetch filtered data when filters are applied or pagination changes while filters are active
+   useEffect(() => {
+     if (filterActive) {
 
-
+      handleApplyFilters();
+     } else{
+      initialReportData()      
+     }    
+  }, [pagination.current, pagination.pageSize, accessToken]);
 
   // useEffect(() => {
-
-  //   if (!filterActive && defectProp) {
-  //     handleApplyFilters(defectProp, pagination.current)
+  //   if (!filterActive) {
+  //     console.log('calling init')
+  //     initialReportData()
   //   }
-  //   else if (filterActive && !defectProp) {
-  //     handleApplyFilters(pagination.current)
-  //   }
-  //   else {
-  //     initialReportData(); // fetch data without filters
-  //   }
-  // }, [pagination.current, pagination.pageSize, accessToken, filterActive]);
-
-
-
-  // // Fetch filtered data when filters are applied or pagination changes while filters are active
-  useEffect(() => {
-    if (filterActive) {
-      handleApplyFilters(pagination.current);
-    }
-  }, [pagination.current, pagination.pageSize, accessToken,]);
-
-  useEffect(() => {
-    if (!filterActive) {
-      initialReportData()
-    }
-  }, [pagination.current, pagination.pageSize, accessToken,]);
-
-
+  // }, [pagination.current, pagination.pageSize, accessToken]);
 
   const handleTableChange = (pagtn) => {
-    setPagination((prev) => ({ ...prev, current: pagtn.current, pageSize: pagtn.pageSize, }))
+    // setPagination((prev) => ({ ...prev, current: pagtn.current, pageSize: pagtn.pageSize, }))
     dispatch(updatePage({
       current: pagtn.current,
       pageSize: pagtn.pageSize
@@ -362,7 +323,8 @@ const Reports = () => {
 
 
   const handleDefectChange = (value) => {
-    dispatch(setSelectedDefect(Number(value)))
+    console.log(value)
+    dispatch(setSelectedDefectReports(Number(value)))
   };
 
   const handleMachineChange = (value) => {
@@ -385,24 +347,17 @@ const Reports = () => {
     }
   };
 
-  const handleApplyFilters = (defect, page) => {
-
+  const handleApplyFilters = () => {
     const params = {
-      page: page, // Ensure this uses the provided page (default is 1)
+      page: pagination.current, // Ensure this uses the provided page (default is 1)
       page_size: pagination.pageSize,
       plant_id: encryptAES(JSON.stringify(localPlantData?.id)) || undefined,
       from_date: dateRange?.[0] || undefined,
       to_date: dateRange?.[1] || undefined,
       machine_id: selectedMachineRedux || undefined,
       product_id: selectedProductRedux || undefined,
-      defect_id: selectedDefectRedux || undefined,
+      defect_id: selectedDefectRedux,
     };
-
-    if (defect) {
-      params.defect_id = defect.id || undefined;
-    }
-
-
 
     // Filter out undefined or null values from query parameters
     const filteredQueryParams = Object.fromEntries(
@@ -427,7 +382,7 @@ const Reports = () => {
     const url = `reports/?${queryString}`;
 
     setLoader(true);
-
+console.log(url)
 
     apiCallInterceptor
       .get(url, {
@@ -436,19 +391,12 @@ const Reports = () => {
         },
       })
       .then((response) => {
-        const { results, total_count, page_size } = response.data;
+        const { results, total_count } = response.data;
 
         dispatch(getReportData({
           reportData: results,
-          current: page,
+          current: pagination.current,
           pageSize: pagination.pageSize,
-          total: total_count,
-        }));
-
-        setPagination((prev) => ({
-          ...prev,
-          current: page, // Update current page
-          pageSize: page_size,
           total: total_count,
         }));
 
@@ -545,8 +493,7 @@ const Reports = () => {
     setSelectedDate(null);
     dispatch(setSelectedMachine(null)); // Dispatching action    
     dispatch(setSelectedProduct(null)); // Dispatching action 
-    dispatch(setSelectedDefect(null)); // Dispatching action 
-    setPagination((prev) => ({ ...prev, current: 1, pageSize: 10 }))
+    dispatch(setSelectedDefectReports(null)); // Dispatching action 
     initialReportData()
   };
 
@@ -574,28 +521,6 @@ const Reports = () => {
         ]}
       >
         <div className="" style={{ display: "flex", flexWrap: "wrap", gap: "2rem", justifyContent: "center" }}>
-
-          {/* <Select
-            style={{ minWidth: "200px", marginRight: "10px" }}
-            showSearch
-            placeholder="Select Machine"
-            value={selectedMachineRedux} // Set default value to 1 if selectedMachine is null
-            // onChange={(e) => handleFilterChange("Machine", e)}
-            onChange={handleMachineChange}
-            size="large"
-            filterOption={(input, machines) =>
-              (machines.children ?? "")
-                .toLowerCase()
-                .includes(input.toLowerCase())
-            }
-          >
-            {machines.map((machine) => (
-              <Select.Option key={machine.id} value={machine.id}>
-                {machine.name}
-              </Select.Option>
-            ))}
-          </Select> */}
-
           <Select
             style={{ minWidth: "200px", marginRight: "10px" }}
             showSearch
@@ -813,11 +738,6 @@ const Reports = () => {
           <Table
             columns={columns}
             dataSource={reportData}
-            // pagination={{
-            //   position: ['topRight'],
-            //   currentPage:2,
-            //   showSizeChanger:true,
-            // }}
             pagination={pagination}
             locale={locale.Table}
             style={{ margin: "1rem 0", fontSize: "1.5rem" }}
@@ -825,7 +745,6 @@ const Reports = () => {
             onChange={handleTableChange}
           />
         )}
-        {/* <Table columns={columns} dataSource={tableData}  style={{margin:"1rem 0",fontSize:"1.5rem"}}/> */}
       </div>
     </>
   );
