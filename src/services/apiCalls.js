@@ -17,7 +17,7 @@ export const useFetchDefects = () => {
       const response = await axiosInstance.get(url);
       return response.data; // Adjust based on your API response structure
     } catch (error) {
-      console.error("Error fetching defects:", error);
+      //console.error("Error fetching defects:", error);
       throw error;
     }
   };
@@ -37,7 +37,7 @@ export const useFetchMachines = (plantName) => {
       }));
       return data;
     } catch (error) {
-      console.error("Error fetching machines:", error);
+      //console.error("Error fetching machines:", error);
       throw error;
     }
   };
@@ -53,7 +53,7 @@ export const useFetchProducts = (plantName) => {
       const response = await axiosInstance.get(url);
       return response.data.results;
     } catch (error) {
-      console.error("Error fetching products:", error);
+      //console.error("Error fetching products:", error);
       throw error;
     }
   };
@@ -69,7 +69,7 @@ export const useFetchDashboardData = (plantId) => {
       const response = await axiosInstance.get(url);
       return response.data;
     } catch (error) {
-      console.error("Error fetching dashboard data:", error);
+      //console.error("Error fetching dashboard data:", error);
       throw error;
     }
   };
@@ -85,7 +85,7 @@ export const useFetchDefectVsMachineData = (plantId) => {
       const response = await axiosInstance.get(url);
       return response.data.data_last_7_days;
     } catch (error) {
-      console.error("Error fetching defect vs machine data:", error);
+      //console.error("Error fetching defect vs machine data:", error);
       throw error;
     }
   };

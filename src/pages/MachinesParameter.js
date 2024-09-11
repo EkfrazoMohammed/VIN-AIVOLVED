@@ -20,10 +20,10 @@ const MachinesParameter = () => {
   const getData = async () => {
     await axios.get(`${baseURL}machine_temprature/`)
       .then((res) => {
-        console.log(res.data)
+        //console.log(res.data)
         setData(res.data)
       }).catch((err) => {
-        console.log(err)
+        //console.log(err)
       })
   }
   // useEffect(() => {

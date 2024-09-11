@@ -21,6 +21,7 @@ import { decryptAES, encryptAES } from "../redux/middleware/encryptPayloadUtils"
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { Modal } from "antd";
+import SelectComponent from "../components/common/Select";
 const columns = [
   {
     title: "Product Name",
@@ -161,10 +162,13 @@ const Reports = () => {
   const selectedProductRedux = useSelector((state) => state.product.selectedProduct);
   // const selectedDefectRedux = useSelector((state) => state.defect.selectedDefect);
   const selectedDefectRedux = useSelector((state) => state.defect.selectedDefectReports);
+  const [dropdownVisible, setDropdownVisible] = useState(true);
+  const [initialScrollY, setInitialScrollY] = useState(0);
+  const scrollThreshold = window.innerHeight * 0.05;
 
   const dateFormat = "YYYY/MM/DD";
   const location = useLocation();
-  let defectProp = location?.state?.filterActive || false;
+  let defectProp = location?.state?.filterActive;
 
 
   const startDate = new Date();
@@ -174,6 +178,9 @@ const Reports = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const { RangePicker } = DatePicker;
   const [filterActive, setfilterActive] = useState(defectProp);
+  const [filterChanged, setfilterChanged] = useState(defectProp);
+
+  console.log(location, "<<<")
 
   const [loader, setLoader] = useState(false);
   const [modal, setModal] = useState(false)
@@ -210,7 +217,7 @@ const Reports = () => {
       )
     );
 
-    console.log(filteredQueryParams)
+    //console.log(filteredQueryParams)
     await sendMessage(filteredQueryParams)
 
   }
@@ -219,19 +226,19 @@ const Reports = () => {
 
   const socketConnection = () => {
     // Create a new WebSocket connection
-    const socket = new WebSocket('wss://huldev.aivolved.in/ws/defect-image-streaming/ ');
+    const socket = new WebSocket('wss://hul.aivolved.in/ws/defect-image-streaming/ ');
 
     // Set WebSocket state
     setWs(socket);
 
     // Connection opened
     socket.onopen = () => {
-      console.log('Connected to WebSocket server');
+      //console.log('Connected to WebSocket server');
     };
 
     // Listen for messages
     socket.onmessage = async (event) => {
-      console.log('Message from server: ', JSON.parse(event.data));
+      //console.log('Message from server: ', JSON.parse(event.data));
       const data = JSON.parse(event.data)
       setMessages((prev) => [data.data]);
 
@@ -239,12 +246,12 @@ const Reports = () => {
 
     // Handle errors
     socket.onerror = (error) => {
-      console.error('WebSocket error: ', error);
+      //console.error('WebSocket error: ', error);
     };
 
     // Connection closed
     socket.onclose = () => {
-      console.log('Disconnected from WebSocket server');
+      //console.log('Disconnected from WebSocket server');
     };
 
     // Cleanup on unmount
@@ -303,7 +310,7 @@ const Reports = () => {
         setLoader(false)
       })
       .catch(err => {
-        console.error(err)
+        //console.error(err)
         setLoader(false)
 
       });
@@ -319,7 +326,7 @@ const Reports = () => {
 
   // useEffect(() => {
   //   if (!filterActive) {
-  //     console.log('calling init')
+  //     //console.log('calling init')
   //     initialReportData()
   //   }
   // }, [pagination.current, pagination.pageSize, accessToken]);
@@ -335,26 +342,30 @@ const Reports = () => {
 
   const handleDefectChange = (value) => {
     dispatch(setSelectedDefectReports(Number(value)))
-
+    setfilterChanged(true)
   };
 
   const handleMachineChange = (value) => {
     dispatch(setSelectedMachine(Number(value))); // Dispatching action    
+    setfilterChanged(true)
+
   };
 
   const handleProductChange = (value) => {
     dispatch(setSelectedProduct(Number(value))); // Dispatching action    
+    setfilterChanged(true)
   }
 
 
 
   const handleDateRangeChange = (dates, dateStrings) => {
-    console.log(dates, dateStrings)
+    //console.log(dates, dateStrings)
     if (dateStrings) {
       setSelectedDate(dateStrings);
       setDateRange(dateStrings);
+      setfilterChanged(true)
     } else {
-      console.error("Invalid date range:", dates, dateStrings);
+      //console.error("Invalid date range:", dates, dateStrings);
     }
   };
 
@@ -393,7 +404,7 @@ const Reports = () => {
     const url = `reports/?${queryString}`;
 
     setLoader(true);
-    console.log(url)
+    //console.log(url)
 
     apiCallInterceptor
       .get(url, {
@@ -419,7 +430,7 @@ const Reports = () => {
         setfilterActive(true);
       })
       .catch((error) => {
-        console.error("Error fetching filtered reports data:", error);
+        //console.error("Error fetching filtered reports data:", error);
         setLoader(false); // Ensure loader is stopped in case of error
       });
   };
@@ -432,7 +443,7 @@ const Reports = () => {
 
 
   const downloadAllImages = async () => {
-    console.log((messages))
+    //console.log((messages))
     const zip = new JSZip();
     const folder = zip.folder('VIN IMAGES'); // Single folder for all images
 
@@ -448,7 +459,7 @@ const Reports = () => {
 
             folder.file(fileName, imageBlob); // Add image to folder
           } catch (error) {
-            console.error(`Error fetching image ${i + 1} from category ${category}:`, error);
+            //console.error(`Error fetching image ${i + 1} from category ${category}:`, error);
           }
         }
       }
@@ -511,7 +522,7 @@ const Reports = () => {
     dispatch(setSelectedDefectReports(null)); // Dispatching action 
     initialReportData()
     setPagination((prev) => ({ ...prev, current: 1, pageSize: 10, }))
-
+    setfilterChanged(false)
   };
 
   const handleClickDownload = () => {
@@ -520,26 +531,28 @@ const Reports = () => {
   }
 
 
+
+
   return (
     <>
       {/* <ToastContainer /> */}
 
       <Modal
-        title={<div style={{ padding: "1rem", textAlign: "center" }}>Filter To Download Images</div>}
+        title={<div style={{ padding: "1rem", textAlign: "center" }}>Apply filters to download the images
+        </div>}
         centered
         open={modal}
         onCancel={() => setModal(false)}
         footer={[
           <>
-
             <Button key="submit" type="primary" style={{ backgroundColor: "#ec522d", }} onClick={handleDownload}>Download</Button>
-
           </>
         ]}
       >
         <div className="" style={{ display: "flex", flexWrap: "wrap", gap: "2rem", justifyContent: "center" }}>
+
           <Select
-            style={{ minWidth: "200px", marginRight: "10px" }}
+            style={{ minWidth: "200px", marginRight: "10px", }}
             showSearch
             placeholder="Select Product"
             onChange={handleProductChange}
@@ -556,7 +569,9 @@ const Reports = () => {
                 {prod.name}
               </Select.Option>
             ))}
+
           </Select>
+
           <Select
             style={{ minWidth: "200px", marginRight: "10px" }}
             showSearch
@@ -580,6 +595,7 @@ const Reports = () => {
 
           <RangePicker
             // showTime
+            className="dx-default-date-range"
             ref={rangePickerRef}
             size="large"
             style={{ marginRight: "10px" }}
@@ -604,7 +620,13 @@ const Reports = () => {
           className=""
           style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}
         >
-          <Select
+          <SelectComponent placeholder={"Select Product"} action={(val) => handleProductChange(val)} selectedData={selectedProductRedux} data={productsData} size={"large"} style={{ minWidth: "200px", marginRight: "10px", }} />
+
+          <SelectComponent placeholder={"Select Machine"} action={(val) => handleMachineChange(val)} selectedData={selectedMachineRedux} data={machines} size={"large"} style={{ minWidth: "200px", marginRight: "10px" }} />
+
+          <SelectComponent placeholder={"Select Defect"} action={(val) => handleDefectChange(val)} selectedData={selectedDefectRedux} data={defectsData} size={"large"} style={{ minWidth: "200px", marginRight: "10px" }} />
+
+          {/* <Select
             style={{ minWidth: "200px", marginRight: "10px" }}
             showSearch
             placeholder="Select Machine"
@@ -622,9 +644,9 @@ const Reports = () => {
                 {machine.name}
               </Select.Option>
             ))}
-          </Select>
+          </Select> */}
 
-          <Select
+          {/* <Select
             style={{ minWidth: "200px", marginRight: "10px" }}
             showSearch
             placeholder="Select Product"
@@ -636,14 +658,16 @@ const Reports = () => {
                 .toLowerCase()
                 .includes(input.toLowerCase())
             }
+
           >
             {productsData.map((prod) => (
               <Select.Option key={prod.id} value={prod.id}>
                 {prod.name}
               </Select.Option>
             ))}
-          </Select>
-          <Select
+          </Select> */}
+
+          {/* <Select
             style={{ minWidth: "200px", marginRight: "10px" }}
             showSearch
             placeholder="Select Defect"
@@ -656,16 +680,19 @@ const Reports = () => {
                 .toLowerCase()
                 .includes(input.toLowerCase())
             }
+
           >
             {defectsData.map((defect) => (
               <Select.Option key={defect.id} value={defect.id}>
                 {defect.name}
               </Select.Option>
             ))}
-          </Select>
+          </Select> */}
 
           <RangePicker
+
             // showTime
+            className="dx-default-date-range"
             size="large"
             style={{ marginRight: "10px" }}
             onChange={handleDateRangeChange}
@@ -683,6 +710,7 @@ const Reports = () => {
 
           <Button
             type="primary"
+            disabled={!filterChanged}
             onClick={() =>
               handleApplyFilters()
             }
@@ -694,7 +722,9 @@ const Reports = () => {
           >
             Apply filters
           </Button>
-          {filterActive ? (
+
+
+          {filterActive && filterChanged ? (
             <Button
               type="primary"
               onClick={resetFilter}

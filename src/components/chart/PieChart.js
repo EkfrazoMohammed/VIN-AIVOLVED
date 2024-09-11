@@ -5,14 +5,15 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { baseURL } from "../../API/API";
 import LoaderIcon from "../LoaderIcon";
-import {setSelectedDefectReports} from "./../../redux/slices/defectSlice"
+import { setSelectedDefectReports } from "./../../redux/slices/defectSlice"
 
-import {updatePage } from "./../../redux/slices/reportSlice";
+import { updatePage } from "./../../redux/slices/reportSlice";
 import { useSelector, useDispatch } from "react-redux";
+import { FaS } from "react-icons/fa6";
 
 function PieChart({ data, selectedDate }) {
   const accessToken = useSelector((state) => state.auth.authData[0].accessToken);
-  const dispatch=useDispatch();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { Title } = Typography;
   const [defectColors, setDefectColors] = useState({});
@@ -36,7 +37,7 @@ function PieChart({ data, selectedDate }) {
   //       setDefectColors(colors);
   //     })
   //     .catch((error) => {
-  //       console.error("Error fetching defect colors:", error);
+  //       //console.error("Error fetching defect colors:", error);
   //     });
   // }, [accessToken]);
 
@@ -84,7 +85,7 @@ function PieChart({ data, selectedDate }) {
                 const clickedIndex = opts.dataPointIndex;
 
                 if (clickedIndex === -1 || !chartData.labels[clickedIndex]) {
-                  console.error("Invalid data point selected");
+                  //console.error("Invalid data point selected");
                   return;
                 }
 
@@ -94,7 +95,7 @@ function PieChart({ data, selectedDate }) {
                 // );
                 const filterActive = true
                 // dispatch(setSelectedDefectReports(clickedVal[0]))
-                // console.log('dispatch called',clickedVal)
+                // //console.log('dispatch called',clickedVal)
                 const clickedVal = defectsData.filter(
                   (val) => val.name === clickedLabel
                 );
@@ -106,10 +107,10 @@ function PieChart({ data, selectedDate }) {
                   }))
                   setTimeout(() => {
                     navigate(`/reports`, { state: { filterActive } });
-                    // navigate(`/reports`);
+
                   }, [500])
                 } else {
-                  console.error("No matching defect found");
+                  //console.error("No matching defect found");
                 }
               },
             },
@@ -121,15 +122,32 @@ function PieChart({ data, selectedDate }) {
               predefinedColors[index % predefinedColors.length]
             );
           }),
+
+          dataLabels: {
+            enabled: true,
+            formatter: function (val) {
+              return val.toFixed(2) + "%";  // Customize the number format if needed
+            },
+
+            style: {
+              fontSize: '12px',  // Customize font size
+              fontFamily: 'Helvetica, Arial, sans-serif',
+              fontWeight: 'bold',
+            }
+          },
           labels: chartData.labels,
           legend: {
             position: "bottom",
             horizontalAlign: "center",
             fontSize: "14px",
+            fontWeight: "bold",
             markers: {
               width: 10,
               height: 10,
               radius: 12,
+            },
+            onItemHover: {
+              highlightDataSeries: false
             },
           },
           responsive: [

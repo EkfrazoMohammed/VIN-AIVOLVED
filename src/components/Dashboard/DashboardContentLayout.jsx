@@ -49,6 +49,7 @@ import RealTimeManufacturingSection from "./RealTimeManufacturingSection";
 import useApiInterceptor from "../../hooks/useInterceptor";
 import axiosInstance from "../../API/axiosInstance";
 import { encryptAES } from "../../redux/middleware/encryptPayloadUtils";
+import SelectComponent from "../common/Select";
 
 const DashboardContentLayout = ({ children }) => {
   const apiCallInterceptor = useApiInterceptor();
@@ -75,21 +76,28 @@ const DashboardContentLayout = ({ children }) => {
 
   const [selectedDefect, setSelectedDefect] = useState(null);
 
+
+  const [filterActive, setFilterActive] = useState(false);
+  const [filterChanged, setFilterChanged] = useState(false);
+
   const [selectedDate, setSelectedDate] = useState(null);
   const [dateRange, setDateRange] = useState([
     formattedStartDate,
     formattedEndDate,
   ]);
-  const [activeProd, setActiveProd] = useState([]);
 
   const currentUrlPath = useLocation();
 
   const handleMachineChange = (value) => {
-    dispatch(setSelectedMachine(Number(value))); // Dispatching action    
+    setFilterActive(false)
+    dispatch(setSelectedMachine(Number(value))); // Dispatching action   
+    setFilterChanged(true)
   };
 
   const handleProductChange = (value) => {
+    setFilterActive(false)
     dispatch(setSelectedProduct(Number(value))); // Dispatching action    
+    setFilterChanged(true)
   }
 
 
@@ -100,12 +108,13 @@ const DashboardContentLayout = ({ children }) => {
     if (Array.isArray(dateStrings) && dateStrings.length === 2) {
       setSelectedDate(dateStrings);
       setDateRange(dateStrings);
+      setFilterChanged(true)
     } else {
-      console.error("Invalid date range:", dates, dateStrings);
+      //console.error("Invalid date range:", dates, dateStrings);
     }
   };
   useEffect(() => {
-    console.log(localPlantData?.id)
+    //console.log(localPlantData?.id)
     // window.location.reload()
   }, [localPlantData])
   const resetFilter = () => {
@@ -116,12 +125,15 @@ const DashboardContentLayout = ({ children }) => {
     dispatch(setSelectedProduct(null)); // Dispatching action
     setSelectedDate(null);
     setFilterActive(false);
+    setFilterChanged(false)
   };
+
+  console.log(dateRange)
 
   const handleApplyFilters = () => {
 
     const domain = `${baseURL}`;
-    const [fromDate, toDate] = dateRange; // Destructure the date range
+    const [fromDate, toDate] = dateRange;
 
     // Construct query parameters
     const queryParams = {
@@ -169,10 +181,11 @@ const DashboardContentLayout = ({ children }) => {
       .then((response) => {
         const { active_products, ...datesData } = response.data;
         dispatch(getDashboardSuccess({ datesData, activeProducts: active_products }))
+        console.log(response.data)
         setFilterActive(true);
       })
       .catch((error) => {
-        console.error("Error:", error); // Log error
+        //console.error("Error:", error); // Log error
 
       });
   };
@@ -200,7 +213,7 @@ const DashboardContentLayout = ({ children }) => {
           getSystemStatus(localPlantData.id, accessToken, apiCallInterceptor),
         ]);
       } catch (err) {
-        console.log(err.message || "Failed to fetch data")
+        //console.log(err.message || "Failed to fetch data")
       } finally {
         setLoading(false);
       }
@@ -221,7 +234,7 @@ const DashboardContentLayout = ({ children }) => {
     setDateRange([formattedStartDate, formattedEndDate]);
   };
 
-  const [filterActive, setFilterActive] = useState(false);
+
 
 
 
@@ -267,7 +280,7 @@ const DashboardContentLayout = ({ children }) => {
       })
       .catch((error) => {
         getDashboardFailure();
-        console.error("Error fetching department data:", error);
+        //console.error("Error fetching department data:", error);
       });
   };
 
@@ -275,7 +288,7 @@ const DashboardContentLayout = ({ children }) => {
     <Menu selectable={true}>
       <Menu.Item key="0">
         <Checkbox.Group
-          style={{ display: "block" }}
+          style={{ display: "block", cursor: "default" }}
           value={selectedCheckboxMachine}
           onChange={handleMachineCheckBoxChange}
         >
@@ -301,7 +314,7 @@ const DashboardContentLayout = ({ children }) => {
   const defectMenu = (
     <Menu>
       <Menu.Item key="0">
-        <Checkbox.Group style={{ display: "block" }}>
+        <Checkbox.Group style={{ display: "block", cursor: "default" }}>
           {Object.keys(categoryDefects).map((defect) => (
             <div
               key={defect.id}
@@ -319,7 +332,7 @@ const DashboardContentLayout = ({ children }) => {
   const prodMenu = (
     <Menu>
       <Menu.Item key="0">
-        <Checkbox.Group style={{ display: "block" }}>
+        <Checkbox.Group style={{ display: "block", cursor: "default" }}>
           {Object.values(tableDataReduxActive).map((prod) => (
             <div
               key={prod.id}
@@ -341,7 +354,7 @@ const DashboardContentLayout = ({ children }) => {
 
 
   const close = () => {
-    console.log("Notification was closed");
+    //console.log("Notification was closed");
   };
   return (
     <>
@@ -360,8 +373,14 @@ const DashboardContentLayout = ({ children }) => {
                     {/* <button className="p-2 bg-gray-200 rounded h-full w-[40px] flex justify-center items-center">
                       <IoFilterSharp />
                     </button> */}
-                    <Select
-                      className="dx-default-select select-machines"
+
+
+                    <SelectComponent placeholder={"Select Machine"} selectedData={selectedMachineRedux} action={(val) => handleMachineChange(val)} data={machines} style={{ minWidth: "150px", zIndex: 1 }} size={"large"} />
+                    <SelectComponent placeholder={"Select Products"} selectedData={selectedProductRedux} action={(val) => handleProductChange(val)} data={productsData} style={{ minWidth: "180px", zIndex: 1 }} size={"large"} />
+
+
+                    {/* <Select
+                      className="dx-default-select "
                       style={{ minWidth: "150px", zIndex: 1 }}
                       showSearch
                       placeholder="Select Machine"
@@ -378,8 +397,8 @@ const DashboardContentLayout = ({ children }) => {
                           {machine.name}
                         </Select.Option>
                       ))}
-                    </Select>
-                    <Select
+                    </Select> */}
+                    {/* <Select
                       className="dx-default-select"
                       style={{ width: "200px", zIndex: 1 }}
                       showSearch
@@ -401,10 +420,11 @@ const DashboardContentLayout = ({ children }) => {
                           {department.name}
                         </Select.Option>
                       ))}
-                    </Select>
+                    </Select> */}
 
                     <RangePicker
                       className="dx-default-date-range"
+                      size="large"
                       style={{ marginRight: "10px", minWidth: "280px", zIndex: 1 }}
                       onChange={handleDateRangeChange}
                       allowClear={false}
@@ -418,21 +438,22 @@ const DashboardContentLayout = ({ children }) => {
                           : []
                       }
                     />
-                    <Button
+
+                    <div
                       type="primary"
                       onClick={handleApplyFilters}
-                      className="p-2 bg-red-500 text-white rounded flex items-center justify-center"
+                      className=" bg-red-500 text-white rounded flex items-center justify-center py-2 px-3 cursor-pointer font-bold"
                     >
                       Apply filters
-                    </Button>
-                    {filterActive && (
-                      <Button
+                    </div>
+                    {filterActive && filterChanged && (
+                      <div
                         type="primary"
                         onClick={resetFilter}
-                        className="p-2 bg-red-500 text-white rounded flex items-center justify-center"
+                        className=" bg-red-500 text-white rounded flex items-center justify-center py-2 px-3 cursor-pointer font-bold"
                       >
                         Reset Filter
-                      </Button>
+                      </div>
                     )}
                   </div>
                   <div className="grid grid-cols-4 gap-4">
@@ -470,7 +491,7 @@ const DashboardContentLayout = ({ children }) => {
                         <AlertOutlined />
                       </div>
                       <Dropdown overlay={prodMenu} trigger={["click"]} className="text-[35px] text-gray-500 font-semibold bg-gray-200 p-3">
-                        <div className="number" style={{ cursor: "pointer" }}>
+                        <div className="number cursor-pointer">
                           <div className="flex items-center justify-between">
                             {Object.keys(tableDataReduxActive).length}
                             <IoIosArrowDown className="text-[18px]" />

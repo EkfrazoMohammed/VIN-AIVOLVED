@@ -15,7 +15,7 @@
 //   instance.interceptors.response.use(
 //     (response) => response,
 //     (error) => {
-//       console.error("API Error:", error);
+//       //console.error("API Error:", error);
 //       return Promise.reject(error);
 //     }
 //   );
@@ -29,7 +29,7 @@
 
 //   useEffect(() => {
 //     // Log the accessToken for debugging
-//     // console.log("Access Token:", accessToken);
+//     // //console.log("Access Token:", accessToken);
 //   }, [accessToken]);
 
 //   // Create and return axios instance

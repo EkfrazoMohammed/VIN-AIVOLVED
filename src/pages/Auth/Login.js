@@ -87,7 +87,7 @@ const Login = () => {
     } catch (error) {
       // Dispatch failure action
       dispatch(signInFailure(error.response?.data));
-      console.log(error)
+      //console.log(error)
       // Notify error
       openNotification("error", error.response?.data?.message
         || "Invalid Credentials");

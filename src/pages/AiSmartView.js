@@ -38,10 +38,10 @@ const AiSmartView = () => {
     try {
       setLoader(true);
       const aiSmartViewData = await getAiSmartView(localPlantData.id, AuthToken, apiCallInterceptor, 1, selectedId);
-      console.log(aismartviewData.results)
+      //console.log(aismartviewData.results)
       setAismartviewData(aiSmartViewData.results);
     } catch (error) {
-      console.error("Failed to fetch AI Smart View data:", error.message);
+      //console.error("Failed to fetch AI Smart View data:", error.message);
     } finally {
       setLoader(false);
     }
@@ -58,7 +58,7 @@ const AiSmartView = () => {
         setAismartviewData(aiSmartViewData.results);
         setCurrentSlideIndex(0);
       } catch (error) {
-        console.error("Failed to fetch AI Smart View data:", error.message);
+        //console.error("Failed to fetch AI Smart View data:", error.message);
       } finally {
         setLoader(false);
       }
@@ -78,7 +78,7 @@ const AiSmartView = () => {
         setAismartviewData(aiSmartViewData);
         setCurrentSlideIndex(0);
       } catch (error) {
-        console.error("Failed to fetch AI Smart View data:", error.message);
+        //console.error("Failed to fetch AI Smart View data:", error.message);
       } finally {
         setLoader(false);
       }

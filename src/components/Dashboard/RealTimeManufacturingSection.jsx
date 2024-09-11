@@ -74,7 +74,7 @@ export default function RealTimeManufacturingSection({
                     key={index}
                     className="flex justify-between items-center bg-[#ff676e] p-2 mb-2 rounded"
                   >
-                    <span className="max-w-28 text-wrap font-bold text-white">
+                    <span className="max-w-28 text-wrap font-bold text-white break-words">
                       {category}
                     </span>
                     <span className="text-white font-bold">

@@ -8,9 +8,13 @@ import { baseURL } from '../../API/API';
 import { ColorRing } from 'react-loader-spinner'
 import { useSelector } from 'react-redux';
 import { encryptAES, decryptAES } from '../../redux/middleware/encryptPayloadUtils'
+import axiosInstance from '../../API/axiosInstance';
+import useApiInterceptor from '../../hooks/useInterceptor';
 
 
 const Alerts = () => {
+
+  const apiInterceptor = useApiInterceptor()
   const accessToken = useSelector((state) => state.auth.authData[0].accessToken);
   const currentUserData = useSelector((state) => (state.user.userData[0]))
   const [api, contextHolder] = notification.useNotification();
@@ -95,9 +99,9 @@ const Alerts = () => {
         "employee_id": data.employee_id
       }
 
-      console.log(payload)
+      //console.log(payload)
       const encryTedData = encryptAES(JSON.stringify(payload))
-      console.log(encryTedData)
+      //console.log(encryTedData)
       const usersPayload = {
         "data": `${encryTedData}`
       }
@@ -105,9 +109,9 @@ const Alerts = () => {
         setLoading(true)
         // Encryption Configuration
         // import axiosInstance from '../../API/axiosInstance'; // Ensure this is correctly imported
-        const postRequest = await axios.post(`${baseURL}user/`, usersPayload, headersOb)
+        const postRequest = await apiInterceptor.post(`user/`, usersPayload, headersOb)
         if (postRequest) {
-          console.log(postRequest)
+          //console.log(postRequest)
           closeModalUser()
           setLoading(false)
           setModal2Open(false)
@@ -123,11 +127,11 @@ const Alerts = () => {
 
       } else {
         setLoading(false)
-        console.log("ERROR")
+        //console.log("ERROR")
       }
     } catch (error) {
       setLoading(false)
-      console.log(error)
+      //console.log(error)
       if (error.response.status === 400) {
         openNotification({ status: "error", message: error.response.data.message });
       }

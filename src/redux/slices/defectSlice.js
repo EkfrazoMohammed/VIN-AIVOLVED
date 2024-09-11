@@ -20,7 +20,7 @@ const defectSlice = createSlice({
       state.selectedDefect = action.payload;
     },
     setSelectedDefectReports: (state, action) => {
-      console.log(action.payload);
+      //console.log(action.payload);
       state.selectedDefectReports = action.payload;
     },
 

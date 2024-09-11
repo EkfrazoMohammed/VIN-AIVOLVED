@@ -58,5 +58,5 @@ export const decryptAESInt = (encryptedData) => {
 // Use this function to decrypt your plantId
 const plantId = "B1w%2F0zn7r3%2FledwBqYUsCw%3D%3D";
 const decryptedPlantId = decryptAES(plantId);
-console.log(decryptedPlantId);
+//console.log(decryptedPlantId);
 

@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 import { baseURL } from "../../API/API"
 import { initialDashboardData, getDefects, getMachines, getSystemStatus, getDepartments, initialDpmuData, initialProductionData, getProducts } from "../../services/dashboardApi";
 import useApiInterceptor from '../../hooks/useInterceptor';
+import axiosInstance from '../../API/axiosInstance';
 
 const Defects = ({ defectsdata }) => {
 
@@ -89,8 +90,8 @@ const Defects = ({ defectsdata }) => {
     };
 
     try {
-      const url = `${baseURL}defect/`;
-      await axios.post(url, payload, {
+      const url = `defect/`;
+      await axiosInstance.post(url, payload, {
         headers: {
           Authorization: `Bearer ${AuthToken}`,
         },
@@ -102,7 +103,7 @@ const Defects = ({ defectsdata }) => {
 
       setModalOpen(false);
     } catch (err) {
-      console.log(err);
+      //console.log(err);
     }
   };
 
@@ -135,7 +136,7 @@ const Defects = ({ defectsdata }) => {
       });
       setEditModalOpen(false);
     } catch (err) {
-      console.log(err);
+      //console.log(err);
     }
   };
 

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import { Link, useNavigate, useNavigation } from "react-router-dom";
 import axios from "axios";
+import moment from "moment";
 import {
   Card,
   notification,
@@ -34,6 +35,8 @@ import ProductionVsReject from "../components/chart/ProductionVsReject";
 import dayjs from "dayjs";
 import { Hourglass } from "react-loader-spinner";
 import { useSelector } from "react-redux";
+import SelectComponent from "../components/common/Select";
+import { current } from "@reduxjs/toolkit";
 
 
 
@@ -91,7 +94,7 @@ function Dashboard() {
       setSelectedDate(dateStrings);
       setDateRange(dateStrings);
     } else {
-      console.error("Invalid date range:", dates, dateStrings);
+      //console.error("Invalid date range:", dates, dateStrings);
     }
   };
 
@@ -160,7 +163,7 @@ function Dashboard() {
         setFilterActive(true);
       })
       .catch((error) => {
-        console.error("Error:", error);
+        //console.error("Error:", error);
         setLoaderData(false);
       });
   };
@@ -182,7 +185,7 @@ function Dashboard() {
         );
       })
       .catch((error) => {
-        console.error("Error fetching machine data:", error);
+        //console.error("Error fetching machine data:", error);
       });
   };
 
@@ -213,7 +216,7 @@ function Dashboard() {
         setMachineOptions(formattedMachines);
       })
       .catch((error) => {
-        console.error("Error fetching machine data:", error);
+        //console.error("Error fetching machine data:", error);
       });
   };
 
@@ -234,7 +237,7 @@ function Dashboard() {
         setDepartmentOptions(formattedDepartment);
       })
       .catch((error) => {
-        console.error("Error fetching department data:", error);
+        //console.error("Error fetching department data:", error);
       });
   };
   const initialDateRange = () => {
@@ -274,12 +277,12 @@ function Dashboard() {
         setActiveProd(active_products);
       })
       .catch((error) => {
-        console.error("Error:", error);
+        //console.error("Error:", error);
         setLoaderData(false);
       });
   };
 
-  // console.log(Object.keys(tableData).filter(res=>res !== "active_products"),"<<<tabledata")
+  // //console.log(Object.keys(tableData).filter(res=>res !== "active_products"),"<<<tabledata")
 
   const initialProductionData = () => {
     const domain = baseURL;
@@ -296,7 +299,7 @@ function Dashboard() {
         setProductionData(response.data.data_last_7_days);
       })
       .catch((error) => {
-        console.error("Error:", error);
+        //console.error("Error:", error);
       });
   };
   const [alertData, setAlertData] = useState(null);
@@ -315,7 +318,7 @@ function Dashboard() {
         setProductOptions(res.data.results);
       })
       .catch((err) => {
-        console.log(err);
+        //console.log(err);
       });
   };
 
@@ -362,7 +365,7 @@ function Dashboard() {
   //       categorizedData[defect_name].push(item);
   //     });
   //   } else {
-  //     console.error('Data is not an array:', data);
+  //     //console.error('Data is not an array:', data);
   //   }
 
   //   return categorizedData;
@@ -383,11 +386,11 @@ function Dashboard() {
     axios
       .get(url)
       .then((response) => {
-        // console.log(response);
+        // //console.log(response);
         setTableData(response.data);
       })
       .catch((error) => {
-        console.error("Error fetching department data:", error);
+        //console.error("Error fetching department data:", error);
       });
   };
 
@@ -465,7 +468,7 @@ function Dashboard() {
         `wss://hul.aivolved.in/ws/notifications/${localPlantData.id}/`
       );
       socket.onopen = () => {
-        console.log(`WebSocket connection established ${localPlantData.id}`);
+        //console.log(`WebSocket connection established ${localPlantData.id}`);
         setIsSocketConnected(true); // Update connection status
       };
 
@@ -555,12 +558,12 @@ function Dashboard() {
       };
 
       socket.onclose = () => {
-        console.log("WebSocket connection closed");
+        //console.log("WebSocket connection closed");
         setIsSocketConnected(false); // Update connection status
       };
 
       socket.onerror = (error) => {
-        console.error("WebSocket error:", error);
+        //console.error("WebSocket error:", error);
         setIsSocketConnected(false); // Update connection status
       };
 
@@ -573,8 +576,15 @@ function Dashboard() {
     return cleanup;
   }, [api]);
   const close = () => {
-    console.log("Notification was closed");
+    //console.log("Notification was closed");
   };
+
+  const disableFutureDates = (current) => {
+    // Disable dates after today (including tomorrow)
+    return current && current.isAfter(dayjs().endOf("day"));
+  };
+
+
   return (
     <>
       {contextHolder}
@@ -591,6 +601,9 @@ function Dashboard() {
             className="mb-24"
             style={{ display: "flex", gap: "1rem" }}
           >
+
+            <SelectComponent placeholder={"Select Machine"} selectedData={selectedMachine} action={(val) => handleMachineChange(val)} data={machineOptions} />
+
             <Select
               style={{ minWidth: "200px", marginRight: "10px" }}
               showSearch
@@ -630,10 +643,9 @@ function Dashboard() {
                 </Select.Option>
               ))}
             </Select>
-
-            <RangePicker
-              // showTime
+            <DatePicker
               size="large"
+              disabledDate={(current) => current.isBefore(moment())}
               style={{ marginRight: "10px", minWidth: "280px" }}
               onChange={handleDateRangeChange}
               allowClear={false}

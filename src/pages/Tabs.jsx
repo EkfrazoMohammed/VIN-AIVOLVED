@@ -87,7 +87,7 @@ return (
              });
     }
     catch(err){
-      console.log(err)
+      //console.log(err)
     }
 
   }
@@ -101,7 +101,7 @@ return (
             setTableData(res.data)
         )
         .catch(err=>
-            console.log(err)
+            //console.log(err)
         )
     },[])
 

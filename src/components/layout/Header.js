@@ -266,7 +266,7 @@ function Header({
 // const PlantName = JSON.parse(localData)
 const localPlantData = useSelector((state) => state.plant.plantData[0]);
 const PlantName =localPlantData.plant_name ;
-// console.log("plantData///",PlantName);
+// //console.log("plantData///",PlantName);
 
 
 
@@ -327,7 +327,7 @@ const PlantName =localPlantData.plant_name ;
       
       
     } catch (error) {
-      console.log(error)
+      //console.log(error)
     }
   }
   const handleLogout  = async ()=>{

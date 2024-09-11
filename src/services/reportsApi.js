@@ -10,7 +10,7 @@ export const reportApi = async (plantId, pageSize, Authtoken, pageNumber, apiCal
         const response = await apiCallInterceptor.get(`reports/?page=${pageNumber}&plant_id=${encryptedData}&page_size=${pageSize}`);
         return response.data;
     } catch (error) {
-        console.error(error);
+        //console.error(error);
         return error;
     }
 };

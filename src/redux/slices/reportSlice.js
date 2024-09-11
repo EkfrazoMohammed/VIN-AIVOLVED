@@ -25,7 +25,7 @@ const reportSlice = createSlice({
             };
         },
         updatePage: (state, action) => {
-            console.log(action.payload)
+            //console.log(action.payload)
             state.pagination.current = action.payload.current;
             state.pagination.pageSize = action.payload.pageSize;
         },

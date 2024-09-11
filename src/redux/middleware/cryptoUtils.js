@@ -21,7 +21,7 @@ const decryptAES = (key, encryptedData) => {
 
         return CryptoJS.enc.Utf8.stringify(decrypted);
     } catch (error) {
-        console.error('Error during decryption:', error);
+        //console.error('Error during decryption:', error);
         return null;
     }
 };

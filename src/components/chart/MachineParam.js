@@ -28,7 +28,7 @@ function MachineParam() {
           setTotalData(modifiedData);
         }
       } catch (error) {
-        console.error("Error fetching machine parameters:", error);
+        //console.error("Error fetching machine parameters:", error);
       }
     };
 

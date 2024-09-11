@@ -44,7 +44,7 @@ const Plant = () => {
       dispatch(setPlantData(plantData)); // Dispatch valid plant data to Redux
       navigate('/');
     } else {
-      console.error('Invalid or empty plant data:', plantData); // Handle invalid data
+      //console.error('Invalid or empty plant data:', plantData); // Handle invalid data
     }
   };
 
@@ -53,7 +53,7 @@ const Plant = () => {
     const fetchPlantData = async () => {
       try {
         if (!accessToken) {
-          console.error("Authorization token is missing");
+          //console.error("Authorization token is missing");
           return;
         }
 
@@ -63,15 +63,15 @@ const Plant = () => {
         if (results) {
           setPlant(results);
         } else {
-          console.warn("No results found in the response");
+          //console.warn("No results found in the response");
         }
       } catch (err) {
-        console.error("Error fetching plant data:", err);
+        //console.error("Error fetching plant data:", err);
         if (err.response && err.response.data.code === "token_not_valid") {
-          console.error("Token is invalid or expired.");
+          //console.error("Token is invalid or expired.");
           // Handle token refresh logic here, or redirect to login
         } else {
-          console.error("Error:", err.message || "Unknown error occurred");
+          //console.error("Error:", err.message || "Unknown error occurred");
         }
       } finally {
         setLoader(false);
@@ -87,7 +87,7 @@ const Plant = () => {
   //     setLoader(true); // Start loading
   //     try {
   //       const res = await axiosInstance.get(`/plant/`);
-  //       console.log("plant==>",res);
+  //       //console.log("plant==>",res);
 
   //       if (res.data.results) {
   //         setPlant(res.data.results);
@@ -95,7 +95,7 @@ const Plant = () => {
   //         setPlant([]); 
   //       }
   //     } catch (err) {
-  //       console.error(err);
+  //       //console.error(err);
   //       setError("Failed to fetch plants. Please try again later."); // Set error state
   //     } finally {
   //       setLoader(false);
@@ -110,7 +110,7 @@ const Plant = () => {
   //     dispatch(setPlantData(plantData)); // Dispatch plant data to Redux
   //     navigate('/dashboard-home'); // Navigate to dashboard if plantData is valid
   //   } else {
-  //     console.error('Invalid plant data:', plantData); // Handle cases where plantData is not valid
+  //     //console.error('Invalid plant data:', plantData); // Handle cases where plantData is not valid
   //   }
   // };
 

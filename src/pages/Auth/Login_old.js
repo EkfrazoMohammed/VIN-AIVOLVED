@@ -59,7 +59,7 @@ const Login = () => {
         // const res = await ApiCall.post('/login/', loginPayload);
         const res = await axiosInstance.post('/login/', loginPayload);
         const data = res.data;
-        console.log("login res", res);
+        //console.log("login res", res);
 
         if (res.status !== 200) {
           dispatch(signInFailure(data));

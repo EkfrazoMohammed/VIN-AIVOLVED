@@ -49,7 +49,7 @@
 //       setSelectedDate(dateStrings);
 //       setDateRange(dateStrings);
 //     } else {
-//       console.error("Invalid date range:", dates, dateStrings);
+//       //console.error("Invalid date range:", dates, dateStrings);
 //     }
 //   };
 
@@ -65,7 +65,7 @@
 //       });
 //       setData(response.data);
 //     } catch (error) {
-//       console.error("Error fetching data:", error);
+//       //console.error("Error fetching data:", error);
 //     }
 //   };
 
@@ -325,7 +325,7 @@ const MachineDataOverview = () => {
       setSelectedDate(dateStrings);
       setDateRange(dateStrings);
     } else {
-      console.error("Invalid date range:", dates, dateStrings);
+      //console.error("Invalid date range:", dates, dateStrings);
     }
   };
 
@@ -356,7 +356,7 @@ const MachineDataOverview = () => {
       setFilterActive(true);
     } catch (error) {
       setLoaderData(false);
-      console.error("Error applying filters:", error);
+      //console.error("Error applying filters:", error);
     }
   };
 
@@ -382,7 +382,7 @@ const MachineDataOverview = () => {
       setActiveProd(active_products);
     } catch (error) {
       setLoaderData(false);
-      console.error("Error fetching initial table data:", error);
+      //console.error("Error fetching initial table data:", error);
     }
   };
 
@@ -391,7 +391,7 @@ const MachineDataOverview = () => {
       const data = await fetchDefectVsMachineData(localPlantData.id);
       setProductionData(data);
     } catch (error) {
-      console.error("Error fetching production data:", error);
+      //console.error("Error fetching production data:", error);
     }
   };
 
@@ -406,7 +406,7 @@ const MachineDataOverview = () => {
         await initialTableData();
         await initialProductionData();
       } catch (error) {
-        console.error("Error fetching initial data:", error);
+        //console.error("Error fetching initial data:", error);
       }
     };
 

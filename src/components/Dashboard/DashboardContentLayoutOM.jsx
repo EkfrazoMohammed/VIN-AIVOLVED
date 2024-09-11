@@ -98,7 +98,7 @@ const DashboardContentLayout = ({ children }) => {
       localPlantData = JSON.parse(localItems);
     }
   } catch (error) {
-    console.error("Failed to parse PlantData from localStorage:", error);
+    //console.error("Failed to parse PlantData from localStorage:", error);
   }
 
   // Handler for date range changes
@@ -108,7 +108,7 @@ const DashboardContentLayout = ({ children }) => {
       setSelectedDate(dateStrings);
       setDateRange(dateStrings);
     } else {
-      console.error("Invalid date range:", dates, dateStrings);
+      //console.error("Invalid date range:", dates, dateStrings);
     }
   };
 
@@ -166,7 +166,7 @@ const DashboardContentLayout = ({ children }) => {
         setFilterActive(true);
       })
       .catch((error) => {
-        console.error("Error:", error);
+        //console.error("Error:", error);
         setLoaderData(false);
       });
   };
@@ -188,7 +188,7 @@ const DashboardContentLayout = ({ children }) => {
         );
       })
       .catch((error) => {
-        console.error("Error fetching machine data:", error);
+        //console.error("Error fetching machine data:", error);
       });
   };
 
@@ -235,7 +235,7 @@ const DashboardContentLayout = ({ children }) => {
         setMachineOptions(formattedMachines);
       })
       .catch((error) => {
-        console.error("Error fetching machine data:", error);
+        //console.error("Error fetching machine data:", error);
       });
   };
 
@@ -256,7 +256,7 @@ const DashboardContentLayout = ({ children }) => {
   //       setDepartmentOptions(formattedDepartment);
   //     })
   //     .catch((error) => {
-  //       console.error("Error fetching department data:", error);
+  //       //console.error("Error fetching department data:", error);
   //     });
   // };
   const initialDateRange = () => {
@@ -296,12 +296,12 @@ const DashboardContentLayout = ({ children }) => {
         setActiveProd(active_products);
       })
       .catch((error) => {
-        console.error("Error:", error);
+        //console.error("Error:", error);
         setLoaderData(false);
       });
   };
 
-  // console.log(Object.keys(tableData).filter(res=>res !== "active_products"),"<<<tabledata")
+  // //console.log(Object.keys(tableData).filter(res=>res !== "active_products"),"<<<tabledata")
 
   const initialProductionData = () => {
     const domain = baseURL;
@@ -318,7 +318,7 @@ const DashboardContentLayout = ({ children }) => {
         setProductionData(response.data.data_last_7_days);
       })
       .catch((error) => {
-        console.error("Error:", error);
+        //console.error("Error:", error);
       });
   };
   const [alertData, setAlertData] = useState(null);
@@ -333,12 +333,12 @@ const DashboardContentLayout = ({ children }) => {
         },
       })
       .then((res) => {
-        console.log(res.data, "prod");
+        //console.log(res.data, "prod");
         setAlertData(res.data.results);
         setProductOptions(res.data.results);
       })
       .catch((err) => {
-        console.log(err);
+        //console.log(err);
       });
   };
 
@@ -386,11 +386,11 @@ const DashboardContentLayout = ({ children }) => {
     axios
       .get(url)
       .then((response) => {
-        console.log(response);
+        //console.log(response);
         // setTableData(response.data);
       })
       .catch((error) => {
-        console.error("Error fetching department data:", error);
+        //console.error("Error fetching department data:", error);
       });
   };
 
@@ -468,7 +468,7 @@ const DashboardContentLayout = ({ children }) => {
         `wss://hul.aivolved.in/ws/notifications/${localPlantData.id}/`
       );
       socket.onopen = () => {
-        console.log(`WebSocket connection established ${localPlantData.id}`);
+        //console.log(`WebSocket connection established ${localPlantData.id}`);
         setIsSocketConnected(true); // Update connection status
       };
 
@@ -527,12 +527,12 @@ const DashboardContentLayout = ({ children }) => {
       };
 
       socket.onclose = () => {
-        console.log("WebSocket connection closed");
+        //console.log("WebSocket connection closed");
         setIsSocketConnected(false); // Update connection status
       };
 
       socket.onerror = (error) => {
-        console.error("WebSocket error:", error);
+        //console.error("WebSocket error:", error);
         setIsSocketConnected(false); // Update connection status
       };
 
@@ -547,7 +547,7 @@ const DashboardContentLayout = ({ children }) => {
 
 
   const close = () => {
-    console.log("Notification was closed");
+    //console.log("Notification was closed");
   };
   return (
     <>

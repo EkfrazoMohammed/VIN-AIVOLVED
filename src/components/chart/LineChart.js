@@ -27,7 +27,7 @@ function LineChart({ data }) {
         setDefectColors(colors);
       })
       .catch(error => {
-        console.error('Error fetching defect colors:', error);
+        //console.error('Error fetching defect colors:', error);
       });
   }, []);
 

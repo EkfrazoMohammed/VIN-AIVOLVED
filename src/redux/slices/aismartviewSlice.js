@@ -27,7 +27,7 @@ const aismartviewSlice = createSlice({
             state.next = action.payload.aismartviewData.next;
         },
         setSelectedDefectAismartview: (state, action) => {
-            console.log(action.payload)
+            //console.log(action.payload)
             state.selectedDefect = action.payload;
         },
         setErrorMessage: (state, action) => {
@@ -45,7 +45,7 @@ const aismartviewSlice = createSlice({
         },
         setCurrentSlideIndex: (state, action) => { // Add this reducer
             state.currentSlideIndex = action.payload;
-            console.log(action.payload)
+            //console.log(action.payload)
         },
     },
 });

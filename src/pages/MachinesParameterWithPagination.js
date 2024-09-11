@@ -13,7 +13,7 @@ const MachinesParameterWithPagination = () => {
       const response = await axios.get(`${baseURL}machine_temprature/`);
       setData(response.data);
     } catch (error) {
-      console.log(error);
+      //console.log(error);
     }
   };
 

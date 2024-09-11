@@ -29,7 +29,7 @@ const useApiInterceptor = () => {
                     const encryptedData = encryptAES(JSON.stringify({ refresh_token: refreshToken }))
 
                     try {
-                        const response = await axios.post('https://huldev.aivolved.in/api/refresh_token/', {
+                        const response = await axios.post('https://hul.aivolved.in/api/refresh_token/', {
                             data: encryptedData,
                         });
 
@@ -47,7 +47,7 @@ const useApiInterceptor = () => {
 
                         return ApiCall(originalRequest);
                     } catch (refreshError) {
-                        console.error("Error in Refreshing Token:", refreshError);
+                        //console.error("Error in Refreshing Token:", refreshError);
                         return Promise.reject(refreshError);
                     } finally {
                         setRefresh(false);

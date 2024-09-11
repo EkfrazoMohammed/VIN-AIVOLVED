@@ -73,7 +73,7 @@ const AiSmartView = () => {
   };
 
   const handleNext = async () => {
-    console.log(pagination?.pageSize - 1)
+    //console.log(pagination?.pageSize - 1)
   if (currentSlideIndex === pagination?.pageSize - 1 || 9) {
     // Fetch the next page of data
     await dispatch(updatePagination({ currentPage: pagination.currentPage + 1, pageSize: pagination.pageSize }));

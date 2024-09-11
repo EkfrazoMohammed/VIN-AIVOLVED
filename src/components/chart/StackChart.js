@@ -10,6 +10,7 @@ function StackChart({ data }) {
   const accessToken = useSelector((state) => state.auth.authData[0].accessToken);
   const { Title } = Typography;
   const [defectColors, setDefectColors] = useState({});
+  const [visibleSeries, setVisibleSeries] = useState({});
 
   useEffect(() => {
     axios
@@ -26,9 +27,9 @@ function StackChart({ data }) {
         setDefectColors(colors);
       })
       .catch((error) => {
-        console.error("Error fetching defect colors:", error);
+        //console.error("Error fetching defect colors:", error);
       });
-  }, []);
+  }, [accessToken]);
 
   const defectNames = [
     ...new Set(Object.values(data).flatMap((defects) => Object.keys(defects))),
@@ -37,15 +38,28 @@ function StackChart({ data }) {
     (a, b) => new Date(a) - new Date(b)
   );
 
-  const seriesData = defectNames.map((defectName, index) => {
-    return {
-      name: defectName,
-      data: sortedDates.map((date) => data[date][defectName] || 0),
-      color:
-        defectColors[defectName] ||
-        ["#FF5733", "#e31f09", "#3357FF"][index % 3],
-    };
-  });
+  // Initialize visibleSeries state to show all series initially
+  useEffect(() => {
+    const initialVisibility = defectNames.reduce((acc, name) => {
+      acc[name] = true;
+      return acc;
+    }, {});
+    setVisibleSeries(initialVisibility);
+  }, [defectNames]);
+
+
+  const seriesData = defectNames
+    .filter((defectName) => visibleSeries[defectName]) // Only include visible series
+    .map((defectName, index) => {
+      return {
+        name: defectName,
+        data: sortedDates.map((date) => data[date][defectName] || 0),
+        color:
+          defectColors[defectName] ||
+          ["#FF5733", "#e31f09", "#3357FF"][index % 3],
+      };
+    });
+
 
   const chartData = {
     series: seriesData,
@@ -80,15 +94,13 @@ function StackChart({ data }) {
         min: 0,
         labels: {
           style: {
-            fontSize: "14px",
             fontWeight: 600,
             colors: ["#8c8c8c"],
           },
         },
       },
       legend: {
-        position: "bottom",
-        offsetY: "0",
+        show: false, // Hide the default legend
       },
       fill: {
         opacity: 1,
@@ -101,13 +113,12 @@ function StackChart({ data }) {
     },
   };
 
-  const daysToShow = 7; 
-  const baseWidth = 500; 
-  const additionalWidthPerDay = 70;
-  const chartWidth =
-    sortedDates.length > daysToShow
-      ? baseWidth + (sortedDates.length - daysToShow) * additionalWidthPerDay
-      : baseWidth;
+  const handleCheckboxChange = (defectName) => {
+    setVisibleSeries((prev) => ({
+      ...prev,
+      [defectName]: !prev[defectName],
+    }));
+  };
 
   if (!data || Object.keys(data).length === 0) {
     return <LoaderIcon text={"Loading..."} />;
@@ -120,22 +131,28 @@ function StackChart({ data }) {
           Bar Graph for Defects
         </Title>
       </div>
+
+      {/* Custom legend with checkboxes */}
+      <div>
+        {defectNames.map((defectName) => (
+          <label key={defectName} style={{ marginRight: "10px" }}>
+            <input
+              type="checkbox"
+              checked={visibleSeries[defectName]} // Controlled by state
+              onChange={() => handleCheckboxChange(defectName)}
+            />
+            {defectName}
+          </label>
+        ))}
+      </div>
+
+      {/* ApexChart */}
       <ReactApexChart
-            options={chartData.options}
-            series={chartData.series}
-            type="bar"
-            height={350}
-          />
-      {/* <div style={{ width: "100%", overflowX: "auto" }}>
-        <div style={{ minWidth: `${chartWidth}px`, width: "auto" }}>
-          <ReactApexChart
-            options={chartData.options}
-            series={chartData.series}
-            type="bar"
-            height={350}
-          />
-        </div>
-      </div> */}
+        options={chartData.options}
+        series={chartData.series}
+        type="bar"
+        height={350}
+      />
     </div>
   );
 }

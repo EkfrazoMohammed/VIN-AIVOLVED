@@ -20,7 +20,7 @@ const useInitializeData = (plantData, authToken) => {
           getSystemStatus()
         ]);
       } catch (error) {
-        console.error("Initialization error:", error);
+        //console.error("Initialization error:", error);
         setInitializationError(error);
       }
     };

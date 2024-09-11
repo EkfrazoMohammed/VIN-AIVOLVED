@@ -22,7 +22,7 @@ const encryptor = encryptTransform({
   secretKey: process.env.REACT_APP_ENCRYPTION_KEY || "V!N_P0ND!", // Ensure secret key is set in .env
   onError: function (error) {
     // Handle the error
-    console.error("Encryption error:", error);
+    //console.error("Encryption error:", error);
   },
 });
 

@@ -61,7 +61,7 @@ useEffect(()=>{
         setOrganization(res.data.results);
        })
       .catch((err) => {
-        console.log(err);
+        //console.log(err);
       });
   }, []);
 
@@ -75,7 +75,7 @@ useEffect(()=>{
           window.location.reload()
            }
     } catch (error) {
-      console.log(error);
+      //console.log(error);
     }
   };
 

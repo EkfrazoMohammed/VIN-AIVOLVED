@@ -328,8 +328,15 @@ label::after {
 }
 .dx-default-date-range.ant-picker .ant-picker-input input::placeholder,
 .dx-default-select .ant-select-selector .ant-select-selection-placeholder {
-  color: #585858 !important;
+  color: #5c5b5b !important;
 }
+
+:where(.css-dev-only-do-not-override-kghr11).ant-select .ant-select-selection-placeholder {
+  color: #5c5b5b !important;
+
+}
+
+
 /* ui enhancement */
 /* side menu */
 /* ui enhancement end */
@@ -414,9 +421,13 @@ label::after {
 .slick-prev,.slick-next,.slick-prev:hover:before, .slick-prev:focus:before, .slick-next:hover:before, .slick-next:focus:before {
   opacity: 0 !important;
 }
-:where(.css-dev-only-do-not-override-kghr11).ant-select-dropdown{
+/* :where(.css-dev-only-do-not-override-kghr11).ant-select-dropdown{
   z-index: 1 !important;
 }
+
+:where(.css-kghr11).ant-select-dropdown{
+  z-index: 999 !important;
+} */
 /* :where(.css-dev-only-do-not-override-kghr11).ant-picker-dropdown-range{
   z-index: 99999 !important;
 } */

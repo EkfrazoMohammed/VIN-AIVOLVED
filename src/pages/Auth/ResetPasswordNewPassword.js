@@ -223,14 +223,14 @@ const PasswordResetForm = () => {
                     type="submit"
                     className="w-full bg-[#ff4403] text-white font-bold py-2 px-4 rounded hover:bg-red-600 transition-colors duration-300"
                   >
-                    Reset Password2
+                    Reset Password
                   </button>
                 </> : <>
                   <button
                     type="submit"
                     className="w-full bg-[#ff4403] text-white font-bold py-2 px-4 rounded hover:bg-red-600 transition-colors duration-300"
                   >
-                    Reset Password1
+                    Reset Password
                   </button>
                 </>}
               </>

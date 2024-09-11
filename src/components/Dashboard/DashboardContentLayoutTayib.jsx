@@ -116,7 +116,7 @@ const DashboardContentLayout = ({ children }) => {
         const defects = await fetchDefects();
         setDefectsData(defects);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        //console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }
@@ -145,11 +145,11 @@ const DashboardContentLayout = ({ children }) => {
     axios
       .get(url)
       .then((response) => {
-        console.log(response);
+        //console.log(response);
         // setTableData(response.data);
       })
       .catch((error) => {
-        console.error("Error fetching department data:", error);
+        //console.error("Error fetching department data:", error);
       });
   };
 
@@ -158,7 +158,7 @@ const DashboardContentLayout = ({ children }) => {
       const socket = new WebSocket(`wss://hul.aivolved.in/ws/notifications/${localPlantData.id}/`);
 
       socket.onopen = () => {
-        console.log(`WebSocket connection established ${localPlantData.id}`);
+        //console.log(`WebSocket connection established ${localPlantData.id}`);
         setIsSocketConnected(true);
       };
 
@@ -202,12 +202,12 @@ const DashboardContentLayout = ({ children }) => {
       };
 
       socket.onclose = () => {
-        console.log("WebSocket connection closed");
+        //console.log("WebSocket connection closed");
         setIsSocketConnected(false);
       };
 
       socket.onerror = (error) => {
-        console.error("WebSocket error:", error);
+        //console.error("WebSocket error:", error);
         setIsSocketConnected(false);
       };
 
@@ -249,7 +249,7 @@ const DashboardContentLayout = ({ children }) => {
       const data = await fetchDashboardData(queryParams)();
       setTableData(data);
     } catch (error) {
-      console.error("Error applying filters:", error);
+      //console.error("Error applying filters:", error);
     } finally {
       setLoading(false);
     }
@@ -345,7 +345,7 @@ const DashboardContentLayout = ({ children }) => {
         `wss://hul.aivolved.in/ws/notifications/${localPlantData.id}/`
       );
       socket.onopen = () => {
-        console.log(`WebSocket connection established ${localPlantData.id}`);
+        //console.log(`WebSocket connection established ${localPlantData.id}`);
         setIsSocketConnected(true); // Update connection status
       };
 
@@ -404,12 +404,12 @@ const DashboardContentLayout = ({ children }) => {
       };
 
       socket.onclose = () => {
-        console.log("WebSocket connection closed");
+        //console.log("WebSocket connection closed");
         setIsSocketConnected(false); // Update connection status
       };
 
       socket.onerror = (error) => {
-        console.error("WebSocket error:", error);
+        //console.error("WebSocket error:", error);
         setIsSocketConnected(false); // Update connection status
       };
 
@@ -424,7 +424,7 @@ const DashboardContentLayout = ({ children }) => {
 
 
   const close = () => {
-    console.log("Notification was closed");
+    //console.log("Notification was closed");
   };
   return (
     <>

@@ -42,7 +42,7 @@ import {
 } from "../redux/slices/dashboardSlice";
 
 export const baseURL =
-  process.env.REACT_APP_API_BASE_URL || "https://huldev.aivolved.in/api/";
+  process.env.REACT_APP_API_BASE_URL || "https://hul.aivolved.in/api/";
 
 export const getMachines = (plantName, token, apiCallInterceptor) => {
   let encryptedPlantName = encryptAES(plantName).replace(/^"|"$/g, '');
@@ -59,7 +59,7 @@ export const getMachines = (plantName, token, apiCallInterceptor) => {
       store.dispatch(getMachineSuccess(formattedMachines));
     })
     .catch((error) => {
-      console.error("Error fetching machine data:", error);
+      //console.error("Error fetching machine data:", error);
       // Dispatch action to handle failure
       store.dispatch(getMachineFailure());
     });
@@ -81,7 +81,7 @@ export const getDepartments = (plantName, token, apiCallInterceptor) => {
       // return formattedDepartment;
     })
     .catch((error) => {
-      console.error("Error fetching department data:", error);
+      //console.error("Error fetching department data:", error);
       // Dispatch action to update Redux state
       store.dispatch(getDepartmentFailure());
     });
@@ -100,7 +100,7 @@ export const getProducts = (plantName, token, apiCallInterceptor) => {
       // return formattedDepartment;
     })
     .catch((error) => {
-      console.error("Error fetching department data:", error);
+      //console.error("Error fetching department data:", error);
       // Dispatch action to update Redux state
       store.dispatch(getProductFailure());
     });
@@ -118,7 +118,7 @@ export const getDefects = (plantName, token, apiCallInterceptor) => {
       store.dispatch(getDefectSuccess(formattedDefects));
     })
     .catch((error) => {
-      console.error("Error fetching department data:", error);
+      //console.error("Error fetching department data:", error);
       // Dispatch action to update Redux state
       store.dispatch(getDefectFailure());
     });
@@ -145,7 +145,7 @@ export const getAiSmartView = async (
 
     return formattedDefects; // Return the data to be used in the calling function
   } catch (error) {
-    console.error("Error fetching AI Smart View data:", error);
+    //console.error("Error fetching AI Smart View data:", error);
     throw error; // Rethrow the error to be caught by the calling function
   }
 };
@@ -161,7 +161,7 @@ export const initialDpmuData = (plantId, token, apiCallInterceptor) => {
       store.dispatch(getDpmuSuccess(response.data.results));
     })
     .catch((error) => {
-      console.error("Error:", error);
+      //console.error("Error:", error);
       store.dispatch(getDpmuFailure());
     });
 };
@@ -178,7 +178,7 @@ export const initialProductionData = (plantId, token, apiCallInterceptor) => {
       // return response.data.data_last_7_days;
     })
     .catch((error) => {
-      console.error("Error:", error);
+      //console.error("Error:", error);
       store.dispatch(getProductVsDefectFailure());
     });
 };
@@ -199,7 +199,7 @@ export const getSystemStatus = (plantId, token, apiCallInterceptor) => {
       store.dispatch(setActiveMachines(activeMachines));
     })
     .catch((error) => {
-      console.error("Error fetching machine data:", error);
+      //console.error("Error fetching machine data:", error);
       store.dispatch(setActiveMachines([]));
     });
 };
@@ -215,10 +215,30 @@ const isEmptyDashboardResponse = (data) => {
 
 export const initialDashboardData = (plantId, token, apiCallInterceptor) => {
 
+
+
+  const startDate = new Date();
+  startDate.setDate(startDate.getDate() - 7); // 7 days ago
+  const formattedStartDate = startDate.toISOString().slice(0, 10);
+  // Format startDate as YYYY-MM-DD
+
+  const endDate = new Date(); // Today's date
+  const formattedEndDate = endDate.toISOString().slice(0, 10); // Format endDate as YYYY-MM-DD
+
+
+
+
   const encryptedPlantId = encodeURIComponent(
     encryptAES(JSON.stringify(plantId))
   );
-  const url = `dashboard/?plant_id=${encryptedPlantId}`;
+  const encryptedfromDate = encodeURIComponent(
+    encryptAES(formattedStartDate)
+  );
+  const encryptedtodate = encodeURIComponent(
+    encryptAES(formattedEndDate)
+  );
+
+  const url = `dashboard/?plant_id=${encryptedPlantId}&from_date=${encryptedfromDate}&to_date=${encryptedtodate}`;
   apiCallInterceptor
     .get(url)
     .then((response) => {
@@ -233,7 +253,7 @@ export const initialDashboardData = (plantId, token, apiCallInterceptor) => {
       }
     })
     .catch((error) => {
-      console.error("Error fetching dashboard data:", error);
+      //console.error("Error fetching dashboard data:", error);
       store.dispatch(getDashboardFailure(error.message));
     });
 };

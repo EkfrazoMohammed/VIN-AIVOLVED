@@ -12,7 +12,7 @@ const useWebSocket = () => {
     const socket = new WebSocket(`wss://hul.aivolved.in/ws/notifications/`);
 
     socket.onopen = () => {
-      console.log("WebSocket connection established");
+      //console.log("WebSocket connection established");
       setIsSocketConnected(true);
     };
 
@@ -36,12 +36,12 @@ const useWebSocket = () => {
     };
 
     socket.onclose = () => {
-      console.log("WebSocket connection closed");
+      //console.log("WebSocket connection closed");
       setIsSocketConnected(false);
     };
 
     socket.onerror = (error) => {
-      console.error("WebSocket error:", error);
+      //console.error("WebSocket error:", error);
       setIsSocketConnected(false);
     };
 

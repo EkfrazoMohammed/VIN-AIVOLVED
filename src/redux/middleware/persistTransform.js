@@ -14,7 +14,7 @@ export const decrypt = (data) => {
 
 const encryptionTransform = {
   in: (inboundState) => {
-    console.log('Encrypting state:', inboundState);
+    //console.log('Encrypting state:', inboundState);
     return {
       ...inboundState,
       auth: encrypt(inboundState.auth), // Encrypt auth state
@@ -22,7 +22,7 @@ const encryptionTransform = {
     };
   },
   out: (outboundState) => {
-    console.log('Decrypting state:', outboundState);
+    //console.log('Decrypting state:', outboundState);
     return {
       ...outboundState,
       auth: decrypt(outboundState.auth), // Decrypt auth state
