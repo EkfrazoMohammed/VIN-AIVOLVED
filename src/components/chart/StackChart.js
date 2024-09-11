@@ -45,8 +45,7 @@ function StackChart({ data }) {
       return acc;
     }, {});
     setVisibleSeries(initialVisibility);
-  }, [defectNames]);
-
+  }, []); // Empty dependency array to ensure this runs only once
 
   const seriesData = defectNames
     .filter((defectName) => visibleSeries[defectName]) // Only include visible series
@@ -60,58 +59,63 @@ function StackChart({ data }) {
       };
     });
 
+  // Fallback if no series is visible to keep x-axis
+  const fallbackSeries = seriesData.length === 0
+    ? [{ name: "No data", data: sortedDates.map(() => 0), color: "#f0f0f0" }]
+    : seriesData;
 
-  const chartData = {
-    series: seriesData,
-    options: {
-      chart: {
-        type: "bar",
-        height: 350,
-        stacked: true,
-        toolbar: {
-          show: false,
+    const chartData = {
+      series: fallbackSeries,
+      options: {
+        chart: {
+          type: "bar",
+          height: 350,
+          stacked: true,
+          toolbar: {
+            show: false,
+          },
+          zoom: {
+            enabled: true,
+          },
+          animations: {
+            enabled: false,
+          },
         },
-        zoom: {
-          enabled: true,
+        xaxis: {
+          type: "category",
+          categories: sortedDates,
+          labels: {
+            rotate: -45,
+            style: {
+              fontSize: "12px",
+              fontWeight: 600,
+              colors: "#000000", // Set all x-axis labels to black
+            },
+          },
         },
-        animations: {
-          enabled: false,
+        yaxis: {
+          min: 0,
+          labels: {
+            style: {
+              fontWeight: 600,
+              colors: "#000000", // Set all y-axis labels to black
+            },
+          },
         },
-      },
-      xaxis: {
-        type: "category",
-        categories: sortedDates,
-        labels: {
-          rotate: -45,
-          style: {
-            fontSize: "12px",
-            fontWeight: 600,
-            colors: ["#8c8c8c"],
+        legend: {
+          show: false, // Hide the default legend
+        },
+        fill: {
+          opacity: 1,
+        },
+        plotOptions: {
+          bar: {
+            columnWidth: "50%",
           },
         },
       },
-      yaxis: {
-        min: 0,
-        labels: {
-          style: {
-            fontWeight: 600,
-            colors: ["#8c8c8c"],
-          },
-        },
-      },
-      legend: {
-        show: false, // Hide the default legend
-      },
-      fill: {
-        opacity: 1,
-      },
-      plotOptions: {
-        bar: {
-          columnWidth: "50%",
-        },
-      },
-    },
-  };
+    };
+    
 
   const handleCheckboxChange = (defectName) => {
     setVisibleSeries((prev) => ({
