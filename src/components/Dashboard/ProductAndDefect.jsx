@@ -12,7 +12,7 @@ const ProductAndDefect = ({ chartData }) => {
     0
   );
   const totalDefects = chartData.reduce(
-    (sum, item) => sum + item.total_defects,
+    (sum, item) => sum + Number(item.total_defects), 
     0
   );
 
