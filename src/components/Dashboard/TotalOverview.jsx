@@ -1,7 +1,7 @@
 import React from "react";
 import { FaGears } from "react-icons/fa6";
 
-const TotalOverview = () => {
+const TotalOverview = ({ machine }) => {
   return (
     <div className="overview-container dashboard-data w-3/12 h-[257px] bg-no-repeat flex flex-col justify-between p-3 rounded-md object-cover bg-cover">
       <div className="title-w">
@@ -16,7 +16,7 @@ const TotalOverview = () => {
           <span className="flex gap-1 items-center">
             <FaGears /> Total Machine
           </span>
-          <div className="data-info">44</div>
+          <div className="data-info">{machine?.length}</div>
         </div>
       </div>
     </div>

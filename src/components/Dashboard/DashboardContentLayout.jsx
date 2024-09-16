@@ -7,7 +7,7 @@ import { IoIosArrowDown } from "react-icons/io";
 import { IoMdArrowForward } from "react-icons/io";
 
 import { useSelector, useDispatch } from "react-redux";
-import { initialDashboardData, getMachines, getSystemStatus, getDepartments, initialDpmuData, initialProductionData, getProducts } from "../../services/dashboardApi";
+import { initialDashboardData, getMachines, getSystemStatus, getDepartments, initialDpmuData, initialProductionData, getProducts, getDefects } from "../../services/dashboardApi";
 import DOMPurify from "dompurify";
 import { setSelectedMachine } from "../../redux/slices/machineSlice"
 import { setSelectedProduct } from "../../redux/slices/productSlice"
@@ -50,6 +50,7 @@ import useApiInterceptor from "../../hooks/useInterceptor";
 import axiosInstance from "../../API/axiosInstance";
 import { encryptAES } from "../../redux/middleware/encryptPayloadUtils";
 import SelectComponent from "../common/Select";
+import { current } from "@reduxjs/toolkit";
 
 const DashboardContentLayout = ({ children }) => {
   const apiCallInterceptor = useApiInterceptor();
@@ -128,7 +129,6 @@ const DashboardContentLayout = ({ children }) => {
     setFilterChanged(false)
   };
 
-  console.log(dateRange)
 
   const handleApplyFilters = () => {
 
@@ -203,6 +203,7 @@ const DashboardContentLayout = ({ children }) => {
 
           getMachines(localPlantData.plant_name, accessToken, apiCallInterceptor),
           getDepartments(localPlantData.plant_name, accessToken, apiCallInterceptor),
+          getDefects(localPlantData?.plant_name, accessToken, apiCallInterceptor),
           initialDpmuData(localPlantData.id, accessToken, apiCallInterceptor),
           getProducts(localPlantData.plant_name, accessToken, apiCallInterceptor),
           initialDateRange(),
@@ -365,7 +366,7 @@ const DashboardContentLayout = ({ children }) => {
       ) : (
         <>
           <div className="dx-row flex  pb-4 gap-3">
-            <TotalOverview />
+            <TotalOverview machine={machines} />
             <div className="overview-container w-9/12 flex flex-col justify-between p-3 rounded-md border-2">
               <div className="filter-lg-w">
                 <div className="inner-w">
@@ -429,6 +430,7 @@ const DashboardContentLayout = ({ children }) => {
                       onChange={handleDateRangeChange}
                       allowClear={false}
                       inputReadOnly
+                      disabledDate={(current) => current && current.valueOf() > Date.now()}
                       value={
                         selectedDate
                           ? [

@@ -10,6 +10,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { initialDashboardData, getDefects, getMachines, getSystemStatus, getDepartments, initialDpmuData, initialProductionData, getProducts } from "./../services/dashboardApi";
 import { reportApi } from "./../services/reportsApi";
 import {
+  setSelectedDefect,
   setSelectedDefectReports,
 } from "../redux/slices/defectSlice"; // Import the actions
 import axios from "axios"
@@ -22,6 +23,7 @@ import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { Modal } from "antd";
 import SelectComponent from "../components/common/Select";
+import { current } from "@reduxjs/toolkit";
 const columns = [
   {
     title: "Product Name",
@@ -170,7 +172,6 @@ const Reports = () => {
   const location = useLocation();
   let defectProp = location?.state?.filterActive;
 
-
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - 7); // 7 days ago
   const [dateRange, setDateRange] = useState();
@@ -180,7 +181,6 @@ const Reports = () => {
   const [filterActive, setfilterActive] = useState(defectProp);
   const [filterChanged, setfilterChanged] = useState(defectProp);
 
-  console.log(location, "<<<")
 
   const [loader, setLoader] = useState(false);
   const [modal, setModal] = useState(false)
@@ -219,14 +219,13 @@ const Reports = () => {
 
     //console.log(filteredQueryParams)
     await sendMessage(filteredQueryParams)
-
   }
 
 
 
   const socketConnection = () => {
     // Create a new WebSocket connection
-    const socket = new WebSocket('wss://hul.aivolved.in/ws/defect-image-streaming/ ');
+    const socket = new WebSocket('wss://huldev.aivolved.in/ws/defect-image-streaming/');
 
     // Set WebSocket state
     setWs(socket);
@@ -542,7 +541,11 @@ const Reports = () => {
         </div>}
         centered
         open={modal}
-        onCancel={() => setModal(false)}
+        onCancel={() => {
+          setModal(false); setSelectedDate(null); dispatch(setSelectedDefectReports(null)); // Dispatching action    
+          dispatch(setSelectedProduct(null));
+          setfilterChanged(false)
+        }}
         footer={[
           <>
             <Button key="submit" type="primary" style={{ backgroundColor: "#ec522d", }} onClick={handleDownload}>Download</Button>
@@ -602,6 +605,7 @@ const Reports = () => {
             onChange={handleDateRangeChange}
             allowClear={false}
             inputReadOnly={true}
+            disabledDate={(current) => current && current.valueOf() > Date.now()}
             value={
               selectedDate
                 ? [
@@ -698,6 +702,7 @@ const Reports = () => {
             onChange={handleDateRangeChange}
             allowClear={false}
             inputReadOnly={true}
+            disabledDate={(current) => current && current.valueOf() > Date.now()}
             value={
               selectedDate
                 ? [

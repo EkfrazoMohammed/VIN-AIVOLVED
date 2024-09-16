@@ -7,10 +7,12 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 Chart.register(ChartDataLabels);
 
 const ProductAndDefect = ({ chartData }) => {
+
   const totalProduction = chartData.reduce(
     (sum, item) => sum + parseInt(item.total_production, 10),
     0
   );
+
   const totalDefects = chartData.reduce(
     (sum, item) => sum + item.total_defects,
     0
@@ -74,7 +76,7 @@ const ProductAndDefect = ({ chartData }) => {
     },
     scales: {
       x: {
-        beginAtZero: true,
+        beginAtZero: false,
         grid: {
           display: true // Hide x-axis grid lines if not needed
         }

@@ -17,7 +17,7 @@ import CurrentTime from "./CurrentTime";
 import { useDispatch, useSelector } from 'react-redux';
 import { signOut } from '../../redux/slices/authSlice';
 import { dashboardSignout } from "../../redux/slices/dashboardSlice";
-import { defectSignout, setSelectedDefect } from "../../redux/slices/defectSlice";
+import { defectSignout, setSelectedDefect, setSelectedDefectReports } from "../../redux/slices/defectSlice";
 import { departmentSignout } from "../../redux/slices/departmentSlice";
 import { dpmuSignout } from "../../redux/slices/dpmuSlice";
 import { machineSignout, setSelectedMachine } from "../../redux/slices/machineSlice";
@@ -126,6 +126,7 @@ const SideMenu = () => {
     dispatch(setSelectedMachine(null)); // Dispatching action    
     dispatch(setSelectedDefect(null)); // Dispatching action 
     dispatch(setSelectedProduct(null));
+    dispatch(setSelectedDefectReports(null))
   }
 
   return (

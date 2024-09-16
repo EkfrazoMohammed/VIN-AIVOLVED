@@ -21,25 +21,15 @@ function PieChart({ data, selectedDate }) {
   // const [defectData, setDefectData] = useState([]);
   const defectsData = useSelector((state) => state.defect.defectsData)
 
-  // useEffect(() => {
-  //   axios
-  //     .get(`${baseURL}defect/`, {
-  //       headers: {
-  //         Authorization: `Bearer ${accessToken}`,
-  //       },
-  //     })
-  //     .then((response) => {
-  //       setDefectData(response.data.results);
-  //       const colors = {};
-  //       response.data.results.forEach((defect) => {
-  //         colors[defect.name] = defect.color_code;
-  //       });
-  //       setDefectColors(colors);
-  //     })
-  //     .catch((error) => {
-  //       //console.error("Error fetching defect colors:", error);
-  //     });
-  // }, [accessToken]);
+
+  useEffect(() => {
+    const colors = {};
+    defectsData.forEach((defect) => {
+      colors[defect.name] = defect.color_code;
+    });
+    setDefectColors(colors);
+
+  }, [accessToken]);
 
   useEffect(() => {
     if (!data || typeof data !== "object") return;
@@ -96,8 +86,10 @@ function PieChart({ data, selectedDate }) {
                 const filterActive = true
                 // dispatch(setSelectedDefectReports(clickedVal[0]))
                 // //console.log('dispatch called',clickedVal)
+                console.log(defectsData)
+                console.log(clickedLabel)
                 const clickedVal = defectsData.filter(
-                  (val) => val.name === clickedLabel
+                  (val) => val.name == clickedLabel
                 );
                 if (clickedVal.length > 0) {
                   dispatch(setSelectedDefectReports(clickedVal[0]?.id));
@@ -107,10 +99,9 @@ function PieChart({ data, selectedDate }) {
                   }))
                   setTimeout(() => {
                     navigate(`/reports`, { state: { filterActive } });
-
                   }, [500])
                 } else {
-                  //console.error("No matching defect found");
+                  console.error("No matching defect found");
                 }
               },
             },

@@ -59,7 +59,7 @@ export default function RealTimeManufacturingSection({
               )}
             </div>
           </div>
-          <div className="p-3  border-2 rounded-md max-h-[350px] overflow-auto">
+          <div className="p-2  border-2 rounded-md max-h-[350px] overflow-auto">
             <h2 className="text-lg  mb-2 font-semibold">Defects by types</h2>
             <ul>
               {loading || !categoryDefects ? (
@@ -74,7 +74,7 @@ export default function RealTimeManufacturingSection({
                     key={index}
                     className="flex justify-between items-center bg-[#ff676e] p-2 mb-2 rounded"
                   >
-                    <span className="max-w-28 text-wrap font-bold text-white break-words">
+                    <span className="max-w-32 text-wrap font-bold text-white break-words">
                       {category}
                     </span>
                     <span className="text-white font-bold">

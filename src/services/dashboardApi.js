@@ -42,7 +42,7 @@ import {
 } from "../redux/slices/dashboardSlice";
 
 export const baseURL =
-  process.env.REACT_APP_API_BASE_URL || "https://hul.aivolved.in/api/";
+  process.env.REACT_APP_API_BASE_URL || "https://huldev.aivolved.in/api/";
 
 export const getMachines = (plantName, token, apiCallInterceptor) => {
   let encryptedPlantName = encryptAES(plantName).replace(/^"|"$/g, '');

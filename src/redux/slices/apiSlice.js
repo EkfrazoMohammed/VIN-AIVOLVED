@@ -3,7 +3,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 // Base URL should be set in an environment variable or configuration
-const baseURL = process.env.REACT_APP_API_BASE_URL || 'https://hul.aivolved.in/api/';
+const baseURL = process.env.REACT_APP_API_BASE_URL || 'https://huldev.aivolved.in/api/';
 
 // Initial state
 const initialState = {
@@ -19,7 +19,7 @@ export const fetchApiData = createAsyncThunk(
   async (endpoint, { getState, rejectWithValue }) => {
     const state = getState();
     const { token } = state.api;
-    
+
     try {
       const response = await axios.get(`${baseURL}/${endpoint}`, {
         headers: { Authorization: `Bearer ${token}` },

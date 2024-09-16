@@ -24,6 +24,7 @@ const defectSlice = createSlice({
       state.selectedDefectReports = action.payload;
     },
 
+
     getDefectFailure: (state) => {
       state.defectsData = [];
       state.selectedDefect = null;

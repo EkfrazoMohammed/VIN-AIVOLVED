@@ -16,6 +16,7 @@ import ProtectedRoutes from "./hooks/protectedRoutes";
 import NotFound from "./pages/PageNotFound";
 import ResetPasswordRoute from "./hooks/resetPasswordRoute";
 import ProtectedRouteForPlant from "./hooks/protectedRouteForPlant";
+import Location from "./pages/Location";
 const App = () => {
   return (
     <Router>
@@ -35,6 +36,7 @@ const App = () => {
         {/* Protected Route for Plant page, outside of Layout */}
         <Route element={<ProtectedRouteForPlant />}>
           <Route path="/plant" element={<Plant />} />
+          <Route path="/location" element={<Location />} />
         </Route>
         <Route element={<ProtectedRoutes />}>
           <Route path="/" element={<Dashboard />} />
