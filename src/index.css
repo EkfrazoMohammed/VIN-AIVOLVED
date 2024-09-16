@@ -13,6 +13,7 @@
   padding: 0;
   box-sizing: border-box;
 }
+
 body {
   margin: 0;
   font-family: "Nunito Sans", sans-serif;
@@ -20,6 +21,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   padding: 0;
 }
+
 body :where(.css-dev-only-do-not-override-kghr11).ant-layout {
   font-family: "Nunito Sans", sans-serif;
 }
@@ -33,6 +35,7 @@ body .layout-dashboard .ant-layout-content {
   padding: 20px;
   padding-left: 295px;
 }
+
 body .ant-layout {
   background: #ffffff;
 }
@@ -40,12 +43,15 @@ body .ant-layout {
 ::-webkit-scrollbar {
   width: 5px;
 }
+
 ::-webkit-scrollbar-thumb {
   background-color: #ff3180;
 }
+
 ::-webkit-scrollbar-track {
   background-color: #cfcfcf;
 }
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
@@ -166,15 +172,11 @@ label::after {
   content: "" !important;
 }
 
-:where(.css-dev-only-do-not-override-kghr11).ant-tabs-card.ant-tabs-top
-  > .ant-tabs-nav
-  .ant-tabs-tab-active {
+:where(.css-dev-only-do-not-override-kghr11).ant-tabs-card.ant-tabs-top>.ant-tabs-nav .ant-tabs-tab-active {
   background-color: rgb(236, 82, 45) !important;
 }
 
-:where(.css-dev-only-do-not-override-kghr11).ant-tabs
-  .ant-tabs-tab.ant-tabs-tab-active
-  .ant-tabs-tab-btn {
+:where(.css-dev-only-do-not-override-kghr11).ant-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
   color: #fff;
 }
 
@@ -186,9 +188,7 @@ label::after {
   box-shadow: 1px 2px 27px rgba(0, 0, 0, 0.243);
 }
 
-:where(.css-dev-only-do-not-override-kghr11).ant-tabs
-  > .ant-tabs-nav
-  .ant-tabs-nav-list {
+:where(.css-dev-only-do-not-override-kghr11).ant-tabs>.ant-tabs-nav .ant-tabs-nav-list {
   gap: 1rem;
 }
 
@@ -237,42 +237,26 @@ label::after {
   gap: 1rem;
 }
 
-:where(.css-dev-only-do-not-override-kghr11).ant-checkbox-wrapper:not(
-    .ant-checkbox-wrapper-disabled
-  ):hover
-  .ant-checkbox-checked:not(.ant-checkbox-disabled)
-  .ant-checkbox-inner {
+:where(.css-dev-only-do-not-override-kghr11).ant-checkbox-wrapper:not(.ant-checkbox-wrapper-disabled):hover .ant-checkbox-checked:not(.ant-checkbox-disabled) .ant-checkbox-inner {
   background-color: orangered !important;
   border: orangered !important;
 }
 
-:where(.css-dev-only-do-not-override-kghr11).ant-checkbox-checked
-  .ant-checkbox-inner {
+:where(.css-dev-only-do-not-override-kghr11).ant-checkbox-checked .ant-checkbox-inner {
   background-color: orangered !important;
   border: orangered !important;
 }
 
-:where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper
-  .ant-table-thead
-  > tr
-  > th {
+:where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper .ant-table-thead>tr>th {
   font-size: 1rem;
 }
 
-:where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper
-  .ant-table-tbody
-  > tr
-  > th,
-:where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper
-  .ant-table-tbody
-  > tr
-  > td {
+:where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper .ant-table-tbody>tr>th,
+:where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper .ant-table-tbody>tr>td {
   font-weight: 500;
 }
 
-:where(.css-dev-only-do-not-override-kghr11).ant-notification
-  .ant-notification-notice-wrapper
-  .ant-notification-notice {
+:where(.css-dev-only-do-not-override-kghr11).ant-notification .ant-notification-notice-wrapper .ant-notification-notice {
   padding: 20px 24px !important;
   width: 384px !important;
   background-color: orangered !important;
@@ -283,19 +267,14 @@ label::after {
   word-wrap: break-word !important;
 }
 
-:where(.css-dev-only-do-not-override-kghr11).ant-notification
-  .ant-notification-notice-wrapper
-  .ant-notification-notice-with-icon
-  .ant-notification-notice-message {
+:where(.css-dev-only-do-not-override-kghr11).ant-notification .ant-notification-notice-wrapper .ant-notification-notice-with-icon .ant-notification-notice-message {
   margin-bottom: 8px !important;
   margin-inline-start: 36px !important;
   color: #fff !important;
   font-size: 16px !important;
 }
 
-:where(.css-dev-only-do-not-override-kghr11).ant-notification
-  .ant-notification-notice-wrapper
-  .ant-notification-notice-close {
+:where(.css-dev-only-do-not-override-kghr11).ant-notification .ant-notification-notice-wrapper .ant-notification-notice-close {
   position: absolute !important;
   top: 20px !important;
   inset-inline-end: 24px !important;
@@ -318,14 +297,17 @@ label::after {
 .dx-default-select {
   height: 100%;
 }
+
 .dx-default-date-range.ant-picker,
 .dx-default-select .ant-select-selector {
   height: 100%;
 }
+
 .ant-picker .ant-picker-range,
 .dx-default-select.select-machines .ant-select-selector {
   background-color: #e5e7eb !important;
 }
+
 .dx-default-date-range.ant-picker .ant-picker-input input::placeholder,
 .dx-default-select .ant-select-selector .ant-select-selection-placeholder {
   color: #414040 !important;
@@ -350,12 +332,15 @@ label::after {
 .logo-w span {
   color: #ffffff;
 }
+
 .logo-w {
   filter: brightness(100);
 }
+
 .client-name-w {
   color: #f80759;
 }
+
 .section-title {
   font-size: 20px;
   font-weight: 600;
@@ -363,6 +348,7 @@ label::after {
   height: 45px;
   color: #707070;
 }
+
 .section-title-overlay {
   position: absolute;
   top: 50%;
@@ -372,6 +358,7 @@ label::after {
   background-color: #ffffff;
   z-index: 2;
 }
+
 .section-title:after {
   content: "";
   display: block;
@@ -384,15 +371,19 @@ label::after {
   transform: translateY(-50%);
   z-index: 0;
 }
+
 .menu-items-w .menu-category-name {
   color: #e4e4e4 !important;
 }
+
 .sidemenu-link {
   color: #e4e4e4 !important;
 }
+
 .sidemenu-link:hover {
   color: #a7fcff !important;
 }
+
 .ant-btn,
 .sidemenu-link.active {
   /* background: linear-gradient(90deg, #ff3c006b 0%, #ff00008c 100%); */
@@ -417,17 +408,25 @@ label::after {
   0% {
     background-position: 0% 50%;
   }
+
   50% {
     background-position: 100% 50%;
   }
+
   100% {
     background-position: 0% 50%;
   }
 }
 
-.slick-prev,.slick-next,.slick-prev:hover:before, .slick-prev:focus:before, .slick-next:hover:before, .slick-next:focus:before {
+.slick-prev,
+.slick-next,
+.slick-prev:hover:before,
+.slick-prev:focus:before,
+.slick-next:hover:before,
+.slick-next:focus:before {
   opacity: 0 !important;
 }
+
 /* :where(.css-dev-only-do-not-override-kghr11).ant-select-dropdown{
   z-index: 1 !important;
 }
@@ -438,3 +437,7 @@ label::after {
 /* :where(.css-dev-only-do-not-override-kghr11).ant-picker-dropdown-range{
   z-index: 99999 !important;
 } */
+
+.custom-input::placeholder {
+  color: #191919;
+}

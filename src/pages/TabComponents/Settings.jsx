@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { Button, Col, Row, Input, notification } from 'antd';
+import { Button, Col, Row, Input, notification, Select } from 'antd';
 import { Switch } from 'antd';
 import { Modal } from 'antd';
 import { ColorRing } from 'react-loader-spinner'
 import { useSelector } from 'react-redux';
 import { encryptAES } from '../../redux/middleware/encryptPayloadUtils'
 import useApiInterceptor from '../../hooks/useInterceptor';
-
 const Settings = () => {
 
   const apiInterceptor = useApiInterceptor()
@@ -15,6 +14,39 @@ const Settings = () => {
   const [api, contextHolder] = notification.useNotification();
   const [loading, setLoading] = useState(false)
   const [modal2Open, setModal2Open] = useState(false);
+  const plants=[
+    {
+        "id": 2,
+        "plant_name": "HC BARS PLANT",
+        "is_active": true
+    },
+    {
+        "id": 3,
+        "plant_name": "HC LIQUIDS PLANT",
+        "is_active": true
+    },
+    {
+        "id": 4,
+        "plant_name": "SHAMPOO PLANT",
+        "is_active": true
+    }
+]
+  const roles = [
+    {
+      "role_name": "Sr.Manager",
+      "is_active": true
+    },
+    {
+      "role_name": "Manager",
+      "is_active": true
+    },
+    {
+      "role_name": "User",
+      "is_active": true
+    }
+  ]
+
+
   const headersOb = {
     headers: {
       Authorization: `Bearer ${accessToken}`
@@ -25,14 +57,18 @@ const Settings = () => {
     last_name: "",
     phone_number: "",
     email: "",
-    employee_id: ""
+    employee_id: "",
+    plant:null,
+    role_name:null
   });
   const [error, setError] = useState({
     fistName: "",
     lastName: "",
     Phone: "",
     email: "",
-    employee_id: ""
+    employee_id: "",
+    plant:null,
+    role_name:null
   })
 
   const closeModalUser = () => {
@@ -42,7 +78,18 @@ const Settings = () => {
       last_name: "",
       phone_number: "",
       email: "",
-      employee_id: ""
+      employee_id: "",
+      plant:null,
+      role_name:null
+    })
+    setError({
+      fistName: "",
+      lastName: "",
+      Phone: "",
+      email: "",
+      employee_id: "",
+      plant:null,
+      role_name:null
     })
   }
   const openNotification = (param) => {
@@ -141,7 +188,12 @@ const Settings = () => {
     }
     setData((prev) => ({ ...prev, [name]: value }))
   }
-
+  const handleRoleChange = (value) => {
+    setData((prev) => ({ ...prev, role_name: value }));
+  };
+  const handlePlantChange = (value) => {
+    setData((prev) => ({ ...prev, plant: value }));
+  };
   return (
     <>
       {contextHolder}
@@ -203,27 +255,60 @@ const Settings = () => {
             <>
               <div className="" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', padding: '1rem', fontWeight: '600' }}>
                 <div className="">
-                  <Input placeholder="Enter First Name" type='text' name='first_name' value={data.first_name} onChange={handleChange} helper className='p-2' />
+                  <Input placeholder="Enter First Name" type='text' name='first_name' value={data.first_name} onChange={handleChange} helper className='p-2 custom-input' />
                   {error.fistName ? <span style={{ fontWeight: '600', color: 'red' }}>{error.fistName}</span> : ""}
                 </div>
                 <div className="">
-                  <Input placeholder="Enter Last Name" type='text' name='last_name' value={data.last_name} onChange={handleChange} className='p-2' />
+                  <Input placeholder="Enter Last Name" type='text' name='last_name' value={data.last_name} onChange={handleChange} className='p-2 custom-input' />
                   {error.lastName ? <span style={{ fontWeight: '600', color: 'red' }}>{error.lastName}</span> : ""}
                 </div>
 
 
                 <div className="">
-                  <Input placeholder="Enter Phone Number" type='number' name='phone_number' value={data.phone_number} onChange={handleChange} className='p-2' />
+                  <Input placeholder="Enter Phone Number" type='number' name='phone_number' value={data.phone_number} onChange={handleChange} className='p-2 custom-input' />
                   {error.Phone ? <span style={{ fontWeight: '600', color: 'red' }}>{error.Phone}</span> : ""}
                 </div>
 
                 <div className="">
-                  <Input placeholder="Enter Email" type='email' name='email' value={data.email} onChange={handleChange} className='p-2' />
+                  <Input placeholder="Enter Email" type='email' name='email' value={data.email} onChange={handleChange} className='p-2 custom-input' />
                   {error.email ? <span style={{ fontWeight: '600', color: 'red' }}>{error.email}</span> : ""}
                 </div>
                 <div className="">
-                  <Input placeholder="Enter Employee Id" type='text' name='employee_id' value={data.employee_id} onChange={handleChange} className='p-2' />
+                  <Input placeholder="Enter Employee Id" type='text' name='employee_id' value={data.employee_id} onChange={handleChange} className='p-2 custom-input' />
                   {error.employee_id ? <span style={{ fontWeight: '600', color: 'red' }}>{error.employee_id}</span> : ""}
+                </div>
+                <div className="">
+                <Select
+                  style={{ minWidth: '100%' }}
+                  placeholder="Select Role"
+                  onChange={handleRoleChange} // Bind the onChange event for Select
+                  value={data.role_name} // Set the value to selected role_name
+                >
+                  {roles.map((role, index) => (
+                    <Select.Option key={index} value={role.role_name}>
+                      {role.role_name}
+                    </Select.Option>
+                  ))}
+                </Select>
+                {error.role_name && <span style={{ fontWeight: '600', color: 'red' }}>{error.role_name}</span>}
+             
+                </div>
+
+                <div className="">
+                <Select
+                  style={{ minWidth: '100%' }}
+                  placeholder="Select Plant"
+                  onChange={handlePlantChange}
+                  value={data.role_name} 
+                >
+                  {plants.map((role, index) => (
+                    <Select.Option key={index} value={role.id}>
+                      {role.plant_name}
+                    </Select.Option>
+                  ))}
+                </Select>
+                {error.plant && <span style={{ fontWeight: '600', color: 'red' }}>{error.plant}</span>}
+             
                 </div>
               </div>
               <div className="" style={{ display: 'flex', justifyContent: 'flex-end', padding: '1rem' }}>
