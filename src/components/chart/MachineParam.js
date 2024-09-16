@@ -1,17 +1,13 @@
 import React, { useState, useEffect } from "react";
 import ReactApexChart from "react-apexcharts";
-import { Typography } from "antd";
 import axios from "axios";
 import { baseURL } from "../../API/API";
 import { useSelector } from "react-redux";
 
 function MachineParam() {
-  const { Title } = Typography;
   const [totalData, setTotalData] = useState([]);
   const [chartOptions, setChartOptions] = useState({});
   const [chartSeries, setChartSeries] = useState([]);
-  const localItems = localStorage.getItem("PlantData");
-  // const localPlantData = JSON.parse(localItems)
   const localPlantData = useSelector((state) => state.plant.plantData[0]);
 
   useEffect(() => {
@@ -28,7 +24,7 @@ function MachineParam() {
           setTotalData(modifiedData);
         }
       } catch (error) {
-        //console.error("Error fetching machine parameters:", error);
+        console.log("Error fetching machine parameters:", error);
       }
     };
 
@@ -36,7 +32,7 @@ function MachineParam() {
   }, []);
 
   useEffect(() => {
-    if (totalData.length === 0) return; // Check if totalData is empty
+    if (totalData.length === 0) return; 
     const groupedData = {};
     totalData.forEach((item) => {
       const date = item.date_time;
@@ -46,20 +42,11 @@ function MachineParam() {
       if (!groupedData[date][item.parameter]) {
         groupedData[date][item.parameter] = 0;
       }
-      // groupedData[date][item.parameter] += parseInt(item.defect_percentage);
       groupedData[date][item.parameter] += parseFloat(item.defect_percentage);
     });
 
     const categories = Object.keys(groupedData);
     const allParameters = new Set(totalData.map((item) => item.parameter));
-    // const seriesData = Array.from(allParameters).map(parameter => {
-
-    //   return {
-    //     name: "DPMU",
-    //     data: categories.map(date => groupedData[date][parameter] || 0),
-    //     color: totalData.find(item => item.parameter === parameter).color_code
-    //   };
-    // }).filter(series => series.data.some(count => count > 0)); // Remove series with count 0 for all dates
     const seriesData = Array.from(allParameters)
       .map((parameter) => {
         return {
@@ -71,10 +58,8 @@ function MachineParam() {
             .color_code,
         };
       })
-      .filter((series) => series.data.some((count) => count > 0)); // Remove series with count 0 for all dates
-
+      .filter((series) => series.data.some((count) => count > 0));
     setChartSeries(seriesData);
-
     const chartOptions = {
       chart: {
         type: "bar",

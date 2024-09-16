@@ -1,14 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import ReactApexChart from "react-apexcharts";
 import { Typography } from "antd";
-import axios from "axios";
-import { baseURL } from "../../API/API";
 import LoaderIcon from "../LoaderIcon";
 import { useSelector } from "react-redux";
 
 function StackChart({ data }) {
   const accessToken = useSelector((state) => state.auth.authData[0].accessToken);
-  const localPlantData = useSelector((state) => state?.plant?.plantData[0]);
   const { Title } = Typography;
   const [defectColors, setDefectColors] = useState({});
   const [visibleSeries, setVisibleSeries] = useState({});
@@ -41,12 +38,7 @@ function StackChart({ data }) {
     }, {});
     setVisibleSeries(resetVisibility);
   }, [data]);
-
-
-
-
   const fallbackColors = ["#FF5733", "#e31f09", "#3357FF"];
-
   const seriesData = defectNames
     .filter((defectName) => visibleSeries[defectName])
     .map((defectName, index) => {
@@ -98,7 +90,7 @@ function StackChart({ data }) {
         },
       },
       legend: {
-        show: false, // Hide default legend
+        show: false,
 
       },
       fill: {
@@ -130,9 +122,7 @@ function StackChart({ data }) {
           Bar Graph for Defects
         </Title>
       </div>
-
-      {/* Custom legend with checkboxes */}
-      <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
+ <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
         {defectNames.map((defectName, index) => {
           const color = defectColors[defectName] || fallbackColors[index % fallbackColors.length];
           return (
@@ -142,12 +132,12 @@ function StackChart({ data }) {
                 checked={visibleSeries[defectName]}
                 onChange={() => handleCheckboxChange(defectName)}
                 style={{
-                  accentColor: color, // Use defect color or fallback
+                  accentColor: color, 
                 }}
               />
               <span
                 style={{
-                  color: "#000", // Use defect color or fallback
+                  color: "#000",
                   fontWeight: "600",
                   padding: "5px",
                 }}
@@ -159,7 +149,6 @@ function StackChart({ data }) {
         })}
       </div>
 
-      {/* ApexChart */}
       <ReactApexChart
         options={chartData.options}
         series={chartData.series}

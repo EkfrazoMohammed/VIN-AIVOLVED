@@ -12,8 +12,7 @@ export default function RealTimeManufacturingSection({
       {
         label: "date_time",
         data: productionData.map((item) => parseInt(item.defect_percentage, 10)),
-        // backgroundColor: "#ffe3b3",
-        backgroundColor: "#fae152", // New color
+        backgroundColor: "#fae152",
       },
     ],
   };

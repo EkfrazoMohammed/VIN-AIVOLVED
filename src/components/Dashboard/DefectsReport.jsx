@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { Bar, Pie } from "react-chartjs-2";
+import React from "react";
 import {
   Chart as ChartJS,
   ArcElement,
@@ -10,8 +9,6 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { IoFilterSharp } from "react-icons/io5";
-
 ChartJS.register(
   ArcElement,
   BarElement,
@@ -32,14 +29,7 @@ const ProductAndDefect = ({ chart1, chart2 }) => {
       <div className="flex items-center space-x-4 mb-4">
 
       </div>
-      {/* <div className="flex items-center mb-4 "> */}
-        {/* <div className="text-lg">
-          <span className="font-semibold text-red-500">Total Defects:</span>{" "}
-          <span className="text-red-500">333</span>
-        </div> */}
-      {/* </div> */}
       <div className="flex w-full gap-3">
-        {/* <Bar data={data} options={options} /> */}
         <div className="w-3/6 text-center border-2 rounded-lg p-3">
           {chart1}
         </div>

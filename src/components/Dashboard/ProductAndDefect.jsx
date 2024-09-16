@@ -104,14 +104,7 @@ const ProductAndDefect = ({ chartData }) => {
           Production vs Defects
         </span>
       </h1>
-      {/* <div className="flex items-center space-x-4 mb-4">
-        <button className="p-2 bg-gray-200 rounded">
-          <IoFilterSharp />
-        </button>
-        <select className="p-2 bg-gray-100 rounded border">
-          <option>All Products</option>
-        </select>
-      </div> */}
+
       <div className="flex gap-4 w-full border-2 rounded-lg p-3  overflow-hidden">
         <div className="w-2/12 min-w-52 rounded-lg bg-gray-100  align-middle flex flex-col gap-4 justify-start p-4 items-start">
           <div className="text-lg mr-4 flex flex-col justify-center ">

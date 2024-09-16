@@ -1,15 +1,11 @@
 import React, { useState, useEffect } from "react";
 import ReactApexChart from "react-apexcharts";
 import { Typography } from "antd";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { baseURL } from "../../API/API";
 import LoaderIcon from "../LoaderIcon";
 import { setSelectedDefectReports } from "./../../redux/slices/defectSlice"
-
 import { updatePage } from "./../../redux/slices/reportSlice";
 import { useSelector, useDispatch } from "react-redux";
-import { FaS } from "react-icons/fa6";
 
 function PieChart({ data, selectedDate }) {
   const accessToken = useSelector((state) => state.auth.authData[0].accessToken);
@@ -18,7 +14,6 @@ function PieChart({ data, selectedDate }) {
   const { Title } = Typography;
   const [defectColors, setDefectColors] = useState({});
   const [chartData, setChartData] = useState({ labels: [], series: [] });
-  // const [defectData, setDefectData] = useState([]);
   const defectsData = useSelector((state) => state.defect.defectsData)
 
 
@@ -28,12 +23,10 @@ function PieChart({ data, selectedDate }) {
       colors[defect.name] = defect.color_code;
     });
     setDefectColors(colors);
-
   }, [accessToken]);
 
   useEffect(() => {
     if (!data || typeof data !== "object") return;
-
     const aggregatedData = Object.values(data).reduce((acc, defects) => {
       Object.entries(defects).forEach(([defect, count]) => {
         if (!acc[defect]) {
@@ -73,21 +66,12 @@ function PieChart({ data, selectedDate }) {
             events: {
               dataPointSelection: (event, chartContext, opts) => {
                 const clickedIndex = opts.dataPointIndex;
-
                 if (clickedIndex === -1 || !chartData.labels[clickedIndex]) {
-                  //console.error("Invalid data point selected");
                   return;
                 }
 
                 const clickedLabel = chartData.labels[clickedIndex];
-                // const clickedVal = defectsData.filter(
-                //   (val) => val.name === clickedLabel
-                // );
                 const filterActive = true
-                // dispatch(setSelectedDefectReports(clickedVal[0]))
-                // //console.log('dispatch called',clickedVal)
-                console.log(defectsData)
-                console.log(clickedLabel)
                 const clickedVal = defectsData.filter(
                   (val) => val.name == clickedLabel
                 );
@@ -117,11 +101,11 @@ function PieChart({ data, selectedDate }) {
           dataLabels: {
             enabled: true,
             formatter: function (val) {
-              return val.toFixed(2) + "%";  // Customize the number format if needed
+              return val.toFixed(2) + "%"; 
             },
 
             style: {
-              fontSize: '12px',  // Customize font size
+              fontSize: '12px',
               fontFamily: 'Helvetica, Arial, sans-serif',
               fontWeight: 'bold',
             }

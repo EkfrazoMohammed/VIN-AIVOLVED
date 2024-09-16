@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import aiLogo from "../../assets/images/ai-logo.webp";
-
-// icons
 import { TbLayoutDashboard } from "react-icons/tb";
 import { LuView } from "react-icons/lu";
 import { HiFlag, HiOutlineDocumentReport } from "react-icons/hi";
@@ -11,8 +9,7 @@ import { MdSignalWifiStatusbarConnectedNoInternet1 } from "react-icons/md";
 import { CiSettings } from "react-icons/ci";
 import { IoMdLogOut } from "react-icons/io";
 import { Button, Modal, notification } from "antd";
-import { baseURL, AuthToken } from "../../API/API";
-import axios from "axios";
+import { AuthToken } from "../../API/API";
 import CurrentTime from "./CurrentTime";
 import { useDispatch, useSelector } from 'react-redux';
 import { signOut } from '../../redux/slices/authSlice';
@@ -37,16 +34,7 @@ const SideMenu = () => {
   const [modal1Open, setModal1Open] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-
-  const localData = localStorage.getItem("PlantData");
-  const PlantName = JSON.parse(localData);
   const refreshToken = useSelector((state) => state.auth.authData[0].refreshToken);
-
-
-
-  // const [refreshTokens, setrefreshTokens] = useState(
-  //   () => JSON.parse(localStorage.getItem("refreshToken")) || null
-  // );
 
   const isActive = (path) => {
     return location.pathname === path ||

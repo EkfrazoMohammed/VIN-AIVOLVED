@@ -2,61 +2,30 @@ import { useState, useEffect } from "react";
 import ProductAndDefect from "./ProductAndDefect";
 import DefectsReport from "./DefectsReport";
 import TotalOverview from "./TotalOverview";
-import { ExclamationCircleOutlined } from "@ant-design/icons";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoMdArrowForward } from "react-icons/io";
-
 import { useSelector, useDispatch } from "react-redux";
 import { initialDashboardData, getMachines, getSystemStatus, getDepartments, initialDpmuData, initialProductionData, getProducts, getDefects } from "../../services/dashboardApi";
-import DOMPurify from "dompurify";
 import { setSelectedMachine } from "../../redux/slices/machineSlice"
 import { setSelectedProduct } from "../../redux/slices/productSlice"
 import { getDashboardSuccess, getDashboardFailure } from "../../redux/slices/dashboardSlice"
-import { Link, useNavigate, useNavigation, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import axios from "axios";
-import {
-  Card,
-  notification,
-  Space,
-  Col,
-  Row,
-  Typography,
-  Select,
-  DatePicker,
-  Checkbox,
-  Button,
-  Dropdown,
-  Menu,
-} from "antd";
-import Paragraph from "antd/lib/typography/Paragraph";
-import {
-  VideoCameraOutlined,
-  BugOutlined,
-  AlertOutlined,
-  NotificationOutlined,
-} from "@ant-design/icons";
+import { notification, Typography, DatePicker, Checkbox, Dropdown, Menu } from "antd";
+import { VideoCameraOutlined, BugOutlined, AlertOutlined, NotificationOutlined } from "@ant-design/icons";
 import StackChart from "../../components/chart/StackChart";
 import PieChart from "../../components/chart/PieChart";
-
-// import MachineParam from "../../components/chart/MachineParam";
-
-import ProductionVsReject from "../../components/chart/ProductionVsReject";
 import { baseURL } from "../../API/API";
 import dayjs from "dayjs";
-import { Hourglass } from "react-loader-spinner";
-import { IoFilterSharp } from "react-icons/io5";
 import RealTimeManufacturingSection from "./RealTimeManufacturingSection";
 import useApiInterceptor from "../../hooks/useInterceptor";
-import axiosInstance from "../../API/axiosInstance";
 import { encryptAES } from "../../redux/middleware/encryptPayloadUtils";
 import SelectComponent from "../common/Select";
-import { current } from "@reduxjs/toolkit";
 
 const DashboardContentLayout = ({ children }) => {
   const apiCallInterceptor = useApiInterceptor();
   const dispatch = useDispatch();
   const localPlantData = useSelector((state) => state?.plant?.plantData[0]);
-
   const accessToken = useSelector((state) => state.auth.authData[0].accessToken);
   const machines = useSelector((state) => state.machine.machinesData)
   const activeMachines = useSelector((state) => state.machine.activeMachines)
@@ -67,85 +36,63 @@ const DashboardContentLayout = ({ children }) => {
   const selectedProductRedux = useSelector((state) => state.product.selectedProduct);
   const tableDataRedux = useSelector((state) => state.dashboard.datesData);
   const tableDataReduxActive = useSelector((state) => state.dashboard.activeProducts)
-
   const [loading, setLoading] = useState(true);
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - 7);
   const formattedStartDate = startDate.toISOString().slice(0, 10);
   const endDate = new Date();
   const formattedEndDate = endDate.toISOString().slice(0, 10);
-
-  const [selectedDefect, setSelectedDefect] = useState(null);
-
-
   const [filterActive, setFilterActive] = useState(false);
   const [filterChanged, setFilterChanged] = useState(false);
-
   const [selectedDate, setSelectedDate] = useState(null);
   const [dateRange, setDateRange] = useState([
     formattedStartDate,
     formattedEndDate,
   ]);
-
   const currentUrlPath = useLocation();
-
   const handleMachineChange = (value) => {
     setFilterActive(false)
-    dispatch(setSelectedMachine(Number(value))); // Dispatching action   
+    dispatch(setSelectedMachine(Number(value)));
     setFilterChanged(true)
   };
 
   const handleProductChange = (value) => {
     setFilterActive(false)
-    dispatch(setSelectedProduct(Number(value))); // Dispatching action    
+    dispatch(setSelectedProduct(Number(value)));
     setFilterChanged(true)
   }
-
-
-
-  // Handler for date range changes
   const handleDateRangeChange = (dates, dateStrings) => {
-    // Ensure dates and dateStrings are valid before updating state
     if (Array.isArray(dateStrings) && dateStrings.length === 2) {
       setSelectedDate(dateStrings);
       setDateRange(dateStrings);
       setFilterChanged(true)
     } else {
-      //console.error("Invalid date range:", dates, dateStrings);
+      console.log("Invalid date range:", dates, dateStrings);
     }
   };
   useEffect(() => {
-    //console.log(localPlantData?.id)
-    // window.location.reload()
   }, [localPlantData])
   const resetFilter = () => {
     initialDashboardData(localPlantData.id, accessToken, apiCallInterceptor);
     initialDpmuData(localPlantData.id, accessToken, apiCallInterceptor);
     initialProductionData(localPlantData.id, accessToken, apiCallInterceptor);
-    dispatch(setSelectedMachine(null)); // Dispatching action
-    dispatch(setSelectedProduct(null)); // Dispatching action
+    dispatch(setSelectedMachine(null));
+    dispatch(setSelectedProduct(null));
     setSelectedDate(null);
     setFilterActive(false);
     setFilterChanged(false)
   };
 
-
   const handleApplyFilters = () => {
-
-    const domain = `${baseURL}`;
     const [fromDate, toDate] = dateRange;
-
-    // Construct query parameters
     const queryParams = {
-      plant_id: localPlantData.id, // Ensure localPlantData is valid
+      plant_id: localPlantData.id,
       from_date: fromDate,
       to_date: toDate,
       machine_id: selectedMachineRedux,
       product_id: selectedProductRedux,
-      defect_id: selectedDefect,
+      defect_id: null,
     };
-
-    // Filter out undefined or null values from query parameters
     const filteredQueryParams = Object.fromEntries(
       Object.entries(queryParams).filter(
         ([_, value]) => value !== undefined && value !== null
@@ -156,9 +103,7 @@ const DashboardContentLayout = ({ children }) => {
     const encryptedUrl = Object.fromEntries(
       Object.entries(filteredQueryParams).map(([key, val]) => {
         if (key !== "page" && key !== "page_size") {
-          // Encrypt values except dates
           if (key === "from_date" || key === "to_date") {
-            // Ensure date is passed as plain string without quotes
             return [key, encryptAES(val)];
           }
           return [key, encryptAES(JSON.stringify(val))];
@@ -169,9 +114,7 @@ const DashboardContentLayout = ({ children }) => {
 
     // Create the query string
     const queryString = new URLSearchParams(encryptedUrl).toString();
-    const url = `dashboard/?${queryString}`; // Complete URL with query string
-
-    // Make the API call using axiosInstance
+    const url = `dashboard/?${queryString}`;
     apiCallInterceptor
       .get(url, {
         headers: {
@@ -185,8 +128,7 @@ const DashboardContentLayout = ({ children }) => {
         setFilterActive(true);
       })
       .catch((error) => {
-        //console.error("Error:", error); // Log error
-
+        console.log("Error:", error);
       });
   };
 
@@ -195,26 +137,20 @@ const DashboardContentLayout = ({ children }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Set loading to true
         setLoading(true);
-
-        // Fetching data in parallel
         await Promise.all([
-
           getMachines(localPlantData.plant_name, accessToken, apiCallInterceptor),
           getDepartments(localPlantData.plant_name, accessToken, apiCallInterceptor),
           getDefects(localPlantData?.plant_name, accessToken, apiCallInterceptor),
           initialDpmuData(localPlantData.id, accessToken, apiCallInterceptor),
           getProducts(localPlantData.plant_name, accessToken, apiCallInterceptor),
           initialDateRange(),
-          // initialTableData(),
           initialDashboardData(localPlantData.id, accessToken, apiCallInterceptor),
           initialProductionData(localPlantData.id, accessToken, apiCallInterceptor),
-
           getSystemStatus(localPlantData.id, accessToken, apiCallInterceptor),
         ]);
       } catch (err) {
-        //console.log(err.message || "Failed to fetch data")
+        console.log(err.message || "Failed to fetch data")
       } finally {
         setLoading(false);
       }
@@ -227,22 +163,12 @@ const DashboardContentLayout = ({ children }) => {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - 7); // 7 days ago
     const formattedStartDate = startDate.toISOString().slice(0, 10);
-    // Format startDate as YYYY-MM-DD
-
     const endDate = new Date(); // Today's date
     const formattedEndDate = endDate.toISOString().slice(0, 10); // Format endDate as YYYY-MM-DD
-
     setDateRange([formattedStartDate, formattedEndDate]);
   };
-
-
-
-
-
-  const { Title } = Typography;
   const { RangePicker } = DatePicker;
   const [categoryDefects, setCategoryDefects] = useState([]);
-  // Function to categorize defects
   const categorizeDefects = (data) => {
     const categories = {};
     Object.keys(data).forEach((date) => {
@@ -277,11 +203,9 @@ const DashboardContentLayout = ({ children }) => {
       .get(url)
       .then((response) => {
         dispatch(getDashboardSuccess(response.data))
-        // setTableData(response.data);
       })
       .catch((error) => {
         getDashboardFailure();
-        //console.error("Error fetching department data:", error);
       });
   };
 
@@ -371,58 +295,8 @@ const DashboardContentLayout = ({ children }) => {
               <div className="filter-lg-w">
                 <div className="inner-w">
                   <div className="flex flex-wrap items-start gap-2 mb-4">
-                    {/* <button className="p-2 bg-gray-200 rounded h-full w-[40px] flex justify-center items-center">
-                      <IoFilterSharp />
-                    </button> */}
-
-
                     <SelectComponent placeholder={"Select Machine"} selectedData={selectedMachineRedux} action={(val) => handleMachineChange(val)} data={machines} style={{ minWidth: "150px", zIndex: 1 }} size={"large"} />
                     <SelectComponent placeholder={"Select Products"} selectedData={selectedProductRedux} action={(val) => handleProductChange(val)} data={productsData} style={{ minWidth: "180px", zIndex: 1 }} size={"large"} />
-
-
-                    {/* <Select
-                      className="dx-default-select "
-                      style={{ minWidth: "150px", zIndex: 1 }}
-                      showSearch
-                      placeholder="Select Machine"
-                      value={selectedMachineRedux}
-                      onChange={handleMachineChange}
-                      filterOption={(input, machineOptions) =>
-                        (machineOptions?.children ?? "")
-                          .toLowerCase()
-                          .includes(input.toLowerCase())
-                      }
-                    >
-                      {machines.map((machine) => (
-                        <Select.Option key={machine.id} value={machine.id} style={{ zIndex: 1 }}>
-                          {machine.name}
-                        </Select.Option>
-                      ))}
-                    </Select> */}
-                    {/* <Select
-                      className="dx-default-select"
-                      style={{ width: "200px", zIndex: 1 }}
-                      showSearch
-                      placeholder="Select Products"
-                      onChange={handleProductChange}
-                      value={selectedProductRedux}
-                      filterOption={(input, productsData) =>
-                        (productsData?.children ?? "")
-                          .toLowerCase()
-                          .includes(input.toLowerCase())
-                      }
-                    >
-                      {productsData.map((department) => (
-                        <Select.Option
-                          key={department.id}
-                          value={department.id}
-
-                        >
-                          {department.name}
-                        </Select.Option>
-                      ))}
-                    </Select> */}
-
                     <RangePicker
                       className="dx-default-date-range"
                       size="large"
@@ -503,12 +377,7 @@ const DashboardContentLayout = ({ children }) => {
                     </div>
                     <Link
                       to="/insights"
-                      className={`relative bg-gray-100 rounded-xl text-left flex flex-col group hover:text-white hover:!bg-red-500 
-                    ${notifications.length > prevNotificationLength
-                          ? "notification-change"
-                          : ""
-                        }
-                  `}
+                      className={`relative bg-gray-100 rounded-xl text-left flex flex-col group hover:text-white hover:!bg-red-500`}
                     >
                       <div className="flex justify-between items-center p-3 flex-1 text-lg w-full gap-3">
                         <span>Insights</span>

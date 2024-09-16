@@ -3,43 +3,34 @@ import ReactApexChart from "react-apexcharts";
 import { Typography } from "antd";
 import { useSelector } from "react-redux";
 import axios from "axios";
-import { createGlobalStyle } from "styled-components";
 import {baseURL} from "../../API/API"
 function LineChart({ data }) {
   const { Title } = Typography;
   const [defectColors, setDefectColors] = useState({});
-  const localPlantData = useSelector((state) => state.plant.plantData);
   const AuthToken = useSelector((state) => state.auth.authData.access_token);
   useEffect(() => {
-    // Fetch defect colors from the API
     axios.get(`${baseURL}defect/`,{
       headers:{
         Authorization:`Bearer ${AuthToken}`
       }
     })
       .then(response => {
-        // Organize the response data as an object with defect names as keys and color codes as values
         const colors = {};
         response.data.results.forEach(defect => {
           colors[defect.name] = defect.color_code;
         });
-        // Set the defect colors state
         setDefectColors(colors);
       })
       .catch(error => {
-        //console.error('Error fetching defect colors:', error);
+        console.log('Error fetching defect colors:', error);
       });
   }, []);
 
   if (!data || Object.keys(data).length === 0) {
     return <div style={{fontWeight:"700",textAlign:'center'}}>NO DATA</div>; // or some other fallback UI
   }
-  // Extract unique defect names from all dates
   const defectNames = [...new Set(Object.values(data).flatMap(defects => Object.keys(defects)))];
-  // Sort the dates in ascending order
   const sortedDates = Object.keys(data).sort((a, b) => new Date(a) - new Date(b));
-
-  // Prepare series data
   const seriesData = defectNames.map((defectName, index) => {
     return {
       name: defectName,
@@ -47,8 +38,6 @@ function LineChart({ data }) {
       color: defectColors[defectName] || ['#FF5733', '#e31f09', '#3357FF'][index % 3]
     };
   });
-
-  // Prepare data for the line chart
   const chartData = {
     series: seriesData,
     options: {
@@ -61,7 +50,7 @@ function LineChart({ data }) {
         },
       },
       legend: {
-        show: true, // Show legend to distinguish between different defect names
+        show: true, 
       },
       dataLabels: {
         enabled: false,
@@ -70,7 +59,7 @@ function LineChart({ data }) {
         curve: "smooth",
       },
       yaxis: {
-        min: 0, // Set the minimum value of y-axis to 0
+        min: 0, 
         labels: {
           style: {
             fontSize: "14px",
@@ -87,7 +76,7 @@ function LineChart({ data }) {
             colors: ["#8c8c8c"],
           },
         },
-        categories: sortedDates, // Set categories as sorted dates
+        categories: sortedDates,
       },
       tooltip: {
         y: {
