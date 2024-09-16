@@ -5,6 +5,7 @@ import storage from "redux-persist/lib/storage/session";
 import { encryptTransform } from "redux-persist-transform-encrypt";
 import authReducer from "./slices/authSlice";
 import userReducer from "./slices/userSlice"
+import locationReducer from './slices/locationSlice';
 import plantReducer from './slices/plantSlice';
 import dashboardReducer from "./slices/dashboardSlice";
 import machineReducer from "./slices/machineSlice";
@@ -41,6 +42,12 @@ const userPersistConfig = {
 
 const plantPersistConfig = {
   key: "plant",
+  storage,
+  transforms: [encryptor],
+};
+
+const locationPersistConfig = {
+  key: "location",
   storage,
   transforms: [encryptor],
 };
@@ -97,6 +104,7 @@ const aismartviewPersistConfig = {
 const rootReducer = {
   auth: persistReducer(authPersistConfig, authReducer),
   user: persistReducer(userPersistConfig, userReducer),
+  location: persistReducer(locationPersistConfig, locationReducer),
   plant: persistReducer(plantPersistConfig, plantReducer),
   report: persistReducer(reportPersistConfig, reportReducer),
   dashboard: persistReducer(dashboardPersistConfig, dashboardReducer),

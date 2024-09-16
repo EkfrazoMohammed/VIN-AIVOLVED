@@ -1,18 +1,12 @@
 import { Row, Col, Card } from "antd";
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import useAxiosInstance from "../API/useAxiosInstance";
 import Slider from "react-slick";
 import "../assets/styles/Plant.css";
 import { Hourglass } from 'react-loader-spinner';
 import { setPlantData } from "../redux/slices/plantSlice"; // Import setPlantData action
 import useApiInterceptor from "../hooks/useInterceptor";
-
 import { useNavigate } from 'react-router-dom';
-import { encryptAES } from "../redux/middleware/encryptPayloadUtils";
-import axios from "axios";
-
 
 const settings = {
   dots: false,
@@ -31,7 +25,6 @@ const Plant = () => {
   const apiCallInterceptor = useApiInterceptor()
   const [plant, setPlant] = useState([]);
   const [loader, setLoader] = useState(true);
-  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
@@ -44,7 +37,7 @@ const Plant = () => {
       dispatch(setPlantData(plantData)); // Dispatch valid plant data to Redux
       navigate('/');
     } else {
-      //console.error('Invalid or empty plant data:', plantData); // Handle invalid data
+      console.log('Invalid or empty plant data:', plantData); // Handle invalid data
     }
   };
 
@@ -53,7 +46,7 @@ const Plant = () => {
     const fetchPlantData = async () => {
       try {
         if (!accessToken) {
-          //console.error("Authorization token is missing");
+          //console.log("Authorization token is missing");
           return;
         }
 
@@ -66,12 +59,12 @@ const Plant = () => {
           //console.warn("No results found in the response");
         }
       } catch (err) {
-        //console.error("Error fetching plant data:", err);
+        //console.log("Error fetching plant data:", err);
         if (err.response && err.response.data.code === "token_not_valid") {
-          //console.error("Token is invalid or expired.");
+          //console.log("Token is invalid or expired.");
           // Handle token refresh logic here, or redirect to login
         } else {
-          //console.error("Error:", err.message || "Unknown error occurred");
+          //console.log("Error:", err.message || "Unknown log occurred");
         }
       } finally {
         setLoader(false);
@@ -80,39 +73,6 @@ const Plant = () => {
 
     fetchPlantData();
   }, [accessToken]);
-
-
-  // useEffect(() => {
-  //   const fetchPlants = async () => {
-  //     setLoader(true); // Start loading
-  //     try {
-  //       const res = await axiosInstance.get(`/plant/`);
-  //       //console.log("plant==>",res);
-
-  //       if (res.data.results) {
-  //         setPlant(res.data.results);
-  //       } else {
-  //         setPlant([]); 
-  //       }
-  //     } catch (err) {
-  //       //console.error(err);
-  //       setError("Failed to fetch plants. Please try again later."); // Set error state
-  //     } finally {
-  //       setLoader(false);
-  //     }
-  //   };
-
-  //   fetchPlants(); 
-  // }, []); 
-
-  // const handleStorage = (plantData) => {
-  //   if (plantData) {
-  //     dispatch(setPlantData(plantData)); // Dispatch plant data to Redux
-  //     navigate('/dashboard-home'); // Navigate to dashboard if plantData is valid
-  //   } else {
-  //     //console.error('Invalid plant data:', plantData); // Handle cases where plantData is not valid
-  //   }
-  // };
 
 
   return (
@@ -165,9 +125,7 @@ const Plant = () => {
             <Col className="flex justify-center">
               <div className="mytab-content p-2 flex gap-2  min-w-[40vw] flex-col">
                 <h3 className="text-black text-xl font-bold">Plants</h3>
-                <h5>Choose Plants</h5>
-                {error ? <h5 className="text-red-500">Unable to fetch data.</h5> : ""}
-
+                <h5>Choose Plants</h5>              
                 {plant.length > 0 && (
                   <Row gutter={[24, 24]} className="plant-row">
                     {plant.map((plant) => (

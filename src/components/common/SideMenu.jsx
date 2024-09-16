@@ -8,6 +8,7 @@ import { RiListSettingsLine } from "react-icons/ri";
 import { MdSignalWifiStatusbarConnectedNoInternet1 } from "react-icons/md";
 import { CiSettings } from "react-icons/ci";
 import { IoMdLogOut } from "react-icons/io";
+import { FaMapLocationDot } from "react-icons/fa6";
 import { Button, Modal, notification } from "antd";
 import { AuthToken } from "../../API/API";
 import CurrentTime from "./CurrentTime";
@@ -214,6 +215,16 @@ const SideMenu = () => {
             <li className="text-[13px] font-normal">
               <div className="mb-1 menu-category-name"> Organization</div>
               <ul className="text-[15px] font-normal">
+              <li className="menu-item">
+                  <Link
+                    to="/location"
+                    onClick={handleClick}
+                    className={`${linkStyle} ${isActive("/location")}`}
+                  >
+                  <FaMapLocationDot />
+                    Locations
+                  </Link>
+                </li>
                 <li className="menu-item">
                   <Link
                     to="/plant"
