@@ -1,22 +1,21 @@
-
 import { configureStore } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage/session";
 import { encryptTransform } from "redux-persist-transform-encrypt";
 import authReducer from "./slices/authSlice";
-import userReducer from "./slices/userSlice"
-import locationReducer from './slices/locationSlice';
-import plantReducer from './slices/plantSlice';
+import userReducer from "./slices/userSlice";
+import rolesReducer from "./slices/roleSlice";
+import locationReducer from "./slices/locationSlice";
+import plantReducer from "./slices/plantSlice";
 import dashboardReducer from "./slices/dashboardSlice";
 import machineReducer from "./slices/machineSlice";
 import productReducer from "./slices/productSlice";
 import departmentReducer from "./slices/departmentSlice";
 import dpmuReducer from "./slices/dpmuSlice";
 import productVsDefectReducer from "./slices/productvsDefectSlice";
-import reportReducer from "./slices/reportSlice"
-import defectReducer from "./slices/defectSlice"
-import aismartviewReducer from "./slices/aismartviewSlice"
-
+import reportReducer from "./slices/reportSlice";
+import defectReducer from "./slices/defectSlice";
+import aismartviewReducer from "./slices/aismartviewSlice";
 
 // Encryption Configuration
 const encryptor = encryptTransform({
@@ -27,7 +26,6 @@ const encryptor = encryptTransform({
   },
 });
 
-
 // Persist Configurations for each slice
 const authPersistConfig = {
   key: "auth",
@@ -36,6 +34,12 @@ const authPersistConfig = {
 };
 const userPersistConfig = {
   key: "user",
+  storage,
+  transforms: [encryptor],
+};
+
+const rolePersistConfig = {
+  key: "role",
   storage,
   transforms: [encryptor],
 };
@@ -84,26 +88,26 @@ const dashboardPersistConfig = {
   transforms: [encryptor],
 };
 const reportPersistConfig = {
-  key: 'report',
+  key: "report",
   storage,
   transforms: [encryptor],
 };
 const defectPersistConfig = {
-  key: 'defect',
+  key: "defect",
   storage,
   transforms: [encryptor],
 };
 const aismartviewPersistConfig = {
-  key: 'aismartview',
+  key: "aismartview",
   storage,
   transforms: [encryptor],
 };
-
 
 // Combine reducers
 const rootReducer = {
   auth: persistReducer(authPersistConfig, authReducer),
   user: persistReducer(userPersistConfig, userReducer),
+  role: persistReducer(rolePersistConfig, rolesReducer),
   location: persistReducer(locationPersistConfig, locationReducer),
   plant: persistReducer(plantPersistConfig, plantReducer),
   report: persistReducer(reportPersistConfig, reportReducer),
@@ -112,7 +116,10 @@ const rootReducer = {
   product: persistReducer(productPersistConfig, productReducer),
   department: persistReducer(departmentPersistConfig, departmentReducer),
   dpmu: persistReducer(dpmuPersistConfig, dpmuReducer),
-  productVsDefect: persistReducer(productVsDefectPersistConfig, productVsDefectReducer),
+  productVsDefect: persistReducer(
+    productVsDefectPersistConfig,
+    productVsDefectReducer
+  ),
   defect: persistReducer(defectPersistConfig, defectReducer),
   aismartview: persistReducer(aismartviewPersistConfig, aismartviewReducer),
 };

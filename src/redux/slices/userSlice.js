@@ -8,6 +8,8 @@ const initialState = {
       lastName: "",
       userName: "",
       isSuperuser: false,
+      user_role_name: "",
+      user_plant: "",
     }
   ],
 };
@@ -26,6 +28,8 @@ const userSlice = createSlice({
       state.userData[0].lastName = action.payload.lastName;
       state.userData[0].userName = action.payload.userName;
       state.userData[0].isSuperuser = action.payload.isSuperuser;
+      state.userData[0].user_role_name = action.payload.lastName;
+      state.userData[0].user_plant = action.payload.lastName;
     },
     userSignInFailure: (state, action) => {
       state.loading = false;
@@ -37,6 +41,8 @@ const userSlice = createSlice({
       state.userData[0].lastName = "";
       state.userData[0].userName = "";
       state.userData[0].isSuperuser = false;
+      state.userData[0].user_role_name = "";
+      state.userData[0].user_plant = "";
     },
   },
 });

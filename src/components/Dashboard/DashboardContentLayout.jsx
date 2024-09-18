@@ -5,7 +5,7 @@ import TotalOverview from "./TotalOverview";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoMdArrowForward } from "react-icons/io";
 import { useSelector, useDispatch } from "react-redux";
-import { initialDashboardData, getMachines, getSystemStatus, getDepartments, initialDpmuData, initialProductionData, getProducts, getDefects } from "../../services/dashboardApi";
+import { initialDashboardData, getMachines, getSystemStatus, getDepartments, initialDpmuData, initialProductionData, getProducts, getDefects, getRoles } from "../../services/dashboardApi";
 import { setSelectedMachine } from "../../redux/slices/machineSlice"
 import { setSelectedProduct } from "../../redux/slices/productSlice"
 import { getDashboardSuccess, getDashboardFailure } from "../../redux/slices/dashboardSlice"
@@ -76,6 +76,7 @@ const DashboardContentLayout = ({ children }) => {
     initialDashboardData(localPlantData.id, accessToken, apiCallInterceptor);
     initialDpmuData(localPlantData.id, accessToken, apiCallInterceptor);
     initialProductionData(localPlantData.id, accessToken, apiCallInterceptor);
+
     dispatch(setSelectedMachine(null));
     dispatch(setSelectedProduct(null));
     setSelectedDate(null);
@@ -139,6 +140,7 @@ const DashboardContentLayout = ({ children }) => {
       try {
         setLoading(true);
         await Promise.all([
+          getRoles(accessToken, apiCallInterceptor),
           getMachines(localPlantData.plant_name, accessToken, apiCallInterceptor),
           getDepartments(localPlantData.plant_name, accessToken, apiCallInterceptor),
           getDefects(localPlantData?.plant_name, accessToken, apiCallInterceptor),

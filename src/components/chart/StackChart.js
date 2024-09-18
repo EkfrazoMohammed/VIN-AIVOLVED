@@ -11,8 +11,6 @@ function StackChart({ data }) {
   const [visibleSeries, setVisibleSeries] = useState({});
   const defectsData = useSelector((state) => state.defect.defectsData)
 
-  console.log(defectsData)
-
   useEffect(() => {
 
     const colors = {};

@@ -15,6 +15,13 @@ import {
   getMachineFailure,
   setActiveMachines,
 } from "../redux/slices/machineSlice"; // Import the actions
+
+import {
+  getRoleSuccess,
+  getRoleFailure,
+  setRoleMachines,
+} from "../redux/slices/roleSlice"; // Import the actions
+
 import {
   getDepartmentSuccess,
   getDepartmentFailure,
@@ -45,7 +52,7 @@ export const baseURL =
   process.env.REACT_APP_API_BASE_URL || "https://huldev.aivolved.in/api/";
 
 export const getMachines = (plantName, token, apiCallInterceptor) => {
-  let encryptedPlantName = encryptAES(plantName).replace(/^"|"$/g, '');
+  let encryptedPlantName = encryptAES(plantName).replace(/^"|"$/g, "");
   encryptedPlantName = decodeURIComponent(encryptedPlantName);
   let url = `machine/?plant_name=${encryptedPlantName}`;
   apiCallInterceptor
@@ -66,7 +73,7 @@ export const getMachines = (plantName, token, apiCallInterceptor) => {
 };
 
 export const getDepartments = (plantName, token, apiCallInterceptor) => {
-  let encryptedPlantName = encryptAES(plantName).replace(/^"|"$/g, '');
+  let encryptedPlantName = encryptAES(plantName).replace(/^"|"$/g, "");
   encryptedPlantName = decodeURIComponent(encryptedPlantName);
   let url = `department/?plant_name=${encryptedPlantName}`;
   apiCallInterceptor
@@ -88,7 +95,7 @@ export const getDepartments = (plantName, token, apiCallInterceptor) => {
 };
 
 export const getProducts = (plantName, token, apiCallInterceptor) => {
-  let encryptedPlantName = encryptAES(plantName).replace(/^"|"$/g, '');
+  let encryptedPlantName = encryptAES(plantName).replace(/^"|"$/g, "");
   encryptedPlantName = decodeURIComponent(encryptedPlantName);
   let url = `product/?plant_name=${encryptedPlantName}`;
   apiCallInterceptor
@@ -106,7 +113,7 @@ export const getProducts = (plantName, token, apiCallInterceptor) => {
     });
 };
 export const getDefects = (plantName, token, apiCallInterceptor) => {
-  let encryptedPlantName = encryptAES(plantName).replace(/^"|"$/g, '');
+  let encryptedPlantName = encryptAES(plantName).replace(/^"|"$/g, "");
   encryptedPlantName = decodeURIComponent(encryptedPlantName);
 
   let url = `defect/?plant_name=${encryptedPlantName}`;
@@ -203,6 +210,22 @@ export const getSystemStatus = (plantId, token, apiCallInterceptor) => {
       store.dispatch(setActiveMachines([]));
     });
 };
+
+export const getRoles = (token, apiCallInterceptor) => {
+  let url = `role/`;
+  apiCallInterceptor
+    .get(url)
+    .then((response) => {
+      const formattedDefects = response.data.results;
+      store.dispatch(getRoleSuccess(formattedDefects));
+    })
+    .catch((error) => {
+      console.error("Error fetching role data:", error);
+      // Dispatch action to update Redux state
+      store.dispatch(getRoleFailure());
+    });
+};
+
 const isEmptyDashboardResponse = (data) => {
   return (
     data &&
@@ -214,9 +237,6 @@ const isEmptyDashboardResponse = (data) => {
 };
 
 export const initialDashboardData = (plantId, token, apiCallInterceptor) => {
-
-
-
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - 7); // 7 days ago
   const formattedStartDate = startDate.toISOString().slice(0, 10);
@@ -225,18 +245,11 @@ export const initialDashboardData = (plantId, token, apiCallInterceptor) => {
   const endDate = new Date(); // Today's date
   const formattedEndDate = endDate.toISOString().slice(0, 10); // Format endDate as YYYY-MM-DD
 
-
-
-
   const encryptedPlantId = encodeURIComponent(
     encryptAES(JSON.stringify(plantId))
   );
-  const encryptedfromDate = encodeURIComponent(
-    encryptAES(formattedStartDate)
-  );
-  const encryptedtodate = encodeURIComponent(
-    encryptAES(formattedEndDate)
-  );
+  const encryptedfromDate = encodeURIComponent(encryptAES(formattedStartDate));
+  const encryptedtodate = encodeURIComponent(encryptAES(formattedEndDate));
 
   const url = `dashboard/?plant_id=${encryptedPlantId}&from_date=${encryptedfromDate}&to_date=${encryptedtodate}`;
   apiCallInterceptor

@@ -1,51 +1,74 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Col, Row, Input, notification, Select } from 'antd';
 import { Switch } from 'antd';
 import { Modal } from 'antd';
 import { ColorRing } from 'react-loader-spinner'
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { encryptAES } from '../../redux/middleware/encryptPayloadUtils'
 import useApiInterceptor from '../../hooks/useInterceptor';
+
 const Settings = () => {
 
   const apiInterceptor = useApiInterceptor()
+  const dispatch = useDispatch();
   const accessToken = useSelector((state) => state.auth.authData[0].accessToken);
   const currentUserData = useSelector((state) => (state.user.userData[0]))
+  const localPlantData = useSelector((state) => state?.plant?.plantData[0]);
+  const all_roles = useSelector((state) => state.role.rolesData)
   const [api, contextHolder] = notification.useNotification();
   const [loading, setLoading] = useState(false)
   const [modal2Open, setModal2Open] = useState(false);
-  const plants=[
-    {
-        "id": 2,
-        "plant_name": "HC BARS PLANT",
-        "is_active": true
-    },
-    {
-        "id": 3,
-        "plant_name": "HC LIQUIDS PLANT",
-        "is_active": true
-    },
-    {
-        "id": 4,
-        "plant_name": "SHAMPOO PLANT",
-        "is_active": true
-    }
-]
-  const roles = [
-    {
-      "role_name": "Sr.Manager",
-      "is_active": true
-    },
-    {
-      "role_name": "Manager",
-      "is_active": true
-    },
-    {
-      "role_name": "User",
-      "is_active": true
-    }
-  ]
+  const [all_plants, setAllPlants] = useState([])
 
+  const [locations, setLocations] = useState([
+    {
+      id: 1,
+      is_active: true,
+      location_name: "Pondi",
+
+    },
+    {
+      id: 2,
+      is_active: true,
+      location_name: "Amli",
+
+    },
+    {
+      id: 3,
+      is_active: false,
+      location_name: "New",
+
+    },
+  ]);
+
+  useEffect(() => {
+    const fetchPlantData = async () => {
+      try {
+        if (!accessToken) {
+          console.log("Authorization token is missing");
+          return;
+        }
+
+        const res = await apiInterceptor.get(`/plant/`)
+        const { results } = res.data
+
+        if (results) {
+          setAllPlants(results);
+        } else {
+          console.warn("No results found in the response");
+        }
+      } catch (err) {
+        //console.log("Error fetching plant data:", err);
+        if (err.response && err.response.data.code === "token_not_valid") {
+          console.log("Token is invalid or expired.");
+        } else {
+          console.log("Error:", err.message || "Unknown log occurred");
+        }
+      }
+    };
+
+    fetchPlantData();
+  }, [accessToken]);
 
   const headersOb = {
     headers: {
@@ -58,8 +81,8 @@ const Settings = () => {
     phone_number: "",
     email: "",
     employee_id: "",
-    plant:null,
-    role_name:null
+    plant: null, //pass id
+    role: null  // pass id
   });
   const [error, setError] = useState({
     fistName: "",
@@ -67,8 +90,8 @@ const Settings = () => {
     Phone: "",
     email: "",
     employee_id: "",
-    plant:null,
-    role_name:null
+    plant: null,
+    role_name: null
   })
 
   const closeModalUser = () => {
@@ -79,8 +102,8 @@ const Settings = () => {
       phone_number: "",
       email: "",
       employee_id: "",
-      plant:null,
-      role_name:null
+      plant: null,
+      role_name: null
     })
     setError({
       fistName: "",
@@ -88,8 +111,8 @@ const Settings = () => {
       Phone: "",
       email: "",
       employee_id: "",
-      plant:null,
-      role_name:null
+      plant: null,
+      role_name: null
     })
   }
   const openNotification = (param) => {
@@ -128,12 +151,17 @@ const Settings = () => {
         "last_name": data.last_name,
         "phone_number": data.phone_number,
         "email": data.email,
-        "employee_id": data.employee_id
+        "employee_id": data.employee_id,
+        "plant": data.plant,
+        "role": data.role
       }
+      console.log(payload)
       const encryTedData = encryptAES(JSON.stringify(payload))
       const usersPayload = {
         "data": `${encryTedData}`
       }
+
+      console.log(usersPayload)
       if (data.employee_id !== "" && data.first_name !== "" && data.last_name !== "" && data.phone_number !== "" && data.email !== "" && error.fistName === "" && error.lastName === "" && error.email === "" && error.Phone === "" && error.employee_id === "") {
         setLoading(true)
         const postRequest = await apiInterceptor.post(`user/`, usersPayload, headersOb)
@@ -146,7 +174,9 @@ const Settings = () => {
             last_name: "",
             phone_number: "",
             email: "",
-            employee_id: ""
+            employee_id: "",
+            plant: null,
+            role_name: null
           })
         }
         openNotification({ status: "success", message: "User Created Successfully!" });
@@ -189,7 +219,8 @@ const Settings = () => {
     setData((prev) => ({ ...prev, [name]: value }))
   }
   const handleRoleChange = (value) => {
-    setData((prev) => ({ ...prev, role_name: value }));
+    setData((prev) => ({ ...prev, role: value }));
+    console.log(data)
   };
   const handlePlantChange = (value) => {
     setData((prev) => ({ ...prev, plant: value }));
@@ -278,38 +309,75 @@ const Settings = () => {
                   {error.employee_id ? <span style={{ fontWeight: '600', color: 'red' }}>{error.employee_id}</span> : ""}
                 </div>
                 <div className="">
-                <Select
-                  style={{ minWidth: '100%' }}
-                  placeholder="Select Role"
-                  onChange={handleRoleChange} // Bind the onChange event for Select
-                  value={data.role_name} // Set the value to selected role_name
-                >
-                  {roles.map((role, index) => (
-                    <Select.Option key={index} value={role.role_name}>
-                      {role.role_name}
-                    </Select.Option>
-                  ))}
-                </Select>
-                {error.role_name && <span style={{ fontWeight: '600', color: 'red' }}>{error.role_name}</span>}
-             
+                  <Select
+                    size='large'
+                    style={{ minWidth: '100%' }}
+                    placeholder="Select Role"
+                    onChange={handleRoleChange}
+                    value={data.role}
+                  >
+                    {all_roles.map((role, index) => (
+                      <Select.Option key={index} value={role.id}>
+                        {role.role_name}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                  {error.role_name && <span style={{ fontWeight: '600', color: 'red' }}>{error.role_name}</span>}
+
                 </div>
 
-                <div className="">
-                <Select
-                  style={{ minWidth: '100%' }}
-                  placeholder="Select Plant"
-                  onChange={handlePlantChange}
-                  value={data.role_name} 
-                >
-                  {plants.map((role, index) => (
-                    <Select.Option key={index} value={role.id}>
-                      {role.plant_name}
-                    </Select.Option>
-                  ))}
-                </Select>
+                {/* location start*/}
+                {data.role == 2 ? (
+                  <Select
+                    size='large'
+                    style={{ minWidth: '100%' }}
+                    placeholder="Select Location"
+                    onChange={handlePlantChange}
+                  >
+                    {locations.map(({ id, location_name }) => (
+                      <Select.Option key={id} value={id}>
+                        {location_name}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                ) : (
+                  data.role == 3 && (
+                    <Select
+                      size='large'
+                      style={{ minWidth: '100%' }}
+                      placeholder="Select Plant"
+                      onChange={handlePlantChange}
+                    >
+                      {all_plants.map(({ id, plant_name }) => (
+                        <Select.Option key={id} value={id}>
+                          {plant_name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  )
+                )}
+
+                {error.location && <span style={{ fontWeight: '600', color: 'red' }}>{error.location}</span>}
                 {error.plant && <span style={{ fontWeight: '600', color: 'red' }}>{error.plant}</span>}
-             
-                </div>
+
+
+                {/* location end */}
+                {/* <div className="">
+                  <Select
+                    style={{ minWidth: '100%' }}
+                    placeholder="Select Plant"
+                    onChange={handlePlantChange}
+                    value={data.role_name}
+                  >
+                    {all_plants.map((role, index) => (
+                      <Select.Option key={index} value={role.id}>
+                        {role.plant_name}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                  {error.plant && <span style={{ fontWeight: '600', color: 'red' }}>{error.plant}</span>}
+
+                </div> */}
               </div>
               <div className="" style={{ display: 'flex', justifyContent: 'flex-end', padding: '1rem' }}>
                 <Button type="primary" style={{ width: '20%', padding: '0' }} danger onClick={() => handlePost()}>
