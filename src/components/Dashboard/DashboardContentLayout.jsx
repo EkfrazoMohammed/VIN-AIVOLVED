@@ -5,7 +5,7 @@ import TotalOverview from "./TotalOverview";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoMdArrowForward } from "react-icons/io";
 import { useSelector, useDispatch } from "react-redux";
-import { initialDashboardData, getMachines, getSystemStatus, getDepartments, initialDpmuData, initialProductionData, getProducts, getDefects, getRoles } from "../../services/dashboardApi";
+import { initialDashboardData, getMachines, getSystemStatus, getDepartments, initialDpmuData, initialProductionData, getProducts, getDefects, getRoles, dpmuFilterData } from "../../services/dashboardApi";
 import { setSelectedMachine } from "../../redux/slices/machineSlice"
 import { setSelectedProduct } from "../../redux/slices/productSlice"
 import { getDashboardSuccess, getDashboardFailure } from "../../redux/slices/dashboardSlice"
@@ -50,6 +50,7 @@ const DashboardContentLayout = ({ children }) => {
     formattedEndDate,
   ]);
   const currentUrlPath = useLocation();
+
   const handleMachineChange = (value) => {
     setFilterActive(false)
     dispatch(setSelectedMachine(Number(value)));
@@ -393,10 +394,16 @@ const DashboardContentLayout = ({ children }) => {
             </div>
           </div>
 
+          <SelectComponent placeholder={"Select Machine"} selectedData={selectedMachineRedux} action={(val) =>
+            handleMachineChange(val)} data={machines} style={{ minWidth: "150px", zIndex: 1 }} size={"large"} />
+
+          <div onClick={() => dpmuFilterData(localPlantData.id, accessToken, apiCallInterceptor, selectedMachineRedux)}>Apply</div>
+
           <RealTimeManufacturingSection
             loading={loading}
             categoryDefects={categoryDefects}
             productionData={dpmuChartData}
+
           />
           <div className="production-defect-report-container flex">
             <ProductAndDefect loading={loading} chartData={productionVsDefectChartData} />

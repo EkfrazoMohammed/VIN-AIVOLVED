@@ -155,13 +155,11 @@ const Settings = () => {
         "plant": data.plant,
         "role": data.role
       }
-      console.log(payload)
       const encryTedData = encryptAES(JSON.stringify(payload))
       const usersPayload = {
         "data": `${encryTedData}`
       }
 
-      console.log(usersPayload)
       if (data.employee_id !== "" && data.first_name !== "" && data.last_name !== "" && data.phone_number !== "" && data.email !== "" && error.fistName === "" && error.lastName === "" && error.email === "" && error.Phone === "" && error.employee_id === "") {
         setLoading(true)
         const postRequest = await apiInterceptor.post(`user/`, usersPayload, headersOb)

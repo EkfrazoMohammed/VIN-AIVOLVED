@@ -82,9 +82,9 @@ const Login = () => {
       dispatch(signInSuccess({ accessToken: access_token, refreshToken: refresh_token }));
       dispatch(userSignInSuccess({ userId: user_id, userName: user_name, firstName: first_name, lastName: last_name, isSuperUser: is_superuser }))
       openNotification("success", message);
-      if(is_superuser){
+      if (is_superuser) {
         navigate("/location");
-      }else{
+      } else {
         navigate("/plant");
       }
 

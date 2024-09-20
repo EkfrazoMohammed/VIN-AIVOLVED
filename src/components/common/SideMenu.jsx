@@ -36,6 +36,8 @@ const SideMenu = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const refreshToken = useSelector((state) => state.auth.authData[0].refreshToken);
+  const role = useSelector(state => state.role.selectedRole)
+  console.log(role, "<rolesData")
 
   const isActive = (path) => {
     return location.pathname === path ||
@@ -212,16 +214,20 @@ const SideMenu = () => {
                 </li>
               </ul>
             </li>
+            {/* {
+              role === "super_use" ?
+           
+            } */}
             <li className="text-[13px] font-normal">
               <div className="mb-1 menu-category-name"> Organization</div>
               <ul className="text-[15px] font-normal">
-              <li className="menu-item">
+                <li className="menu-item">
                   <Link
                     to="/location"
                     onClick={handleClick}
                     className={`${linkStyle} ${isActive("/location")}`}
                   >
-                  <FaMapLocationDot />
+                    <FaMapLocationDot />
                     Locations
                   </Link>
                 </li>
@@ -240,6 +246,20 @@ const SideMenu = () => {
             <li className="text-[13px] font-normal">
               <div className="mb-1 menu-category-name"> Other</div>
               <ul className="text-[15px] font-normal">
+                {/* {
+                  role === "super_use" ?
+                    <li className="menu-item">
+                      <Link
+                        to="/settings"
+                        onClick={handleClick}
+                        className={`${linkStyle} ${isActive("/settings")}`}
+                      >
+                        <CiSettings />
+                        Settings
+                      </Link>
+                    </li>
+                    : null
+                } */}
                 <li className="menu-item">
                   <Link
                     to="/settings"

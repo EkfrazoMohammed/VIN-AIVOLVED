@@ -157,6 +157,7 @@ export const getAiSmartView = async (
   }
 };
 
+
 export const initialDpmuData = (plantId, token, apiCallInterceptor) => {
   const encryptedPlantId = encodeURIComponent(
     encryptAES(JSON.stringify(plantId))
@@ -172,6 +173,30 @@ export const initialDpmuData = (plantId, token, apiCallInterceptor) => {
       store.dispatch(getDpmuFailure());
     });
 };
+
+export const dpmuFilterData = (plantId, token, apiCallInterceptor, machineId) => {
+
+  const encryptedPlantId = encodeURIComponent(
+    encryptAES(JSON.stringify(plantId))
+  );
+  const encryptedMachineID = encodeURIComponent(
+    encryptAES(JSON.stringify(machineId))
+  );
+  console.log(encryptedMachineID, "<encryptedmachine")
+
+  const url = `params_graph/?plant_id=${encryptedPlantId}&machine_id=${encryptedMachineID}`;
+  apiCallInterceptor
+    .get(url)
+    .then((response) => {
+      store.dispatch(getDpmuSuccess(response.data.results));
+    })
+    .catch((error) => {
+      //console.error("Error:", error);
+      store.dispatch(getDpmuFailure());
+    });
+};
+
+
 
 export const initialProductionData = (plantId, token, apiCallInterceptor) => {
   const encryptedPlantId = encodeURIComponent(
