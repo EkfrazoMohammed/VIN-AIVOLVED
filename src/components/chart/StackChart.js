@@ -120,7 +120,7 @@ function StackChart({ data }) {
           Bar Graph for Defects
         </Title>
       </div>
- <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
+      <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
         {defectNames.map((defectName, index) => {
           const color = defectColors[defectName] || fallbackColors[index % fallbackColors.length];
           return (
@@ -130,7 +130,7 @@ function StackChart({ data }) {
                 checked={visibleSeries[defectName]}
                 onChange={() => handleCheckboxChange(defectName)}
                 style={{
-                  accentColor: color, 
+                  accentColor: color,
                 }}
               />
               <span
