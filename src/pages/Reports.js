@@ -225,7 +225,7 @@ const Reports = () => {
 
   const socketConnection = () => {
     // Create a new WebSocket connection
-    const socket = new WebSocket('wss://huldev.aivolved.in/ws/defect-image-streaming/');
+    const socket = new WebSocket('wss://hul.aivolved.in/ws/defect-image-streaming/');
 
     // Set WebSocket state
     setWs(socket);
@@ -751,7 +751,7 @@ const Reports = () => {
           >
             Download Excel
           </Button>
-          <Button
+          {/* <Button
             type="primary"
             icon={<DownloadOutlined />}
             size="large"
@@ -759,7 +759,7 @@ const Reports = () => {
             onClick={handleClickDownload}
           >
             Download Images
-          </Button>
+          </Button> */}
         </div>
 
         {loader ? (

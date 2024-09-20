@@ -6,65 +6,75 @@ import { encryptAES } from "../redux/middleware/encryptPayloadUtils";
 import axios from "axios";
 
 const useApiInterceptor = () => {
+  const dispatch = useDispatch();
+  const refreshToken = useSelector(
+    (state) => state.auth.authData[0].refreshToken
+  );
+  const accessToken = useSelector((state) => state.auth.authData.access_token);
+  const [refresh, setRefresh] = useState(false);
 
-    const dispatch = useDispatch();
-    const refreshToken = useSelector((state) => state.auth.authData[0].refreshToken);
-    const accessToken = useSelector((state) => state.auth.authData.access_token);
-    const [refresh, setRefresh] = useState(false);
+  useEffect(() => {
+    const interceptor = ApiCall.interceptors.response.use(
+      (response) => response,
 
-    useEffect(() => {
+      async (error) => {
+        const originalRequest = error.config;
 
-        const interceptor = ApiCall.interceptors.response.use(
-            (response) => response,
+        if (error.response.status === 401 && !originalRequest._retry) {
+          if (!refresh) {
+            originalRequest._retry = true;
+            setRefresh(true);
+          }
+          const encryptedData = encryptAES(
+            JSON.stringify({ refresh_token: refreshToken })
+          );
 
-            async (error) => {
-                const originalRequest = error.config;
+          try {
+            const response = await axios.post(
+              "https://hul.aivolved.in/api/refresh_token/",
+              {
+                data: encryptedData,
+              }
+            );
 
-                if (error.response.status === 401 && !originalRequest._retry) {
+            const { access_token } = response.data;
 
-                    if (!refresh) {
-                        originalRequest._retry = true;
-                        setRefresh(true);
-                    }
-                    const encryptedData = encryptAES(JSON.stringify({ refresh_token: refreshToken }))
+            // Update the tokens in Redux state
+            // { access_token, refresh_token, user }
+            // dispatch(setAuthData({ access_token: access, refresh_token: refreshToken }));
 
-                    try {
-                        const response = await axios.post('https://huldev.aivolved.in/api/refresh_token/', {
-                            data: encryptedData,
-                        });
+            dispatch(
+              signInSuccess({
+                accessToken: access_token,
+                refreshToken: refreshToken,
+              })
+            );
 
-                        const { access_token } = response.data;
+            // Update the Authorization header for future requests
+            ApiCall.defaults.headers.common[
+              "Authorization"
+            ] = `Bearer ${access_token}`;
+            originalRequest.headers["Authorization"] = `Bearer ${access_token}`;
 
-                        // Update the tokens in Redux state
-                        // { access_token, refresh_token, user }
-                        // dispatch(setAuthData({ access_token: access, refresh_token: refreshToken }));
+            return ApiCall(originalRequest);
+          } catch (refreshError) {
+            //console.error("Error in Refreshing Token:", refreshError);
+            return Promise.reject(refreshError);
+          } finally {
+            setRefresh(false);
+          }
+        }
 
-                        dispatch(signInSuccess({ accessToken: access_token, refreshToken: refreshToken }));
+        return Promise.reject(error);
+      }
+    );
 
-                        // Update the Authorization header for future requests
-                        ApiCall.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
-                        originalRequest.headers['Authorization'] = `Bearer ${access_token}`;
+    return () => {
+      ApiCall.interceptors.response.eject(interceptor);
+    };
+  }, [refreshToken, accessToken, refresh, dispatch]);
 
-                        return ApiCall(originalRequest);
-                    } catch (refreshError) {
-                        //console.error("Error in Refreshing Token:", refreshError);
-                        return Promise.reject(refreshError);
-                    } finally {
-                        setRefresh(false);
-                    }
-                }
-
-                return Promise.reject(error);
-            }
-        );
-
-        return () => {
-            ApiCall.interceptors.response.eject(interceptor);
-        };
-
-    }, [refreshToken, accessToken, refresh, dispatch]);
-
-    return ApiCall;
+  return ApiCall;
 };
 
 export default useApiInterceptor;

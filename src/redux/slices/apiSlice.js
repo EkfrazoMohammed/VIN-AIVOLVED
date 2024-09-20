@@ -1,21 +1,22 @@
 // src/redux/apiSlice.js
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
 
 // Base URL should be set in an environment variable or configuration
-const baseURL = process.env.REACT_APP_API_BASE_URL || 'https://huldev.aivolved.in/api/';
+const baseURL =
+  process.env.REACT_APP_API_BASE_URL || "https://hul.aivolved.in/api/";
 
 // Initial state
 const initialState = {
   baseURL,
   token: null,
-  status: 'idle',
+  status: "idle",
   error: null,
 };
 
 // Create async thunk for API requests
 export const fetchApiData = createAsyncThunk(
-  'api/fetchApiData',
+  "api/fetchApiData",
   async (endpoint, { getState, rejectWithValue }) => {
     const state = getState();
     const { token } = state.api;
@@ -32,7 +33,7 @@ export const fetchApiData = createAsyncThunk(
 );
 
 const apiSlice = createSlice({
-  name: 'api',
+  name: "api",
   initialState,
   reducers: {
     setToken(state, action) {
@@ -45,14 +46,14 @@ const apiSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchApiData.pending, (state) => {
-        state.status = 'loading';
+        state.status = "loading";
       })
       .addCase(fetchApiData.fulfilled, (state, action) => {
-        state.status = 'succeeded';
+        state.status = "succeeded";
         // Handle success, e.g., save data to state
       })
       .addCase(fetchApiData.rejected, (state, action) => {
-        state.status = 'failed';
+        state.status = "failed";
         state.error = action.payload;
       });
   },
