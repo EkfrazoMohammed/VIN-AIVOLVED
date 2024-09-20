@@ -1,12 +1,24 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import SelectComponent from "../common/Select";
-
+import { dpmuFilterData, initialDpmuData } from "../../services/dashboardApi";
+import useApiInterceptor from "../../hooks/useInterceptor";
+import { setSelectedMachineDpmu } from "../../redux/slices/machineSlice";
+import { useDispatch } from "react-redux";
 export default function RealTimeManufacturingSection({
   loading,
   categoryDefects,
   productionData,
+  selectedMachineDpmu,
+  machines,
+  machineChangeAction,
+  accessToken,
+  plant_id,
 }) {
+
+  const apiCallInterceptor = useApiInterceptor();
+  const [filterDpmu, setfilterDpmu] = useState(false);
+  const dispatch = useDispatch()
   const data = {
     labels: productionData.map((item) => item.date_time),
     datasets: [
@@ -39,6 +51,21 @@ export default function RealTimeManufacturingSection({
       },
     },
   };
+
+  const handleDpmuFilter = () => {
+    setfilterDpmu(true)
+    dpmuFilterData(plant_id, accessToken, apiCallInterceptor, selectedMachineDpmu)
+  }
+
+  const resetFilterDpmu = () => {
+    setfilterDpmu(false)
+    initialDpmuData(plant_id, accessToken, apiCallInterceptor);
+    dispatch(setSelectedMachineDpmu(null));
+  }
+
+  useEffect(() => {
+    dispatch(setSelectedMachineDpmu(null));
+  }, [])
 
   return (
     <div className="py-4 px-0 ">
@@ -88,6 +115,29 @@ export default function RealTimeManufacturingSection({
         </div>
 
         <div className="flex-grow">
+          <div className="flex gap-3 py-3">
+
+            <SelectComponent placeholder={"Select Machine"} selectedData={selectedMachineDpmu} action={(val) =>
+              machineChangeAction(val)} data={machines} style={{ minWidth: "150px", zIndex: 1 }} size={"large"} />
+            <div
+              type="primary"
+              onClick={handleDpmuFilter}
+              className=" bg-red-500 text-white rounded flex items-center justify-center py-2 px-3 cursor-pointer font-bold"
+            >
+              Apply filters
+            </div>
+            {
+              filterDpmu ?
+                <div
+                  type="primary"
+                  onClick={resetFilterDpmu}
+                  className=" bg-red-500 text-white rounded flex items-center justify-center py-2 px-3 cursor-pointer font-bold"
+                >
+                  Reset Filter
+                </div>
+                : null
+            }
+          </div>
           <Bar data={data} options={options} />
         </div>
       </div>

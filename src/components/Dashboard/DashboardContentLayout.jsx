@@ -6,7 +6,7 @@ import { IoIosArrowDown } from "react-icons/io";
 import { IoMdArrowForward } from "react-icons/io";
 import { useSelector, useDispatch } from "react-redux";
 import { initialDashboardData, getMachines, getSystemStatus, getDepartments, initialDpmuData, initialProductionData, getProducts, getDefects, getRoles, dpmuFilterData } from "../../services/dashboardApi";
-import { setSelectedMachine } from "../../redux/slices/machineSlice"
+import { setSelectedMachine, setSelectedMachineDpmu } from "../../redux/slices/machineSlice"
 import { setSelectedProduct } from "../../redux/slices/productSlice"
 import { getDashboardSuccess, getDashboardFailure } from "../../redux/slices/dashboardSlice"
 import { Link, useLocation } from "react-router-dom";
@@ -33,6 +33,7 @@ const DashboardContentLayout = ({ children }) => {
   const productionVsDefectChartData = useSelector((state) => state.productVsDefect.productvsdefectData)
   const productsData = useSelector((state) => state.product.productsData)
   const selectedMachineRedux = useSelector((state) => state.machine.selectedMachine);
+  const selectedMachineDpmu = useSelector((state) => state.machine.selectedMachineDpmu);
   const selectedProductRedux = useSelector((state) => state.product.selectedProduct);
   const tableDataRedux = useSelector((state) => state.dashboard.datesData);
   const tableDataReduxActive = useSelector((state) => state.dashboard.activeProducts)
@@ -56,6 +57,12 @@ const DashboardContentLayout = ({ children }) => {
     dispatch(setSelectedMachine(Number(value)));
     setFilterChanged(true)
   };
+
+
+  const handleMachineChangeDpmu = (value) => {
+    dispatch(setSelectedMachineDpmu(Number(value)));
+  };
+
 
   const handleProductChange = (value) => {
     setFilterActive(false)
@@ -84,6 +91,9 @@ const DashboardContentLayout = ({ children }) => {
     setFilterActive(false);
     setFilterChanged(false)
   };
+  const resetFilterDpmu = () => {
+    initialDpmuData(localPlantData.id, accessToken, apiCallInterceptor);
+  }
 
   const handleApplyFilters = () => {
     const [fromDate, toDate] = dateRange;
@@ -394,15 +404,18 @@ const DashboardContentLayout = ({ children }) => {
             </div>
           </div>
 
-          <SelectComponent placeholder={"Select Machine"} selectedData={selectedMachineRedux} action={(val) =>
-            handleMachineChange(val)} data={machines} style={{ minWidth: "150px", zIndex: 1 }} size={"large"} />
 
-          <div onClick={() => dpmuFilterData(localPlantData.id, accessToken, apiCallInterceptor, selectedMachineRedux)}>Apply</div>
+
 
           <RealTimeManufacturingSection
             loading={loading}
             categoryDefects={categoryDefects}
             productionData={dpmuChartData}
+            selectedMachineDpmu={selectedMachineDpmu}
+            machines={machines}
+            machineChangeAction={(val) => handleMachineChangeDpmu(val)}
+            plant_id={localPlantData.id}
+            accessToken={accessToken}
 
           />
           <div className="production-defect-report-container flex">

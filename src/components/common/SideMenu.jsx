@@ -18,7 +18,7 @@ import { dashboardSignout } from "../../redux/slices/dashboardSlice";
 import { defectSignout, setSelectedDefect, setSelectedDefectReports } from "../../redux/slices/defectSlice";
 import { departmentSignout } from "../../redux/slices/departmentSlice";
 import { dpmuSignout } from "../../redux/slices/dpmuSlice";
-import { machineSignout, setSelectedMachine } from "../../redux/slices/machineSlice";
+import { machineSignout, setSelectedMachine, setSelectedMachineDpmu } from "../../redux/slices/machineSlice";
 import { plantSignOut } from "../../redux/slices/plantSlice";
 import { productSignout, setSelectedProduct } from "../../redux/slices/productSlice";
 import { productVsDefectSignout } from "../../redux/slices/productvsDefectSlice";
@@ -118,6 +118,8 @@ const SideMenu = () => {
     dispatch(setSelectedDefect(null)); // Dispatching action 
     dispatch(setSelectedProduct(null));
     dispatch(setSelectedDefectReports(null))
+    dispatch(setSelectedMachineDpmu(null))
+
   }
 
   return (
