@@ -5,7 +5,7 @@ import { Table, Select, DatePicker, Button, Image, Tag } from 'antd';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
 import moment from 'moment';
-import {API, AuthToken, baseURL, localPlantData} from "./../API/API"
+import { API, AuthToken, baseURL, localPlantData } from "./../API/API"
 import { ToastContainer, toast } from 'react-toastify';
 import {
   VideoCameraOutlined,
@@ -26,32 +26,36 @@ const Reports = () => {
 
   const location = useLocation();
   const localItems = localStorage.getItem("PlantData")
-  const localPlantData = JSON.parse(localItems) 
+  const localPlantData = JSON.parse(localItems)
   const defectProp = location?.state?.clickedVal[0]?.name || null
   const defectId = location?.state?.clickedVal[0]?.id || null
 
 
 
   const columns = [
-    { title: "Product Name", dataIndex: "product", key: "alert_name",id:"alert_name"  ,
+    {
+      title: "Product Name", dataIndex: "product", key: "alert_name", id: "alert_name",
       sorter: (a, b) => a.product.localeCompare(b.product),
-      sortDirections: ['ascend','descend' ,'cancel'], },
-    { title: "Defect Name", dataIndex: "defect", key: "defect_name" ,
+      sortDirections: ['ascend', 'descend', 'cancel'],
+    },
+    {
+      title: "Defect Name", dataIndex: "defect", key: "defect_name",
       sorter: (a, b) => a.defect.localeCompare(b.defect),
-      sortDirections: ['ascend','descend' ,'cancel'],
+      sortDirections: ['ascend', 'descend', 'cancel'],
 
     },
-    { title: "Machine Name", dataIndex: "machine", key: "machine_name",
+    {
+      title: "Machine Name", dataIndex: "machine", key: "machine_name",
       sorter: (a, b) => a.machine.localeCompare(b.machine),
-      sortDirections: ['ascend','descend' ,'cancel'],
+      sortDirections: ['ascend', 'descend', 'cancel'],
 
-     },
+    },
     {
       title: "Department Name",
       dataIndex: "department",
       key: "department_name",
       sorter: (a, b) => a.department.localeCompare(b.department),
-      sortDirections: ['ascend','descend' ,'cancel'],
+      sortDirections: ['ascend', 'descend', 'cancel'],
     },
     {
       title: "Recorded Date Time",
@@ -71,8 +75,8 @@ const Reports = () => {
       key: "image",
       render: (image_b64) =>
         image_b64 ? (
-          // <Image src={`http://localhost:8000${image_b64}`} alt="Defect Image" width={50} />
-          <Image src={image_b64} alt="Defect Image" width={50} />
+          <Image src={`http://localhost:8000${image_b64}`} alt="Defect Image" width={50} />
+          // <Image src={image_b64} alt="Defect Image" width={50} />
         ) : null,
     },
   ];
@@ -80,8 +84,8 @@ const Reports = () => {
   const locale = {
     Table: {
       sortTitle: 'Sort',
-        triggerAsc: 'Click to sort in ascending order by defect name',
-        triggerDesc: 'Click to sort in descending order by defect name',
+      triggerAsc: 'Click to sort in ascending order by defect name',
+      triggerDesc: 'Click to sort in descending order by defect name',
       cancelSort: 'Click to cancel sorting',
     },
   };
@@ -89,10 +93,10 @@ const Reports = () => {
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - 7); // 7 days ago
   const formattedStartDate = startDate.toISOString().slice(0, 10); // Format startDate as YYYY-MM-DD
-  
+
   const endDate = new Date(); // Today's date
   const formattedEndDate = endDate.toISOString().slice(0, 10); // Format endDate as YYYY-MM-DD
-  
+
   const [selectedMachine, setSelectedMachine] = useState(null);
   const [selectedDepartment, setSelectedDepartment] = useState(null);
   const [selectedDefect, setselectedDefect] = useState(defectId || null);
@@ -105,10 +109,10 @@ const Reports = () => {
     pageSize: 10,
     total: 0,
     position: ['topRight'],
-    showSizeChanger:true
+    showSizeChanger: true
   });
   const [productOptions, setProductOptions] = useState([]);
-  const [loader,setLoader] = useState(false)
+  const [loader, setLoader] = useState(false)
 
 
   const handleProductChange = value => {
@@ -143,25 +147,25 @@ const Reports = () => {
       setSelectedDate(dateStrings)
       setDateRange(dateStrings);
     } else {
-      console.error('Invalid date range:', dates,dateStrings);
+      console.error('Invalid date range:', dates, dateStrings);
     }
   };
 
-    
-    
-  let url ;
 
-  const handleApplyFilters = (page,pageSize) => {
+
+  let url;
+
+  const handleApplyFilters = (page, pageSize) => {
 
     const domain = `${baseURL}`;
 
     let fromDate, toDate;
 
-  // Check if dateRange is valid and destructure it
-  if (Array.isArray(dateRange) && dateRange.length === 2) {
-    [fromDate, toDate] = dateRange;
-  }
-     url = `${domain}reports/?page=1&page_size=${pageSize}&`;
+    // Check if dateRange is valid and destructure it
+    if (Array.isArray(dateRange) && dateRange.length === 2) {
+      [fromDate, toDate] = dateRange;
+    }
+    url = `${domain}reports/?page=1&page_size=${pageSize}&`;
     // url += `machine=${selectedMachine}&department=${selectedDepartment}`;
     // url += `?plant_id=${localPlantData.id}&from_date=${fromDate}&to_date=${toDate}&machine_id=${selectedMachine}&department_id=${selectedDepartment}&product_id=${selectedProduct}&defect_id=${selectedDefect}`;
     // if (fromDate && toDate) {
@@ -169,43 +173,43 @@ const Reports = () => {
     // }
     if (localPlantData.id) {
       url += `plant_id=${localPlantData.id}&`;
-  }
-  if (fromDate) {
+    }
+    if (fromDate) {
       url += `from_date=${fromDate}&`;
-  }
-  if (toDate) {
+    }
+    if (toDate) {
       url += `to_date=${toDate}&`;
-  }
-  if (selectedMachine) {
+    }
+    if (selectedMachine) {
       url += `machine_id=${selectedMachine}&`;
-  }
-  if (selectedDepartment) {
+    }
+    if (selectedDepartment) {
       url += `department_id=${selectedDepartment}&`;
-  }
-  if (selectedProduct) {
+    }
+    if (selectedProduct) {
       url += `product_id=${selectedProduct}&`;
-  }
-  if (selectedDefect) {
+    }
+    if (selectedDefect) {
       url += `defect_id=${selectedDefect}&`;
-  }
-  
-  // Remove the trailing '&' if present
-  if (url.endsWith('&')) {
+    }
+
+    // Remove the trailing '&' if present
+    if (url.endsWith('&')) {
       url = url.slice(0, -1);
-  }
-  
-  // If no filters are added, remove the trailing '?'
-  if (url.endsWith('?')) {
+    }
+
+    // If no filters are added, remove the trailing '?'
+    if (url.endsWith('?')) {
       url = url.slice(0, -1);
-  }
-  setLoader(true)
-    axios.get(url,{
-      headers:{
-        Authorization:`Bearer ${AuthToken}`
+    }
+    setLoader(true)
+    axios.get(url, {
+      headers: {
+        Authorization: `Bearer ${AuthToken}`
       }
     })
-    .then(response => {
-      const {results,total_count,page_size} = response.data
+      .then(response => {
+        const { results, total_count, page_size } = response.data
         setLoader(false)
         setTableData(results);
         setfilterActive(true);
@@ -213,7 +217,7 @@ const Reports = () => {
         setPagination({
           ...pagination,
           current: page,
-          pageSize:page_size, 
+          pageSize: page_size,
           total: total_count,
         });
       })
@@ -225,17 +229,17 @@ const Reports = () => {
 
   const [machineOptions, setMachineOptions] = useState([]);
   const [defectsOptions, setDefectsOptions] = useState([]);
-  const [filterActive ,setfilterActive] = useState(false);
+  const [filterActive, setfilterActive] = useState(false);
 
 
-  
 
-  const getMachines=()=>{
+
+  const getMachines = () => {
     const domain = `${baseURL}`;
     let url = `${domain}machine/?plant_name=${localPlantData.plant_name}`;
-    axios.get(url,{
-      headers:{
-        Authorization:`Bearer ${AuthToken}`
+    axios.get(url, {
+      headers: {
+        Authorization: `Bearer ${AuthToken}`
       }
     })
       .then(response => {
@@ -250,11 +254,11 @@ const Reports = () => {
       });
   }
 
-  const getDefects=()=>{
+  const getDefects = () => {
     let url = `${baseURL}defect/?plant_name=${localPlantData.plant_name}`;
-    axios.get(url,{
-      headers:{
-        Authorization:`Bearer ${AuthToken}`
+    axios.get(url, {
+      headers: {
+        Authorization: `Bearer ${AuthToken}`
       }
     })
       .then(response => {
@@ -270,12 +274,12 @@ const Reports = () => {
   }
 
   const [departmentOptions, setDepartmentOptions] = useState([]);
-  const getDepartments=()=>{
+  const getDepartments = () => {
     const domain = `${baseURL}`;
     let url = `${domain}department/?plant_name=${localPlantData.plant_name}`;
-    axios.get(url,{
-      headers:{
-        Authorization:`Bearer ${AuthToken}`
+    axios.get(url, {
+      headers: {
+        Authorization: `Bearer ${AuthToken}`
       }
     })
       .then(response => {
@@ -289,38 +293,38 @@ const Reports = () => {
         console.error('Error fetching machine data:', error);
       });
   }
-  
+
   // const initialDateRange = () => {
   //   const startDate = new Date();
   //   startDate.setDate(startDate.getDate() - 7); // 7 days ago
   //   const formattedStartDate = startDate.toISOString().slice(0, 10); // Format startDate as YYYY-MM-DD
-    
+
   //   const endDate = new Date(); // Today's date
   //   const formattedEndDate = endDate.toISOString().slice(0, 10); // Format endDate as YYYY-MM-DD
-    
+
   //   setDateRange([formattedStartDate, formattedEndDate]);
   // };
 
-  const initialTableData = (page,pageSize) => {
+  const initialTableData = (page, pageSize) => {
     // const domain = `http://143.110.184.45:8100/`;
     setLoader(true)
-   console.log(pageSize)
-   const url = `${baseURL}reports/?page=${page}&plant_id=${localPlantData.id}&page_size=${pageSize}`;
-    axios.get(url,{
-      headers:{
-        Authorization:`Bearer ${AuthToken}`
+    console.log(pageSize)
+    const url = `${baseURL}reports/?page=${page}&plant_id=${localPlantData.id}&page_size=${pageSize}`;
+    axios.get(url, {
+      headers: {
+        Authorization: `Bearer ${AuthToken}`
       }
     })
       .then(response => {
 
-const {results,total_count,page_size} = response.data
+        const { results, total_count, page_size } = response.data
 
         setTableData(results);
         setLoader(false)
         setPagination({
           ...pagination,
           current: 1,
-          pageSize:page_size,
+          pageSize: page_size,
           total: total_count,
         });
       })
@@ -328,37 +332,37 @@ const {results,total_count,page_size} = response.data
         console.error('Error:', error);
       });
   };
-  const prodApi = ()=>{
+  const prodApi = () => {
     const domain = `${baseURL}`;
     const url = `${domain}product/?plant_name=${localPlantData.plant_name}`;
-    axios.get(url,{
-      headers:{
-        Authorization:`Bearer ${AuthToken}`
+    axios.get(url, {
+      headers: {
+        Authorization: `Bearer ${AuthToken}`
       }
-    }).then((res)=>{
-   setProductOptions(res.data.results)
-    })  
-    .catch((err)=>{
-      console.log(err)
+    }).then((res) => {
+      setProductOptions(res.data.results)
     })
+      .catch((err) => {
+        console.log(err)
+      })
   }
-  
+
   useEffect(() => {
     getDepartments()
     getMachines();
     getDefects()
-    if(defectProp){
+    if (defectProp) {
       handleApplyFilters(pagination.current, pagination.pageSize)
-    }else{
+    } else {
       initialTableData(pagination.current, pagination.pageSize);
 
     }
     // initialDateRange()
-   prodApi()
-  }, []); 
+    prodApi()
+  }, []);
 
   const downloadExcel = () => {
-  
+
     // Convert JSON to Excel
     const ws = XLSX.utils.json_to_sheet(tableData);
     const wb = XLSX.utils.book_new();
@@ -392,41 +396,41 @@ const {results,total_count,page_size} = response.data
   const [notifications, setNotifications] = useState([]);
   const [isSocketConnected, setIsSocketConnected] = useState(false);
   const [prevNotificationLength, setPrevNotificationLength] = useState(0);
-  
+
 
   const handleTableChange = (pagination) => {
     console.log(pagination.pageSize)
-   setPagination({
-    ...pagination,
-    pageSize:pagination.pageSize
-   })
-if(filterActive){
-handleApplyFilters(pagination.current, pagination.pageSize)
-}
-else {
-  initialTableData(pagination.current, pagination.pageSize);
-}
+    setPagination({
+      ...pagination,
+      pageSize: pagination.pageSize
+    })
+    if (filterActive) {
+      handleApplyFilters(pagination.current, pagination.pageSize)
+    }
+    else {
+      initialTableData(pagination.current, pagination.pageSize);
+    }
 
   };
-  
+
   const initializeWebSocket = () => {
     const socket = new WebSocket(`wss://hul.aivolved.in/ws/notifications/`);
-  
+
     socket.onopen = () => {
       console.log("WebSocket connection established");
       setIsSocketConnected(true); // Update connection status
     };
-  
+
     socket.onmessage = (event) => {
       const message = JSON.parse(event.data);
       setNotifications(prevNotifications => {
         const newNotifications = [...prevNotifications, message.notification];
         // toast.error(message.notification); // Display toast notification
-        toast.error(message.notification, 
+        toast.error(message.notification,
           {
             position: "top-right",
             // autoClose: false,
-            autoClose:10000,
+            autoClose: 10000,
             hideProgressBar: false,
             closeOnClick: true,
             pauseOnHover: true,
@@ -435,160 +439,160 @@ else {
             theme: "colored",
             style: { whiteSpace: 'pre-line' },  // Added style for new line character
             // transition: Bounce,
-            }
+          }
         ); // Display toast notification with 5 seconds duration
         return newNotifications;
       });
     };
-  
+
     socket.onclose = () => {
       console.log("WebSocket connection closed");
       setIsSocketConnected(false); // Update connection status
     };
-  
+
     socket.onerror = (error) => {
       console.error("WebSocket error:", error);
       setIsSocketConnected(false); // Update connection status
     };
-  
+
     return () => {
       socket.close();
     };
   };
-  
+
   useEffect(() => {
     const cleanupWebSocket = initializeWebSocket();
     return cleanupWebSocket;
   }, []);
-  
+
   useEffect(() => {
     if (notifications.length > prevNotificationLength) {
       setPrevNotificationLength(notifications.length);
     }
   }, [notifications]);
-  
-const resetFilter = ()=>{
-  initialTableData(pagination.current,pagination.pageSize)
-  setfilterActive(false)
-  setselectedDefect(null)
-  setSelectedMachine(null)
-  setselectedProduct(null)
-  setSelectedDate(null)
-  setPagination({
-    ...pagination,
-    current: 1,
-  })
-}
 
-    return (
-      
-      <>
-       {/* <ToastContainer /> */}
-
-    
-    <div className="layout-content">
-      <div className="" style={{display:'flex',flexWrap:'wrap',gap:'1rem'}}>
-
-      <Select
-  style={{ minWidth: "200px", marginRight: "10px" }}
-  showSearch
-  placeholder="Select Machine"
-  value={selectedMachine} // Set default value to 1 if selectedMachine is null
-  onChange={handleMachineChange}
-  size="large"
-  filterOption={(input,machineOptions)=>
-
-    (machineOptions.children ?? "").toLowerCase().includes(input.toLowerCase())
+  const resetFilter = () => {
+    initialTableData(pagination.current, pagination.pageSize)
+    setfilterActive(false)
+    setselectedDefect(null)
+    setSelectedMachine(null)
+    setselectedProduct(null)
+    setSelectedDate(null)
+    setPagination({
+      ...pagination,
+      current: 1,
+    })
   }
->
-{machineOptions.map(machine => (
-    <Select.Option key={machine.id} value={machine.id}>{machine.name}</Select.Option>
-  ))}
-</Select>
 
-      <Select
-        style={{ minWidth: "200px", marginRight: "10px" }}
-        showSearch
-        placeholder="Select Product"
-        onChange={handleProductChange}
-        value={selectedProduct}
-        size="large"
-        filterOption={(input,productOptions)=>
-        // ( productOptions.children ?? "".toLowerCase() ).includes(input.toLowerCase() )
-       ( productOptions.children ?? "").toLowerCase().includes(input.toLowerCase())
+  return (
 
-        }
-      >
-        {productOptions.map(department => (
-          <Select.Option key={department.id} value={department.id}>{department.name}</Select.Option>
-        ))}
-      </Select>
-      <Select
-        style={{ minWidth: "200px", marginRight: "10px" }}
-        showSearch
-        placeholder="Select Defect"
-        onChange={handleDefectChange}
-        value={selectedDefect}
-        size="large"
-        filterOption={(input,defectsOptions)=>
-        // ( productOptions.children ?? "".toLowerCase() ).includes(input.toLowerCase() )
-       ( defectsOptions.children ?? "").toLowerCase().includes(input.toLowerCase())
+    <>
+      {/* <ToastContainer /> */}
 
-        }
-      >
-        {defectsOptions.map(department => (
-          <Select.Option key={department.id} value={department.id}>{department.name}</Select.Option>
-        ))}
-      </Select>
 
-      <RangePicker
-      // showTime
-          size="large"
-        style={{ marginRight: "10px" }}
-        onChange={handleDateRangeChange}
-          allowClear={false}
-          inputReadOnly={true}
-         value={selectedDate ? [dayjs(selectedDate[0],dateFormat),dayjs(selectedDate[1],dateFormat)]:[]}
-      />
-   
-      <Button type="primary" onClick={()=>handleApplyFilters(pagination.current, pagination.pageSize)} style={{fontSize:"1rem",backgroundColor:"#ec522d",marginRight:"10px"}}>Apply filters</Button>
-      {filterActive ? 
-      <Button type="primary" onClick={resetFilter} style={{fontSize:"1rem",backgroundColor:"#ec522d",marginRight:"10px"}}>Reset Filter</Button>
-      :null}
-      <Button type="primary" icon={<DownloadOutlined />} size='large' style={{fontSize:"1rem",backgroundColor:"#ec522d"}} onClick={downloadExcel}>
+      <div className="layout-content">
+        <div className="" style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
+
+          <Select
+            style={{ minWidth: "200px", marginRight: "10px" }}
+            showSearch
+            placeholder="Select Machine"
+            value={selectedMachine} // Set default value to 1 if selectedMachine is null
+            onChange={handleMachineChange}
+            size="large"
+            filterOption={(input, machineOptions) =>
+
+              (machineOptions.children ?? "").toLowerCase().includes(input.toLowerCase())
+            }
+          >
+            {machineOptions.map(machine => (
+              <Select.Option key={machine.id} value={machine.id}>{machine.name}</Select.Option>
+            ))}
+          </Select>
+
+          <Select
+            style={{ minWidth: "200px", marginRight: "10px" }}
+            showSearch
+            placeholder="Select Product"
+            onChange={handleProductChange}
+            value={selectedProduct}
+            size="large"
+            filterOption={(input, productOptions) =>
+              // ( productOptions.children ?? "".toLowerCase() ).includes(input.toLowerCase() )
+              (productOptions.children ?? "").toLowerCase().includes(input.toLowerCase())
+
+            }
+          >
+            {productOptions.map(department => (
+              <Select.Option key={department.id} value={department.id}>{department.name}</Select.Option>
+            ))}
+          </Select>
+          <Select
+            style={{ minWidth: "200px", marginRight: "10px" }}
+            showSearch
+            placeholder="Select Defect"
+            onChange={handleDefectChange}
+            value={selectedDefect}
+            size="large"
+            filterOption={(input, defectsOptions) =>
+              // ( productOptions.children ?? "".toLowerCase() ).includes(input.toLowerCase() )
+              (defectsOptions.children ?? "").toLowerCase().includes(input.toLowerCase())
+
+            }
+          >
+            {defectsOptions.map(department => (
+              <Select.Option key={department.id} value={department.id}>{department.name}</Select.Option>
+            ))}
+          </Select>
+
+          <RangePicker
+            // showTime
+            size="large"
+            style={{ marginRight: "10px" }}
+            onChange={handleDateRangeChange}
+            allowClear={false}
+            inputReadOnly={true}
+            value={selectedDate ? [dayjs(selectedDate[0], dateFormat), dayjs(selectedDate[1], dateFormat)] : []}
+          />
+
+          <Button type="primary" onClick={() => handleApplyFilters(pagination.current, pagination.pageSize)} style={{ fontSize: "1rem", backgroundColor: "#ec522d", marginRight: "10px" }}>Apply filters</Button>
+          {filterActive ?
+            <Button type="primary" onClick={resetFilter} style={{ fontSize: "1rem", backgroundColor: "#ec522d", marginRight: "10px" }}>Reset Filter</Button>
+            : null}
+          <Button type="primary" icon={<DownloadOutlined />} size='large' style={{ fontSize: "1rem", backgroundColor: "#ec522d" }} onClick={downloadExcel}>
             Download
           </Button>
+        </div>
+
+        {
+          loader ? <div className="" style={{ height: "60vh", width: "100%", display: "flex", justifyContent: "center", alignItems: "center", boxShadow: " rgba(0, 0, 0, 0.24) 0px 3px 8px", marginTop: '1rem', borderRadius: "10px" }}>
+            <Hourglass
+              visible={true}
+              height="40"
+              width="40"
+              ariaLabel="hourglass-loading"
+              wrapperStyle={{}}
+              wrapperClass=""
+              colors={[' #ec522d', '#ec522d']}
+            />
+          </div> :
+            <Table
+              columns={columns}
+              dataSource={tableData}
+              // pagination={{
+              //   position: ['topRight'],
+              //   currentPage:2,
+              //   showSizeChanger:true,
+              // }}
+              pagination={pagination}
+              locale={locale.Table}
+              style={{ margin: "1rem 0", fontSize: "1.5rem" }}
+              loading={loader}
+              onChange={handleTableChange}
+            />
+        }
+        {/* <Table columns={columns} dataSource={tableData}  style={{margin:"1rem 0",fontSize:"1.5rem"}}/> */}
       </div>
-          
-          {
-            loader ? <div className="" style={{height:"60vh",width:"100%",display:"flex",justifyContent:"center",alignItems:"center",boxShadow:" rgba(0, 0, 0, 0.24) 0px 3px 8px",marginTop:'1rem',borderRadius:"10px"}}>
-              <Hourglass
-  visible={true}
-  height="40"
-  width="40"
-  ariaLabel="hourglass-loading"
-  wrapperStyle={{}}
-  wrapperClass=""
-  colors={[' #ec522d', '#ec522d']}
-  />
-            </div> : 
-      <Table
-      columns={columns}
-      dataSource={tableData}
-      // pagination={{
-      //   position: ['topRight'],
-      //   currentPage:2,
-      //   showSizeChanger:true,
-      // }}
-      pagination={pagination}
-      locale={locale.Table }
-      style={{ margin: "1rem 0", fontSize: "1.5rem" }}
-      loading={loader}
-      onChange={handleTableChange}
-    />
-          }
-      {/* <Table columns={columns} dataSource={tableData}  style={{margin:"1rem 0",fontSize:"1.5rem"}}/> */}
-    </div>
     </>
   );
 };

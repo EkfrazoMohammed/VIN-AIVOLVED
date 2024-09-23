@@ -8,13 +8,13 @@ import { Hourglass } from 'react-loader-spinner'
 function StackChart({ data }) {
   const { Title } = Typography;
   const [defectColors, setDefectColors] = useState({});
-  
+
 
   useEffect(() => {
     // Fetch defect colors from the API
-    axios.get(`${baseURL}defect/`,{
+    axios.get(`${baseURL}defect/`, {
       headers: {
-        Authorization:`Bearer ${AuthToken}`
+        Authorization: `Bearer ${AuthToken}`
       }
     })
       .then(response => {
@@ -25,7 +25,7 @@ function StackChart({ data }) {
         });
         // Set the defect colors state
         setDefectColors(colors);
-      
+
       })
       .catch(error => {
         console.error('Error fetching defect colors:', error);
@@ -71,8 +71,8 @@ function StackChart({ data }) {
             fontSize: "14px",
             fontWeight: 600,
             colors: ["#8c8c8c"],
-            margin:"10px",
-  
+            margin: "10px",
+
           },
         },
       },
@@ -97,7 +97,7 @@ function StackChart({ data }) {
   };
 
   if (!data || Object.keys(data).length === 0) {
-    return <div style={{ fontWeight: "700", textAlign: 'center' ,display:'flex',justifyContent:'center',alignItems:'center',height:'300px'}}>NO DATA</div>; // or some other fallback UI
+    return <div style={{ fontWeight: "700", textAlign: 'center', display: 'flex', justifyContent: 'center', alignItems: 'center', height: '300px' }}>NO DATA</div>; // or some other fallback UI
   }
 
 
@@ -106,11 +106,11 @@ function StackChart({ data }) {
       <div>
         <Title level={5}>Bar Graph for Defects</Title>
       </div>
-      <ReactApexChart 
-        options={chartData.options} 
-        series={chartData.series} 
-        type="bar" 
-        height={350} 
+      <ReactApexChart
+        options={chartData.options}
+        series={chartData.series}
+        type="bar"
+        height={350}
       />
     </div>
   );

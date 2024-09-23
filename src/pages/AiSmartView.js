@@ -17,9 +17,9 @@ const AiSmartView = () => {
   const [defectImages, setDefectImages] = useState([]);
   const [defects, setDefects] = useState([]);
   const [selectedDefect, setSelectedDefect] = useState(null);
-  const [errorMessage, setErrorMessage] = useState(""); 
-  const [currentSlideIndex, setCurrentSlideIndex] = useState(0); 
-  const sliderRef = useRef(null); 
+  const [errorMessage, setErrorMessage] = useState("");
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+  const sliderRef = useRef(null);
   const [loader, setLoader] = useState(false);
   const [pagination, setPagination] = useState({
     currentPage: 1,
@@ -32,12 +32,12 @@ const AiSmartView = () => {
     axios.get(`${baseURL}defect/?plant_name=${localPlantData.plant_name}`, {
       headers: { Authorization: `Bearer ${AuthToken}` }
     })
-    .then(response => {
-      setDefects(response.data.results);
-    })
-    .catch(error => {
-      console.error("Error fetching defects:", error);
-    });
+      .then(response => {
+        setDefects(response.data.results);
+      })
+      .catch(error => {
+        console.error("Error fetching defects:", error);
+      });
   }, []);
 
   useEffect(() => {
@@ -65,26 +65,26 @@ const AiSmartView = () => {
           Authorization: `Bearer ${AuthToken}`
         }
       })
-      .then(response => {
-        if (response.data.results.length > 0) {
-          setErrorMessage("");
-          setDefectImages(response.data.results);
-          setPagination(prev => ({
-            ...prev,
-            pageSize: response.data.page_size,
-            totalPages: Math.ceil(response.data.total_count / response.data.page_size)
-          }));
-        } else {
-          setDefectImages([]);
-          setErrorMessage("NO DATA");
-        }
-        setLoader(false);
-      })
-      .catch(error => {
-        setLoader(false);
-        console.error("Error fetching defect images:", error);
-        setErrorMessage("No Images to display for this selected defect");
-      });
+        .then(response => {
+          if (response.data.results.length > 0) {
+            setErrorMessage("");
+            setDefectImages(response.data.results);
+            setPagination(prev => ({
+              ...prev,
+              pageSize: response.data.page_size,
+              totalPages: Math.ceil(response.data.total_count / response.data.page_size)
+            }));
+          } else {
+            setDefectImages([]);
+            setErrorMessage("NO DATA");
+          }
+          setLoader(false);
+        })
+        .catch(error => {
+          setLoader(false);
+          console.error("Error fetching defect images:", error);
+          setErrorMessage("No Images to display for this selected defect");
+        });
     } else {
       setDefectImages([]);
       setErrorMessage("");
@@ -136,10 +136,10 @@ const AiSmartView = () => {
     return nextFourIndexes.map((index) => (
       <div key={index} className="d-flex justify-content-center" style={{ alignItems: "center" }}>
         <LazyLoad height={80} offset={100}>
-             {/* GLOBAL  */}
-        <img src={`${defectImages[index].image}`} alt={`Defect ${index + 1}`} style={{ width: '80px', height: '80px',objectFit:"cover" ,margin: '5px' }} />
-        {/* LOCAL DASHBOARD */}
-        {/* <img src={`http://localhost:8000${defectImages[index].image}`} alt={`Defect ${index + 1}`} style={{ width: '80px', height: '80px',objectFit:"cover" ,margin: '5px' }} /> */}
+          {/* GLOBAL  */}
+          {/* <img src={`${defectImages[index].image}`} alt={`Defect ${index + 1}`} style={{ width: '80px', height: '80px',objectFit:"cover" ,margin: '5px' }} /> */}
+          {/* LOCAL DASHBOARD */}
+          <img src={`http://localhost:8000${defectImages[index].image}`} alt={`Defect ${index + 1}`} style={{ width: '80px', height: '80px', objectFit: "cover", margin: '5px' }} />
         </LazyLoad>
       </div>
     ));
@@ -162,7 +162,7 @@ const AiSmartView = () => {
           <Select.Option key={defects.id} value={defects.id}>{defects.name}</Select.Option>
         ))}
       </Select>
-      {loader ?  
+      {loader ?
         <div className="" style={{ height: "60vh", width: "100%", display: "flex", justifyContent: "center", alignItems: "center", boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px", marginTop: '1rem', borderRadius: "10px" }}>
           <Hourglass
             visible={true}
@@ -174,7 +174,7 @@ const AiSmartView = () => {
             colors={['#ec522d', '#ec522d']}
           />
         </div>
-        : 
+        :
         <>
           {errorMessage ? (
             <p style={{ textAlign: 'center', marginTop: '10vh', fontSize: '2.5rem', fontWeight: '500' }}>{errorMessage}</p>
@@ -193,8 +193,8 @@ const AiSmartView = () => {
                   {defectImages.map((imageData, index) => (
                     <div key={index} className="ai-view-image_container d-flex justify-content-center vh-100">
                       <LazyLoad height={200} offset={100}>
-              <img src={`${imageData.image}`} alt={`Defect ${index + 1}`} style={{ width: '100%', height: 'auto',margin:"0 auto",maxWidth:'500px' }} />
-              {/* <img src={`http://localhost:8000${imageData.image}`} alt={`Defect ${index + 1}`} style={{ width: '100%', height: '55vh',margin:"0 auto",maxWidth:'900px' }} /> */}
+                        {/* <img src={`${imageData.image}`} alt={`Defect ${index + 1}`} style={{ width: '100%', height: 'auto', margin: "0 auto", maxWidth: '500px' }} /> */}
+                        <img src={`http://localhost:8000${imageData.image}`} alt={`Defect ${index + 1}`} style={{ width: '100%', height: '55vh', margin: "0 auto", maxWidth: '900px' }} />
                       </LazyLoad>
                     </div>
                   ))}

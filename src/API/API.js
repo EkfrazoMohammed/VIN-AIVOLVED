@@ -6,13 +6,13 @@ import axios from "axios";
 
 
 
-const baseURL =  'http://localhost:8000/api/';
+const baseURL = 'http://localhost:8000/api/';
 
 const token = localStorage.getItem("token");
 const AuthToken = JSON.parse(token)
 const localItems = localStorage.getItem("PlantData")
-const localPlantData = JSON.parse(localItems) 
+const localPlantData = JSON.parse(localItems)
 const API = axios.create({
     baseURL,
 })
-export {baseURL,API,AuthToken,localPlantData}
+export { baseURL, API, AuthToken, localPlantData }
