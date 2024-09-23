@@ -19,8 +19,9 @@ import { baseURL } from "../../API/API";
 import dayjs from "dayjs";
 import RealTimeManufacturingSection from "./RealTimeManufacturingSection";
 import useApiInterceptor from "../../hooks/useInterceptor";
-import { encryptAES } from "../../redux/middleware/encryptPayloadUtils";
+import { decryptAES, encryptAES } from "../../redux/middleware/encryptPayloadUtils";
 import SelectComponent from "../common/Select";
+import { setSelectedShift } from "../../redux/slices/shiftSlice";
 
 const DashboardContentLayout = ({ children }) => {
   const apiCallInterceptor = useApiInterceptor();
@@ -32,9 +33,13 @@ const DashboardContentLayout = ({ children }) => {
   const dpmuChartData = useSelector((state) => state.dpmu.dpmuData)
   const productionVsDefectChartData = useSelector((state) => state.productVsDefect.productvsdefectData)
   const productsData = useSelector((state) => state.product.productsData)
+  const shiftData = useSelector((state) => state.shift.shiftData)
   const selectedMachineRedux = useSelector((state) => state.machine.selectedMachine);
   const selectedMachineDpmu = useSelector((state) => state.machine.selectedMachineDpmu);
+
   const selectedProductRedux = useSelector((state) => state.product.selectedProduct);
+  const selectedShiftRedux = useSelector((state) => state.shift.selectedShift)
+
   const tableDataRedux = useSelector((state) => state.dashboard.datesData);
   const tableDataReduxActive = useSelector((state) => state.dashboard.activeProducts)
   const [loading, setLoading] = useState(true);
@@ -69,6 +74,13 @@ const DashboardContentLayout = ({ children }) => {
     dispatch(setSelectedProduct(Number(value)));
     setFilterChanged(true)
   }
+
+  const handleShiftChange = (value) => {
+    setFilterActive(false)
+    console.log(value)
+    dispatch(setSelectedShift(value));
+    setFilterChanged(true)
+  }
   const handleDateRangeChange = (dates, dateStrings) => {
     if (Array.isArray(dateStrings) && dateStrings.length === 2) {
       setSelectedDate(dateStrings);
@@ -79,7 +91,11 @@ const DashboardContentLayout = ({ children }) => {
     }
   };
   useEffect(() => {
+    dispatch(setSelectedMachine(null));
+    dispatch(setSelectedProduct(null));
+    dispatch(setSelectedShift(null))
   }, [localPlantData])
+
   const resetFilter = () => {
     initialDashboardData(localPlantData.id, accessToken, apiCallInterceptor);
     initialDpmuData(localPlantData.id, accessToken, apiCallInterceptor);
@@ -87,6 +103,7 @@ const DashboardContentLayout = ({ children }) => {
 
     dispatch(setSelectedMachine(null));
     dispatch(setSelectedProduct(null));
+    dispatch(setSelectedShift(null))
     setSelectedDate(null);
     setFilterActive(false);
     setFilterChanged(false)
@@ -104,13 +121,16 @@ const DashboardContentLayout = ({ children }) => {
       machine_id: selectedMachineRedux,
       product_id: selectedProductRedux,
       defect_id: null,
+      shift: selectedShiftRedux
     };
+    console.log(queryParams)
     const filteredQueryParams = Object.fromEntries(
       Object.entries(queryParams).filter(
         ([_, value]) => value !== undefined && value !== null
       )
     );
 
+    console.log(filteredQueryParams)
 
     const encryptedUrl = Object.fromEntries(
       Object.entries(filteredQueryParams).map(([key, val]) => {
@@ -123,6 +143,10 @@ const DashboardContentLayout = ({ children }) => {
         return [key, val];
       })
     );
+
+
+    // const decrypt = decryptAES(selectedShiftRedux)
+    // console.log(decrypt, "decryptvalue")
 
     // Create the query string
     const queryString = new URLSearchParams(encryptedUrl).toString();
@@ -294,6 +318,7 @@ const DashboardContentLayout = ({ children }) => {
   const close = () => {
     //console.log("Notification was closed");
   };
+
   return (
     <>
       {children &&
@@ -309,7 +334,11 @@ const DashboardContentLayout = ({ children }) => {
                 <div className="inner-w">
                   <div className="flex flex-wrap items-start gap-2 mb-4">
                     <SelectComponent placeholder={"Select Machine"} selectedData={selectedMachineRedux} action={(val) => handleMachineChange(val)} data={machines} style={{ minWidth: "150px", zIndex: 1 }} size={"large"} />
+
                     <SelectComponent placeholder={"Select Products"} selectedData={selectedProductRedux} action={(val) => handleProductChange(val)} data={productsData} style={{ minWidth: "180px", zIndex: 1 }} size={"large"} />
+
+                    <SelectComponent placeholder={"Select Shift"} selectedData={selectedShiftRedux} action={(val) => handleShiftChange(val)} data={shiftData} valueType="name" style={{ minWidth: "180px", zIndex: 1 }} size={"large"} />
+
                     <RangePicker
                       className="dx-default-date-range"
                       size="large"

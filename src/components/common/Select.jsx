@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { Select } from 'antd'
 
-const SelectComponent = ({ placeholder, value, action, data, selectedData, style, size }) => {
+const SelectComponent = ({ placeholder, valueType, action, data, selectedData, style, size }) => {
 
     const [dropdownVisible, setDropdownVisible] = React.useState(false);
     const [initialScrollY, setInitialScrollY] = React.useState(0);
@@ -49,7 +49,7 @@ const SelectComponent = ({ placeholder, value, action, data, selectedData, style
             onDropdownVisibleChange={setDropdownVisible}
         >
             {data.map((prod) => (
-                <Select.Option key={prod.id} value={prod.id}>
+                <Select.Option key={prod.id} value={valueType === "name" ? prod.name : prod.id}>
                     {prod.name}
                 </Select.Option>
             ))}

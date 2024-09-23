@@ -10,6 +10,7 @@ import plantReducer from "./slices/plantSlice";
 import dashboardReducer from "./slices/dashboardSlice";
 import machineReducer from "./slices/machineSlice";
 import productReducer from "./slices/productSlice";
+import shiftReducer from "./slices/shiftSlice";
 import departmentReducer from "./slices/departmentSlice";
 import dpmuReducer from "./slices/dpmuSlice";
 import productVsDefectReducer from "./slices/productvsDefectSlice";
@@ -66,6 +67,11 @@ const productPersistConfig = {
   storage,
   transforms: [encryptor],
 };
+const shiftPersistConfig = {
+  key: "shift",
+  storage,
+  transforms: [encryptor],
+};
 
 const departmentPersistConfig = {
   key: "department",
@@ -114,6 +120,7 @@ const rootReducer = {
   dashboard: persistReducer(dashboardPersistConfig, dashboardReducer),
   machine: persistReducer(machinePersistConfig, machineReducer),
   product: persistReducer(productPersistConfig, productReducer),
+  shift: persistReducer(shiftPersistConfig, shiftReducer),
   department: persistReducer(departmentPersistConfig, departmentReducer),
   dpmu: persistReducer(dpmuPersistConfig, dpmuReducer),
   productVsDefect: persistReducer(

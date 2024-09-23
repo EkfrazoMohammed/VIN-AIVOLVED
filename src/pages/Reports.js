@@ -13,6 +13,7 @@ import {
   setSelectedDefect,
   setSelectedDefectReports,
 } from "../redux/slices/defectSlice"; // Import the actions
+
 import axios from "axios"
 import { getReportData, updatePage } from ".././redux/slices/reportSlice";
 import { setSelectedMachine } from "../redux/slices/machineSlice"
@@ -24,6 +25,10 @@ import { saveAs } from 'file-saver';
 import { Modal } from "antd";
 import SelectComponent from "../components/common/Select";
 import { current } from "@reduxjs/toolkit";
+
+import { setSelectedShift } from "../redux/slices/shiftSlice";
+
+
 const columns = [
   {
     title: "Product Name",
@@ -114,6 +119,21 @@ const columns = [
       );
     },
   },
+  {
+    title: "OCR",
+    dataIndex: "ocr",
+    key: "ocr",
+
+    render: (text) => {
+      const decrypData = decryptAES(text);
+      // const formattedDateTime = decrypData ? decrypData.replace("T", " ") : null;
+      return (
+        <>
+          {decrypData ? <div>{decrypData}</div> : null}
+        </>
+      );
+    },
+  },
 
   {
     title: "Image",
@@ -160,8 +180,11 @@ const Reports = () => {
   const machines = useSelector((state) => state.machine.machinesData)
   const defectsData = useSelector((state) => state.defect.defectsData)
   const productsData = useSelector((state) => state.product.productsData)
+  const shiftData = useSelector((state) => state.shift.shiftData)
+
   const selectedMachineRedux = useSelector((state) => state.machine.selectedMachine);
   const selectedProductRedux = useSelector((state) => state.product.selectedProduct);
+  const selectedShiftRedux = useSelector((state) => state.shift.selectedShift)
   // const selectedDefectRedux = useSelector((state) => state.defect.selectedDefect);
   const selectedDefectRedux = useSelector((state) => state.defect.selectedDefectReports);
   const [dropdownVisible, setDropdownVisible] = useState(true);
@@ -355,16 +378,18 @@ const Reports = () => {
     setfilterChanged(true)
   }
 
+  const handleShiftChange = (value) => {
+    dispatch(setSelectedShift(value));
+    setfilterChanged(true)
+  }
 
 
   const handleDateRangeChange = (dates, dateStrings) => {
-    //console.log(dates, dateStrings)
     if (dateStrings) {
       setSelectedDate(dateStrings);
       setDateRange(dateStrings);
       setfilterChanged(true)
     } else {
-      //console.error("Invalid date range:", dates, dateStrings);
     }
   };
 
@@ -378,6 +403,7 @@ const Reports = () => {
       machine_id: selectedMachineRedux || undefined,
       product_id: selectedProductRedux || undefined,
       defect_id: selectedDefectRedux,
+      shift: selectedShiftRedux
     };
 
     // Filter out undefined or null values from query parameters
@@ -629,6 +655,8 @@ const Reports = () => {
           <SelectComponent placeholder={"Select Machine"} action={(val) => handleMachineChange(val)} selectedData={selectedMachineRedux} data={machines} size={"large"} style={{ minWidth: "200px", marginRight: "10px" }} />
 
           <SelectComponent placeholder={"Select Defect"} action={(val) => handleDefectChange(val)} selectedData={selectedDefectRedux} data={defectsData} size={"large"} style={{ minWidth: "200px", marginRight: "10px" }} />
+
+          <SelectComponent placeholder={"Select Shift"} selectedData={selectedShiftRedux} action={(val) => handleShiftChange(val)} data={shiftData} valueType="name" style={{ minWidth: "180px", zIndex: 1 }} size={"large"} />
 
           {/* <Select
             style={{ minWidth: "200px", marginRight: "10px" }}

@@ -26,6 +26,7 @@ import { reportSignout } from "../../redux/slices/reportSlice";
 import { userSignOut } from "../../redux/slices/userSlice";
 import useApiInterceptor from "../../hooks/useInterceptor";
 import { encryptAES } from "../../redux/middleware/encryptPayloadUtils";
+import { setSelectedShift, ShiftSignout } from "../../redux/slices/shiftSlice";
 const linkStyle =
   "sidemenu-link h-[45px] no-underline flex justify-start items-center px-3 rounded-[3px] gap-2";
 
@@ -37,7 +38,6 @@ const SideMenu = () => {
   const navigate = useNavigate();
   const refreshToken = useSelector((state) => state.auth.authData[0].refreshToken);
   const role = useSelector(state => state.role.selectedRole)
-  console.log(role, "<rolesData")
 
   const isActive = (path) => {
     return location.pathname === path ||
@@ -86,6 +86,7 @@ const SideMenu = () => {
     dispatch(productVsDefectSignout());
     dispatch(reportSignout());
     dispatch(userSignOut());
+    dispatch(ShiftSignout())
   }
   const clearSessionandLocalStorage = () => {
     sessionStorage.removeItem("persist:auth");
@@ -99,6 +100,7 @@ const SideMenu = () => {
     sessionStorage.removeItem("persist:dpmu");
     sessionStorage.removeItem("persist:productVsDefect");
     sessionStorage.removeItem("persist:defect");
+    sessionStorage.removeItem("persist:shift");
   }
   const handleLogout = async () => {
     setModal1Open(false);
@@ -113,13 +115,12 @@ const SideMenu = () => {
 
 
   const handleClick = () => {
-
     dispatch(setSelectedMachine(null)); // Dispatching action    
     dispatch(setSelectedDefect(null)); // Dispatching action 
     dispatch(setSelectedProduct(null));
     dispatch(setSelectedDefectReports(null))
     dispatch(setSelectedMachineDpmu(null))
-
+    dispatch(setSelectedShift(null))
   }
 
   return (
