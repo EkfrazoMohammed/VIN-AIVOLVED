@@ -92,6 +92,7 @@ const DashboardContentLayout = ({ children }) => {
   useEffect(() => {
     dispatch(setSelectedMachine(null));
     dispatch(setSelectedProduct(null));
+    dispatch(setSelectedShift(null));
   }, [localPlantData])
 
   const resetFilter = () => {
@@ -121,7 +122,7 @@ const DashboardContentLayout = ({ children }) => {
       defect_id: null,
       shift: selectedShiftRedux
     };
-    console.log(queryParams)
+
     const filteredQueryParams = Object.fromEntries(
       Object.entries(queryParams).filter(
         ([_, value]) => value !== undefined && value !== null
@@ -142,8 +143,7 @@ const DashboardContentLayout = ({ children }) => {
     );
 
 
-    // const decrypt = decryptAES(selectedShiftRedux)
-    // console.log(decrypt, "decryptvalue")
+
 
     // Create the query string
     const queryString = new URLSearchParams(encryptedUrl).toString();
@@ -154,6 +154,7 @@ const DashboardContentLayout = ({ children }) => {
           Authorization: `Bearer ${accessToken}`, // Include authorization token
         },
       })
+
       .then((response) => {
         const { active_products, ...datesData } = response.data;
         dispatch(getDashboardSuccess({ datesData, activeProducts: active_products }))

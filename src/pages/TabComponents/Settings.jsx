@@ -307,7 +307,7 @@ const Settings = () => {
                   {error.employee_id ? <span style={{ fontWeight: '600', color: 'red' }}>{error.employee_id}</span> : ""}
                 </div>
                 <div className="">
-                  <Select
+                  {/* <Select
                     size='large'
                     style={{ minWidth: '100%' }}
                     placeholder="Select Role"
@@ -319,7 +319,7 @@ const Settings = () => {
                         {role.role_name}
                       </Select.Option>
                     ))}
-                  </Select>
+                  </Select> */}
                   {error.role_name && <span style={{ fontWeight: '600', color: 'red' }}>{error.role_name}</span>}
 
                 </div>
