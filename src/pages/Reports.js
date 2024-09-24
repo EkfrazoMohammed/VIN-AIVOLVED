@@ -248,7 +248,7 @@ const Reports = () => {
 
   const socketConnection = () => {
     // Create a new WebSocket connection
-    const socket = new WebSocket('wss://huldev.aivolved.in/ws/defect-image-streaming/');
+    const socket = new WebSocket('wss://hul.aivolved.in/ws/defect-image-streaming/');
 
     // Set WebSocket state
     setWs(socket);

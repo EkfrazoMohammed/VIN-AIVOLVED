@@ -86,7 +86,7 @@ const SideMenu = () => {
     dispatch(productVsDefectSignout());
     dispatch(reportSignout());
     dispatch(userSignOut());
-    dispatch(ShiftSignout())
+    // dispatch(ShiftSignout())
   }
   const clearSessionandLocalStorage = () => {
     sessionStorage.removeItem("persist:auth");
@@ -224,7 +224,7 @@ const SideMenu = () => {
             <li className="text-[13px] font-normal">
               <div className="mb-1 menu-category-name"> Organization</div>
               <ul className="text-[15px] font-normal">
-                <li className="menu-item">
+                {/* <li className="menu-item">
                   <Link
                     to="/location"
                     onClick={handleClick}
@@ -233,7 +233,7 @@ const SideMenu = () => {
                     <FaMapLocationDot />
                     Locations
                   </Link>
-                </li>
+                </li> */}
                 <li className="menu-item">
                   <Link
                     to="/plant"

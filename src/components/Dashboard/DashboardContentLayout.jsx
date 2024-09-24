@@ -33,7 +33,7 @@ const DashboardContentLayout = ({ children }) => {
   const dpmuChartData = useSelector((state) => state.dpmu.dpmuData)
   const productionVsDefectChartData = useSelector((state) => state.productVsDefect.productvsdefectData)
   const productsData = useSelector((state) => state.product.productsData)
-  const shiftData = useSelector((state) => state.shift.shiftData)
+  // const shiftData = useSelector((state) => state.shift.shiftData)
   const selectedMachineRedux = useSelector((state) => state.machine.selectedMachine);
   const selectedMachineDpmu = useSelector((state) => state.machine.selectedMachineDpmu);
 
@@ -56,6 +56,9 @@ const DashboardContentLayout = ({ children }) => {
     formattedEndDate,
   ]);
   const currentUrlPath = useLocation();
+
+  const shiftData =
+    [{ id: 1, name: "shift1" }, { id: 2, name: "shift2" }, { id: 3, name: "shift3" }]
 
   const handleMachineChange = (value) => {
     setFilterActive(false)
@@ -93,7 +96,6 @@ const DashboardContentLayout = ({ children }) => {
   useEffect(() => {
     dispatch(setSelectedMachine(null));
     dispatch(setSelectedProduct(null));
-    dispatch(setSelectedShift(null))
   }, [localPlantData])
 
   const resetFilter = () => {
@@ -130,7 +132,6 @@ const DashboardContentLayout = ({ children }) => {
       )
     );
 
-    console.log(filteredQueryParams)
 
     const encryptedUrl = Object.fromEntries(
       Object.entries(filteredQueryParams).map(([key, val]) => {
@@ -319,6 +320,7 @@ const DashboardContentLayout = ({ children }) => {
     //console.log("Notification was closed");
   };
 
+  console.log(shiftData, "<<<")
   return (
     <>
       {children &&
@@ -336,6 +338,7 @@ const DashboardContentLayout = ({ children }) => {
                     <SelectComponent placeholder={"Select Machine"} selectedData={selectedMachineRedux} action={(val) => handleMachineChange(val)} data={machines} style={{ minWidth: "150px", zIndex: 1 }} size={"large"} />
 
                     <SelectComponent placeholder={"Select Products"} selectedData={selectedProductRedux} action={(val) => handleProductChange(val)} data={productsData} style={{ minWidth: "180px", zIndex: 1 }} size={"large"} />
+
 
                     <SelectComponent placeholder={"Select Shift"} selectedData={selectedShiftRedux} action={(val) => handleShiftChange(val)} data={shiftData} valueType="name" style={{ minWidth: "180px", zIndex: 1 }} size={"large"} />
 
