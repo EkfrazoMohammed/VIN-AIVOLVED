@@ -779,7 +779,7 @@ const Reports = () => {
           >
             Download Excel
           </Button>
-          <Button
+          {/* <Button
             type="primary"
             icon={<DownloadOutlined />}
             size="large"
@@ -787,7 +787,7 @@ const Reports = () => {
             onClick={handleClickDownload}
           >
             Download Images
-          </Button>
+          </Button> */}
         </div>
 
         {loader ? (
