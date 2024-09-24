@@ -11,7 +11,7 @@ import { setSelectedProduct } from "../../redux/slices/productSlice"
 import { getDashboardSuccess, getDashboardFailure } from "../../redux/slices/dashboardSlice"
 import { Link, useLocation } from "react-router-dom";
 import axios from "axios";
-import { notification, Typography, DatePicker, Checkbox, Dropdown, Menu } from "antd";
+import { DatePicker, Checkbox, Dropdown, Menu } from "antd";
 import { VideoCameraOutlined, BugOutlined, AlertOutlined, NotificationOutlined } from "@ant-design/icons";
 import StackChart from "../../components/chart/StackChart";
 import PieChart from "../../components/chart/PieChart";
@@ -19,7 +19,7 @@ import { baseURL } from "../../API/API";
 import dayjs from "dayjs";
 import RealTimeManufacturingSection from "./RealTimeManufacturingSection";
 import useApiInterceptor from "../../hooks/useInterceptor";
-import { decryptAES, encryptAES } from "../../redux/middleware/encryptPayloadUtils";
+import { encryptAES } from "../../redux/middleware/encryptPayloadUtils";
 import SelectComponent from "../common/Select";
 import { setSelectedShift } from "../../redux/slices/shiftSlice";
 
@@ -33,7 +33,7 @@ const DashboardContentLayout = ({ children }) => {
   const dpmuChartData = useSelector((state) => state.dpmu.dpmuData)
   const productionVsDefectChartData = useSelector((state) => state.productVsDefect.productvsdefectData)
   const productsData = useSelector((state) => state.product.productsData)
-  // const shiftData = useSelector((state) => state.shift.shiftData)
+  const shiftDataRedux = useSelector((state) => state.shift.shiftData)
   const selectedMachineRedux = useSelector((state) => state.machine.selectedMachine);
   const selectedMachineDpmu = useSelector((state) => state.machine.selectedMachineDpmu);
 
@@ -56,10 +56,6 @@ const DashboardContentLayout = ({ children }) => {
     formattedEndDate,
   ]);
   const currentUrlPath = useLocation();
-
-  const shiftData =
-    [{ id: 1, name: "shift1" }, { id: 2, name: "shift2" }, { id: 3, name: "shift3" }]
-
   const handleMachineChange = (value) => {
     setFilterActive(false)
     dispatch(setSelectedMachine(Number(value)));
@@ -310,17 +306,6 @@ const DashboardContentLayout = ({ children }) => {
       </Menu.Item>
     </Menu>
   );
-  const [notifications, setNotifications] = useState([]);
-  const [isSocketConnected, setIsSocketConnected] = useState(false);
-  const [prevNotificationLength, setPrevNotificationLength] = useState(0);
-  const [api, contextHolder] = notification.useNotification();
-
-
-  const close = () => {
-    //console.log("Notification was closed");
-  };
-
-  console.log(shiftData, "<<<")
   return (
     <>
       {children &&
@@ -336,12 +321,8 @@ const DashboardContentLayout = ({ children }) => {
                 <div className="inner-w">
                   <div className="flex flex-wrap items-start gap-2 mb-4">
                     <SelectComponent placeholder={"Select Machine"} selectedData={selectedMachineRedux} action={(val) => handleMachineChange(val)} data={machines} style={{ minWidth: "150px", zIndex: 1 }} size={"large"} />
-
                     <SelectComponent placeholder={"Select Products"} selectedData={selectedProductRedux} action={(val) => handleProductChange(val)} data={productsData} style={{ minWidth: "180px", zIndex: 1 }} size={"large"} />
-
-
-                    <SelectComponent placeholder={"Select Shift"} selectedData={selectedShiftRedux} action={(val) => handleShiftChange(val)} data={shiftData} valueType="name" style={{ minWidth: "180px", zIndex: 1 }} size={"large"} />
-
+                    <SelectComponent placeholder={"Select Shift"} selectedData={selectedShiftRedux} action={(val) => handleShiftChange(val)} data={shiftDataRedux} valueType="name" style={{ minWidth: "180px", zIndex: 1 }} size={"large"} />
                     <RangePicker
                       className="dx-default-date-range"
                       size="large"
