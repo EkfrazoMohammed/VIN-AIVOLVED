@@ -1,6 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
-import storage from "redux-persist/lib/storage/session";
+// import storage from "redux-persist/lib/storage"; // For localStorage
+// import sessionStorage from "redux-persist/lib/storage/session"; // For sessionStorage
+import localStoragePersist from "redux-persist/lib/storage"; // For localStorage
+import sessionStoragePersist from "redux-persist/lib/storage/session"; // For sessionStorage
 import { encryptTransform } from "redux-persist-transform-encrypt";
 import authReducer from "./slices/authSlice";
 import userReducer from "./slices/userSlice";
@@ -23,112 +26,46 @@ const encryptor = encryptTransform({
   secretKey: process.env.REACT_APP_ENCRYPTION_KEY || "V!N_P0ND!", // Ensure secret key is set in .env
   onError: function (error) {
     // Handle the error
-    //console.error("Encryption error:", error);
+    console.error("Encryption error:", error);
   },
 });
 
+// Determine storage based on localStorage value
+// const savingStorage =
+//   localStorage.getItem("rememberMeClicked") === "true"
+//     ? storage
+//     : sessionStorage;
+// Function to get storage based on "rememberMeClicked" value
+const getStorage = () => {
+  return localStorage.getItem("rememberMeClicked") === "true"
+    ? localStoragePersist
+    : sessionStoragePersist;
+};
+
 // Persist Configurations for each slice
-const authPersistConfig = {
-  key: "auth",
-  storage,
+const createPersistConfig = (key) => ({
+  key,
+  storage: getStorage(), // Make sure to assign it correctly
   transforms: [encryptor],
-};
-const userPersistConfig = {
-  key: "user",
-  storage,
-  transforms: [encryptor],
-};
+});
 
-const rolePersistConfig = {
-  key: "role",
-  storage,
-  transforms: [encryptor],
-};
-
-const plantPersistConfig = {
-  key: "plant",
-  storage,
-  transforms: [encryptor],
-};
-
-const locationPersistConfig = {
-  key: "location",
-  storage,
-  transforms: [encryptor],
-};
-
-const machinePersistConfig = {
-  key: "machine",
-  storage,
-  transforms: [encryptor],
-};
-const productPersistConfig = {
-  key: "product",
-  storage,
-  transforms: [encryptor],
-};
-const shiftPersistConfig = {
-  key: "shift",
-  storage,
-  transforms: [encryptor],
-};
-
-const departmentPersistConfig = {
-  key: "department",
-  storage,
-  transforms: [encryptor],
-};
-const dpmuPersistConfig = {
-  key: "dpmu",
-  storage,
-  transforms: [encryptor],
-};
-const productVsDefectPersistConfig = {
-  key: "productVsDefect",
-  storage,
-  transforms: [encryptor],
-};
-const dashboardPersistConfig = {
-  key: "dashboard",
-  storage,
-  transforms: [encryptor],
-};
-const reportPersistConfig = {
-  key: "report",
-  storage,
-  transforms: [encryptor],
-};
-const defectPersistConfig = {
-  key: "defect",
-  storage,
-  transforms: [encryptor],
-};
-const aismartviewPersistConfig = {
-  key: "aismartview",
-  storage,
-  transforms: [encryptor],
-};
-
-// Combine reducers
+// Combine reducers with persist configurations
 const rootReducer = {
-  auth: persistReducer(authPersistConfig, authReducer),
-  user: persistReducer(userPersistConfig, userReducer),
-  role: persistReducer(rolePersistConfig, rolesReducer),
-  location: persistReducer(locationPersistConfig, locationReducer),
-  plant: persistReducer(plantPersistConfig, plantReducer),
-  report: persistReducer(reportPersistConfig, reportReducer),
-  dashboard: persistReducer(dashboardPersistConfig, dashboardReducer),
-  machine: persistReducer(machinePersistConfig, machineReducer),
-  product: persistReducer(productPersistConfig, productReducer),
-  shift: persistReducer(shiftPersistConfig, shiftReducer),
-  department: persistReducer(departmentPersistConfig, departmentReducer),
-  dpmu: persistReducer(dpmuPersistConfig, dpmuReducer),
-  productVsDefect: persistReducer(
-    productVsDefectPersistConfig,
-    productVsDefectReducer
-  ),
-  defect: persistReducer(defectPersistConfig, defectReducer),
-  aismartview: persistReducer(aismartviewPersistConfig, aismartviewReducer),
+  auth: persistReducer(createPersistConfig("auth"), authReducer),
+  user: persistReducer(createPersistConfig("user"), userReducer),
+  role: persistReducer(createPersistConfig("role"), rolesReducer),
+  location: persistReducer(createPersistConfig("location"), locationReducer),
+  plant: persistReducer(createPersistConfig("plant"), plantReducer),
+  report: persistReducer(createPersistConfig("report"), reportReducer),
+  dashboard: persistReducer(createPersistConfig("dashboard"), dashboardReducer),
+  machine: persistReducer(createPersistConfig("machine"), machineReducer),
+  product: persistReducer(createPersistConfig("product"), productReducer),
+  shift: persistReducer(createPersistConfig("shift"), shiftReducer),
+  department: persistReducer(createPersistConfig("department"), departmentReducer),
+  dpmu: persistReducer(createPersistConfig("dpmu"), dpmuReducer),
+  productVsDefect: persistReducer(createPersistConfig("productVsDefect"), productVsDefectReducer),
+  defect: persistReducer(createPersistConfig("defect"), defectReducer),
+  aismartview: persistReducer(createPersistConfig("aismartview"), aismartviewReducer),
 };
 
 // Configure the store

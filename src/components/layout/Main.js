@@ -13,7 +13,9 @@ function Main({ children }) {
   const plantName = localPlantData?.plant_name;
 let { pathname } = useLocation();
   pathname = pathname.replace("/", "");
+  const local=localStorage.getItem("rememberMeClicked"); // Set Remember Me immediately   
   useEffect(() => {
+    console.log(local)
   }, [pathname]);
 
   return (

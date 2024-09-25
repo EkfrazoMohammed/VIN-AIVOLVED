@@ -31,12 +31,7 @@ const Login = () => {
       duration: 2,
     });
   };
-
-
-
-
-
-
+const [saveUserLocal,setSaveUserLocal] = useState(false);
   const loginPost = async () => {
     setError({ UserError: "", PasswordError: "" });
     setLoading(true);
@@ -80,6 +75,10 @@ const Login = () => {
 
       const { access_token, refresh_token, user_id, is_superuser, first_name, last_name, user_name, message } = JSON.parse(decrypt);
       dispatch(signInSuccess({ accessToken: access_token, refreshToken: refresh_token }));
+   if(saveUserLocal){
+     localStorage.setItem("rememberMeClicked",saveUserLocal); // Set local Remember Me state
+   }
+   
       dispatch(userSignInSuccess({ userId: user_id, userName: user_name, firstName: first_name, lastName: last_name, isSuperUser: is_superuser }))
       openNotification("success", message);
       // if (is_superuser) {
@@ -87,6 +86,7 @@ const Login = () => {
       // } else {
       //   navigate("/plant");
       // }
+    
       navigate("/plant");
 
 
@@ -103,7 +103,9 @@ const Login = () => {
 
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
+
+
     setLoginPayload(prev => ({ ...prev, [name]: value }));
     // Clear error messages on input change
     if (name === "email_or_phone") {
@@ -112,6 +114,19 @@ const Login = () => {
     if (name === "password") {
       setError(prev => ({ ...prev, PasswordError: "" }));
     }
+  // Handle Remember Me checkbox
+ 
+    // Handle Remember Me checkbox
+    if (name === "rememberMe") {
+      if (checked) {
+        localStorage.setItem("rememberMeClicked", true); // Set Remember Me immediately
+        setSaveUserLocal(true);
+      } else {
+        localStorage.setItem("rememberMeClicked", false);
+        setSaveUserLocal(false);
+      }
+
+  }
   };
 
 
@@ -154,7 +169,7 @@ const Login = () => {
               {error.PasswordError && <span style={{ color: 'red', fontWeight: '700', fontSize: '0.8rem', marginLeft: '0.5rem' }}>{error.PasswordError}</span>}
             </div>
             <div style={{ display: 'flex', gap: '1rem' }}>
-              <Checkbox style={{ fontWeight: '700' }}>Remember Me</Checkbox>
+              <Checkbox style={{ fontWeight: '700' }}  onChange={handleChange} name="rememberMe">Remember Me</Checkbox>
             </div>
             <div>
               <button
