@@ -10,7 +10,7 @@ function MachineParam() {
   const [chartOptions, setChartOptions] = useState({});
   const [chartSeries, setChartSeries] = useState([]);
   const localItems = localStorage.getItem("PlantData")
-  const localPlantData = JSON.parse(localItems) 
+  const localPlantData = JSON.parse(localItems)
   useEffect(() => {
     const getData = async () => {
       try {
@@ -48,7 +48,7 @@ function MachineParam() {
     const categories = Object.keys(groupedData);
     const allParameters = new Set(totalData.map(item => item.parameter));
     // const seriesData = Array.from(allParameters).map(parameter => {
-       
+
     //   return {
     //     name: "DPMU",
     //     data: categories.map(date => groupedData[date][parameter] || 0),
@@ -87,7 +87,7 @@ function MachineParam() {
           }
         }
       },
-   
+
       legend: {
         position: 'bottom',
         offsetY: '0'
@@ -104,7 +104,7 @@ function MachineParam() {
     <div>
       <div>
         <h4>Real-Time Manufacturing DPMU
-</h4>
+        </h4>
       </div>
       <ReactApexChart
         options={chartOptions}
