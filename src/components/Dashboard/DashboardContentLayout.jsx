@@ -5,7 +5,7 @@ import TotalOverview from "./TotalOverview";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoMdArrowForward } from "react-icons/io";
 import { useSelector, useDispatch } from "react-redux";
-import { initialDashboardData, getMachines, getSystemStatus, getDepartments, initialDpmuData, initialProductionData, getProducts, getDefects, getRoles, dpmuFilterData } from "../../services/dashboardApi";
+import { initialDashboardData, getMachines, getSystemStatus, getDepartments, initialDpmuData, initialProductionData, getProducts, getDefects, getRoles, dpmuFilterData, dpmuFilterDate } from "../../services/dashboardApi";
 import { setSelectedMachine, setSelectedMachineDpmu } from "../../redux/slices/machineSlice"
 import { setSelectedProduct } from "../../redux/slices/productSlice"
 import { getDashboardSuccess, getDashboardFailure } from "../../redux/slices/dashboardSlice"
@@ -22,6 +22,8 @@ import useApiInterceptor from "../../hooks/useInterceptor";
 import { encryptAES } from "../../redux/middleware/encryptPayloadUtils";
 import SelectComponent from "../common/Select";
 import { setSelectedShift } from "../../redux/slices/shiftSlice";
+import { getProductVsDefectSuccess } from "../../redux/slices/productvsDefectSlice";
+import { getDpmuSuccess } from "../../redux/slices/dpmuSlice";
 
 const DashboardContentLayout = ({ children }) => {
   const apiCallInterceptor = useApiInterceptor();
@@ -98,8 +100,7 @@ const DashboardContentLayout = ({ children }) => {
   const resetFilter = () => {
     initialDashboardData(localPlantData.id, accessToken, apiCallInterceptor);
     initialDpmuData(localPlantData.id, accessToken, apiCallInterceptor);
-    initialProductionData(localPlantData.id, accessToken, apiCallInterceptor);
-
+    initialProductionData(localPlantData.id, accessToken, apiCallInterceptor)
     dispatch(setSelectedMachine(null));
     dispatch(setSelectedProduct(null));
     dispatch(setSelectedShift(null))
@@ -107,11 +108,70 @@ const DashboardContentLayout = ({ children }) => {
     setFilterActive(false);
     setFilterChanged(false)
   };
-  const resetFilterDpmu = () => {
-    initialDpmuData(localPlantData.id, accessToken, apiCallInterceptor);
+
+
+  // FILTER DATA FROM FRONTEND PARAMS GRAPH
+  const handelFilterProduction = () => {
+    dpmuFilterDate(localPlantData.id, apiCallInterceptor, dateRange)
   }
 
+
+  // FILTER DATA FROM BACKEND
+  // const handelFilterProduction = async () => {
+  //   try {
+  //     setLoading(true)
+  //     const [fromDate, toDate] = dateRange;
+  //     const queryParams = {
+  //       plant_id: localPlantData.id,
+  //       from_date: fromDate,
+  //       to_date: toDate,
+
+  //     };
+  //     const filteredQueryParams = Object.fromEntries(
+  //       Object.entries(queryParams).filter(
+  //         ([_, value]) => value !== undefined && value !== null
+  //       )
+  //     );
+  //     const encryptedUrl = Object.fromEntries(
+  //       Object.entries(filteredQueryParams).map(([key, val]) => {
+  //         if (key !== "page" && key !== "page_size") {
+  //           if (key === "from_date" || key === "to_date") {
+  //             return [key, encryptAES(val)];
+  //           }
+  //           return [key, encryptAES(JSON.stringify(val))];
+  //         }
+  //         return [key, val];
+  //       })
+  //     );
+  //     const queryString = new URLSearchParams(encryptedUrl).toString();
+
+  //     const defectUrl = `defct-vs-machine/?${queryString}`;
+  //     const ParamUrl = `params_graph/?${queryString}`;
+
+  //     const [defectResponse, paramResponse] = await Promise.all([
+  //       apiCallInterceptor.get(defectUrl),
+  //       apiCallInterceptor.get(ParamUrl)
+  //     ])
+
+  //     if (defectResponse && paramResponse) {
+  //       setLoading(false)
+  //     }
+
+  //     dispatch(getProductVsDefectSuccess(defectResponse.data.data_last_7_days));
+  //     dispatch(getDpmuSuccess(paramResponse.data.results));
+
+  //   } catch (error) {
+  //     console.log("Error:", error);
+  //     setLoading(false)
+  //   }
+  // }
+
+
   const handleApplyFilters = () => {
+
+    if (selectedDate && selectedDate !== null) {
+      handelFilterProduction()
+    }
     const [fromDate, toDate] = dateRange;
     const queryParams = {
       plant_id: localPlantData.id,
@@ -128,8 +188,6 @@ const DashboardContentLayout = ({ children }) => {
         ([_, value]) => value !== undefined && value !== null
       )
     );
-
-
     const encryptedUrl = Object.fromEntries(
       Object.entries(filteredQueryParams).map(([key, val]) => {
         if (key !== "page" && key !== "page_size") {
@@ -142,12 +200,9 @@ const DashboardContentLayout = ({ children }) => {
       })
     );
 
-
-
-
-    // Create the query string
     const queryString = new URLSearchParams(encryptedUrl).toString();
     const url = `dashboard/?${queryString}`;
+    setLoading(true)
     apiCallInterceptor
       .get(url, {
         headers: {
@@ -160,8 +215,10 @@ const DashboardContentLayout = ({ children }) => {
         dispatch(getDashboardSuccess({ datesData, activeProducts: active_products }))
         console.log(response.data)
         setFilterActive(true);
+        setLoading(false)
       })
       .catch((error) => {
+        setLoading(false)
         console.log("Error:", error);
       });
   };
@@ -224,6 +281,7 @@ const DashboardContentLayout = ({ children }) => {
   }, [tableDataRedux]);
 
   const [selectedCheckboxMachine, setSelectedCheckboxMachine] = useState([]);
+
   const handleMachineCheckBoxChange = (checkedValues) => {
     setSelectedCheckboxMachine(checkedValues);
     let url = `${baseURL}/reports?machine=`;
@@ -331,8 +389,14 @@ const DashboardContentLayout = ({ children }) => {
                       onChange={handleDateRangeChange}
                       allowClear={false}
                       inputReadOnly
-                      disabledDate={(current) => current && current.valueOf() > Date.now()}
-                      value={
+                      disabledDate={(current) => {
+                        const now = Date.now();
+                        const thirtyDaysAgo = new Date(now);
+                        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+
+                        return current && (current.valueOf() > now || current.valueOf() < thirtyDaysAgo);
+                      }} value={
                         selectedDate
                           ? [
                             dayjs(selectedDate[0], "YYYY/MM/DD"),
@@ -430,7 +494,6 @@ const DashboardContentLayout = ({ children }) => {
             machineChangeAction={(val) => handleMachineChangeDpmu(val)}
             plant_id={localPlantData.id}
             accessToken={accessToken}
-
           />
           <div className="production-defect-report-container flex">
             <ProductAndDefect loading={loading} chartData={productionVsDefectChartData} />
@@ -438,8 +501,8 @@ const DashboardContentLayout = ({ children }) => {
           <DefectsReport
             loading={loading}
             chartData={tableDataRedux}
-            chart1={<StackChart data={tableDataRedux} />}
-            chart2={<PieChart data={tableDataRedux} selectedDate={selectedDate} />}
+            chart1={<StackChart data={tableDataRedux} loading={loading} />}
+            chart2={<PieChart data={tableDataRedux} selectedDate={selectedDate} loading={loading} />}
           />
         </>
       )}

@@ -19,16 +19,20 @@ export default function RealTimeManufacturingSection({
   const apiCallInterceptor = useApiInterceptor();
   const [filterDpmu, setfilterDpmu] = useState(false);
   const dispatch = useDispatch()
+
+
   const data = {
-    labels: productionData.map((item) => item.date_time),
+    labels: productionData?.map((item) => item.date_time),
     datasets: [
       {
         label: "date_time",
-        data: productionData.map((item) => parseInt(item.defect_percentage, 10)),
+        data: productionData?.map((item) => parseInt(item.defect_percentage, 10)),
         backgroundColor: "#fae152",
       },
     ],
   };
+
+
 
   const options = {
     responsive: true,
@@ -54,7 +58,7 @@ export default function RealTimeManufacturingSection({
 
   const handleDpmuFilter = () => {
     setfilterDpmu(true)
-    dpmuFilterData(plant_id, accessToken, apiCallInterceptor, selectedMachineDpmu)
+    dpmuFilterData(accessToken, apiCallInterceptor, selectedMachineDpmu)
   }
 
   const resetFilterDpmu = () => {
@@ -67,13 +71,15 @@ export default function RealTimeManufacturingSection({
     dispatch(setSelectedMachineDpmu(null));
   }, [])
 
+
+
   return (
     <div className="py-4 px-0 ">
       <h1 className="section-title  text-red-700 mb-4">
         <span className="section-title-overlay font-bold" > Real-Time Manufacturing DPMU</span>
       </h1>
       <div className="flex mb-4">
-        <div className="flex-grow mr-4 min-w-52">
+        <div className="flex-grow mr-4 min-w-52 max-w-96">
           <div className="p-3  mb-2 border-2 rounded-md">
             <div className="flex justify-between items-center mb-2">
               <span className="text-lg font-semibold">Total Defects</span>
@@ -115,7 +121,7 @@ export default function RealTimeManufacturingSection({
         </div>
 
         <div className="flex-grow">
-          <div className="flex gap-3 py-3">
+          <div className="flex gap-3 py-3 ]">
 
             <SelectComponent placeholder={"Select Machine"} selectedData={selectedMachineDpmu} action={(val) =>
               machineChangeAction(val)} data={machines} style={{ minWidth: "150px", zIndex: 1 }} size={"large"} />
@@ -138,7 +144,11 @@ export default function RealTimeManufacturingSection({
                 : null
             }
           </div>
-          <Bar data={data} options={options} />
+          {
+            productionData?.length > 0 ?
+              <Bar data={data} options={options} /> :
+              <div className="flex justify-center items-center font-extrabold h-52 ">NO DATA</div>
+          }
         </div>
       </div>
     </div>

@@ -36,6 +36,7 @@ function StackChart({ data }) {
     }, {});
     setVisibleSeries(resetVisibility);
   }, [data]);
+  
   const fallbackColors = ["#FF5733", "#e31f09", "#3357FF"];
   const seriesData = defectNames
     .filter((defectName) => visibleSeries[defectName])
@@ -110,7 +111,7 @@ function StackChart({ data }) {
   };
 
   if (!data || Object.keys(data).length === 0) {
-    return <LoaderIcon text={"Loading..."} />;
+    return <div className="flex items-center justify-center w-full h-full font-bold ">NO DATA</div>;
   }
 
   return (

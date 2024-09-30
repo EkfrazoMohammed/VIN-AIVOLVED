@@ -3,9 +3,12 @@ import ReactApexChart from "react-apexcharts";
 import { Typography } from "antd";
 
 function ProductionVsReject({ data }) {
+
   const { Title } = Typography;
   if (!data || Object.keys(data).length === 0) {
-    return <div style={{ fontWeight: "700", textAlign: 'center', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>NO DATA</div>; // or some other fallback UI
+    return <div style={{ fontWeight: "700", textAlign: 'center', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      NO DATA
+    </div>;
   }
 
   const categories = data.map(item => item.date);
@@ -77,7 +80,6 @@ function ProductionVsReject({ data }) {
         type="bar"
         height={350}
         width={"100%"}
-
       />
     </div>
   );

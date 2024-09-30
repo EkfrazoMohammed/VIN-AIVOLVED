@@ -14,25 +14,26 @@ const ProductAndDefect = ({ chartData }) => {
   );
 
   const totalDefects = chartData.reduce(
-    (sum, item) => sum + Number(item.total_defects), 
+    (sum, item) => sum + Number(item.total_defects),
     0
   );
 
-  if (!chartData || Object.keys(chartData).length === 0) {
-    return (
-      <div
-        style={{
-          fontWeight: "700",
-          textAlign: "center",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        NO DATA
-      </div>
-    );
-  }
+  // if (!chartData || Object.keys(chartData).length === 0) {
+  //   return (
+  //     <div
+  //       style={{
+  //         fontWeight: "700",
+  //         textAlign: "center",
+  //         display: "flex",
+  //         justifyContent: "center",
+  //         alignItems: "center",
+  //       }}
+  //       className="w-full h-52"
+  //     >
+  //       NO DATA
+  //     </div>
+  //   );
+  // }
 
   const data = {
     labels: chartData.map((item) => item.date),
@@ -120,9 +121,13 @@ const ProductAndDefect = ({ chartData }) => {
             </span>
           </div>
         </div>
+
         <div className="w-10/12 h-full">
-          <Bar data={data} options={options} />
-        </div>
+          {
+            chartData?.length > 0 ?
+              <Bar data={data} options={options} /> :
+              <div className="flex justify-center items-center font-extrabold h-52 w-full ">NO DATA</div>
+          }        </div>
       </div>
     </div>
   );

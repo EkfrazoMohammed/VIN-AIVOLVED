@@ -55,7 +55,7 @@ const useApiInterceptor = () => {
                     const encryptedData = encryptAES(JSON.stringify({ refresh_token: refreshToken }));
 
                     try {
-                        const response = await axios.post('https://hul.aivolved.in/api/refresh_token/', {
+                        const response = await axios.post('https://huldev.aivolved.in/api/refresh_token/', {
                             data: encryptedData,
                         });
 

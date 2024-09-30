@@ -1,4 +1,4 @@
-const baseURL = process.env.REACT_APP_API_BASE_URL || "https://hul.aivolved.in/api/";
+const baseURL = process.env.REACT_APP_API_BASE_URL || "https://huldev.aivolved.in/api/";
 
 const getMachinesEndpoint = (plantName) => `${baseURL}machine/?plant_name=${encodeURIComponent(plantName)}`;
 const getProductsEndpoint = (plantName) => `${baseURL}product/?plant_name=${encodeURIComponent(plantName)}`;

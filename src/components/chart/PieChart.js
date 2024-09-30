@@ -7,7 +7,7 @@ import { setSelectedDefectReports } from "./../../redux/slices/defectSlice"
 import { updatePage } from "./../../redux/slices/reportSlice";
 import { useSelector, useDispatch } from "react-redux";
 
-function PieChart({ data, selectedDate }) {
+function PieChart({ data, selectedDate, loading }) {
   const accessToken = useSelector((state) => state.auth.authData[0].accessToken);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -26,6 +26,7 @@ function PieChart({ data, selectedDate }) {
   }, [accessToken]);
 
   useEffect(() => {
+
     if (!data || typeof data !== "object") return;
     const aggregatedData = Object.values(data).reduce((acc, defects) => {
       Object.entries(defects).forEach(([defect, count]) => {
@@ -43,8 +44,13 @@ function PieChart({ data, selectedDate }) {
     setChartData({ labels, series });
   }, [data]);
 
+  if (loading && Object.keys(data).length === 0) {
+    return <div className="flex items-center justify-center w-full h-full font-bold ">Loading...</div>;
+
+  }
+
   if (!data || Object.keys(data).length === 0) {
-    return <LoaderIcon text={"Loading..."} />;
+    return <div className="flex items-center justify-center w-full  font-extrabold h-52 ">NO DATA</div>;
   }
   if (!chartData || !chartData.labels || !chartData.series) {
     return <div>Loading chart...</div>;
@@ -58,6 +64,7 @@ function PieChart({ data, selectedDate }) {
             : "Pie Chart for Defects (7 days)"}
         </Title>
       </div>
+
       <ReactApexChart
         options={{
           chart: {
@@ -101,7 +108,7 @@ function PieChart({ data, selectedDate }) {
           dataLabels: {
             enabled: true,
             formatter: function (val) {
-              return val.toFixed(2) + "%"; 
+              return val.toFixed(2) + "%";
             },
 
             style: {
@@ -143,6 +150,7 @@ function PieChart({ data, selectedDate }) {
         type="pie"
         height={350}
       />
+
     </div>
   );
 }

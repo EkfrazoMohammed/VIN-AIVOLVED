@@ -49,7 +49,7 @@ import {
 } from "../redux/slices/dashboardSlice";
 
 export const baseURL =
-  process.env.REACT_APP_API_BASE_URL || "https://hul.aivolved.in/api/";
+  process.env.REACT_APP_API_BASE_URL || "https://huldev.aivolved.in/api/";
 
 export const getMachines = (plantName, token, apiCallInterceptor) => {
   let encryptedPlantName = encryptAES(plantName).replace(/^"|"$/g, "");
@@ -166,7 +166,15 @@ export const initialDpmuData = (plantId, token, apiCallInterceptor) => {
   apiCallInterceptor
     .get(url)
     .then((response) => {
-      store.dispatch(getDpmuSuccess(response.data.results));
+      const filteredProductionData = response.data.results?.filter((item) => {
+        const itemDate = new Date(item.date_time);
+        const currentDate = new Date();
+        const diffInTime = currentDate - itemDate;
+        const diffInDays = diffInTime / (1000 * 3600 * 24); // Convert time difference from milliseconds to days
+
+        return diffInDays <= 15; // Only include data from the last 30 days
+      });
+      store.dispatch(getDpmuSuccess(filteredProductionData));
     })
     .catch((error) => {
       //console.error("Error:", error);
@@ -174,27 +182,19 @@ export const initialDpmuData = (plantId, token, apiCallInterceptor) => {
     });
 };
 
-export const dpmuFilterData = (plantId, token, apiCallInterceptor, machineId) => {
-
-  const encryptedPlantId = encodeURIComponent(
-    encryptAES(JSON.stringify(plantId))
-  );
-  const encryptedMachineID = encodeURIComponent(
-    encryptAES(JSON.stringify(machineId))
-  );
-  console.log(encryptedMachineID, "<encryptedmachine")
-
-  const url = `params_graph/?plant_id=${encryptedPlantId}&machine_id=${encryptedMachineID}`;
-  apiCallInterceptor
-    .get(url)
+export const dpmuFilterData = (token, apiCallInterceptor, queryString) => {
+  const url = `params_graph/${queryString}`;
+  apiCallInterceptor.get(url)
     .then((response) => {
       store.dispatch(getDpmuSuccess(response.data.results));
     })
     .catch((error) => {
-      //console.error("Error:", error);
+      console.error("Error:", error);
       store.dispatch(getDpmuFailure());
     });
 };
+
+
 
 
 
@@ -293,5 +293,40 @@ export const initialDashboardData = (plantId, token, apiCallInterceptor) => {
     .catch((error) => {
       //console.error("Error fetching dashboard data:", error);
       store.dispatch(getDashboardFailure(error.message));
+    });
+};
+
+
+
+// FILTER DATA IN FRONTEND DPMU AS PER THE DATE
+
+
+export const dpmuFilterDate = (plantId, apiCallInterceptor, dateRange) => {
+  const encryptedPlantId = encodeURIComponent(
+    encryptAES(JSON.stringify(plantId))
+  );
+  const url = `params_graph/?plant_id=${encryptedPlantId}`;
+  apiCallInterceptor
+    .get(url)
+    .then((response) => {
+      const [fromDate, toDate] = dateRange;
+
+      // Convert 'fromDate' and 'toDate' into JavaScript Date objects
+      const from = new Date(fromDate);
+      const to = new Date(toDate);
+
+      // Filter the response data based on the date range
+      const filteredData = response.data.results.filter((item) => {
+        const itemDate = new Date(item.date_time); // Convert item date to Date object
+        return itemDate >= from && itemDate <= to; // Check if itemDate is within the range
+      });
+
+      // Log the filtered results
+      console.log('Filtered Data:', filteredData);
+      store.dispatch(getDpmuSuccess(filteredData));
+    })
+    .catch((error) => {
+      //console.error("Error:", error);
+      store.dispatch(getDpmuFailure());
     });
 };
