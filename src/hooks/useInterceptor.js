@@ -7,26 +7,52 @@ import axios from "axios";
 
 const useApiInterceptor = () => {
 
+
+    let isRefreshing = false;
+    let failedQueue = [];
+
+
+    const processQueue = async (error, token = null) => {
+        for (let request of failedQueue) {
+            if (error) {
+                request.reject(error);
+            } else {
+                request.resolve(token);
+            }
+        }
+        failedQueue = [];
+    };
+
     const dispatch = useDispatch();
     const refreshToken = useSelector((state) => state.auth.authData[0].refreshToken);
     const accessToken = useSelector((state) => state.auth.authData.access_token);
     const [refresh, setRefresh] = useState(false);
 
     useEffect(() => {
-
         const interceptor = ApiCall.interceptors.response.use(
             (response) => response,
-
             async (error) => {
                 const originalRequest = error.config;
 
                 if (error.response.status === 401 && !originalRequest._retry) {
+                    if (isRefreshing) {
 
-                    if (!refresh) {
-                        originalRequest._retry = true;
-                        setRefresh(true);
+                        return new Promise((resolve, reject) => {
+                            failedQueue.push({ resolve, reject });
+                        })
+                            .then((token) => {
+                                originalRequest.headers['Authorization'] = `Bearer ${token}`;
+                                return ApiCall(originalRequest);
+                            })
+                            .catch((err) => {
+                                return Promise.reject(err);
+                            });
                     }
-                    const encryptedData = encryptAES(JSON.stringify({ refresh_token: refreshToken }))
+
+                    originalRequest._retry = true;
+                    setRefresh(true);
+                    isRefreshing = true;
+                    const encryptedData = encryptAES(JSON.stringify({ refresh_token: refreshToken }));
 
                     try {
                         const response = await axios.post('https://hul.aivolved.in/api/refresh_token/', {
@@ -35,22 +61,20 @@ const useApiInterceptor = () => {
 
                         const { access_token } = response.data;
 
-                        // Update the tokens in Redux state
-                        // { access_token, refresh_token, user }
-                        // dispatch(setAuthData({ access_token: access, refresh_token: refreshToken }));
+                        dispatch(signInSuccess({ accessToken: access_token, refreshToken }));
 
-                        dispatch(signInSuccess({ accessToken: access_token, refreshToken: refreshToken }));
-
-                        // Update the Authorization header for future requests
                         ApiCall.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
                         originalRequest.headers['Authorization'] = `Bearer ${access_token}`;
 
+                        processQueue(null, access_token);
+
                         return ApiCall(originalRequest);
                     } catch (refreshError) {
-                        //console.error("Error in Refreshing Token:", refreshError);
+                        processQueue(refreshError, null);
                         return Promise.reject(refreshError);
                     } finally {
                         setRefresh(false);
+                        isRefreshing = false;
                     }
                 }
 
@@ -61,7 +85,6 @@ const useApiInterceptor = () => {
         return () => {
             ApiCall.interceptors.response.eject(interceptor);
         };
-
     }, [refreshToken, accessToken, refresh, dispatch]);
 
     return ApiCall;
