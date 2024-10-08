@@ -49,7 +49,7 @@ import {
 } from "../redux/slices/dashboardSlice";
 
 export const baseURL =
-  process.env.REACT_APP_API_BASE_URL || "https://huldev.aivolved.in/api/";
+  process.env.REACT_APP_API_BASE_URL || "https://hul.aivolved.in/api/";
 
 export const getMachines = (plantName, token, apiCallInterceptor) => {
   let encryptedPlantName = encryptAES(plantName).replace(/^"|"$/g, "");
@@ -182,11 +182,35 @@ export const initialDpmuData = (plantId, token, apiCallInterceptor) => {
     });
 };
 
-export const dpmuFilterData = (token, apiCallInterceptor, queryString) => {
-  const url = `params_graph/${queryString}`;
+export const dpmuFilterData = (apiCallInterceptor, machineId, plantId, dateRange, selectedDate) => {
+  const encrypt = encryptAES(JSON.stringify(machineId));
+  const encryptedPlantId = encodeURIComponent(
+    encryptAES(JSON.stringify(plantId))
+  );
+  let url;
+  if (machineId && machineId !== null) {
+    url = `params_graph/?plant_id=${encryptedPlantId}&machine_id=${encrypt}`;
+  }
+  else {
+    url = `params_graph/?plant_id=${encryptedPlantId}`;
+
+  }
   apiCallInterceptor.get(url)
     .then((response) => {
-      store.dispatch(getDpmuSuccess(response.data.results));
+      if (!selectedDate) {
+        store.dispatch(getDpmuSuccess(response.data.results));
+      }
+      else {
+        const [fromDate, toDate] = dateRange;
+        const from = new Date(fromDate);
+        const to = new Date(toDate);
+
+        const filteredData = response.data.results.filter((item) => {
+          const itemDate = new Date(item.date_time); // Convert item date to Date object
+          return itemDate >= from && itemDate <= to; // Check if itemDate is within the range
+        });
+        store.dispatch(getDpmuSuccess(filteredData));
+      }
     })
     .catch((error) => {
       console.error("Error:", error);
@@ -301,32 +325,52 @@ export const initialDashboardData = (plantId, token, apiCallInterceptor) => {
 // FILTER DATA IN FRONTEND DPMU AS PER THE DATE
 
 
-export const dpmuFilterDate = (plantId, apiCallInterceptor, dateRange) => {
-  const encryptedPlantId = encodeURIComponent(
-    encryptAES(JSON.stringify(plantId))
-  );
-  const url = `params_graph/?plant_id=${encryptedPlantId}`;
-  apiCallInterceptor
-    .get(url)
-    .then((response) => {
-      const [fromDate, toDate] = dateRange;
+// export const dpmuFilterDate = (plantId, apiCallInterceptor, dateRange) => {
+//   const encryptedPlantId = encodeURIComponent(
+//     encryptAES(JSON.stringify(plantId))
+//   );
+//   const url = `params_graph/?plant_id=${encryptedPlantId}`;
+//   apiCallInterceptor
+//     .get(url)
+//     .then((response) => {
+//       const [fromDate, toDate] = dateRange;
 
-      // Convert 'fromDate' and 'toDate' into JavaScript Date objects
-      const from = new Date(fromDate);
-      const to = new Date(toDate);
+//       // Convert 'fromDate' and 'toDate' into JavaScript Date objects
+//       const from = new Date(fromDate);
+//       const to = new Date(toDate);
 
-      // Filter the response data based on the date range
-      const filteredData = response.data.results.filter((item) => {
-        const itemDate = new Date(item.date_time); // Convert item date to Date object
-        return itemDate >= from && itemDate <= to; // Check if itemDate is within the range
-      });
+//       // Filter the response data based on the date range
+//       const filteredData = response.data.results.filter((item) => {
+//         const itemDate = new Date(item.date_time); // Convert item date to Date object
+//         return itemDate >= from && itemDate <= to; // Check if itemDate is within the range
+//       });
 
-      // Log the filtered results
-      console.log('Filtered Data:', filteredData);
-      store.dispatch(getDpmuSuccess(filteredData));
-    })
-    .catch((error) => {
-      //console.error("Error:", error);
-      store.dispatch(getDpmuFailure());
+//       // Log the filtered results
+//       console.log('Filtered Data:', filteredData);
+//       store.dispatch(getDpmuSuccess(filteredData));
+//     })
+//     .catch((error) => {
+//       //console.error("Error:", error);
+//       store.dispatch(getDpmuFailure());
+//     });
+// };
+
+export const dpmuFilterDate = async (DpmuData, dateRange) => {
+  try {
+    const [fromDate, toDate] = dateRange;
+    const from = new Date(fromDate);
+    const to = new Date(toDate);
+
+
+    const filteredData = DpmuData.filter((item) => {
+      const itemDate = new Date(item.date_time); // Convert item date to Date object
+      return itemDate >= from && itemDate <= to; // Check if itemDate is within the range
     });
-};
+
+    // Log the filtered results
+    console.log('Filtered Data:', filteredData);
+    store.dispatch(getDpmuSuccess(filteredData));
+  } catch (error) {
+
+  }
+}

@@ -24,6 +24,7 @@ import SelectComponent from "../common/Select";
 import { setSelectedShift } from "../../redux/slices/shiftSlice";
 import { getProductVsDefectSuccess } from "../../redux/slices/productvsDefectSlice";
 import { getDpmuSuccess } from "../../redux/slices/dpmuSlice";
+import DropdownComponent from "../common/DropdownComponent";
 
 const DashboardContentLayout = ({ children }) => {
   const apiCallInterceptor = useApiInterceptor();
@@ -60,6 +61,10 @@ const DashboardContentLayout = ({ children }) => {
   const currentUrlPath = useLocation();
   const handleMachineChange = (value) => {
     setFilterActive(false)
+
+    if (!value) {
+      return dispatch(setSelectedMachine(null))
+    }
     dispatch(setSelectedMachine(Number(value)));
     setFilterChanged(true)
   };
@@ -72,13 +77,18 @@ const DashboardContentLayout = ({ children }) => {
 
   const handleProductChange = (value) => {
     setFilterActive(false)
+    if (!value) {
+      return dispatch(setSelectedProduct(null))
+    }
     dispatch(setSelectedProduct(Number(value)));
     setFilterChanged(true)
   }
 
   const handleShiftChange = (value) => {
     setFilterActive(false)
-    console.log(value)
+    if (!value) {
+      return dispatch(setSelectedShift(null))
+    }
     dispatch(setSelectedShift(value));
     setFilterChanged(true)
   }
@@ -92,15 +102,14 @@ const DashboardContentLayout = ({ children }) => {
     }
   };
   useEffect(() => {
-    dispatch(setSelectedMachine(null));
-    dispatch(setSelectedProduct(null));
-    dispatch(setSelectedShift(null));
+    resetFilter()
   }, [localPlantData])
 
   const resetFilter = () => {
     initialDashboardData(localPlantData.id, accessToken, apiCallInterceptor);
     initialDpmuData(localPlantData.id, accessToken, apiCallInterceptor);
     initialProductionData(localPlantData.id, accessToken, apiCallInterceptor)
+    initialDateRange();
     dispatch(setSelectedMachine(null));
     dispatch(setSelectedProduct(null));
     dispatch(setSelectedShift(null))
@@ -110,69 +119,75 @@ const DashboardContentLayout = ({ children }) => {
   };
 
 
-  // FILTER DATA FROM FRONTEND PARAMS GRAPH
-  const handelFilterProduction = () => {
-    dpmuFilterDate(localPlantData.id, apiCallInterceptor, dateRange)
-  }
+
 
 
   // FILTER DATA FROM BACKEND
-  // const handelFilterProduction = async () => {
-  //   try {
-  //     setLoading(true)
-  //     const [fromDate, toDate] = dateRange;
-  //     const queryParams = {
-  //       plant_id: localPlantData.id,
-  //       from_date: fromDate,
-  //       to_date: toDate,
+  const handelFilterProduction = async () => {
+    try {
+      dpmuFilterData(apiCallInterceptor, selectedMachineRedux, localPlantData.id, dateRange, selectedDate)
+      setLoading(true)
+      const [fromDate, toDate] = dateRange;
+      const queryParams = {
+        plant_id: localPlantData.id,
+        from_date: fromDate,
+        to_date: toDate,
+        machine_id: selectedMachineRedux
+      };
+      const filteredQueryParams = Object.fromEntries(
+        Object.entries(queryParams).filter(
+          ([_, value]) => value !== undefined && value !== null
+        )
+      );
+      const encryptedUrl = Object.fromEntries(
+        Object.entries(filteredQueryParams).map(([key, val]) => {
+          if (key !== "page" && key !== "page_size") {
+            if (key === "from_date" || key === "to_date") {
+              return [key, encryptAES(val)];
+            }
+            return [key, encryptAES(JSON.stringify(val))];
+          }
+          return [key, val];
+        })
+      );
+      const queryString = new URLSearchParams(encryptedUrl).toString();
 
-  //     };
-  //     const filteredQueryParams = Object.fromEntries(
-  //       Object.entries(queryParams).filter(
-  //         ([_, value]) => value !== undefined && value !== null
-  //       )
-  //     );
-  //     const encryptedUrl = Object.fromEntries(
-  //       Object.entries(filteredQueryParams).map(([key, val]) => {
-  //         if (key !== "page" && key !== "page_size") {
-  //           if (key === "from_date" || key === "to_date") {
-  //             return [key, encryptAES(val)];
-  //           }
-  //           return [key, encryptAES(JSON.stringify(val))];
-  //         }
-  //         return [key, val];
-  //       })
-  //     );
-  //     const queryString = new URLSearchParams(encryptedUrl).toString();
+      const defectUrl = `defct-vs-machine/?${queryString}`;
+      // const ParamUrl = `params_graph/?${queryString}`;
 
-  //     const defectUrl = `defct-vs-machine/?${queryString}`;
-  //     const ParamUrl = `params_graph/?${queryString}`;
+      const [defectResponse, paramResponse] = await Promise.all([
+        apiCallInterceptor.get(defectUrl),
+        // apiCallInterceptor.get(ParamUrl)
+      ])
 
-  //     const [defectResponse, paramResponse] = await Promise.all([
-  //       apiCallInterceptor.get(defectUrl),
-  //       apiCallInterceptor.get(ParamUrl)
-  //     ])
+      if (defectResponse) {
+        setLoading(false)
+      }
 
-  //     if (defectResponse && paramResponse) {
-  //       setLoading(false)
-  //     }
+      dispatch(getProductVsDefectSuccess(defectResponse.data.data_last_7_days));
+      // dispatch(getDpmuSuccess(paramResponse.data.results));
 
-  //     dispatch(getProductVsDefectSuccess(defectResponse.data.data_last_7_days));
-  //     dispatch(getDpmuSuccess(paramResponse.data.results));
-
-  //   } catch (error) {
-  //     console.log("Error:", error);
-  //     setLoading(false)
-  //   }
-  // }
+    } catch (error) {
+      console.log("Error:", error);
+      setLoading(false)
+    }
+  }
 
 
   const handleApplyFilters = () => {
 
-    if (selectedDate && selectedDate !== null) {
-      handelFilterProduction()
+    if (!selectedMachineRedux) {
+      initialDpmuData(localPlantData.id, accessToken, apiCallInterceptor);
+      initialProductionData(localPlantData.id, accessToken, apiCallInterceptor)
+      setFilterActive(false)
     }
+
+    if (selectedDate || selectedMachineRedux) {
+      handelFilterProduction();
+    }
+
     const [fromDate, toDate] = dateRange;
+
     const queryParams = {
       plant_id: localPlantData.id,
       from_date: fromDate,
@@ -259,6 +274,7 @@ const DashboardContentLayout = ({ children }) => {
     const formattedEndDate = endDate.toISOString().slice(0, 10); // Format endDate as YYYY-MM-DD
     setDateRange([formattedStartDate, formattedEndDate]);
   };
+
   const { RangePicker } = DatePicker;
   const [categoryDefects, setCategoryDefects] = useState([]);
   const categorizeDefects = (data) => {
@@ -379,9 +395,13 @@ const DashboardContentLayout = ({ children }) => {
               <div className="filter-lg-w">
                 <div className="inner-w">
                   <div className="flex flex-wrap items-start gap-2 mb-4">
-                    <SelectComponent placeholder={"Select Machine"} selectedData={selectedMachineRedux} action={(val) => handleMachineChange(val)} data={machines} style={{ minWidth: "150px", zIndex: 1 }} size={"large"} />
-                    <SelectComponent placeholder={"Select Products"} selectedData={selectedProductRedux} action={(val) => handleProductChange(val)} data={productsData} style={{ minWidth: "180px", zIndex: 1 }} size={"large"} />
-                    <SelectComponent placeholder={"Select Shift"} selectedData={selectedShiftRedux} action={(val) => handleShiftChange(val)} data={shiftDataRedux} valueType="name" style={{ minWidth: "180px", zIndex: 1 }} size={"large"} />
+
+                    <SelectComponent placeholder={"Select Machine"} selectedData={selectedMachineRedux} setSelectedData={setSelectedMachine} action={(val) => handleMachineChange(val)} data={machines} style={{ minWidth: "150px", zIndex: 1 }} size={"large"} />
+
+                    <SelectComponent placeholder={"Select Products"} selectedData={selectedProductRedux} setSelectedData={setSelectedProduct} action={(val) => handleProductChange(val)} data={productsData} style={{ minWidth: "180px", zIndex: 1 }} size={"large"} />
+
+                    <SelectComponent placeholder={"Select Shift"} selectedData={selectedShiftRedux} setSelectedData={setSelectedShift} action={(val) => handleShiftChange(val)} data={shiftDataRedux} valueType="name" style={{ minWidth: "180px", zIndex: 1 }} size={"large"} />
+
                     <RangePicker
                       className="dx-default-date-range"
                       size="large"
@@ -393,7 +413,6 @@ const DashboardContentLayout = ({ children }) => {
                         const now = Date.now();
                         const thirtyDaysAgo = new Date(now);
                         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
 
                         return current && (current.valueOf() > now || current.valueOf() < thirtyDaysAgo);
                       }} value={
@@ -429,42 +448,23 @@ const DashboardContentLayout = ({ children }) => {
                         <span>Active Machines</span>
                         <VideoCameraOutlined />
                       </div>
-                      <Dropdown overlay={menu} trigger={["click"]} className=" text-[35px] text-gray-500 font-semibold bg-gray-200 p-3">
-                        <div className="number" style={{ cursor: "pointer" }}>
-                          <div className=" flex items-center justify-between">
-                            {activeMachines.length}
-                            <IoIosArrowDown className="text-[18px]" />
-                          </div>
-                        </div>
-                      </Dropdown>
+
+                      <DropdownComponent menu={menu} data={activeMachines} />
                     </div>
                     <div className="bg-gray-100 rounded-xl text-left flex flex-col">
                       <div className="flex justify-between items-center p-3 flex-1 text-lg w-full gap-3">
                         <span>Defect Classification</span>
                         <BugOutlined />
                       </div>
-                      <Dropdown overlay={defectMenu} trigger={["click"]} className="text-[35px] text-gray-500 font-semibold bg-gray-200 p-3">
-                        <div className="number" style={{ cursor: "pointer" }}>
-                          <div className="flex items-center justify-between">
-                            {Object.keys(categoryDefects).length}
-                            <IoIosArrowDown className="text-[18px]" />
-                          </div>
-                        </div>
-                      </Dropdown>
+                      <DropdownComponent menu={defectMenu} data={categoryDefects} />
                     </div>
                     <div className="bg-gray-100 rounded-xl text-left flex flex-col">
                       <div className="flex justify-between items-center p-3 flex-1 text-lg w-full gap-3">
                         <span>No. of SKU</span>
                         <AlertOutlined />
                       </div>
-                      <Dropdown overlay={prodMenu} trigger={["click"]} className="text-[35px] text-gray-500 font-semibold bg-gray-200 p-3">
-                        <div className="number cursor-pointer">
-                          <div className="flex items-center justify-between">
-                            {Object.keys(tableDataReduxActive).length}
-                            <IoIosArrowDown className="text-[18px]" />
-                          </div>
-                        </div>
-                      </Dropdown>
+
+                      <DropdownComponent menu={prodMenu} data={tableDataReduxActive} />
                     </div>
                     <Link
                       to="/insights"

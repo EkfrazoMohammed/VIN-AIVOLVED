@@ -16,8 +16,7 @@ export default function RealTimeManufacturingSection({
   plant_id,
 }) {
 
-  const apiCallInterceptor = useApiInterceptor();
-  const [filterDpmu, setfilterDpmu] = useState(false);
+
   const dispatch = useDispatch()
 
 
@@ -56,21 +55,11 @@ export default function RealTimeManufacturingSection({
     },
   };
 
-  const handleDpmuFilter = () => {
-    setfilterDpmu(true)
-    dpmuFilterData(accessToken, apiCallInterceptor, selectedMachineDpmu)
-  }
 
-  const resetFilterDpmu = () => {
-    setfilterDpmu(false)
-    initialDpmuData(plant_id, accessToken, apiCallInterceptor);
-    dispatch(setSelectedMachineDpmu(null));
-  }
 
   useEffect(() => {
     dispatch(setSelectedMachineDpmu(null));
   }, [])
-
 
 
   return (
@@ -120,34 +109,11 @@ export default function RealTimeManufacturingSection({
           </div>
         </div>
 
-        <div className="flex-grow">
-          <div className="flex gap-3 py-3 ]">
-
-            <SelectComponent placeholder={"Select Machine"} selectedData={selectedMachineDpmu} action={(val) =>
-              machineChangeAction(val)} data={machines} style={{ minWidth: "150px", zIndex: 1 }} size={"large"} />
-            <div
-              type="primary"
-              onClick={handleDpmuFilter}
-              className=" bg-red-500 text-white rounded flex items-center justify-center py-2 px-3 cursor-pointer font-bold"
-            >
-              Apply filters
-            </div>
-            {
-              filterDpmu ?
-                <div
-                  type="primary"
-                  onClick={resetFilterDpmu}
-                  className=" bg-red-500 text-white rounded flex items-center justify-center py-2 px-3 cursor-pointer font-bold"
-                >
-                  Reset Filter
-                </div>
-                : null
-            }
-          </div>
+        <div className="flex w-full">
           {
-            productionData?.length > 0 ?
+            !productionData?.every(item => item.defect_percentage === 0) ?
               <Bar data={data} options={options} /> :
-              <div className="flex justify-center items-center font-extrabold h-52 ">NO DATA</div>
+              <div className="flex justify-center items-center font-extrabold h-52 text-center w-full ">NO DATA</div>
           }
         </div>
       </div>

@@ -7,6 +7,7 @@ import Defects from './TabComponents/Defects';
 import Department from './TabComponents/Department';
 import Machine from './TabComponents/Machine';
 import { initialDashboardData, getDefects, getMachines, getSystemStatus, getDepartments, initialDpmuData, initialProductionData, getProducts } from "../services/dashboardApi";
+import DefectTrigger from './TabComponents/DefectTrigger';
 
 
 const SettingsContainer = () => {
@@ -46,6 +47,11 @@ const SettingsContainer = () => {
       key: '5',
       label: 'Products',
       children: <Alerts productsData={productsData} />,
+    },
+    {
+      key: '6',
+      label: 'Defect Trigger',
+      children: <DefectTrigger machinesdata={machines} defectsdata={defectsData} />,
     },
   ];
   return (

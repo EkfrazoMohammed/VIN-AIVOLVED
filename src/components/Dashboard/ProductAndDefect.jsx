@@ -50,6 +50,7 @@ const ProductAndDefect = ({ chartData }) => {
       },
     ],
   };
+  // console.log(chartData.every(item => item.total_production === 0 && item.total_defects === 0))
 
   const options = {
     responsive: true,
@@ -124,7 +125,7 @@ const ProductAndDefect = ({ chartData }) => {
 
         <div className="w-10/12 h-full">
           {
-            chartData?.length > 0 ?
+            !chartData?.every(item => item.total_production === 0 && item.total_defects === 0) ?
               <Bar data={data} options={options} /> :
               <div className="flex justify-center items-center font-extrabold h-52 w-full ">NO DATA</div>
           }        </div>

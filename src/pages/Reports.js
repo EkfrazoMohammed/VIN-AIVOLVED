@@ -224,6 +224,9 @@ const Reports = () => {
   const [messages, setMessages] = useState([]);
   const [ws, setWs] = useState(null);
 
+
+
+
   const handleDownload = async () => {
     const params = {
       plant_id: localPlantData?.id || undefined,
@@ -363,22 +366,34 @@ const Reports = () => {
 
 
   const handleDefectChange = (value) => {
+    if (!value) {
+      return dispatch(setSelectedDefectReports(null))
+    }
     dispatch(setSelectedDefectReports(Number(value)))
     setfilterChanged(true)
   };
 
   const handleMachineChange = (value) => {
+    if (!value) {
+      return dispatch(setSelectedMachine(null))
+    };
     dispatch(setSelectedMachine(Number(value))); // Dispatching action    
     setfilterChanged(true)
 
   };
 
   const handleProductChange = (value) => {
+    if (!value) {
+      return dispatch(setSelectedProduct(null))
+    }
     dispatch(setSelectedProduct(Number(value))); // Dispatching action    
     setfilterChanged(true)
   }
 
   const handleShiftChange = (value) => {
+    if (!value) {
+      return dispatch(setSelectedShift(null))
+    }
     dispatch(setSelectedShift(value));
     setfilterChanged(true)
   }
@@ -394,6 +409,9 @@ const Reports = () => {
   };
 
   const handleApplyFilters = (page = 1) => {
+    if (!selectedMachineRedux && !selectedProductRedux && !selectedDefectRedux && !selectedShiftRedux) {
+      resetFilter()
+    }
     const params = {
       page: page, // Ensure this uses the provided page (default is 1)
       page_size: pagination.pageSize,
@@ -542,9 +560,10 @@ const Reports = () => {
   const resetFilter = async () => {
     setfilterActive(false);
     setSelectedDate(null);
-    dispatch(setSelectedMachine(null)); // Dispatching action    
-    dispatch(setSelectedProduct(null)); // Dispatching action 
-    dispatch(setSelectedDefectReports(null)); // Dispatching action 
+    dispatch(setSelectedMachine(null));
+    dispatch(setSelectedProduct(null));
+    dispatch(setSelectedDefectReports(null));
+    dispatch(setSelectedShift(null))
     initialReportData()
     setPagination((prev) => ({ ...prev, current: 1, pageSize: 10, }))
     setfilterChanged(false)

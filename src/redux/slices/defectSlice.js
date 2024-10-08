@@ -28,6 +28,7 @@ const defectSlice = createSlice({
     getDefectFailure: (state) => {
       state.defectsData = [];
       state.selectedDefect = null;
+      state.selectedDefectReports = null;
       state.loading = false;
     },
     defectSignout: (state) => {

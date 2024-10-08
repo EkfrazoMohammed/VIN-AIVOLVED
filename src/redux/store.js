@@ -20,6 +20,7 @@ import productVsDefectReducer from "./slices/productvsDefectSlice";
 import reportReducer from "./slices/reportSlice";
 import defectReducer from "./slices/defectSlice";
 import aismartviewReducer from "./slices/aismartviewSlice";
+import defectTriggerReducer from "./slices/defecTriggerSlice";
 
 // Encryption Configuration
 const encryptor = encryptTransform({
@@ -66,6 +67,7 @@ const rootReducer = {
   productVsDefect: persistReducer(createPersistConfig("productVsDefect"), productVsDefectReducer),
   defect: persistReducer(createPersistConfig("defect"), defectReducer),
   aismartview: persistReducer(createPersistConfig("aismartview"), aismartviewReducer),
+  defectTrigger: persistReducer(createPersistConfig("defectTrigger"), defectTriggerReducer)
 };
 
 // Configure the store

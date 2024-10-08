@@ -36,7 +36,7 @@ function StackChart({ data }) {
     }, {});
     setVisibleSeries(resetVisibility);
   }, [data]);
-  
+
   const fallbackColors = ["#FF5733", "#e31f09", "#3357FF"];
   const seriesData = defectNames
     .filter((defectName) => visibleSeries[defectName])
@@ -110,9 +110,9 @@ function StackChart({ data }) {
     }));
   };
 
-  if (!data || Object.keys(data).length === 0) {
-    return <div className="flex items-center justify-center w-full h-full font-bold ">NO DATA</div>;
-  }
+  // if (!data || Object.keys(data).length === 0) {
+  //   return <div className="flex items-center justify-center w-full h-full font-bold ">NO DATA</div>;
+  // }
 
   return (
     <div>
@@ -147,13 +147,17 @@ function StackChart({ data }) {
           );
         })}
       </div>
+      {
 
-      <ReactApexChart
-        options={chartData.options}
-        series={chartData.series}
-        type="bar"
-        height={350}
-      />
+        !data || Object.keys(data).length === 0 ?
+          <div className="flex items-center justify-center w-full h-48 font-bold ">NO DATA</div> :
+          <ReactApexChart
+            options={chartData.options}
+            series={chartData.series}
+            type="bar"
+            height={350}
+          />
+      }
     </div>
   );
 }

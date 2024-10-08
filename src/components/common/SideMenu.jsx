@@ -27,6 +27,7 @@ import { userSignOut } from "../../redux/slices/userSlice";
 import useApiInterceptor from "../../hooks/useInterceptor";
 import { encryptAES } from "../../redux/middleware/encryptPayloadUtils";
 import { setSelectedShift, ShiftSignout } from "../../redux/slices/shiftSlice";
+import { defectTriggerSignOut } from "../../redux/slices/defecTriggerSlice";
 const linkStyle =
   "sidemenu-link h-[45px] no-underline flex justify-start items-center px-3 rounded-[3px] gap-2";
 
@@ -86,6 +87,7 @@ const SideMenu = () => {
     dispatch(productVsDefectSignout());
     dispatch(reportSignout());
     dispatch(userSignOut());
+    dispatch(defectTriggerSignOut())
     // dispatch(ShiftSignout())
   }
   const clearSessionandLocalStorage = () => {

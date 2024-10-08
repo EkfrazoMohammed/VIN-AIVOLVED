@@ -441,3 +441,28 @@ label::after {
 .custom-input::placeholder {
   color: #191919;
 }
+.editable-row .ant-form-item-explain {
+  position: absolute;
+  top: 100%;
+  font-size: 12px;
+}
+.custom-table.ant-table-wrapper .ant-table-tbody >tr >td >.ant-table-wrapper:only-child .ant-table{
+  margin-inline: 0 !important;
+}
+.custom-table.ant-spin-nested-loading{
+  margin: 1rem !important;
+}
+:where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper tr.ant-table-expanded-row >td, :where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper tr.ant-table-expanded-row:hover >td{
+  background: #fff !important;
+}
+
+/* Add box-shadow to the table */
+.custom-table .ant-table-wrapper .ant-table {
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1) !important; /* Inner table box-shadow */
+  border-radius: 8px; /* Optional: Add border radius */
+  margin-top: 1rem; /* Optional: Margin between tables */
+}
+.custom-table .ant-table-cell {
+  font-weight: 600; /* Change this value to desired font weight */
+}
+

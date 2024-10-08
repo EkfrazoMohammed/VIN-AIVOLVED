@@ -214,7 +214,7 @@ const Settings = () => {
         setError((prev) => ({ ...prev, email: "" }))
       }
     }
-    setData((prev) => ({ ...prev, [name]: value }))
+    setData((prev) => ({ ...prev, [name]: value.replace(/\s/g, '') }))
   }
   const handleRoleChange = (value) => {
     setData((prev) => ({ ...prev, role: value }));
@@ -284,26 +284,26 @@ const Settings = () => {
             <>
               <div className="" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', padding: '1rem', fontWeight: '600' }}>
                 <div className="">
-                  <Input placeholder="Enter First Name" type='text' name='first_name' value={data.first_name} onChange={handleChange} helper className='p-2 custom-input' />
+                  <Input placeholder="*Enter First Name" type='text' name='first_name' value={data.first_name} onChange={handleChange} helper className='p-2 custom-input' />
                   {error.fistName ? <span style={{ fontWeight: '600', color: 'red' }}>{error.fistName}</span> : ""}
                 </div>
                 <div className="">
-                  <Input placeholder="Enter Last Name" type='text' name='last_name' value={data.last_name} onChange={handleChange} className='p-2 custom-input' />
+                  <Input placeholder="*Enter Last Name" type='text' name='last_name' value={data.last_name} onChange={handleChange} className='p-2 custom-input' />
                   {error.lastName ? <span style={{ fontWeight: '600', color: 'red' }}>{error.lastName}</span> : ""}
                 </div>
 
 
                 <div className="">
-                  <Input placeholder="Enter Phone Number" type='number' name='phone_number' value={data.phone_number} onChange={handleChange} className='p-2 custom-input' />
+                  <Input placeholder="*Enter Phone Number" type='number' name='phone_number' value={data.phone_number} onChange={handleChange} className='p-2 custom-input' />
                   {error.Phone ? <span style={{ fontWeight: '600', color: 'red' }}>{error.Phone}</span> : ""}
                 </div>
 
                 <div className="">
-                  <Input placeholder="Enter Email" type='email' name='email' value={data.email} onChange={handleChange} className='p-2 custom-input' />
+                  <Input placeholder="*Enter Email" type='email' name='email' value={data.email} onChange={handleChange} className='p-2 custom-input' />
                   {error.email ? <span style={{ fontWeight: '600', color: 'red' }}>{error.email}</span> : ""}
                 </div>
                 <div className="">
-                  <Input placeholder="Enter Employee Id" type='text' name='employee_id' value={data.employee_id} onChange={handleChange} className='p-2 custom-input' />
+                  <Input placeholder="*Enter Employee Id" type='text' name='employee_id' value={data.employee_id} onChange={handleChange} className='p-2 custom-input' />
                   {error.employee_id ? <span style={{ fontWeight: '600', color: 'red' }}>{error.employee_id}</span> : ""}
                 </div>
                 <div className="">

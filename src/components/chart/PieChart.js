@@ -49,9 +49,9 @@ function PieChart({ data, selectedDate, loading }) {
 
   }
 
-  if (!data || Object.keys(data).length === 0) {
-    return <div className="flex items-center justify-center w-full  font-extrabold h-52 ">NO DATA</div>;
-  }
+  // if (!data || Object.keys(data).length === 0) {
+  //   return <div className="flex items-center justify-center w-full  font-extrabold h-52 ">NO DATA</div>;
+  // }
   if (!chartData || !chartData.labels || !chartData.series) {
     return <div>Loading chart...</div>;
   }
@@ -64,92 +64,113 @@ function PieChart({ data, selectedDate, loading }) {
             : "Pie Chart for Defects (7 days)"}
         </Title>
       </div>
+      {
+        !data || Object.keys(data).length === 0 ?
+          <div className="flex items-center justify-center w-full h-48 font-bold  ">NO DATA</div> :
+          <ReactApexChart
+            options={{
+              chart: {
+                width: 380,
+                type: "pie",
+                events: {
+                  dataPointSelection: (event, chartContext, opts) => {
+                    const clickedIndex = opts.dataPointIndex;
+                    if (clickedIndex === -1 || !chartData.labels[clickedIndex]) {
+                      return;
+                    }
 
-      <ReactApexChart
-        options={{
-          chart: {
-            width: 380,
-            type: "pie",
-            events: {
-              dataPointSelection: (event, chartContext, opts) => {
-                const clickedIndex = opts.dataPointIndex;
-                if (clickedIndex === -1 || !chartData.labels[clickedIndex]) {
-                  return;
-                }
-
-                const clickedLabel = chartData.labels[clickedIndex];
-                const filterActive = true
-                const clickedVal = defectsData.filter(
-                  (val) => val.name == clickedLabel
+                    const clickedLabel = chartData.labels[clickedIndex];
+                    const filterActive = true
+                    const clickedVal = defectsData.filter(
+                      (val) => val.name == clickedLabel
+                    );
+                    if (clickedVal.length > 0) {
+                      dispatch(setSelectedDefectReports(clickedVal[0]?.id));
+                      dispatch(updatePage({
+                        current: 1,
+                        pageSize: 10
+                      }))
+                      setTimeout(() => {
+                        navigate(`/reports`, { state: { filterActive } });
+                      }, [500])
+                    } else {
+                      console.error("No matching defect found");
+                    }
+                  },
+                },
+              },
+              colors: chartData.labels.map((label, index) => {
+                const predefinedColors = ["#FF5733", "#e31f09", "#3357FF"];
+                return (
+                  defectColors[label] ||
+                  predefinedColors[index % predefinedColors.length]
                 );
-                if (clickedVal.length > 0) {
-                  dispatch(setSelectedDefectReports(clickedVal[0]?.id));
-                  dispatch(updatePage({
-                    current: 1,
-                    pageSize: 10
-                  }))
-                  setTimeout(() => {
-                    navigate(`/reports`, { state: { filterActive } });
-                  }, [500])
-                } else {
-                  console.error("No matching defect found");
+              }),
+
+              dataLabels: {
+                enabled: true,
+                formatter: function (val) {
+                  return val.toFixed(2) + "%";
+                },
+
+                style: {
+                  fontSize: '12px',
+                  fontFamily: 'Helvetica, Arial, sans-serif',
+                  fontWeight: 'bold',
+                  colors: ["#000"],
+                  textShadow: "none",
+
+
+                },
+                dropShadow: {
+                  enabled: false, // Ensures no shadow covers the text
+                },
+                offset: 30,
+              },
+              labels: chartData.labels,
+              legend: {
+                position: "bottom",
+                horizontalAlign: "center",
+                fontSize: "14px",
+                fontWeight: "bold",
+
+                markers: {
+                  width: 10,
+                  height: 10,
+                  radius: 12,
+
+                },
+                onItemHover: {
+                  highlightDataSeries: false
+                },
+              },
+              plotOptions: {
+                pie: {
+                  dataLabels: {
+                    offset: 0,  // Adjust this value to avoid text getting cut off or hidden
+
+                  }
                 }
               },
-            },
-          },
-          colors: chartData.labels.map((label, index) => {
-            const predefinedColors = ["#FF5733", "#e31f09", "#3357FF"];
-            return (
-              defectColors[label] ||
-              predefinedColors[index % predefinedColors.length]
-            );
-          }),
-
-          dataLabels: {
-            enabled: true,
-            formatter: function (val) {
-              return val.toFixed(2) + "%";
-            },
-
-            style: {
-              fontSize: '12px',
-              fontFamily: 'Helvetica, Arial, sans-serif',
-              fontWeight: 'bold',
-            }
-          },
-          labels: chartData.labels,
-          legend: {
-            position: "bottom",
-            horizontalAlign: "center",
-            fontSize: "14px",
-            fontWeight: "bold",
-            markers: {
-              width: 10,
-              height: 10,
-              radius: 12,
-            },
-            onItemHover: {
-              highlightDataSeries: false
-            },
-          },
-          responsive: [
-            {
-              breakpoint: 480,
-              options: {
-                chart: {
-                  width: 200,
+              responsive: [
+                {
+                  breakpoint: 480,
+                  options: {
+                    chart: {
+                      width: 200,
+                    },
+                    legend: {
+                      position: "bottom",
+                    },
+                  },
                 },
-                legend: {
-                  position: "bottom",
-                },
-              },
-            },
-          ],
-        }}
-        series={chartData.series}
-        type="pie"
-        height={350}
-      />
+              ],
+            }}
+            series={chartData.series}
+            type="pie"
+            height={350}
+          />
+      }
 
     </div>
   );

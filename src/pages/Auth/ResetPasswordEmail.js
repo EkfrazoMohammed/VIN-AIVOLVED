@@ -137,7 +137,7 @@ const ResetPasswordEmail = () => {
                       gap: "0.5rem",
                     }}
                   >
-                    <h2 style={{ margin: "0.5rem 0", fontWeight: "700" }}> Email address</h2>
+                    <h2 style={{ margin: "0.5rem 0", fontWeight: "700" }}> <span className="text-red-600">*</span> Email address</h2>
                     <input
                       type="email"
                       style={{
