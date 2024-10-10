@@ -122,30 +122,47 @@ const Settings = () => {
       duration: 5,
     });
   };
+
   const handlePost = async () => {
     try {
-      const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Updated email regex pattern
+      let hasError = false;
+  
+      // Reset errors
+      setError({});
+  
       if (data.first_name === "") {
-        setError((prev) => ({ ...prev, fistName: "*Please Enter First Name " }))
+        setError((prev) => ({ ...prev, fistName: "*Please Enter First Name " }));
+        hasError = true;
       }
       if (data.last_name === "") {
-        setError((prev) => ({ ...prev, lastName: "*Please Enter Last Name " }))
+        setError((prev) => ({ ...prev, lastName: "*Please Enter Last Name " }));
+        hasError = true;
       }
       if (data.phone_number === "") {
-        setError((prev) => ({ ...prev, Phone: "*Please Enter Phone Number " }))
-      }
-      else if ((data.phone_number).length !== 10) {
-        setError((prev) => ({ ...prev, Phone: "*Please Enter Valid Phone Number " }))
+        setError((prev) => ({ ...prev, Phone: "*Please Enter Phone Number " }));
+        hasError = true;
+      } else if (data.phone_number.length !== 10) {
+        setError((prev) => ({ ...prev, Phone: "*Please Enter Valid Phone Number " }));
+        hasError = true;
       }
       if (data.email === "") {
-        setError((prev) => ({ ...prev, email: "*Please Enter Email" }))
-      }
-      else if (!emailPattern.test(data.email)) {
-        setError((prev) => ({ ...prev, email: "*Please Enter Valid Email" }))
+        setError((prev) => ({ ...prev, email: "*Please Enter Email" }));
+        hasError = true;
+      } else if (!emailPattern.test(data.email)) {
+        setError((prev) => ({ ...prev, email: "*Please Enter Valid Email" }));
+        hasError = true;
       }
       if (data.employee_id === "") {
-        setError((prev) => ({ ...prev, employee_id: "*Please Enter Employee Id" }))
+        setError((prev) => ({ ...prev, employee_id: "*Please Enter Employee Id" }));
+        hasError = true;
       }
+  
+      // If there are any validation errors, prevent submission
+      if (hasError) {
+        return; // Stop execution if validation fails
+      }
+  
       const payload = {
         "first_name": data.first_name,
         "last_name": data.last_name,
@@ -153,42 +170,43 @@ const Settings = () => {
         "email": data.email,
         "employee_id": data.employee_id,
         "plant": data.plant,
-        "role": data.role
-      }
-      const encryTedData = encryptAES(JSON.stringify(payload))
+        "role": data.role,
+      };
+      const encryTedData = encryptAES(JSON.stringify(payload));
       const usersPayload = {
-        "data": `${encryTedData}`
-      }
-
-      if (data.employee_id !== "" && data.first_name !== "" && data.last_name !== "" && data.phone_number !== "" && data.email !== "" && error.fistName === "" && error.lastName === "" && error.email === "" && error.Phone === "" && error.employee_id === "") {
-        setLoading(true)
-        const postRequest = await apiInterceptor.post(`user/`, usersPayload, headersOb)
-        if (postRequest) {
-          closeModalUser()
-          setLoading(false)
-          setModal2Open(false)
-          setData({
-            first_name: "",
-            last_name: "",
-            phone_number: "",
-            email: "",
-            employee_id: "",
-            plant: null,
-            role_name: null
-          })
-        }
+        "data": `${encryTedData}`,
+      };
+  
+      setLoading(true);
+      const postRequest = await apiInterceptor.post(`user/`, usersPayload, headersOb);
+  
+      if (postRequest) {
+        closeModalUser();
+        setLoading(false);
+        setModal2Open(false);
+        setData({
+          first_name: "",
+          last_name: "",
+          phone_number: "",
+          email: "",
+          employee_id: "",
+          plant: null,
+          role_name: null,
+        });
         openNotification({ status: "success", message: "User Created Successfully!" });
-
-      } else {
-        setLoading(false)
       }
     } catch (error) {
-      setLoading(false)
+      setLoading(false);
       if (error.response.status === 400) {
-        openNotification({ status: "error", message: error.response.data.message });
+        if (error.response.data.message === "Token is invalid or expired") {
+          openNotification({ status: "error", message: 'Unable to create user, Please Try again!' });
+        } else {
+          openNotification({ status: "error", message: error.response.data.message });
+        }
       }
     }
-  }
+  };
+  
 
 
   const handleChange = (e) => {
@@ -267,6 +285,7 @@ const Settings = () => {
         onOk={() => setModal2Open(false)}
         onCancel={closeModalUser}
         footer={null}
+        maskClosable={false} // This prevents the modal from closing on outside clicks
       >
         {
           loading ?

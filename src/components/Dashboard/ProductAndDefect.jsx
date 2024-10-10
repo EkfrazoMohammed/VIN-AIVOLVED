@@ -35,6 +35,68 @@ const ProductAndDefect = ({ chartData }) => {
   //   );
   // }
 
+  // const data = {
+  //   labels: chartData.map((item) => item.date),
+  //   datasets: [
+  //     {
+  //       label: "Total Production",
+  //       data: chartData.map((item) => item.total_production),
+  //       backgroundColor: "#58f558",
+  //     },
+  //     {
+  //       label: "Total Defects",
+  //       data: chartData.map((item) => item.total_defects),
+  //       backgroundColor: "#fc5347",
+  //     },
+  //   ],
+  // };
+  // const options = {
+  //   responsive: true,
+  //   indexAxis: 'y', // This makes the bar chart horizontal
+  //   plugins: {
+  //     datalabels: {
+  //       anchor: 'end',
+  //       align: 'end',
+  //       color: 'black',
+  //       font: {
+  //         weight: 'bold'
+  //       },
+  //       formatter: (value) => {
+  //         return value;
+  //       }
+  //     }
+  //   },
+  //   layout: {
+  //     padding: {
+  //       top: 10,
+  //       left: 10,
+  //       right: 10,
+  //       bottom: 10
+  //     }
+  //   },
+  //   scales: {
+  //     x: {
+  //       beginAtZero: false,
+  //       grid: {
+  //         display: true // Hide x-axis grid lines if not needed
+  //       }
+  //     },
+  //     y: {
+  //       grid: {
+  //         display: false // Hide y-axis grid lines if not needed
+  //       }
+  //     }
+  //   },
+  //   elements: {
+  //     bar: {
+  //       borderWidth: 2
+  //     }
+  //   },
+  //   animation: {
+  //     duration: 500
+  //   }
+  // };
+
   const data = {
     labels: chartData.map((item) => item.date),
     datasets: [
@@ -42,62 +104,76 @@ const ProductAndDefect = ({ chartData }) => {
         label: "Total Production",
         data: chartData.map((item) => item.total_production),
         backgroundColor: "#58f558",
+        minBarLength: 10, // Minimum visible size of production bars
       },
       {
         label: "Total Defects",
         data: chartData.map((item) => item.total_defects),
         backgroundColor: "#fc5347",
+        minBarLength: 10, // Minimum visible size of defect bars
       },
     ],
   };
-  // console.log(chartData.every(item => item.total_production === 0 && item.total_defects === 0))
-
+  
   const options = {
     responsive: true,
     indexAxis: 'y', // This makes the bar chart horizontal
     plugins: {
+      legend: {
+        display: true,
+        labels: {
+          color: 'black',
+          font: {
+            size: 14,
+          },
+        },
+        onClick: null, // Disable the ability to click on the legend to hide/show datasets
+      },
       datalabels: {
         anchor: 'end',
         align: 'end',
         color: 'black',
         font: {
-          weight: 'bold'
+          weight: 'bold',
         },
         formatter: (value) => {
           return value;
-        }
-      }
+        },
+      },
     },
     layout: {
       padding: {
         top: 10,
         left: 10,
         right: 10,
-        bottom: 10
-      }
+        bottom: 10,
+      },
     },
     scales: {
       x: {
         beginAtZero: false,
         grid: {
-          display: true // Hide x-axis grid lines if not needed
-        }
+          display: true, // Show or hide x-axis grid lines if needed
+        },
       },
       y: {
         grid: {
-          display: false // Hide y-axis grid lines if not needed
-        }
-      }
+          display: false, // Show or hide y-axis grid lines if needed
+        },
+      },
     },
     elements: {
       bar: {
-        borderWidth: 2
-      }
+        borderWidth: 2,
+      },
     },
     animation: {
-      duration: 500
-    }
+      duration: 500,
+    },
   };
+  
+  
+  
 
   return (
     <div className="py-3 w-full ">

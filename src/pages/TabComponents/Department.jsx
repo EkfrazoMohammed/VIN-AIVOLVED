@@ -1,12 +1,5 @@
-import React, { useMemo, useState, useEffect } from 'react';
-import { Button, Select, Space, Card, Col, Row, ColorPicker, Table, Tag, Form, Input, Radio, notification, Descriptions } from 'antd';
-import { Switch } from 'antd';
-import { useSelector } from 'react-redux';
-import axios from "axios";
-
-import { EditOutlined } from '@ant-design/icons';
-// import {API, AuthToken, baseURL, localPlantData} from "./../API/API"
-import { baseURL } from "../../API/API"
+import React from 'react';
+import {Table,notification} from 'antd';
 
 const Departments = ({ departmentsdata }) => {
 
@@ -16,13 +9,13 @@ const Departments = ({ departmentsdata }) => {
       title: 'ID',
       dataIndex: 'id',
       id: 'id',
-      render: (text) => <a>{text}</a>,
+      render: (text) => <div>{text}</div>,
     },
     {
       title: 'Department',
       dataIndex: 'name',
       id: 'name',
-      render: (text) => <a>{text}</a>,
+      render: (text) => <div>{text}</div>,
     },
 
 

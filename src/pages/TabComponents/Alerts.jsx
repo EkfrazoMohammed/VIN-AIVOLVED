@@ -8,14 +8,14 @@ const Alert = ({ productsData }) => {
       title: 'ID',
       dataIndex: 'id',
       key: 'id',
-      render: (text) => <a>{text}</a>,
+      render: (text) => <div>{text}</div>,
 
     },
     {
       title: 'Product ',
       dataIndex: 'name',
       key: 'name',
-      render: (text) => <a>{text}</a>,
+      render: (text) => <div>{text}</div>,
     },
 
 

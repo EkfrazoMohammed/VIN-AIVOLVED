@@ -19,6 +19,8 @@ const Defects = ({ defectsdata }) => {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editData, setEditData] = useState(null);
   // const reduxDefectData = data
+
+  console.log(defectsdata)
   const [tableData, setTableData] = useState(defectsdata);
   const [selectedValue, setSelectedValue] = useState(null);
   const [color, setColor] = useState('#1677ff');
@@ -32,13 +34,13 @@ const Defects = ({ defectsdata }) => {
     {
       title: 'ID',
       dataIndex: 'id',
-      render: (text) => <a>{text}</a>,
+      render: (text) => <div>{text}</div>,
     },
     {
       title: 'Defect Name',
       dataIndex: 'name',
       sorter: (a, b) => a.name.localeCompare(b.name),
-      render: (text) => <a>{text}</a>,
+      render: (text) => <div>{text}</div>,
     },
     {
       title: 'Color',
@@ -144,7 +146,7 @@ const Defects = ({ defectsdata }) => {
     setTableData(defectsdata)
     setSelectedValue(null);
   };
-
+console.log(tableData)
   return (
     <>
       {contextHolder}
@@ -183,7 +185,7 @@ const Defects = ({ defectsdata }) => {
         title="Create Defects"
         onCancel={() => setModalOpen(false)}
         footer={[
-          <Button key="cancel" onClick={() => setModalOpen(false)}>
+          <Button key="cancel" type="primary" style={{ background: '#EC522D', color: '#fff' }} onClick={() => setModalOpen(false)}>
             Cancel
 
 
@@ -196,15 +198,15 @@ const Defects = ({ defectsdata }) => {
         <Row gutter={24} style={{ margin: '1rem', display: 'flex', flexDirection: 'column' }}>
           <Col style={{ margin: '1rem' }}>
             <Form form={form} size="large" layout="vertical">
-              <Form.Item name="name" rules={[{ required: true, message: 'Please enter defect name' }]}>
-                <h6>Defects Name</h6>
+              <Form.Item name="name" rules={[{ required: true, message: 'Please enter defect name *' }]}>
+                <h6>Defects Name <span style={{ fontWeight: '600', color: 'red' }}>*</span></h6>
                 <div style={{ display: "flex", gap: "1rem" }}>
                   <Input placeholder="Enter Defect Name" name="name" onChange={(e) => { setData(e.target.value) }} />
                 </div>
               </Form.Item>
 
-              <Form.Item >
-                <h6>Select Color</h6>
+              <Form.Item rules={[{ required: true, message: 'Please enter color code *' }]}>
+                <h6>Select Color <span style={{ fontWeight: '600', color: 'red' }}>*</span></h6>
                 <div style={{ display: "flex", gap: "1rem" }}>
                   <ColorPicker value={color} onChange={(color) => setColor(color.toHexString())} showText={(color) => <span>{color.toHexString()}</span>} />
 

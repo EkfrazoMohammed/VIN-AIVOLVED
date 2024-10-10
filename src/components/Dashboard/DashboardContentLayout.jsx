@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import ProductAndDefect from "./ProductAndDefect";
 import DefectsReport from "./DefectsReport";
 import TotalOverview from "./TotalOverview";
-import { IoIosArrowDown } from "react-icons/io";
 import { IoMdArrowForward } from "react-icons/io";
 import { useSelector, useDispatch } from "react-redux";
 import { initialDashboardData, getMachines, getSystemStatus, getDepartments, initialDpmuData, initialProductionData, getProducts, getDefects, getRoles, dpmuFilterData, dpmuFilterDate } from "../../services/dashboardApi";
@@ -11,7 +10,7 @@ import { setSelectedProduct } from "../../redux/slices/productSlice"
 import { getDashboardSuccess, getDashboardFailure } from "../../redux/slices/dashboardSlice"
 import { Link, useLocation } from "react-router-dom";
 import axios from "axios";
-import { DatePicker, Checkbox, Dropdown, Menu } from "antd";
+import { DatePicker, Checkbox, Menu } from "antd";
 import { VideoCameraOutlined, BugOutlined, AlertOutlined, NotificationOutlined } from "@ant-design/icons";
 import StackChart from "../../components/chart/StackChart";
 import PieChart from "../../components/chart/PieChart";
@@ -23,7 +22,6 @@ import { encryptAES } from "../../redux/middleware/encryptPayloadUtils";
 import SelectComponent from "../common/Select";
 import { setSelectedShift } from "../../redux/slices/shiftSlice";
 import { getProductVsDefectSuccess } from "../../redux/slices/productvsDefectSlice";
-import { getDpmuSuccess } from "../../redux/slices/dpmuSlice";
 import DropdownComponent from "../common/DropdownComponent";
 
 const DashboardContentLayout = ({ children }) => {
@@ -118,10 +116,6 @@ const DashboardContentLayout = ({ children }) => {
     setFilterChanged(false)
   };
 
-
-
-
-
   // FILTER DATA FROM BACKEND
   const handelFilterProduction = async () => {
     try {
@@ -153,20 +147,14 @@ const DashboardContentLayout = ({ children }) => {
       const queryString = new URLSearchParams(encryptedUrl).toString();
 
       const defectUrl = `defct-vs-machine/?${queryString}`;
-      // const ParamUrl = `params_graph/?${queryString}`;
-
-      const [defectResponse, paramResponse] = await Promise.all([
+    
+      const [defectResponse] = await Promise.all([
         apiCallInterceptor.get(defectUrl),
-        // apiCallInterceptor.get(ParamUrl)
       ])
-
       if (defectResponse) {
         setLoading(false)
       }
-
       dispatch(getProductVsDefectSuccess(defectResponse.data.data_last_7_days));
-      // dispatch(getDpmuSuccess(paramResponse.data.results));
-
     } catch (error) {
       console.log("Error:", error);
       setLoading(false)
@@ -221,10 +209,9 @@ const DashboardContentLayout = ({ children }) => {
     apiCallInterceptor
       .get(url, {
         headers: {
-          Authorization: `Bearer ${accessToken}`, // Include authorization token
+          Authorization: `Bearer ${accessToken}`,
         },
       })
-
       .then((response) => {
         const { active_products, ...datesData } = response.data;
         dispatch(getDashboardSuccess({ datesData, activeProducts: active_products }))
@@ -373,7 +360,7 @@ const DashboardContentLayout = ({ children }) => {
               style={{ display: "flex", flexDirection: "column" }}
             >
               <p style={{ fontSize: "1.1rem", width: "100%" }} value={prod}>
-                {prod}
+             {prod}
               </p>
             </div>
           ))}
@@ -448,7 +435,6 @@ const DashboardContentLayout = ({ children }) => {
                         <span>Active Machines</span>
                         <VideoCameraOutlined />
                       </div>
-
                       <DropdownComponent menu={menu} data={activeMachines} />
                     </div>
                     <div className="bg-gray-100 rounded-xl text-left flex flex-col">
@@ -463,7 +449,6 @@ const DashboardContentLayout = ({ children }) => {
                         <span>No. of SKU</span>
                         <AlertOutlined />
                       </div>
-
                       <DropdownComponent menu={prodMenu} data={tableDataReduxActive} />
                     </div>
                     <Link
@@ -481,9 +466,6 @@ const DashboardContentLayout = ({ children }) => {
               </div>
             </div>
           </div>
-
-
-
 
           <RealTimeManufacturingSection
             loading={loading}
