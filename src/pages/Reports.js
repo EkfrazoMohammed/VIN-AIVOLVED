@@ -5,14 +5,15 @@ import * as XLSX from "xlsx";
 import { DownloadOutlined } from "@ant-design/icons";
 import { Hourglass } from "react-loader-spinner";
 import dayjs from "dayjs";
-import { toast } from "react-toastify";
 import { useSelector, useDispatch } from "react-redux";
-import { initialDashboardData, getDefects, getMachines, getSystemStatus, getDepartments, initialDpmuData, initialProductionData, getProducts } from "./../services/dashboardApi";
+import { getDefects} from "./../services/dashboardApi";
 import { reportApi } from "./../services/reportsApi";
+
 import {
   setSelectedDefect,
   setSelectedDefectReports,
 } from "../redux/slices/defectSlice";
+
 
 import axios from "axios"
 import { getReportData, updatePage } from ".././redux/slices/reportSlice";
@@ -24,8 +25,6 @@ import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { Modal } from "antd";
 import SelectComponent from "../components/common/Select";
-import { current } from "@reduxjs/toolkit";
-
 import { setSelectedShift } from "../redux/slices/shiftSlice";
 
 
@@ -59,7 +58,6 @@ const columns = [
     render: (text) => {
       const decrypData = decryptAES(text)
       return (
-
         <>
           {
             decrypData ? <div >{decrypData}</div> : null
@@ -120,6 +118,21 @@ const columns = [
     },
   },
   {
+    title: "Shift",
+    dataIndex: "shift",
+    key: "shift",
+
+    render: (text) => {
+      const decrypData = decryptAES(text);
+      // const formattedDateTime = decrypData ? decrypData.replace("T", " ") : null;
+      return (
+        <>
+          {decrypData ? <div>{decrypData}</div> : null}
+        </>
+      );
+    },
+  },
+  {
     title: "OCR",
     dataIndex: "ocr",
     key: "ocr",
@@ -145,7 +158,7 @@ const columns = [
       return (
         <>{
           image_b64 ? (
-            <Image src={decrypData} alt="Defect Image" width={50} />
+            <Image src={decrypData} alt="Defect Image" width={50} height={50} />
           ) : null}
         </>
       )
@@ -574,9 +587,6 @@ const Reports = () => {
     setModal(true)
   }
 
-
-
-
   return (
     <>
       {/* <ToastContainer /> */}
@@ -670,78 +680,10 @@ const Reports = () => {
           style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}
         >
           <SelectComponent placeholder={"Select Product"} action={(val) => handleProductChange(val)} selectedData={selectedProductRedux} data={productsData} size={"large"} style={{ minWidth: "200px", marginRight: "10px", }} />
-
           <SelectComponent placeholder={"Select Machine"} action={(val) => handleMachineChange(val)} selectedData={selectedMachineRedux} data={machines} size={"large"} style={{ minWidth: "200px", marginRight: "10px" }} />
-
           <SelectComponent placeholder={"Select Defect"} action={(val) => handleDefectChange(val)} selectedData={selectedDefectRedux} data={defectsData} size={"large"} style={{ minWidth: "200px", marginRight: "10px" }} />
-
           <SelectComponent placeholder={"Select Shift"} selectedData={selectedShiftRedux} action={(val) => handleShiftChange(val)} data={shiftData} valueType="name" style={{ minWidth: "180px", zIndex: 1 }} size={"large"} />
-
-          {/* <Select
-            style={{ minWidth: "200px", marginRight: "10px" }}
-            showSearch
-            placeholder="Select Machine"
-            value={selectedMachineRedux} // Set default value to 1 if selectedMachine is null
-            onChange={handleMachineChange}
-            size="large"
-            filterOption={(input, machines) =>
-              (machines.children ?? "")
-                .toLowerCase()
-                .includes(input.toLowerCase())
-            }
-          >
-            {machines.map((machine) => (
-              <Select.Option key={machine.id} value={machine.id}>
-                {machine.name}
-              </Select.Option>
-            ))}
-          </Select> */}
-
-          {/* <Select
-            style={{ minWidth: "200px", marginRight: "10px" }}
-            showSearch
-            placeholder="Select Product"
-            onChange={handleProductChange}
-            value={selectedProductRedux}
-            size="large"
-            filterOption={(input, productsData) =>
-              (productsData.children ?? "")
-                .toLowerCase()
-                .includes(input.toLowerCase())
-            }
-
-          >
-            {productsData.map((prod) => (
-              <Select.Option key={prod.id} value={prod.id}>
-                {prod.name}
-              </Select.Option>
-            ))}
-          </Select> */}
-
-          {/* <Select
-            style={{ minWidth: "200px", marginRight: "10px" }}
-            showSearch
-            placeholder="Select Defect"
-            onChange={handleDefectChange}
-            value={selectedDefectRedux}
-            size="large"
-            filterOption={(input, defectsData) =>
-              // ( productOptions.children ?? "".toLowerCase() ).includes(input.toLowerCase() )
-              (defectsData.children ?? "")
-                .toLowerCase()
-                .includes(input.toLowerCase())
-            }
-
-          >
-            {defectsData.map((defect) => (
-              <Select.Option key={defect.id} value={defect.id}>
-                {defect.name}
-              </Select.Option>
-            ))}
-          </Select> */}
-
           <RangePicker
-
             // showTime
             className="dx-default-date-range"
             size="large"
@@ -789,7 +731,18 @@ const Reports = () => {
               Reset Filter
             </Button>
           ) : null}
-          <Button
+          {reportData?.length>0 ? (
+ <Button
+ type="primary"
+ icon={<DownloadOutlined />}
+ size="large"
+ style={{ fontSize: "1rem", backgroundColor: "#ec522d" }}
+ onClick={downloadExcel}
+>
+ Download Excel
+</Button>
+          ):null}
+          {/* <Button
             type="primary"
             disabled={!reportData.length > 0}
             icon={<DownloadOutlined />}
@@ -798,7 +751,7 @@ const Reports = () => {
             onClick={downloadExcel}
           >
             Download Excel
-          </Button>
+          </Button> */}
           {/* <Button
             type="primary"
             icon={<DownloadOutlined />}

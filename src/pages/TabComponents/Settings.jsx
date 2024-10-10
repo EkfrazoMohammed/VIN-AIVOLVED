@@ -122,6 +122,7 @@ const Settings = () => {
       duration: 5,
     });
   };
+
   const handlePost = async () => {
     try {
       const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -177,16 +178,22 @@ const Settings = () => {
         setModal2Open(false);
         setLoading(false)
         resetForm();
+
         openNotification({ status: "success", message: "User Created Successfully!" });
       }
 
     } catch (error) {
       // Handle error response
       setLoading(false);
-      if (error.response && error.response.status === 400) {
-        openNotification({ status: "error", message: error.response.data.message });
+      if (error.response.status === 400) {
+        if (error.response.data.message === "Token is invalid or expired") {
+          openNotification({ status: "error", message: 'Unable to create user, Please Try again!' });
+        } else {
+          openNotification({ status: "error", message: error.response.data.message });
+        }
       }
     }
+    
   };
 
   // Reset form function to clear form data and errors
@@ -202,8 +209,7 @@ const Settings = () => {
     });
     setError({});
   };
-
-
+      setLoading(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -287,6 +293,7 @@ const Settings = () => {
         onOk={() => setModal2Open(false)}
         onCancel={closeModalUser}
         footer={null}
+        maskClosable={false} // This prevents the modal from closing on outside clicks
       >
         {
           loading ?
