@@ -193,7 +193,6 @@ const Settings = () => {
         }
       }
     }
-    
   };
 
   // Reset form function to clear form data and errors
@@ -208,8 +207,8 @@ const Settings = () => {
       role: null,
     });
     setError({});
+    setLoading(false);
   };
-      setLoading(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target
