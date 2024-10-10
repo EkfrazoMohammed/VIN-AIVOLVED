@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
-// import storage from "redux-persist/lib/storage"; // For localStorage
+// import storage from "redux-persist/lib/storage"; // For LocalStorage
 // import sessionStorage from "redux-persist/lib/storage/session"; // For sessionStorage
 import localStoragePersist from "redux-persist/lib/storage"; // For localStorage
 import sessionStoragePersist from "redux-persist/lib/storage/session"; // For sessionStorage
