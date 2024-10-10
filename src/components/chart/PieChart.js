@@ -119,13 +119,11 @@ function PieChart({ data, selectedDate, loading }) {
                   fontWeight: 'bold',
                   colors: ["#000"],
                   textShadow: "none",
-
-
                 },
                 dropShadow: {
                   enabled: false, // Ensures no shadow covers the text
                 },
-                offset: 30,
+
               },
               labels: chartData.labels,
               legend: {

@@ -125,75 +125,90 @@ const Settings = () => {
   const handlePost = async () => {
     try {
       const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-      if (data.first_name === "") {
-        setError((prev) => ({ ...prev, fistName: "*Please Enter First Name " }))
+      let errors = {};
+
+      // Validate fields
+      if (!data.first_name) errors.firstName = "*Please Enter First Name";
+      if (!data.last_name) errors.lastName = "*Please Enter Last Name";
+      if (!data.phone_number) {
+        errors.Phone = "*Please Enter Phone Number";
+      } else if (data.phone_number.length !== 10) {
+        errors.Phone = "*Please Enter Valid Phone Number";
       }
-      if (data.last_name === "") {
-        setError((prev) => ({ ...prev, lastName: "*Please Enter Last Name " }))
+      if (!data.email) {
+        errors.email = "*Please Enter Email";
+      } else if (!emailPattern.test(data.email)) {
+        errors.email = "*Please Enter Valid Email";
       }
-      if (data.phone_number === "") {
-        setError((prev) => ({ ...prev, Phone: "*Please Enter Phone Number " }))
+      if (!data.employee_id) errors.employee_id = "*Please Enter Employee ID";
+
+      setError(errors); // Update errors
+
+      // If there are any errors, stop execution
+      if (Object.keys(errors).length > 0) {
+        setLoading(false);
+        return;
       }
-      else if ((data.phone_number).length !== 10) {
-        setError((prev) => ({ ...prev, Phone: "*Please Enter Valid Phone Number " }))
-      }
-      if (data.email === "") {
-        setError((prev) => ({ ...prev, email: "*Please Enter Email" }))
-      }
-      else if (!emailPattern.test(data.email)) {
-        setError((prev) => ({ ...prev, email: "*Please Enter Valid Email" }))
-      }
-      if (data.employee_id === "") {
-        setError((prev) => ({ ...prev, employee_id: "*Please Enter Employee Id" }))
-      }
+
+      // Create payload
       const payload = {
-        "first_name": data.first_name,
-        "last_name": data.last_name,
-        "phone_number": data.phone_number,
-        "email": data.email,
-        "employee_id": data.employee_id,
-        "plant": data.plant,
-        "role": data.role
-      }
-      const encryTedData = encryptAES(JSON.stringify(payload))
+        first_name: data.first_name,
+        last_name: data.last_name,
+        phone_number: data.phone_number,
+        email: data.email,
+        employee_id: data.employee_id,
+        plant: data.plant,
+        role: data.role,
+      };
+
+      // Encrypt the payload
+      const encryptedData = encryptAES(JSON.stringify(payload));
       const usersPayload = {
-        "data": `${encryTedData}`
-      }
+        data: encryptedData,
+      };
 
-      if (data.employee_id !== "" && data.first_name !== "" && data.last_name !== "" && data.phone_number !== "" && data.email !== "" && error.fistName === "" && error.lastName === "" && error.email === "" && error.Phone === "" && error.employee_id === "") {
-        setLoading(true)
-        const postRequest = await apiInterceptor.post(`user/`, usersPayload, headersOb)
-        if (postRequest) {
-          closeModalUser()
-          setLoading(false)
-          setModal2Open(false)
-          setData({
-            first_name: "",
-            last_name: "",
-            phone_number: "",
-            email: "",
-            employee_id: "",
-            plant: null,
-            role_name: null
-          })
-        }
-        openNotification({ status: "success", message: "User Created Successfully!" });
+      // Set loading state and make the API request
+      setLoading(true);
+      const postRequest = await apiInterceptor.post(`user/`, usersPayload, headersOb);
 
-      } else {
+      // On successful request, handle success
+      if (postRequest) {
+        closeModalUser();
+        setModal2Open(false);
         setLoading(false)
+        resetForm();
+        openNotification({ status: "success", message: "User Created Successfully!" });
       }
+
     } catch (error) {
-      setLoading(false)
-      if (error.response.status === 400) {
+      // Handle error response
+      setLoading(false);
+      if (error.response && error.response.status === 400) {
         openNotification({ status: "error", message: error.response.data.message });
       }
     }
-  }
+  };
+
+  // Reset form function to clear form data and errors
+  const resetForm = () => {
+    setData({
+      first_name: "",
+      last_name: "",
+      phone_number: "",
+      email: "",
+      employee_id: "",
+      plant: null,
+      role: null,
+    });
+    setError({});
+  };
+
 
 
   const handleChange = (e) => {
     const { name, value } = e.target
     const emailRegex = /^[^\s@]+@[^\s@]+\[^\s@]+$/;
+
     if (name === "first_name") {
       setError((prev) => ({ ...prev, fistName: "" }))
     }
@@ -216,13 +231,18 @@ const Settings = () => {
     }
     setData((prev) => ({ ...prev, [name]: value.replace(/\s/g, '') }))
   }
+
+
+
   const handleRoleChange = (value) => {
     setData((prev) => ({ ...prev, role: value }));
     console.log(data)
   };
+
   const handlePlantChange = (value) => {
     setData((prev) => ({ ...prev, plant: value }));
   };
+
   return (
     <>
       {contextHolder}
@@ -299,7 +319,7 @@ const Settings = () => {
                 </div>
 
                 <div className="">
-                  <Input placeholder="*Enter Email" type='email' name='email' value={data.email} onChange={handleChange} className='p-2 custom-input' />
+                  <Input placeholder="*Enter Email" type='text' name='email' value={data.email} onChange={handleChange} className='p-2 custom-input' />
                   {error.email ? <span style={{ fontWeight: '600', color: 'red' }}>{error.email}</span> : ""}
                 </div>
                 <div className="">

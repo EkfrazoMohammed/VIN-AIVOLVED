@@ -12,7 +12,7 @@ import { reportApi } from "./../services/reportsApi";
 import {
   setSelectedDefect,
   setSelectedDefectReports,
-} from "../redux/slices/defectSlice"; // Import the actions
+} from "../redux/slices/defectSlice";
 
 import axios from "axios"
 import { getReportData, updatePage } from ".././redux/slices/reportSlice";
@@ -791,6 +791,7 @@ const Reports = () => {
           ) : null}
           <Button
             type="primary"
+            disabled={!reportData.length > 0}
             icon={<DownloadOutlined />}
             size="large"
             style={{ fontSize: "1rem", backgroundColor: "#ec522d" }}

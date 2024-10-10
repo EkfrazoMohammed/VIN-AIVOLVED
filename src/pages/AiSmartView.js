@@ -125,50 +125,61 @@ const AiSmartView = () => {
           </div>
         ) : (
           <>
-            {selectedDefect !== null && aismartviewData?.length > 0 ? (
+            {selectedDefect !== null ? (
               <>
-                <div className="AISmartContainer">
-                  <div className="AISmartContainer-top">
-                    <div>
-                      <strong>Machine:</strong>{" "}
-                      {decryptAES(aismartviewData[currentSlideIndex]?.machine_name)}
-                    </div>
-                    <div>
-                      <strong>Recorded Date & Time:</strong>{" "}
-                      {decryptAES(aismartviewData[currentSlideIndex]?.recorded_date_time).split("T").join(" ")}
-                    </div>
-                  </div>
-                  <Slider {...settings} ref={sliderRef} className="max-w-[100vh]">
-                    {aismartviewData?.map((item, index) => (
-                      <>
-                        <div key={index} className="aismart-item">
-                          <img
-                            src={decryptAES(item.image)}
-                            alt={`Slide ${index}`}
-                            style={{ maxHeight: "70vh", width: '40vw', display: "block", margin: "0 auto" }}
-                          />
+                {
+                  aismartviewData.length > 0 ?
+                    <>
+                      <div className="AISmartContainer">
+                        <div className="AISmartContainer-top">
+                          <div>
+                            <strong>Machine:</strong>{" "}
+                            {decryptAES(aismartviewData[currentSlideIndex]?.machine_name)}
+                          </div>
+                          <div>
+                            <strong>Recorded Date & Time:</strong>{" "}
+                            {decryptAES(aismartviewData[currentSlideIndex]?.recorded_date_time).split("T").join(" ")}
+                          </div>
                         </div>
-                      </>
-                    ))}
-                  </Slider>
 
-                </div>
-                <div className="flex items-center justify-between mt-4">
-                  <button
-                    onClick={handlePrev}
-                    disabled={currentSlideIndex === 0}
-                    className="bg-[#f50909] text-white py-2 px-4 rounded"
-                  >
-                    <LeftOutlined />
-                  </button>
-                  <button
-                    onClick={(i) => handleNext(i)}
-                    disabled={currentSlideIndex === 10}
-                    className="bg-[#f50909] text-white py-2 px-4 rounded"
-                  >
-                    <RightOutlined />
-                  </button>
-                </div>
+
+                        <Slider {...settings} ref={sliderRef} className="max-w-[100vh]">
+                          {aismartviewData?.map((item, index) => (
+                            <>
+                              <div key={index} className="aismart-item">
+                                <img
+                                  src={decryptAES(item.image)}
+                                  alt={`Slide ${index}`}
+                                  style={{ maxHeight: "70vh", width: '40vw', display: "block", margin: "0 auto" }}
+                                />
+
+                              </div>
+                            </>
+                          ))}
+                        </Slider>
+
+                      </div>
+
+                      <div className="flex items-center justify-between mt-4">
+                        <button
+                          onClick={handlePrev}
+                          disabled={currentSlideIndex === 0}
+                          className="bg-[#f50909] text-white py-2 px-4 rounded"
+                        >
+                          <LeftOutlined />
+                        </button>
+                        <button
+                          onClick={(i) => handleNext(i)}
+                          disabled={currentSlideIndex === 10}
+                          className="bg-[#f50909] text-white py-2 px-4 rounded"
+                        >
+                          <RightOutlined />
+                        </button>
+                      </div>
+                    </>
+                    : <div className="" style={{ height: "100%", maxHeight: "70vh", width: '100%', display: "flex", fontWeight: "800", justifyContent: "center", alignItems: "center" }}>NO DATA</div>
+
+                }
               </>
             ) : (
               <p className="text-lg text-black">Select a defect to view images.</p>

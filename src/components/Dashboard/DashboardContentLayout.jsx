@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import ProductAndDefect from "./ProductAndDefect";
 import DefectsReport from "./DefectsReport";
 import TotalOverview from "./TotalOverview";
@@ -58,6 +58,9 @@ const DashboardContentLayout = ({ children }) => {
     formattedStartDate,
     formattedEndDate,
   ]);
+
+  const rangePickerRef = useRef(null);
+  const [visible, setVisible] = useState(false);
   const currentUrlPath = useLocation();
   const handleMachineChange = (value) => {
     setFilterActive(false)
@@ -381,6 +384,30 @@ const DashboardContentLayout = ({ children }) => {
       </Menu.Item>
     </Menu>
   );
+
+  useEffect(() => {
+    // Function to handle scroll event
+    const handleScroll = () => {
+      // Close the RangePicker if it is open
+      if (visible) {
+        setVisible(false);
+      }
+    };
+
+    // Add the scroll event listener
+    window.addEventListener('scroll', handleScroll);
+
+    // Clean up event listener on component unmount
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [visible]); // Dependency array includes 'visible' to update on change
+
+  // Handle opening/closing of the RangePicker manually
+  const handleOpenChange = (open) => {
+    setVisible(open);
+  };
+
   return (
     <>
       {children &&
@@ -402,9 +429,13 @@ const DashboardContentLayout = ({ children }) => {
 
                     <SelectComponent placeholder={"Select Shift"} selectedData={selectedShiftRedux} setSelectedData={setSelectedShift} action={(val) => handleShiftChange(val)} data={shiftDataRedux} valueType="name" style={{ minWidth: "180px", zIndex: 1 }} size={"large"} />
 
-                    <RangePicker
+
+                    {/* <RangePicker
                       className="dx-default-date-range"
                       size="large"
+                      ref={rangePickerRef}
+                      open={visible} // Control the visibility based on scroll
+                      onOpenChange={handleOpenChange} // Update visibility state when user manually opens/closes
                       style={{ marginRight: "10px", minWidth: "280px", zIndex: 1 }}
                       onChange={handleDateRangeChange}
                       allowClear={false}
@@ -423,7 +454,35 @@ const DashboardContentLayout = ({ children }) => {
                           ]
                           : []
                       }
+                    /> */}
+
+                    <RangePicker
+                      className="dx-default-date-range"
+                      size="large"
+                      ref={rangePickerRef}
+                      open={visible} // Control visibility based on scroll
+                      onOpenChange={handleOpenChange} // Update visibility state when user manually opens/closes
+                      style={{ marginRight: "10px", minWidth: "280px", zIndex: 1 }}
+                      onChange={handleDateRangeChange}
+                      allowClear={false}
+                      inputReadOnly
+                      disabledDate={(current) => {
+                        const now = Date.now();
+                        const thirtyDaysAgo = new Date(now);
+                        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+                        return current && (current.valueOf() > now || current.valueOf() < thirtyDaysAgo);
+                      }}
+                      value={
+                        selectedDate
+                          ? [
+                            dayjs(selectedDate[0], "YYYY/MM/DD"),
+                            dayjs(selectedDate[1], "YYYY/MM/DD"),
+                          ]
+                          : []
+                      }
                     />
+
 
                     <div
                       type="primary"
