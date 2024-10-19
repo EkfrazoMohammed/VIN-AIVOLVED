@@ -161,36 +161,36 @@ else{
 <div className="slider-container">
       <Slider {...settings}>
       <div className="image_wrapper">
-    <img 
-        style={{height: '100%', width: '200px', objectFit: 'contain',objectPosition:'center'}} 
-        src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/hamamsoap.png" 
-        alt="" 
-    />
+      <img 
+          style={{height: '100%', width: '200px', objectFit: 'contain',objectPosition:'center'}} 
+          src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/k1_P88.png" 
+          alt="" 
+      />
 </div>
-<img 
-        style={{height: '100%', width: '200px', objectFit: 'contain',objectPosition:'center'}} 
-        src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/surfexcel.png" 
+{/* <img 
+        style={{maxHeight: '200px', maxWidth: '200px', objectFit: 'contain',objectPosition:'center'}} 
+        src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/k12.png" 
         alt="" 
-    />
+    /> */}
         <div  className="image_wrapper" >
 
-        <img style={{height: '100%', width: '200px',  objectFit: 'contain',objectPosition:'center'}} src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/dovesachet.png" alt="" />        </div>
+        <img style={{height: '100%', width: '200px',  objectFit: 'contain',objectPosition:'center'}} src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/k15.png" alt="" />        </div>
         <div  className="image_wrapper" >
-        <img style={{height: '100%', width: '200px',  objectFit: 'contain',objectPosition:'center'}}src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/sunsilksaceht.png" alt="" />        </div>
+        <img style={{height: '100%', width: '200px',  objectFit: 'contain',objectPosition:'center'}}src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/k12_Gpp.png" alt="" />        </div>
         <div  className="image_wrapper" >
-        <img style={{height: '100%', width: '200px',  objectFit: 'contain',objectPosition:'center'}}src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/clinicplus.png" alt="" />        </div>
+        <img style={{height: '100%', width: '200px',  objectFit: 'contain',objectPosition:'center'}}src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/k10_1.jpg" alt="" />        </div>
   
       </Slider>
     </div>
 </Col>
-<Col span={14} style={{display:'flex',justifyContent:"start",background:'#dfefff',flexDirection:'column',gap:"0rem",alignItems:"center"}}>
+<Col span={14} style={{display:'flex',justifyContent:"start",background:'#E8154B',flexDirection:'column',gap:"0rem",alignItems:"center"}}>
 <Row gutter={24} style={{display:'flex',justifyContent:'center',}}>
   <Col span={24} style={{display:'flex',justifyContent:'center',}}>  
   
-  <img style={{width:'50%'}} src="https://eimkeia.stripocdn.email/content/guids/CABINET_8270216c780e362a1fbcd636b59c67ae376eb446dc5f95e17700b638b8c3f618/images/131321hulremovebgpreview.png" alt="" />
+  <img style={{width:'50%'}} src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/kelloggslogodesignhistoryandevolutionkreafolk_25617f7875da46fea00fa866621aed54remove.png" alt="" />
   </Col>
 </Row>
-{
+{/* {
   loader ?        
   <div className="" style={{height:"50vh",display:'flex',justifyContent:'center',alignItems:'center'}}>
       <Hourglass
@@ -203,7 +203,7 @@ else{
   colors={[' #293dbe', '#293dbe']}
   />
   </div>    : 
-  <>
+  <> */}
   
 <Col  style={{display:'flex',justifyContent:'center'}}>
 
@@ -215,12 +215,13 @@ else{
 </div>
 <div className="" style={{display:'flex',flexWrap:'wrap',justifyContent:'center',width:'100%',gap:'0.5rem'}}>
 
- 
+{/*  
   {organization?.map((item, index) => {
           return (
-            <>
+            <> */}
             
-            <div   key={item.id} onClick={()=>{handleStorage(item);navigate('/dashboard-home')}}>
+            {/* <div   key={item.id} onClick={()=>{handleStorage(item);navigate('/dashboard-home')}}> */}
+            <div  onClick={()=>{navigate('/dashboard-home')}}>
               <Card
                 size="small"
                 style={{
@@ -242,30 +243,32 @@ else{
                   }}
                 >
                   <img
-                    src='https://media.licdn.com/dms/image/C4E12AQHw3bPisn1x0g/article-inline_image-shrink_1000_1488/0/1595858405291?e=1724284800&v=beta&t=mHKkjIq_LELHb3yT9Euo1vDxlSfmjlBlZwhTZPdJsDs'
+                    src='https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/kelloggslogodesignhistoryandevolutionkreafolk_25617f7875da46fea00fa866621aed54_8TP.jpg'
                     style={{     width: "90%",
-                        height: "90%",  borderRadius: "50%", }}
+                        height: "90%",  
+                        // borderRadius: "50%",
+                       }}
                     alt=""
                   />
                 </div>
                 <h5 style={{ textAlign: "center" }}>
-                  {item.plant_name}
+                  {'Kelloggs Plant'}
                 </h5>
               </Card>
             </div>
      
         
-            </>
+            {/* </>
           );
-        })}
+        })} */}
 
 
 
 </div>
 </div>
 </Col>
-  </>
-}
+  {/* </>
+} */}
 
 </Col>
 <Col span={5} style={{display:'flex',justifyContent:'center'}}>
@@ -273,23 +276,23 @@ else{
 <Slider {...settings}>
 <div className="slider-container">
       <Slider {...settings}>
-      <div className="image_wrapper">
-    <img 
-        style={{height: '100%', width: '200px', objectFit: 'contain',objectPosition:'center'}} 
-        src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/surfexcel.png" 
-        alt="" 
-    />
-</div>
-        <div  className="image_wrapper" >
+    
+<div  className="image_wrapper" >
 
-        <img style={{height: '100%', width: '200px',  objectFit: 'contain',objectPosition:'center'}} src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/lifebuoy.png" alt="" />        </div>
-        <div  className="image_wrapper" >
-        <img style={{height: '100%', width: '200px',  objectFit: 'contain',objectPosition:'center'}}src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/comfortgreen.png" alt="" />        </div>
-        <div  className="image_wrapper" >
-        <img style={{height: '100%', width: '200px',  objectFit: 'contain',objectPosition:'center'}}src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/comfortpink.png" alt="" />        </div>
-        <div  className="image_wrapper" >
-        <img style={{height: '100%', width: '200px',  objectFit: 'contain',objectPosition:'center'}}src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/comfortblue.png" alt="" />        </div>
-  
+<img style={{height: '100%', width: '200px',  objectFit: 'contain',objectPosition:'center'}} src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/k15.png" alt="" />        </div>
+<div  className="image_wrapper" >
+<img style={{height: '100%', width: '200px',  objectFit: 'contain',objectPosition:'center'}}src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/k12_Gpp.png" alt="" />        </div>
+<div  className="image_wrapper" >
+<img style={{height: '100%', width: '200px',  objectFit: 'contain',objectPosition:'center'}}src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/k10_1.jpg" alt="" />        </div>
+
+<div  className="image_wrapper" >
+
+<img style={{height: '100%', width: '200px',  objectFit: 'contain',objectPosition:'center'}} src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/k15.png" alt="" />        </div>
+<div  className="image_wrapper" >
+<img style={{height: '100%', width: '200px',  objectFit: 'contain',objectPosition:'center'}}src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/k12_Gpp.png" alt="" />        </div>
+<div  className="image_wrapper" >
+<img style={{height: '100%', width: '200px',  objectFit: 'contain',objectPosition:'center'}}src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/k10_1.jpg" alt="" />        </div>
+
       </Slider>
     </div>
       </Slider>

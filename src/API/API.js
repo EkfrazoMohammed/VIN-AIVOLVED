@@ -7,6 +7,7 @@ import axios from "axios";
 
 
 const baseURL = 'http://localhost:8000/api/';
+// const baseURL=`http://kellogs.aivolved.in/api/`;
 
 const token = localStorage.getItem("token");
 const AuthToken = JSON.parse(token)
