@@ -192,7 +192,7 @@ const Settings = () => {
         }
       }
     }
-
+    
   };
 
   // Reset form function to clear form data and errors
@@ -208,6 +208,7 @@ const Settings = () => {
     });
     setLoading(false);
     setError({});
+    setLoading(false);
   };
 
   const handleChange = (e) => {
