@@ -16,9 +16,10 @@ const settings = {
   vertical: true,
   verticalSwiping: false,
   autoplay: true,
-  speed: 1500,
-  autoplaySpeed: 1,
+  speed: 1000,
+  autoplaySpeed: 5,
 };
+
 
 const Plant = () => {
 
@@ -74,42 +75,25 @@ const Plant = () => {
     fetchPlantData();
   }, [accessToken]);
 
+  const images1 = [
+    'https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/clinicplus.png',
+    'https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/lifebuoy.png',
+    'https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/surfexcel.png',
+    'https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/comfortgreen.png',
+    'https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/comfortpink.png',
+    'https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/comfortblue.png',
 
+  ];
+  const images2 = [
+    'https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/clinicplus.png',
+    'https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/dovesachet.png',
+    'https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/hamamsoap.png',
+    "https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/surfexcel.png",
+    "https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/sunsilksaceht.png"
+  ]
   return (
-    <Row className="h-screen m-0 p-0 overflow-hidden">
-      <Col span={5} className="flex justify-center p-0 m-0">
-
-        <div className="slider-container">
-          <Slider {...settings}>
-            <div className="image_wrapper">
-              <img
-                style={{ height: '100%', width: '200px', objectFit: 'contain', objectPosition: 'center' }}
-                src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/hamamsoap.png"
-                alt=""
-              />
-            </div>
-            <img
-              style={{ height: '100%', width: '200px', objectFit: 'contain', objectPosition: 'center' }}
-              src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/surfexcel.png"
-              alt=""
-            />
-            <div className="image_wrapper" >
-
-              <img style={{ height: '100%', width: '200px', objectFit: 'contain', objectPosition: 'center' }} src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/dovesachet.png" alt="" />        </div>
-            <div className="image_wrapper" >
-              <img style={{ height: '100%', width: '200px', objectFit: 'contain', objectPosition: 'center' }} src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/sunsilksaceht.png" alt="" />        </div>
-            <div className="image_wrapper" >
-              <img style={{ height: '100%', width: '200px', objectFit: 'contain', objectPosition: 'center' }} src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/clinicplus.png" alt="" />        </div>
-
-          </Slider>
-        </div>
-      </Col>
-      <Col span={14} className="flex justify-start bg-[#dfefff] flex-col gap-0 items-center">
-        <Row className="flex justify-center">
-          <Col span={24} className="flex justify-center">
-            <img className="w-1/2" src="https://eimkeia.stripocdn.email/content/guids/CABINET_8270216c780e362a1fbcd636b59c67ae376eb446dc5f95e17700b638b8c3f618/images/131321hulremovebgpreview.png" alt="" />
-          </Col>
-        </Row>
+    <Row className="h-screen  overflow-hidden flex  bg-[#dfefff] justify-center items-center gap-4 p-2">
+      <Col span={15} className="flex justify-start flex-col gap-0 items-center my-2 p-0">
         {loader ?
           <div className="h-[50vh] flex justify-center items-center">
             <Hourglass
@@ -122,14 +106,17 @@ const Plant = () => {
           </div>
           :
           <>
-            <Col className="flex justify-center">
-              <div className="mytab-content p-2 flex gap-2  min-w-[40vw] flex-col">
-                <h3 className="text-black text-xl font-bold">Plants</h3>
-                <h5>Choose Plants</h5>              
+            <Col className=" w-full">
+              <div className="mytab-content  flex gap-2  flex-col w-full ">
+                <h3 className="text-black text-3xl font-bold ">Plants</h3>
+                <span className="text-xl flex-col flex w-[130px] justify-center items-center gap-1">
+                  <span>Choose Plants</span>
+                  <span className="bg-[#2734c1] w-[90%] h-0.5"></span>
+                </span>
                 {plant.length > 0 && (
-                  <Row gutter={[24, 24]} className="plant-row">
+                  <Row gutter={[24, 24]} className="plant-row my-3  justify-between">
                     {plant.map((plant) => (
-                      <Col span={8} key={plant.id}>
+                      <Col span={8} key={plant.id} >
                         <Card
                           hoverable
                           className="custom-card"
@@ -139,10 +126,10 @@ const Plant = () => {
 
                             <img
                               src='https://eimkeia.stripocdn.email/content/guids/CABINET_8270216c780e362a1fbcd636b59c67ae376eb446dc5f95e17700b638b8c3f618/images/131321hulremovebgpreview.png'
-                              style={{ width: "100%", height: "100%", borderRadius: "50%", }}
+                              style={{ width: "100%", height: "50%", borderRadius: "50%", }}
                               alt=""
                             />
-                            <h3 className="font-semibold text-xl">{plant.plant_name}</h3>
+                            <h3 className="font-bold text-[18px]  text-center whitespace-nowrap overflow-hidden w-[95%] text-ellipsis">{plant.plant_name}</h3>
                           </div>
                         </Card>
                       </Col>
@@ -154,29 +141,24 @@ const Plant = () => {
           </>
         }
       </Col>
+      <Col span={4} className="flex justify-center my-3 bg-white rounded-3xl h-[95vh]">
 
-      <Col span={5} style={{ display: 'flex', justifyContent: 'center' }}>
+        <div className="scroll-container">
+          <div className="scroll-content2 ">
+            {[...images2, ...images2].map((img, index) => (
+              <img key={index} src={img} alt={`img-${index}`} className="image" />
+            ))}
+          </div>
+        </div>
+      </Col>
+      <Col span={4} className="my-3 bg-white rounded-3xl flex justify-center h-[95VH]" >
 
-        <div className="slider-container">
-          <Slider {...settings}>
-            <div className="image_wrapper">
-              <img
-                style={{ height: '100%', width: '200px', objectFit: 'contain', objectPosition: 'center' }}
-                src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/surfexcel.png"
-                alt=""
-              />
-            </div>
-            <div className="image_wrapper" >
-
-              <img style={{ height: '100%', width: '200px', objectFit: 'contain', objectPosition: 'center' }} src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/lifebuoy.png" alt="" />        </div>
-            <div className="image_wrapper" >
-              <img style={{ height: '100%', width: '200px', objectFit: 'contain', objectPosition: 'center' }} src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/comfortgreen.png" alt="" />        </div>
-            <div className="image_wrapper" >
-              <img style={{ height: '100%', width: '200px', objectFit: 'contain', objectPosition: 'center' }} src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/comfortpink.png" alt="" />        </div>
-            <div className="image_wrapper" >
-              <img style={{ height: '100%', width: '200px', objectFit: 'contain', objectPosition: 'center' }} src="https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/comfortblue.png" alt="" />        </div>
-
-          </Slider>
+        <div className="scroll-container">
+          <div className="scroll-content ">
+            {[...images1, ...images1].map((img, index) => (
+              <img key={index} src={img} alt={`img-${index}`} className="image" />
+            ))}
+          </div>
         </div>
 
       </Col>

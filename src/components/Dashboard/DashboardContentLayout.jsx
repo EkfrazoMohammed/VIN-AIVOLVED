@@ -4,7 +4,7 @@ import DefectsReport from "./DefectsReport";
 import TotalOverview from "./TotalOverview";
 import { IoMdArrowForward } from "react-icons/io";
 import { useSelector, useDispatch } from "react-redux";
-import { initialDashboardData, getMachines, getSystemStatus, getDepartments, initialDpmuData, initialProductionData, getProducts, getDefects, getRoles, dpmuFilterData, dpmuFilterDate } from "../../services/dashboardApi";
+import { initialDashboardData, getMachines, getSystemStatus, getDepartments, initialDpmuData, initialProductionData, getProducts, getDefects, getRoles, dpmuFilterData, dpmuFilterDate, getAverageDpmu } from "../../services/dashboardApi";
 import { setSelectedMachine, setSelectedMachineDpmu } from "../../redux/slices/machineSlice"
 import { setSelectedProduct } from "../../redux/slices/productSlice"
 import { getDashboardSuccess, getDashboardFailure } from "../../redux/slices/dashboardSlice"
@@ -57,6 +57,8 @@ const DashboardContentLayout = ({ children }) => {
     formattedEndDate,
   ]);
 
+
+  const [textData, setTextData] = useState(null);
   const rangePickerRef = useRef(null);
   const [visible, setVisible] = useState(false);
   const currentUrlPath = useLocation();
@@ -104,7 +106,7 @@ const DashboardContentLayout = ({ children }) => {
   };
   useEffect(() => {
     resetFilter()
-  }, [localPlantData])
+  }, [localPlantData, currentUrlPath])
 
   const resetFilter = () => {
     initialDashboardData(localPlantData.id, accessToken, apiCallInterceptor);
@@ -150,7 +152,7 @@ const DashboardContentLayout = ({ children }) => {
       const queryString = new URLSearchParams(encryptedUrl).toString();
 
       const defectUrl = `defct-vs-machine/?${queryString}`;
-    
+
       const [defectResponse] = await Promise.all([
         apiCallInterceptor.get(defectUrl),
       ])
@@ -169,12 +171,11 @@ const DashboardContentLayout = ({ children }) => {
 
     if (!selectedMachineRedux) {
       initialDpmuData(localPlantData.id, accessToken, apiCallInterceptor);
-      initialProductionData(localPlantData.id, accessToken, apiCallInterceptor)
+      // initialProductionData(localPlantData.id, accessToken, apiCallInterceptor)
       setFilterActive(false)
     }
-
     if (selectedDate || selectedMachineRedux) {
-      handelFilterProduction();
+      handelFilterProduction()
     }
 
     const [fromDate, toDate] = dateRange;
@@ -229,7 +230,6 @@ const DashboardContentLayout = ({ children }) => {
   };
 
 
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -245,6 +245,7 @@ const DashboardContentLayout = ({ children }) => {
           initialDashboardData(localPlantData.id, accessToken, apiCallInterceptor),
           initialProductionData(localPlantData.id, accessToken, apiCallInterceptor),
           getSystemStatus(localPlantData.id, accessToken, apiCallInterceptor),
+          getAverageDpmu(localPlantData.id, apiCallInterceptor, setTextData)
         ]);
       } catch (err) {
         console.log(err.message || "Failed to fetch data")
@@ -363,7 +364,7 @@ const DashboardContentLayout = ({ children }) => {
               style={{ display: "flex", flexDirection: "column" }}
             >
               <p style={{ fontSize: "1.1rem", width: "100%" }} value={prod}>
-             {prod}
+                {prod}
               </p>
             </div>
           ))}
@@ -404,7 +405,7 @@ const DashboardContentLayout = ({ children }) => {
       ) : (
         <>
           <div className="dx-row flex  pb-4 gap-3">
-            <TotalOverview machine={machines} />
+            <TotalOverview machine={machines} textData={textData} />
             <div className="overview-container w-9/12 flex flex-col justify-between p-3 rounded-md border-2">
               <div className="filter-lg-w">
                 <div className="inner-w">

@@ -230,11 +230,12 @@ label::after {
 }
 
 :where(.css-dev-only-do-not-override-kghr11).ant-card .ant-card-body {
-  padding: 24px;
+  padding: 14px;
   border-radius: 0 0 8px 8px;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  /* gap: 1rem; */
+
 }
 
 :where(.css-dev-only-do-not-override-kghr11).ant-checkbox-wrapper:not(.ant-checkbox-wrapper-disabled):hover .ant-checkbox-checked:not(.ant-checkbox-disabled) .ant-checkbox-inner {

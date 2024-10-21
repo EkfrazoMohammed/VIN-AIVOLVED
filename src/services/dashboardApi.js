@@ -94,6 +94,17 @@ export const getDepartments = (plantName, token, apiCallInterceptor) => {
     });
 };
 
+export const getAverageDpmu = (plantId, apiCallInterceptor, setTextData) => {
+  const encryptedPlantId = encryptAES(JSON.stringify(plantId))
+  let url = `average-dpmu/?plant_id=${encryptedPlantId}`
+  apiCallInterceptor.get(url).then((res) => {
+    setTextData(res.data);
+  })
+    .catch((err) => {
+      console.log(err)
+    })
+}
+
 export const getProducts = (plantName, token, apiCallInterceptor) => {
   let encryptedPlantName = encryptAES(plantName).replace(/^"|"$/g, "");
   encryptedPlantName = decodeURIComponent(encryptedPlantName);

@@ -35,6 +35,7 @@ export default function RealTimeManufacturingSection({
 
   const options = {
     responsive: true,
+
     plugins: {
       legend: {
         display: false,

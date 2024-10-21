@@ -8,9 +8,11 @@ Chart.register(ChartDataLabels);
 
 const ProductAndDefect = ({ chartData }) => {
 
+
   const totalProduction = chartData.reduce(
     (sum, item) => sum + parseInt(item.total_production, 10),
     0
+
   );
 
   const totalDefects = chartData.reduce(
@@ -114,7 +116,7 @@ const ProductAndDefect = ({ chartData }) => {
       },
     ],
   };
-  
+
   const options = {
     responsive: true,
     indexAxis: 'y', // This makes the bar chart horizontal
@@ -131,7 +133,7 @@ const ProductAndDefect = ({ chartData }) => {
       },
       datalabels: {
         anchor: 'end',
-        align: 'end',
+        align: chartData.length === 1 ? "center" : "end",
         color: 'black',
         font: {
           weight: 'bold',
@@ -164,16 +166,16 @@ const ProductAndDefect = ({ chartData }) => {
     },
     elements: {
       bar: {
-        borderWidth: 2,
+        borderWidth: 0,
       },
     },
     animation: {
       duration: 500,
     },
   };
-  
-  
-  
+
+
+
 
   return (
     <div className="py-3 w-full ">

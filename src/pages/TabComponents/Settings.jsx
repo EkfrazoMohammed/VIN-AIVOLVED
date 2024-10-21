@@ -127,7 +127,6 @@ const Settings = () => {
     try {
       const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
       let errors = {};
-
       // Validate fields
       if (!data.first_name) errors.firstName = "*Please Enter First Name";
       if (!data.last_name) errors.lastName = "*Please Enter Last Name";
@@ -193,7 +192,7 @@ const Settings = () => {
         }
       }
     }
-    
+
   };
 
   // Reset form function to clear form data and errors
@@ -207,16 +206,16 @@ const Settings = () => {
       plant: null,
       role: null,
     });
+    setLoading(false);
     setError({});
   };
-      setLoading(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target
     const emailRegex = /^[^\s@]+@[^\s@]+\[^\s@]+$/;
 
     if (name === "first_name") {
-      setError((prev) => ({ ...prev, fistName: "" }))
+      setError((prev) => ({ ...prev, firstName: "" }))
     }
     if (name === "last_name") {
       setError((prev) => ({ ...prev, lastName: "" }))
@@ -312,7 +311,7 @@ const Settings = () => {
               <div className="" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', padding: '1rem', fontWeight: '600' }}>
                 <div className="">
                   <Input placeholder="*Enter First Name" type='text' name='first_name' value={data.first_name} onChange={handleChange} helper className='p-2 custom-input' />
-                  {error.fistName ? <span style={{ fontWeight: '600', color: 'red' }}>{error.fistName}</span> : ""}
+                  {error.firstName ? <span style={{ fontWeight: '600', color: 'red' }}>{error.firstName}</span> : ""}
                 </div>
                 <div className="">
                   <Input placeholder="*Enter Last Name" type='text' name='last_name' value={data.last_name} onChange={handleChange} className='p-2 custom-input' />
@@ -405,6 +404,7 @@ const Settings = () => {
                 </div> */}
               </div>
               <div className="" style={{ display: 'flex', justifyContent: 'flex-end', padding: '1rem' }}>
+                
                 <Button type="primary" style={{ width: '20%', padding: '0' }} danger onClick={() => handlePost()}>
                   Submit
                 </Button>

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import Slider from "react-slick";
-import { Select } from "antd";
+import { Button, Select } from "antd";
 import { useSelector } from "react-redux";
 import { RightOutlined, LeftOutlined } from "@ant-design/icons";
 import { Hourglass } from "react-loader-spinner";
@@ -95,7 +95,7 @@ const AiSmartView = () => {
     slidesToScroll: 1,
     afterChange: (index) => setCurrentSlideIndex(index),
   };
-
+  console.log(aismartviewData.length)
   return (
     <div className="flex min-h-[calc(100vh-120px)] gap-2">
       <div
@@ -161,20 +161,27 @@ const AiSmartView = () => {
                       </div>
 
                       <div className="flex items-center justify-between mt-4">
-                        <button
-                          onClick={handlePrev}
-                          disabled={currentSlideIndex === 0}
-                          className="bg-[#f50909] text-white py-2 px-4 rounded"
-                        >
-                          <LeftOutlined />
-                        </button>
-                        <button
-                          onClick={(i) => handleNext(i)}
-                          disabled={currentSlideIndex === 10}
-                          className="bg-[#f50909] text-white py-2 px-4 rounded"
-                        >
-                          <RightOutlined />
-                        </button>
+                        {
+                          aismartviewData.length > 2 &&
+                          <button
+
+                            onClick={handlePrev}
+                            disabled={currentSlideIndex === 0}
+                            className="bg-[#f50909] py-2 px-3 rounded-lg text-white"
+                          >
+                            <LeftOutlined />
+                          </button>
+                        }
+                        {
+                          aismartviewData.length > 2 &&
+                          <button
+                            onClick={(i) => handleNext(i)}
+                            disabled={currentSlideIndex === 10}
+                            className="bg-[#f50909] py-2 px-3 rounded-lg text-white"
+                          >
+                            <RightOutlined />
+                          </button>
+                        }
                       </div>
                     </>
                     : <div className="" style={{ height: "100%", maxHeight: "70vh", width: '100%', display: "flex", fontWeight: "800", justifyContent: "center", alignItems: "center" }}>NO DATA</div>

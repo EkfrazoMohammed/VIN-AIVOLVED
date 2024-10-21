@@ -6,7 +6,7 @@ import { DownloadOutlined } from "@ant-design/icons";
 import { Hourglass } from "react-loader-spinner";
 import dayjs from "dayjs";
 import { useSelector, useDispatch } from "react-redux";
-import { getDefects} from "./../services/dashboardApi";
+import { getDefects } from "./../services/dashboardApi";
 import { reportApi } from "./../services/reportsApi";
 
 import {
@@ -731,17 +731,17 @@ const Reports = () => {
               Reset Filter
             </Button>
           ) : null}
-          {reportData?.length>0 ? (
- <Button
- type="primary"
- icon={<DownloadOutlined />}
- size="large"
- style={{ fontSize: "1rem", backgroundColor: "#ec522d" }}
- onClick={downloadExcel}
->
- Download Excel
-</Button>
-          ):null}
+          {reportData?.length > 0 ? (
+            <Button
+              type="primary"
+              icon={<DownloadOutlined />}
+              size="large"
+              style={{ fontSize: "1rem", backgroundColor: "#ec522d" }}
+              onClick={downloadExcel}
+            >
+              Download Excel
+            </Button>
+          ) : null}
           {/* <Button
             type="primary"
             disabled={!reportData.length > 0}
