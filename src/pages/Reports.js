@@ -26,6 +26,7 @@ import { saveAs } from 'file-saver';
 import { Modal } from "antd";
 import SelectComponent from "../components/common/Select";
 import { setSelectedShift } from "../redux/slices/shiftSlice";
+import { clearConfig } from "dompurify";
 
 
 const columns = [
@@ -422,9 +423,9 @@ const Reports = () => {
   };
 
   const handleApplyFilters = (page = 1) => {
-    if (!selectedMachineRedux && !selectedProductRedux && !selectedDefectRedux && !selectedShiftRedux) {
-      resetFilter()
-    }
+    // if (!selectedMachineRedux && !selectedProductRedux && !selectedDefectRedux && !selectedShiftRedux) {
+    //   resetFilter()
+    // }
     const params = {
       page: page, // Ensure this uses the provided page (default is 1)
       page_size: pagination.pageSize,
@@ -455,6 +456,9 @@ const Reports = () => {
         return [key, val];
       })
     );
+// console.log(encryptedUrl)
+//     const decrypt = decryptAES(encryptedUrl.machine_id)
+//     console.log(decrypt,"<")
 
     const queryString = new URLSearchParams(encryptedUrl).toString();
     const url = `reports/?${queryString}`;
@@ -738,6 +742,7 @@ const Reports = () => {
               size="large"
               style={{ fontSize: "1rem", backgroundColor: "#ec522d" }}
               onClick={downloadExcel}
+            
             >
               Download Excel
             </Button>

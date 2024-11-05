@@ -47,6 +47,7 @@ import {
   getDashboardSuccess,
   getDashboardFailure,
 } from "../redux/slices/dashboardSlice";
+import { clearConfig } from "dompurify";
 
 export const baseURL =
   process.env.REACT_APP_API_BASE_URL || "https://hul.aivolved.in/api/";
@@ -220,7 +221,7 @@ export const dpmuFilterData = (apiCallInterceptor, machineId, plantId, dateRange
           const itemDate = new Date(item.date_time); // Convert item date to Date object
           return itemDate >= from && itemDate <= to; // Check if itemDate is within the range
         });
-        store.dispatch(getDpmuSuccess(filteredData));
+        store.dispatch(getDpmuSuccess(filteredData.slice(-15)));
       }
     })
     .catch((error) => {
@@ -241,7 +242,8 @@ export const initialProductionData = (plantId, token, apiCallInterceptor) => {
   apiCallInterceptor
     .get(url)
     .then((response) => {
-      store.dispatch(getProductVsDefectSuccess(response.data.data_last_7_days));
+      // console.log(response.data.data_last_7_days.toSpliced(0,1))
+      store.dispatch(getProductVsDefectSuccess(response.data.data_last_7_days.toSpliced(0,1)));
       // return response.data.data_last_7_days;
     })
     .catch((error) => {
@@ -298,7 +300,7 @@ const isEmptyDashboardResponse = (data) => {
 
 export const initialDashboardData = (plantId, token, apiCallInterceptor) => {
   const startDate = new Date();
-  startDate.setDate(startDate.getDate() - 7); // 7 days ago
+  startDate.setDate(startDate.getDate() - 6); // 7 days ago
   const formattedStartDate = startDate.toISOString().slice(0, 10);
   // Format startDate as YYYY-MM-DD
 

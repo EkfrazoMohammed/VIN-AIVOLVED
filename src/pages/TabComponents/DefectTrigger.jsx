@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import { getTriggerDefects, postTriggerData } from '../../services/defectTriggerApi';
 
 const App = () => {
+    const [expandedRowKey, setExpandedRowKey] = useState(null);
 
     const apiCallInterceptor = useApiInterceptor();
 
@@ -147,37 +148,51 @@ const App = () => {
         />
     );
 
+    // Function to handle row expansion (accordion style)
+    const handleRowExpand = (expanded, record) => {
+      if (expanded) {
+        setExpandedRowKey(record.key);  // Open the clicked row
+      } else {
+        setExpandedRowKey(null);  // Close the row
+      }
+    };
+
     return (
         <ConfigProvider
-            theme={{
-                components: {
-                    Table: {
-                        colorBgContainer: '#fff',
-                        colorPrimary: '#000',
-                        colorFillAlter: '#fff',
-                        controlHeight: 48,
-                        headerBg: '#ad3737',
-                        headerColor: '#fff',
-                        rowHoverBg: '#e6f7ff',
-                        padding: '1rem',
-                        boxShadowSecondary:
-                            '0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05)',
-                        fontWeightStrong: 500,
-                    },
-                },
-            }}
-        >
-            <Table
-                columns={columns}
-                className="custom-table"
-                style={{ boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)', borderRadius: '8px' }}
-                pagination={false}
-                expandable={{
-                    expandedRowRender,
-                }}
-                dataSource={dataSource}
-            />
-        </ConfigProvider>
+        theme={{
+          components: {
+            Table: {
+              colorBgContainer: '#fff',
+              colorPrimary: '#000',
+              colorFillAlter: '#fff',
+              controlHeight: 48,
+              headerBg: '#ad3737',
+              headerColor: '#fff',
+              rowHoverBg: '#e6f7ff',
+              padding: '1rem',
+              boxShadowSecondary:
+                '0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05)',
+              fontWeightStrong: 500,
+            },
+          },
+        }}
+      >
+        <Table
+          columns={columns}
+          dataSource={dataSource}
+          pagination={false}
+          expandable={{
+            expandedRowRender,  
+            expandedRowKeys: expandedRowKey ? [expandedRowKey] : [],
+            onExpand: handleRowExpand,  
+          }}
+          className="custom-table"
+          style={{
+            boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
+            borderRadius: '8px',
+          }}
+        />
+      </ConfigProvider>
     );
 
 };
