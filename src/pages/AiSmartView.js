@@ -157,10 +157,11 @@ const AiSmartView = () => {
                             </>
                           ))}
                         </Slider>
-
                       </div>
 
                       <div className="flex items-center justify-between mt-4">
+                        <>
+
                         {
                           aismartviewData.length > 2 &&
                           <button
@@ -172,6 +173,9 @@ const AiSmartView = () => {
                             <LeftOutlined />
                           </button>
                         }
+
+                                                <div className="bg-red-600 w-20 h-10 text-white font-bold flex justify-center items-center rounded-full"> Page {pagination.currentPage}</div>
+
                         {
                           aismartviewData.length > 2 &&
                           <button
@@ -182,6 +186,7 @@ const AiSmartView = () => {
                             <RightOutlined />
                           </button>
                         }
+                        </>
                       </div>
                     </>
                     : <div className="" style={{ height: "100%", maxHeight: "70vh", width: '100%', display: "flex", fontWeight: "800", justifyContent: "center", alignItems: "center" }}>NO DATA</div>
