@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import ReactApexChart from "react-apexcharts";
 import { Typography } from "antd";
-import LoaderIcon from "../LoaderIcon";
 import { useSelector } from "react-redux";
 
 function StackChart({ data }) {
@@ -9,16 +8,14 @@ function StackChart({ data }) {
   const { Title } = Typography;
   const [defectColors, setDefectColors] = useState({});
   const [visibleSeries, setVisibleSeries] = useState({});
-  const defectsData = useSelector((state) => state.defect.defectsData)
+  const defectsData = useSelector((state) => state.defect.defectsData);
 
   useEffect(() => {
-
     const colors = {};
     defectsData.forEach((defect) => {
       colors[defect.name] = defect.color_code;
     });
     setDefectColors(colors);
-
   }, [accessToken]);
 
   const defectNames = [
@@ -27,7 +24,6 @@ function StackChart({ data }) {
   const sortedDates = Object.keys(data).sort(
     (a, b) => new Date(a) - new Date(b)
   );
-
 
   useEffect(() => {
     const resetVisibility = defectNames.reduce((acc, name) => {
@@ -56,6 +52,8 @@ function StackChart({ data }) {
       chart: {
         type: "bar",
         height: 350,
+        colors:"#000",
+       
         stacked: true,
         toolbar: {
           show: false,
@@ -67,6 +65,25 @@ function StackChart({ data }) {
           enabled: false,
         },
       },
+      dataLabels: {
+        enabled: true,
+        formatter: function (val) {
+          return val.toFixed(0);
+        },
+
+        style: {
+          fontSize: '12px',
+          fontFamily: 'Helvetica, Arial, sans-serif',
+          fontWeight: 'bold',
+          colors: ["#000"],
+          textShadow: "none",
+        },
+        dropShadow: {
+          enabled: false, // Ensures no shadow covers the text
+        },
+
+      },
+      
       xaxis: {
         type: "category",
         categories: sortedDates,
@@ -90,14 +107,13 @@ function StackChart({ data }) {
       },
       legend: {
         show: false,
-
       },
       fill: {
         opacity: 1,
       },
       plotOptions: {
         bar: {
-          columnWidth: "50%",
+          columnWidth: sortedDates.length > 7 ? "80%" : "50%",
         },
       },
     },
@@ -110,10 +126,6 @@ function StackChart({ data }) {
     }));
   };
 
-  // if (!data || Object.keys(data).length === 0) {
-  //   return <div className="flex items-center justify-center w-full h-full font-bold ">NO DATA</div>;
-  // }
-
   return (
     <div>
       <div>
@@ -125,7 +137,14 @@ function StackChart({ data }) {
         {defectNames.map((defectName, index) => {
           const color = defectColors[defectName] || fallbackColors[index % fallbackColors.length];
           return (
-            <label key={defectName} style={{ marginRight: "10px", display: "flex", alignItems: "center" }}>
+            <label
+              key={defectName}
+              style={{
+                marginRight: "10px",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
               <input
                 type="checkbox"
                 checked={visibleSeries[defectName]}
@@ -147,17 +166,43 @@ function StackChart({ data }) {
           );
         })}
       </div>
+     <div className="w-full ">
       {
-
-        !data || Object.keys(data).length === 0 ?
-          <div className="flex items-center justify-center w-full h-48 font-bold ">NO DATA</div> :
-          <ReactApexChart
-            options={chartData.options}
-            series={chartData.series}
-            type="bar"
-            height={350}
-          />
+        !data || Object.keys(data).length === 0 ? (
+          <div className="flex items-center justify-center w-full h-48 font-bold ">
+            NO DATA
+          </div>
+        ) : (
+          <div
+            style={{
+              width: "100%",
+           
+              overflowX: sortedDates.length > 7 ? "auto" : "hidden", // Enable horizontal scroll if there are more than 7 dates
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                width: `100%`, // Adjust width to accommodate the number of dates
+              }}
+            >
+              <ReactApexChart
+                options={chartData.options}
+                series={chartData.series}
+                type="bar"
+                height={350}
+                width={
+                  sortedDates.length < 3
+                    ? 500
+                    : sortedDates.length > 5
+                    ? `${sortedDates.length * 28}%`
+                    : `${sortedDates.length * 50}%`
+                }                            />
+            </div>
+          </div>
+        )
       }
+     </div>
     </div>
   );
 }

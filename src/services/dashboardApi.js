@@ -221,7 +221,7 @@ export const dpmuFilterData = (apiCallInterceptor, machineId, plantId, dateRange
           const itemDate = new Date(item.date_time); // Convert item date to Date object
           return itemDate >= from && itemDate <= to; // Check if itemDate is within the range
         });
-        store.dispatch(getDpmuSuccess(filteredData.slice(-15)));
+        store.dispatch(getDpmuSuccess(filteredData));
       }
     })
     .catch((error) => {

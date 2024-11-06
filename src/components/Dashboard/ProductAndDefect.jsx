@@ -120,6 +120,7 @@ const ProductAndDefect = ({ chartData }) => {
   const options = {
     responsive: true,
     indexAxis: 'y', // This makes the bar chart horizontal
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         display: true,
@@ -202,11 +203,38 @@ const ProductAndDefect = ({ chartData }) => {
         </div>
 
         <div className="w-10/12 h-full">
-          {
-            !chartData?.every(item => item.total_production === 0 && item.total_defects === 0) ?
-              <Bar data={data} options={options} /> :
-              <div className="flex justify-center items-center font-extrabold h-52 w-full ">NO DATA</div>
-          }        </div>
+  {
+    !chartData?.every(item => item.total_production === 0 && item.total_defects === 0) ? (
+      <div
+        style={{
+          width: "100%",
+          height: "500px", 
+          maxHeight: "100%", 
+          overflowY: chartData?.length > 15 ? "auto" : "visible", 
+        }}
+      >
+        <div
+          style={{
+            height: chartData?.length * 60 + "px", 
+            minHeight: "100%", 
+            width: "100%", 
+            display: "flex", 
+            justifyContent: "flex-start", 
+            flexDirection: "column", 
+          }}
+        >
+          {/* Render your Bar chart here */}
+          <Bar data={data} options={options} />
+        </div>
+      </div>
+    ) : (
+      <div className="flex justify-center items-center font-extrabold h-52 w-full">
+        NO DATA
+      </div>
+    )
+  }
+</div>
+
       </div>
     </div>
   );
