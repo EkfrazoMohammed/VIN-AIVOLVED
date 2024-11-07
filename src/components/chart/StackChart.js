@@ -192,10 +192,10 @@ function StackChart({ data }) {
                 type="bar"
                 height={350}
                 width={
-                  sortedDates.length < 3
-                    ? 500
+                  sortedDates.length <= 5
+                    ? 450
                     : sortedDates.length > 5
-                    ? `${sortedDates.length * 28}%`
+                    ? `${sortedDates.length * 22}%`
                     : `${sortedDates.length * 50}%`
                 }                            />
             </div>
