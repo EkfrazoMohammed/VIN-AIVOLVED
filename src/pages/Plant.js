@@ -92,7 +92,7 @@ const Plant = () => {
     "https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/sunsilksaceht.png"
   ]
   return (
-    <Row className="h-screen  overflow-hidden flex  bg-[#dfefff] justify-center items-center gap-4 p-2">
+    <Row className="h-screen  overflow-hidden flex  bg-[#43996A] justify-center items-center gap-4 p-2">
       <Col span={15} className="flex justify-start flex-col gap-0 items-center my-2 p-0">
         {loader ?
           <div className="h-[50vh] flex justify-center items-center">
@@ -111,7 +111,7 @@ const Plant = () => {
                 <h3 className="text-black text-3xl font-bold ">Plants</h3>
                 <span className="text-xl flex-col flex w-[130px] justify-center items-center gap-1">
                   <span>Choose Plants</span>
-                  <span className="bg-[#2734c1] w-[90%] h-0.5"></span>
+                  <span className="bg-[#06175d] w-[90%] h-0.5"></span>
                 </span>
                 {plant.length > 0 && (
                   <Row gutter={[24, 24]} className="plant-row my-3  justify-between">
@@ -129,7 +129,7 @@ const Plant = () => {
                               style={{ width: "100%", height: "50%", borderRadius: "50%", }}
                               alt=""
                             />
-                            <h3 className="font-bold text-[18px]  text-center whitespace-nowrap overflow-hidden w-[95%] text-ellipsis">{plant.plant_name}</h3>
+                            <h3 className="font-bold text-[18px]  text-center whitespace-nowrap overflow-hidden w-[95%] text-ellipsis text-[#43996A]">{plant.plant_name}</h3>
                           </div>
                         </Card>
                       </Col>
@@ -141,7 +141,7 @@ const Plant = () => {
           </>
         }
       </Col>
-      <Col span={4} className="flex justify-center my-3 bg-white rounded-3xl h-[95vh]">
+      <Col span={4} className="flex justify-center my-3 bg-white rounded-3xl h-[95vh] items-center">
 
         <div className="scroll-container">
           <div className="scroll-content2 ">
@@ -151,7 +151,7 @@ const Plant = () => {
           </div>
         </div>
       </Col>
-      <Col span={4} className="my-3 bg-white rounded-3xl flex justify-center h-[95VH]" >
+      <Col span={4} className="my-3 bg-white rounded-3xl flex justify-center h-[95VH] items-center" >
 
         <div className="scroll-container">
           <div className="scroll-content ">
@@ -167,3 +167,4 @@ const Plant = () => {
 };
 
 export default Plant;
+
