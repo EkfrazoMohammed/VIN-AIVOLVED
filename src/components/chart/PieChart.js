@@ -61,7 +61,7 @@ function PieChart({ data, selectedDate, loading }) {
         <Title level={5} className="text-left semibold">
           {selectedDate
             ? `Pie Chart from ${selectedDate[0]}  to  ${selectedDate[1]}`
-            : "Pie Chart for Defects (7 days)"}
+            : "Defect Distribution Analysis (Last 7 Days)"}
         </Title>
       </div>
       {

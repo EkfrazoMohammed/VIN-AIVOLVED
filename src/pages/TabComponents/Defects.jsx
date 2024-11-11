@@ -156,7 +156,7 @@ console.log(tableData)
             showSearch
             value={selectedValue}
             style={{ width: 200, height: '40px' }}
-            placeholder="Search to Select Defects"
+            placeholder="Search or Select Defects"
             optionFilterProp="children"
             onChange={handleDefectChange}
             filterOption={(input, option) =>

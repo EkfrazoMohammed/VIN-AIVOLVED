@@ -195,6 +195,7 @@ const DashboardContentLayout = ({ children }) => {
         ([_, value]) => value !== undefined && value !== null
       )
     );
+
     const encryptedUrl = Object.fromEntries(
       Object.entries(filteredQueryParams).map(([key, val]) => {
         if (key !== "page" && key !== "page_size") {

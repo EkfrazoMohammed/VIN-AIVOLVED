@@ -14,7 +14,6 @@ export default function RealTimeManufacturingSection({
   plant_id,
 }) {
   const dispatch = useDispatch();
-  console.log(productionData, "<<prodData");
 
   // Prepare the chart data
   const data = {

@@ -195,6 +195,7 @@ export const initialDpmuData = (plantId, token, apiCallInterceptor) => {
 };
 
 export const dpmuFilterData = (apiCallInterceptor, machineId, plantId, dateRange, selectedDate) => {
+  console.log('filtered dpmu')
   const encrypt = encryptAES(JSON.stringify(machineId));
   const encryptedPlantId = encodeURIComponent(
     encryptAES(JSON.stringify(plantId))
@@ -210,7 +211,7 @@ export const dpmuFilterData = (apiCallInterceptor, machineId, plantId, dateRange
   apiCallInterceptor.get(url)
     .then((response) => {
       if (!selectedDate) {
-        store.dispatch(getDpmuSuccess(response.data.results));
+        store.dispatch(getDpmuSuccess(response.data.results.slice(-15)));
       }
       else {
         const [fromDate, toDate] = dateRange;
@@ -221,6 +222,7 @@ export const dpmuFilterData = (apiCallInterceptor, machineId, plantId, dateRange
           const itemDate = new Date(item.date_time); // Convert item date to Date object
           return itemDate >= from && itemDate <= to; // Check if itemDate is within the range
         });
+    
         store.dispatch(getDpmuSuccess(filteredData));
       }
     })
@@ -381,7 +383,6 @@ export const dpmuFilterDate = async (DpmuData, dateRange) => {
     });
 
     // Log the filtered results
-    console.log('Filtered Data:', filteredData);
     store.dispatch(getDpmuSuccess(filteredData));
   } catch (error) {
 

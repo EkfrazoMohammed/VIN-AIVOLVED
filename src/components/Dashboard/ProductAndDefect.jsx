@@ -117,6 +117,8 @@ const ProductAndDefect = ({ chartData }) => {
     ],
   };
 
+  const maxValue = Math.max(...data.datasets[0].data);
+  const newMax  = (maxValue * 1.05)
   const options = {
     responsive: true,
     indexAxis: 'y', // This makes the bar chart horizontal
@@ -133,8 +135,8 @@ const ProductAndDefect = ({ chartData }) => {
         onClick: null, // Disable the ability to click on the legend to hide/show datasets
       },
       datalabels: {
-        anchor: 'end',
-        align: chartData.length === 1 ? "center" : "end",
+        anchor: "end",
+        align: chartData.length === 1 ? "end" : "end",
         color: 'black',
         font: {
           weight: 'bold',
@@ -158,6 +160,7 @@ const ProductAndDefect = ({ chartData }) => {
         grid: {
           display: true, // Show or hide x-axis grid lines if needed
         },
+        suggestedMax:newMax
       },
       y: {
         grid: {
@@ -202,7 +205,7 @@ const ProductAndDefect = ({ chartData }) => {
           </div>
         </div>
 
-        <div className="w-10/12 h-full">
+        <div className="w-9/12 h-full">
   {
     !chartData?.every(item => item.total_production === 0 && item.total_defects === 0) ? (
       <div
