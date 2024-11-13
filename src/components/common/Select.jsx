@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { Select } from 'antd'
+import { Select ,ConfigProvider } from 'antd'
 
 const SelectComponent = ({ placeholder, valueType, action, data, selectedData, style, size, setSelectedData }) => {
 
@@ -34,7 +34,17 @@ const SelectComponent = ({ placeholder, valueType, action, data, selectedData, s
 
 
     return (
-        <Select
+        <ConfigProvider
+  theme={{
+    components: {
+      Select: {
+      selectorBg:"#d2d7e9",
+      colorText:"#585858"
+      },
+    },
+  }}
+>
+<Select
             style={{ ...style, }}
             showSearch
             placeholder={placeholder}
@@ -57,6 +67,8 @@ const SelectComponent = ({ placeholder, valueType, action, data, selectedData, s
             ))}
 
         </Select>
+</ConfigProvider>
+     
     )
 }
 

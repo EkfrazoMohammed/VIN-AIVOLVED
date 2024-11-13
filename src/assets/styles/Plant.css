@@ -8,24 +8,23 @@ margin: 0;
 
 .mytab-content{
   width:100%;
-  padding:1rem;
   border-radius:10px;
   overflow-y:scroll;
-  border:15px solid #ababab12;
+  /* border:15px solid #ababab12; */
   display:flex;
   flex-direction:column;
   gap:2rem;
-  background:#fff;
+  /* background:#fff; */
   height: 95vh;
 }
 .mytab-content::-webkit-scrollbar {
   width: 4px;
   /* Width of the scrollbar */
-  height: 90% !important;
+  /* height: 90% !important; */
 }
 
 .mytab-content::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: #fff;
   /* border-radius: 20px; */
   height: 90%;
 }
@@ -67,20 +66,17 @@ margin: 0;
   display: flex;
   flex-direction: column;
   gap: 3rem;
-  animation: scroll 10s linear infinite;
+  animation: scroll 20s linear infinite;
   transition:ease-in-out;
-  align-items: center;
-  justify-content: center;
 }
-.scroll-content2 {
+/* .scroll-content2 {
   display: flex;
   flex-direction: column;
   gap: 3rem;
-  animation: scroll2 10s linear infinite;
+  animation: scroll2 15s linear infinite;
   transition:ease-in-out;
   align-items: center;
-  justify-content: center;
-}
+} */
 
 
 
@@ -88,23 +84,34 @@ margin: 0;
   0% {
     transform: translateY(0);
   }
+
   100% {
-    transform: translateY(-50%); /* Only scroll half because we're duplicating the images */
+    transform: translateY(-60%); /* Only scroll half because we're duplicating the images */
   }
+
 }
  
-@keyframes scroll2 {
-  0% {
-    transform: translateY(-50%);
-  }
-  100% {
-    transform: translateY(0); /* Only scroll half because we're duplicating the images */
-  }
-}
+
 
 .image {
   width: 55%;
   height: auto;
   margin-bottom: 10px; /* Adjust spacing between images */
 }
+
+.item{
+  background:linear-gradient(180deg,#c1dece ,#fff);
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+}
+.item img{
+  object-fit: contain;
+  height: auto;
+  width: 50%;
+}
+
 

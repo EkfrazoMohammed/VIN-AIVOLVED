@@ -11,7 +11,7 @@ import { getDashboardSuccess, getDashboardFailure } from "../../redux/slices/das
 import { Link, useLocation } from "react-router-dom";
 import axios from "axios";
 import { DatePicker, Checkbox, Menu } from "antd";
-import { VideoCameraOutlined, BugOutlined, AlertOutlined, NotificationOutlined } from "@ant-design/icons";
+import { VideoCameraOutlined, BugOutlined, AlertOutlined, NotificationOutlined, VideoCameraFilled, BugFilled, AlertFilled, NotificationFilled } from "@ant-design/icons";
 import StackChart from "../../components/chart/StackChart";
 import PieChart from "../../components/chart/PieChart";
 import { baseURL } from "../../API/API";
@@ -195,7 +195,7 @@ const DashboardContentLayout = ({ children }) => {
         ([_, value]) => value !== undefined && value !== null
       )
     );
-
+   
     const encryptedUrl = Object.fromEntries(
       Object.entries(filteredQueryParams).map(([key, val]) => {
         if (key !== "page" && key !== "page_size") {
@@ -220,9 +220,8 @@ const DashboardContentLayout = ({ children }) => {
       .then((response) => {
         const { active_products, ...datesData } = response.data;
         dispatch(getDashboardSuccess({ datesData, activeProducts: active_products }))
-        console.log(response.data)
         setFilterActive(true);
-        setLoading(false)
+        setLoading(false);
       })
       .catch((error) => {
         setLoading(false)
@@ -407,12 +406,12 @@ const DashboardContentLayout = ({ children }) => {
         <>
           <div className="dx-row flex  pb-4 gap-3">
             <TotalOverview machine={machines} textData={textData} />
-            <div className="overview-container w-9/12 flex flex-col justify-between p-3 rounded-md border-2">
+            <div className="overview-container w-9/12 flex flex-col justify-between p-3 rounded-md">
               <div className="filter-lg-w">
                 <div className="inner-w">
                   <div className="flex flex-wrap items-start gap-2 mb-4">
 
-                    <SelectComponent placeholder={"Select Machine"} selectedData={selectedMachineRedux} setSelectedData={setSelectedMachine} action={(val) => handleMachineChange(val)} data={machines} style={{ minWidth: "150px", zIndex: 1 }} size={"large"} />
+                    <SelectComponent placeholder={"Select Machine"} selectedData={selectedMachineRedux} setSelectedData={setSelectedMachine} action={(val) => handleMachineChange(val)} data={machines} style={{ minWidth: "150px", zIndex: 1 ,background:"#E6EAFA"}} size={"large"} />
 
                     <SelectComponent placeholder={"Select Products"} selectedData={selectedProductRedux} setSelectedData={setSelectedProduct} action={(val) => handleProductChange(val)} data={productsData} style={{ minWidth: "180px", zIndex: 1 }} size={"large"} />
 
@@ -476,7 +475,7 @@ const DashboardContentLayout = ({ children }) => {
                     <div
                       type="primary"
                       onClick={handleApplyFilters}
-                      className=" bg-red-500 text-white rounded flex items-center justify-center py-2 px-3 cursor-pointer font-bold"
+                      className=" commButton text-white rounded flex items-center justify-center py-2 px-3 cursor-pointer font-bold"
                     >
                       Apply filters
                     </div>
@@ -491,36 +490,38 @@ const DashboardContentLayout = ({ children }) => {
                     )}
                   </div>
                   <div className="grid grid-cols-4 gap-4">
-                    <div className=" bg-gray-100 rounded-xl text-left flex flex-col">
+                    <div className=" bg-[#D2D7E9] rounded-xl text-left flex flex-col text-[#06175D] font-bold">
                       <div className="flex justify-between items-center p-3 flex-1 text-lg w-full gap-3">
                         <span>Active Machines</span>
-                        <VideoCameraOutlined />
+                        <VideoCameraFilled />
+                        {/* <img src="https://eimkeia.stripocdn.email/content/guids/CABINET_8270216c780e362a1fbcd636b59c67ae376eb446dc5f95e17700b638b8c3f618/images/wall_mount_camera.png" alt="" className="" /> */}
                       </div>
                       <DropdownComponent menu={menu} data={activeMachines} />
                     </div>
-                    <div className="bg-gray-100 rounded-xl text-left flex flex-col">
+                    <div className="bg-[#D2D7E9] rounded-xl text-left flex flex-col text-[#06175D] font-bold">
                       <div className="flex justify-between items-center p-3 flex-1 text-lg w-full gap-3">
                         <span>Defect Classification</span>
-                        <BugOutlined />
+                        <BugFilled />
                       </div>
                       <DropdownComponent menu={defectMenu} data={categoryDefects} />
                     </div>
-                    <div className="bg-gray-100 rounded-xl text-left flex flex-col">
+                    <div className="bg-[#D2D7E9] rounded-xl text-left flex flex-col text-[#06175D] font-bold">
                       <div className="flex justify-between items-center p-3 flex-1 text-lg w-full gap-3">
                         <span>No. of SKU</span>
-                        <AlertOutlined />
+                        <AlertFilled />
                       </div>
                       <DropdownComponent menu={prodMenu} data={tableDataReduxActive} />
                     </div>
                     <Link
                       to="/insights"
-                      className={`relative bg-gray-100 rounded-xl text-left flex flex-col group hover:text-white hover:!bg-red-500`}
+                      className={`inisigts_page relative  rounded-xl text-left flex flex-col group text-white font-bold `}
                     >
-                      <div className="flex justify-between items-center p-3 flex-1 text-lg w-full gap-3">
+                      <div className="flex justify-center items-center p-3 flex-1 text-3xl w-full gap-1 flex-col  ">
                         <span>Insights</span>
-                        <NotificationOutlined />
+                        {/* <NotificationFilled className="w-4 absolute top-2 left-3"/> */}
+                        <img src="https://eimkeia.stripocdn.email/content/guids/CABINET_8270216c780e362a1fbcd636b59c67ae376eb446dc5f95e17700b638b8c3f618/images/sparkling.png" alt="" className="w-6 absolute top-3 left-3" />
+                      <IoMdArrowForward className="w-12" />
                       </div>
-                      <IoMdArrowForward className="absolute bottom-5 right-5 text-lg" />
                     </Link>
                   </div>
                 </div>

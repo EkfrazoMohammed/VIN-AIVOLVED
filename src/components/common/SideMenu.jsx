@@ -158,9 +158,9 @@ const SideMenu = () => {
         </div>
       </Modal>
       <div className="sidemenu-container flex flex-col min-h-screen w-[270px] fixed left-0 border-r-2">
-        <div className="logo-w h-[75px] flex items-center gap-3 border-b-2 py-3 px-3">
-          <img src={aiLogo} alt="" className="w-[60px]" />
-          <span className="font-bold text-xl">AiVolved</span>
+        <div className="bg-[#06175d]  h-[75px] flex items-center gap-2 border-b-2 justify-center text-white">
+          <img src={aiLogo} alt="" className="w-[50px]" />
+          <span className="font-bold text-xl ">AiVolved</span>
         </div>
         <div className="menu-items-w h-full flex flex-col flex-1 justify-between">
           <ul className="menu-list list-none py-3 px-3 flex flex-col gap-2">

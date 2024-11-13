@@ -1,0 +1,6 @@
+projectKey=VIN
+serverUrl=http://localhost:9000
+serverVersion=10.7.0.96327
+dashboardUrl=http://localhost:9000/dashboard?id=VIN
+ceTaskId=23fa7649-d669-4348-a0b0-d6008e2b225b
+ceTaskUrl=http://localhost:9000/api/ce/task?id=23fa7649-d669-4348-a0b0-d6008e2b225b
