@@ -6,14 +6,13 @@ import { baseURL } from '../API/API';
 const MachinesParameterWithPagination = () => {
   const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(4); // Number of cards per page
+  const pageSize = 4; // Number of cards per page
 
   const getData = async () => {
     try {
       const response = await axios.get(`${baseURL}machine_temprature/`);
       setData(response.data);
     } catch (error) {
-      //console.log(error);
     }
   };
 
@@ -61,7 +60,7 @@ const MachinesParameterWithPagination = () => {
                             <div className='secondLinecolumnData'>
                                 <div className='secondLinecolumnDataHeading'>Vertical</div>
                                 {JSON.parse(item.vertical).map((value, index) => (
-                                    <div key={index} className='secondLinecolumnDataValue'>{value}</div>
+                                    <div key={value} className='secondLinecolumnDataValue'>{value}</div>
                                 ))}
                             </div>
                         </div>

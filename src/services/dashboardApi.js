@@ -1,13 +1,10 @@
 //services/dashboardApi.js
 
-import axios from "axios";
 import store from "../redux/store"; // Import the store
-import useApiInterceptor from "../hooks/useInterceptor";
 import {
-  decryptAES,
-  decryptAESInt,
+
   encryptAES,
-  encryptAESInt,
+
 } from "../redux/middleware/encryptPayloadUtils";
 
 import {
@@ -19,7 +16,6 @@ import {
 import {
   getRoleSuccess,
   getRoleFailure,
-  setRoleMachines,
 } from "../redux/slices/roleSlice"; // Import the actions
 
 import {
@@ -34,7 +30,6 @@ import {
 import {
   getDefectSuccess,
   getDefectFailure,
-  setSelectedDefect,
 } from "../redux/slices/defectSlice"; // Import the actions
 
 import { getDpmuSuccess, getDpmuFailure } from "../redux/slices/dpmuSlice"; // Import the actions
@@ -47,13 +42,13 @@ import {
   getDashboardSuccess,
   getDashboardFailure,
 } from "../redux/slices/dashboardSlice";
-import { clearConfig } from "dompurify";
 
 export const baseURL =
   process.env.REACT_APP_API_BASE_URL || "https://hul.aivolved.in/api/";
 
 export const getMachines = (plantName, token, apiCallInterceptor) => {
-  let encryptedPlantName = encryptAES(plantName).replace(/^"|"$/g, "");
+  let encryptedPlantName = encryptAES(plantName).replace(/^"|"$|^"+$/g, "");
+
   encryptedPlantName = decodeURIComponent(encryptedPlantName);
   let url = `machine/?plant_name=${encryptedPlantName}`;
   apiCallInterceptor
@@ -74,7 +69,8 @@ export const getMachines = (plantName, token, apiCallInterceptor) => {
 };
 
 export const getDepartments = (plantName, token, apiCallInterceptor) => {
-  let encryptedPlantName = encryptAES(plantName).replace(/^"|"$/g, "");
+  let encryptedPlantName = encryptAES(plantName).replace(/^"|"$|^"+$/g, "");
+
   encryptedPlantName = decodeURIComponent(encryptedPlantName);
   let url = `department/?plant_name=${encryptedPlantName}`;
   apiCallInterceptor
@@ -107,7 +103,8 @@ export const getAverageDpmu = (plantId, apiCallInterceptor, setTextData) => {
 }
 
 export const getProducts = (plantName, token, apiCallInterceptor) => {
-  let encryptedPlantName = encryptAES(plantName).replace(/^"|"$/g, "");
+  let encryptedPlantName = encryptAES(plantName).replace(/^"|"$|^"+$/g, "");
+
   encryptedPlantName = decodeURIComponent(encryptedPlantName);
   let url = `product/?plant_name=${encryptedPlantName}`;
   apiCallInterceptor
@@ -119,13 +116,12 @@ export const getProducts = (plantName, token, apiCallInterceptor) => {
       // return formattedDepartment;
     })
     .catch((error) => {
-      //console.error("Error fetching department data:", error);
       // Dispatch action to update Redux state
       store.dispatch(getProductFailure());
     });
 };
 export const getDefects = (plantName, token, apiCallInterceptor) => {
-  let encryptedPlantName = encryptAES(plantName).replace(/^"|"$/g, "");
+  let encryptedPlantName = encryptAES(plantName).replace(/^"|"$|^"+$/g, "");
   encryptedPlantName = decodeURIComponent(encryptedPlantName);
 
   let url = `defect/?plant_name=${encryptedPlantName}`;
@@ -165,7 +161,7 @@ export const getAiSmartView = async (
     return formattedDefects; // Return the data to be used in the calling function
   } catch (error) {
     //console.error("Error fetching AI Smart View data:", error);
-    throw error; // Rethrow the error to be caught by the calling function
+    throw new Error(` ${error}`);
   }
 };
 
@@ -292,11 +288,12 @@ export const getRoles = (token, apiCallInterceptor) => {
 
 const isEmptyDashboardResponse = (data) => {
   return (
-    data &&
-    data.active_products &&
-    Array.isArray(data.active_products) &&
-    data.active_products.length === 0 &&
+   
+    data?.active_products &&
+    Array?.isArray(data.active_products) &&
+    data?.active_products.length === 0 &&
     Object.keys(data).length === 1
+    
   );
 };
 
@@ -334,42 +331,6 @@ export const initialDashboardData = (plantId, token, apiCallInterceptor) => {
       store.dispatch(getDashboardFailure(error.message));
     });
 };
-
-
-
-// FILTER DATA IN FRONTEND DPMU AS PER THE DATE
-
-
-// export const dpmuFilterDate = (plantId, apiCallInterceptor, dateRange) => {
-//   const encryptedPlantId = encodeURIComponent(
-//     encryptAES(JSON.stringify(plantId))
-//   );
-//   const url = `params_graph/?plant_id=${encryptedPlantId}`;
-//   apiCallInterceptor
-//     .get(url)
-//     .then((response) => {
-//       const [fromDate, toDate] = dateRange;
-
-//       // Convert 'fromDate' and 'toDate' into JavaScript Date objects
-//       const from = new Date(fromDate);
-//       const to = new Date(toDate);
-
-//       // Filter the response data based on the date range
-//       const filteredData = response.data.results.filter((item) => {
-//         const itemDate = new Date(item.date_time); // Convert item date to Date object
-//         return itemDate >= from && itemDate <= to; // Check if itemDate is within the range
-//       });
-
-//       // Log the filtered results
-//       console.log('Filtered Data:', filteredData);
-//       store.dispatch(getDpmuSuccess(filteredData));
-//     })
-//     .catch((error) => {
-//       //console.error("Error:", error);
-//       store.dispatch(getDpmuFailure());
-//     });
-// };
-
 export const dpmuFilterDate = async (DpmuData, dateRange) => {
   try {
     const [fromDate, toDate] = dateRange;
@@ -385,6 +346,7 @@ export const dpmuFilterDate = async (DpmuData, dateRange) => {
     // Log the filtered results
     store.dispatch(getDpmuSuccess(filteredData));
   } catch (error) {
+    throw new Error(` ${error}`);
 
   }
 }

@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
-import { Table, Select, DatePicker, Button, Image, Tag } from "antd";
+import { Table, Select, DatePicker, Button, Image ,Modal } from "antd";
 import * as XLSX from "xlsx";
 import { DownloadOutlined } from "@ant-design/icons";
 import { Hourglass } from "react-loader-spinner";
@@ -10,7 +10,6 @@ import { getDefects } from "./../services/dashboardApi";
 import { reportApi } from "./../services/reportsApi";
 
 import {
-  setSelectedDefect,
   setSelectedDefectReports,
 } from "../redux/slices/defectSlice";
 
@@ -23,10 +22,8 @@ import useApiInterceptor from "../hooks/useInterceptor";
 import { decryptAES, encryptAES } from "../redux/middleware/encryptPayloadUtils";
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
-import { Modal } from "antd";
 import SelectComponent from "../components/common/Select";
 import { setSelectedShift } from "../redux/slices/shiftSlice";
-import { clearConfig } from "dompurify";
 
 
 const columns = [
@@ -125,7 +122,6 @@ const columns = [
 
     render: (text) => {
       const decrypData = decryptAES(text);
-      // const formattedDateTime = decrypData ? decrypData.replace("T", " ") : null;
       return (
         <>
           {decrypData ? <div>{decrypData}</div> : null}
@@ -140,7 +136,6 @@ const columns = [
 
     render: (text) => {
       const decrypData = decryptAES(text);
-      // const formattedDateTime = decrypData ? decrypData.replace("T", " ") : null;
       return (
         <>
           {decrypData ? <div>{decrypData}</div> : null}
@@ -186,7 +181,6 @@ const Reports = () => {
   // REDUX CALLING
   const dispatch = useDispatch()
   const reportData = useSelector((state) => state.report.reportData);
-  // const pagination = useSelector((state) => state.report.pagination);
   const localPlantData = useSelector((state) => state.plant.plantData[0]);
   const accessToken = useSelector(
     (state) => state.auth.authData[0].accessToken
@@ -199,11 +193,8 @@ const Reports = () => {
   const selectedMachineRedux = useSelector((state) => state.machine.selectedMachine);
   const selectedProductRedux = useSelector((state) => state.product.selectedProduct);
   const selectedShiftRedux = useSelector((state) => state.shift.selectedShift)
-  // const selectedDefectRedux = useSelector((state) => state.defect.selectedDefect);
   const selectedDefectRedux = useSelector((state) => state.defect.selectedDefectReports);
-  const [dropdownVisible, setDropdownVisible] = useState(true);
-  const [initialScrollY, setInitialScrollY] = useState(0);
-  const scrollThreshold = window.innerHeight * 0.05;
+
 
   const dateFormat = "YYYY/MM/DD";
   const location = useLocation();
@@ -215,8 +206,8 @@ const Reports = () => {
 
   const [selectedDate, setSelectedDate] = useState(null);
   const { RangePicker } = DatePicker;
-  const [filterActive, setfilterActive] = useState(defectProp);
-  const [filterChanged, setfilterChanged] = useState(defectProp);
+  const [filterActive, setFilterActive] = useState(defectProp);
+  const [filterChanged, setFilterChanged] = useState(defectProp);
 
 
   const [loader, setLoader] = useState(false);
@@ -235,8 +226,8 @@ const Reports = () => {
   )
 
 
-  const [messages, setMessages] = useState([]);
-  const [ws, setWs] = useState(null);
+  const messages  = [];
+  const ws = null;
 
 
 
@@ -257,47 +248,12 @@ const Reports = () => {
       )
     );
 
-    //console.log(filteredQueryParams)
-    await sendMessage(filteredQueryParams)
+     sendMessage(filteredQueryParams)
   }
 
 
 
-  const socketConnection = () => {
-    // Create a new WebSocket connection
-    const socket = new WebSocket('wss://hul.aivolved.in/ws/defect-image-streaming/');
 
-    // Set WebSocket state
-    setWs(socket);
-
-    // Connection opened
-    socket.onopen = () => {
-      //console.log('Connected to WebSocket server');
-    };
-
-    // Listen for messages
-    socket.onmessage = async (event) => {
-      //console.log('Message from server: ', JSON.parse(event.data));
-      const data = JSON.parse(event.data)
-      setMessages((prev) => [data.data]);
-
-    };
-
-    // Handle errors
-    socket.onerror = (error) => {
-      //console.error('WebSocket error: ', error);
-    };
-
-    // Connection closed
-    socket.onclose = () => {
-      //console.log('Disconnected from WebSocket server');
-    };
-
-    // Cleanup on unmount
-    return () => {
-      socket.close();
-    };
-  };
 
 
   useEffect(() => {
@@ -363,12 +319,7 @@ const Reports = () => {
     }
   }, [pagination.current, pagination.pageSize, accessToken]);
 
-  // useEffect(() => {
-  //   if (!filterActive) {
-  //     //console.log('calling init')
-  //     initialReportData()
-  //   }
-  // }, [pagination.current, pagination.pageSize, accessToken]);
+
 
   const handleTableChange = (pagtn) => {
     setPagination((prev) => ({ ...prev, current: pagtn.current, pageSize: pagtn.pageSize, }))
@@ -384,7 +335,7 @@ const Reports = () => {
       return dispatch(setSelectedDefectReports(null))
     }
     dispatch(setSelectedDefectReports(Number(value)))
-    setfilterChanged(true)
+    setFilterChanged(true)
   };
 
   const handleMachineChange = (value) => {
@@ -392,7 +343,7 @@ const Reports = () => {
       return dispatch(setSelectedMachine(null))
     };
     dispatch(setSelectedMachine(Number(value))); // Dispatching action    
-    setfilterChanged(true)
+    setFilterChanged(true)
 
   };
 
@@ -401,7 +352,7 @@ const Reports = () => {
       return dispatch(setSelectedProduct(null))
     }
     dispatch(setSelectedProduct(Number(value))); // Dispatching action    
-    setfilterChanged(true)
+    setFilterChanged(true)
   }
 
   const handleShiftChange = (value) => {
@@ -409,7 +360,7 @@ const Reports = () => {
       return dispatch(setSelectedShift(null))
     }
     dispatch(setSelectedShift(value));
-    setfilterChanged(true)
+    setFilterChanged(true)
   }
 
 
@@ -417,15 +368,11 @@ const Reports = () => {
     if (dateStrings) {
       setSelectedDate(dateStrings);
       setDateRange(dateStrings);
-      setfilterChanged(true)
-    } else {
-    }
+      setFilterChanged(true)
+    } 
   };
 
   const handleApplyFilters = (page = 1) => {
-    // if (!selectedMachineRedux && !selectedProductRedux && !selectedDefectRedux && !selectedShiftRedux) {
-    //   resetFilter()
-    // }
     const params = {
       page: page, // Ensure this uses the provided page (default is 1)
       page_size: pagination.pageSize,
@@ -487,7 +434,7 @@ const Reports = () => {
           pageSize: page_size,
           total: total_count,
         })); setLoader(false);
-        setfilterActive(true);
+        setFilterActive(true);
       })
       .catch((error) => {
         //console.error("Error fetching filtered reports data:", error);
@@ -575,7 +522,7 @@ const Reports = () => {
   };
 
   const resetFilter = async () => {
-    setfilterActive(false);
+    setFilterActive(false);
     setSelectedDate(null);
     dispatch(setSelectedMachine(null));
     dispatch(setSelectedProduct(null));
@@ -583,13 +530,10 @@ const Reports = () => {
     dispatch(setSelectedShift(null))
     initialReportData()
     setPagination((prev) => ({ ...prev, current: 1, pageSize: 10, }))
-    setfilterChanged(false)
+    setFilterChanged(false)
   };
 
-  const handleClickDownload = () => {
-    socketConnection();
-    setModal(true)
-  }
+
 
   return (
     <>
@@ -603,12 +547,11 @@ const Reports = () => {
         onCancel={() => {
           setModal(false); setSelectedDate(null); dispatch(setSelectedDefectReports(null)); // Dispatching action    
           dispatch(setSelectedProduct(null));
-          setfilterChanged(false)
+          setFilterChanged(false)
         }}
         footer={[
-          <>
             <Button key="submit" type="primary" style={{ backgroundColor: "#ec522d", }} onClick={handleDownload}>Download</Button>
-          </>
+      
         ]}
       >
         <div className="" style={{ display: "flex", flexWrap: "wrap", gap: "2rem", justifyContent: "center" }}>

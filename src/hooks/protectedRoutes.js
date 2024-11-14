@@ -1,9 +1,7 @@
-// src/hooks/protectedRoutes.js
-import React, { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { Outlet, Navigate, useLocation } from "react-router-dom";
+import React from "react";
+import { useSelector } from "react-redux";
+import { Outlet, Navigate } from "react-router-dom";
 import Layout from "../pages/Layout";
-// import { validateToken } from '../redux/actions/authActions';
 
 const ProtectedRoutes = () => {
   const isAuthenticated = useSelector(

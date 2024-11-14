@@ -1,24 +1,13 @@
 import { Row, Col, Card } from "antd";
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import Slider from "react-slick";
 import "../assets/styles/Plant.css";
 import { Hourglass } from 'react-loader-spinner';
 import { setPlantData } from "../redux/slices/plantSlice"; // Import setPlantData action
 import useApiInterceptor from "../hooks/useInterceptor";
 import { useNavigate } from 'react-router-dom';
 
-const settings = {
-  dots: false,
-  infinite: true,
-  slidesToShow: 3,
-  slidesToScroll: 1,
-  vertical: true,
-  verticalSwiping: false,
-  autoplay: true,
-  speed: 1000,
-  autoplaySpeed: 5,
-};
+
 
 
 const Plant = () => {
@@ -47,7 +36,6 @@ const Plant = () => {
     const fetchPlantData = async () => {
       try {
         if (!accessToken) {
-          //console.log("Authorization token is missing");
           return;
         }
 
@@ -56,16 +44,14 @@ const Plant = () => {
 
         if (results) {
           setPlant(results);
-        } else {
-          //console.warn("No results found in the response");
-        }
+        } 
       } catch (err) {
-        //console.log("Error fetching plant data:", err);
+        console.log("Error fetching plant data:");
         if (err.response && err.response.data.code === "token_not_valid") {
-          //console.log("Token is invalid or expired.");
-          // Handle token refresh logic here, or redirect to login
+          console.log("Token is invalid or expired.");
+         
         } else {
-          //console.log("Error:", err.message || "Unknown log occurred");
+          console.log("Error:", err.message || "Unknown log occurred");
         }
       } finally {
         setLoader(false);
@@ -76,20 +62,61 @@ const Plant = () => {
   }, [accessToken]);
 
   const images1 = [
-    'https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/clinicplus.png',
-    'https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/lifebuoy.png',
-    'https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/surfexcel.png',
-    'https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/comfortgreen.png',
-    'https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/comfortpink.png',
-    'https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/comfortblue.png',
+    {
+      id:1,
+      img:'https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/clinicplus.png',
+    },
+
+    {
+      id:2,
+      img:'https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/lifebuoy.png',
+
+    } ,
+     {
+      id:3,
+      img:    'https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/surfexcel.png',
+
+    } ,
+     {
+      id:4,
+      img:    'https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/comfortgreen.png',
+      
+    },
+      {
+      id:5,
+      img:    'https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/comfortpink.png',
+
+    },
+    {
+      id:6,
+      img:    'https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/comfortpink.png',
+
+    }
+
 
   ];
   const images2 = [
-    'https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/clinicplus.png',
-    'https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/dovesachet.png',
-    'https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/hamamsoap.png',
-    "https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/surfexcel.png",
-    "https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/sunsilksaceht.png"
+    {
+      id:7,
+      img:     'https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/clinicplus.png',
+      
+
+    },
+    {
+      id:8,
+img:    'https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/dovesachet.png',
+
+    },
+    {
+      id:9,
+img:    'https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/hamamsoap.png',
+
+    },
+    {
+      id:10,
+img:    "https://aactxg.stripocdn.email/content/guids/CABINET_a08f84c963ba97ae8e54a37bd01dd75bb5bb673089fc68f65ed61fa0eb796f86/images/sunsilksaceht.png"
+
+    }
   ]
   return (
     <Row className="h-screen  overflow-hidden flex  bg-[#dfefff] justify-center items-center gap-4 p-2">
@@ -105,7 +132,6 @@ const Plant = () => {
             />
           </div>
           :
-          <>
             <Col className=" w-full">
               <div className="mytab-content  flex gap-2  flex-col w-full ">
                 <h3 className="text-black text-3xl font-bold ">Plants</h3>
@@ -138,7 +164,6 @@ const Plant = () => {
                 )}
               </div>
             </Col>
-          </>
         }
       </Col>
       <Col span={4} className="flex justify-center my-3 bg-white rounded-3xl h-[95vh]">
@@ -146,7 +171,7 @@ const Plant = () => {
         <div className="scroll-container">
           <div className="scroll-content2 ">
             {[...images2, ...images2].map((img, index) => (
-              <img key={index} src={img} alt={`img-${index}`} className="image" />
+              <img key={img.id}  src={img.img} alt={`img-${index}`} className="image" />
             ))}
           </div>
         </div>
@@ -156,7 +181,7 @@ const Plant = () => {
         <div className="scroll-container">
           <div className="scroll-content ">
             {[...images1, ...images1].map((img, index) => (
-              <img key={index} src={img} alt={`img-${index}`} className="image" />
+              <img key={img.id}  src={img.img} alt={`img-${index}`} className="image" />
             ))}
           </div>
         </div>

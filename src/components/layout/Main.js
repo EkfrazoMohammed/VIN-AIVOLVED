@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import {  useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { Layout, Drawer} from "antd";
+import { Layout} from "antd";
 import { useSelector} from "react-redux";
 import SideMenu from "../common/SideMenu";
 import TopHeader from "../common/TopHeader";
 import DashboardContentLayout from "../Dashboard/DashboardContentLayout";
+import PropTypes from "prop-types";
 
 const { Content, Sider } = Layout;
 
@@ -38,5 +39,8 @@ let { pathname } = useLocation();
     </Layout>
   );
 }
+Main.propTypes = {
+  children: PropTypes.node.isRequired,
+};
 
 export default Main;

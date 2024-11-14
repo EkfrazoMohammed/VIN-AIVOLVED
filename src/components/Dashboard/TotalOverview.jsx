@@ -1,5 +1,6 @@
 import React from "react";
 import { FaGears } from "react-icons/fa6";
+import PropTypes from "prop-types";
 
 const TotalOverview = ({ machine, textData }) => {
   return (
@@ -26,5 +27,8 @@ const TotalOverview = ({ machine, textData }) => {
     </div>
   );
 };
-
+TotalOverview.propTypes = {
+  textData: PropTypes.any,
+  machine:PropTypes.any,
+};
 export default TotalOverview;

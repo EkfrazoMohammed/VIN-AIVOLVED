@@ -1,5 +1,6 @@
 import React from 'react';
-import {Table,notification} from 'antd';
+import {Table} from 'antd';
+import PropTypes from 'prop-types';
 
 const Departments = ({ departmentsdata }) => {
 
@@ -21,15 +22,13 @@ const Departments = ({ departmentsdata }) => {
 
   ];
 
-  const [api, contextHolder] = notification.useNotification();
   return (
-    <>
-      {contextHolder}
 
       <Table columns={columns} dataSource={departmentsdata} pagination={{ pageSize: 6 }} />
 
-    </>
   )
 }
-
+Departments.propTypes = {
+  departmentsdata:PropTypes.any
+}
 export default Departments;

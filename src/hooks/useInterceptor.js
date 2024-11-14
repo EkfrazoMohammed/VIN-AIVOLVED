@@ -15,7 +15,7 @@ const useApiInterceptor = () => {
     const processQueue = async (error, token = null) => {
         for (let request of failedQueue) {
             if (error) {
-                request.reject(error);
+                request.reject(new Error (error));
             } else {
                 request.resolve(token);
             }
@@ -45,7 +45,7 @@ const useApiInterceptor = () => {
                                 return ApiCall(originalRequest);
                             })
                             .catch((err) => {
-                                return Promise.reject(err);
+                                return Promise.reject(new Error(err));
                             });
                     }
 
@@ -71,14 +71,14 @@ const useApiInterceptor = () => {
                         return ApiCall(originalRequest);
                     } catch (refreshError) {
                         processQueue(refreshError, null);
-                        return Promise.reject(refreshError);
+                        return Promise.reject(new Error (refreshError));
                     } finally {
                         setRefresh(false);
                         isRefreshing = false;
                     }
                 }
 
-                return Promise.reject(error);
+                return Promise.reject( new Error(error));
             }
         );
 

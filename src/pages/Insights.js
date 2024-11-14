@@ -1,23 +1,13 @@
 
-import React, { useState, useEffect } from 'react';
-import { useSelector,useDispatch } from 'react-redux';
-import { Table, Select, DatePicker, Button, Image, Tag } from 'antd';
-import axios from 'axios';
-import * as XLSX from 'xlsx';
-import {API, baseURL} from "./../API/API"
+import React  from 'react';
+import { Table } from 'antd';
+
 import { Hourglass } from 'react-loader-spinner';
-const { RangePicker } = DatePicker;
 
 const Insights = () => {
-  const [loader,setLoader] = useState(false)
+  const loader = false
 
-  // const localItems = localStorage.getItem("PlantData")
-  // const localPlantData = JSON.parse(localItems) 
-
-    // const localItems = localStorage.getItem("PlantData")
-  // const localPlantData = JSON.parse(localItems) 
-  const localPlantData = useSelector((state) => state.plant.plantData);
-  const AuthToken = useSelector((state) => state.auth.authData.access_token);
+  
   const columns = [
     { title: 'Notification Text', dataIndex: 'notification_text', key: 'notification_text', responsive: ['md'], render:(text)=> <div className="" style={{whiteSpace:"pre-line"}}>{text}</div> },
     { title: 'RCA 1', dataIndex: 'rca1', key: 'rca1', responsive: ['lg'],  render:(text)=> <div className="" style={{whiteSpace:"pre-line"}}>{text}</div>},
@@ -32,8 +22,7 @@ const Insights = () => {
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - 7); // 7 days ago
   
-  const [tableData, setTableData] = useState([]);
-
+const tableData = []
   return (
     <div className="layout-content">
       

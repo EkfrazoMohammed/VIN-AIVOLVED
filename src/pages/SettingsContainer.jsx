@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React from 'react';
+import { useSelector } from 'react-redux';
 import { Tabs } from 'antd';
 import Settings from "./TabComponents/Settings";
 import Alerts from './TabComponents/Alerts';
 import Defects from './TabComponents/Defects';
 import Department from './TabComponents/Department';
 import Machine from './TabComponents/Machine';
-import { initialDashboardData, getDefects, getMachines, getSystemStatus, getDepartments, initialDpmuData, initialProductionData, getProducts } from "../services/dashboardApi";
 import DefectTrigger from './TabComponents/DefectTrigger';
 
 
@@ -17,9 +16,7 @@ const SettingsContainer = () => {
   const productsData = useSelector((state) => state.product.productsData)
   const departmentsData = useSelector((state) => state.department.departmentsData)
 
-  const onChange = (key) => {
-    //console.log(key);
-  };
+
 
 
   const items = [
@@ -55,10 +52,9 @@ const SettingsContainer = () => {
     },
   ];
   return (
-    <>
       <Tabs type="card"
-        size={'large'} defaultActiveKey="1" items={items} onChange={onChange} />
-    </>
+        size={'large'} defaultActiveKey="1" items={items}  />
+ 
   )
 }
 

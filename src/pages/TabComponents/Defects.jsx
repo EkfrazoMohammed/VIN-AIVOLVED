@@ -1,13 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Modal, Select, Table, Form, Input, ColorPicker, notification, Row, Col } from 'antd';
+import { Button, Modal, Select, Table, Form, Input, notification, Row, Col } from 'antd';
 import axios from 'axios';
 import { EditOutlined, ReloadOutlined } from '@ant-design/icons';
 import { useSelector } from 'react-redux';
-// import {API, AuthToken, baseURL, localPlantData} from "./../API/API"
 import { baseURL } from "../../API/API"
-import { initialDashboardData, getDefects, getMachines, getSystemStatus, getDepartments, initialDpmuData, initialProductionData, getProducts } from "../../services/dashboardApi";
+import {  getDefects, } from "../../services/dashboardApi";
 import useApiInterceptor from '../../hooks/useInterceptor';
 import axiosInstance from '../../API/axiosInstance';
+import PropTypes from 'prop-types';
+import ColorPickerComponent from '../../components/common/ColorPickerComponent';
+
+
+
+
+
+
 
 const Defects = ({ defectsdata }) => {
 
@@ -18,7 +25,6 @@ const Defects = ({ defectsdata }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editData, setEditData] = useState(null);
-  // const reduxDefectData = data
 
   console.log(defectsdata)
   const [tableData, setTableData] = useState(defectsdata);
@@ -56,17 +62,17 @@ const Defects = ({ defectsdata }) => {
     {
       title: 'Edit',
       render: (record) => (
-        <div style={{ cursor: 'pointer' }} onClick={() => handleEdit(record)}>
+        <button  style={{ cursor: 'pointer' }} onClick={() => handleEdit(record)}>
           <EditOutlined />
-        </div>
+        </button>
       ),
     },
   ];
 
   const handleEdit = async (record) => {
-    await setEditData(record);
-    await setColor(record.color_code);
-    await setEditModalOpen(true);
+     setEditData(record);
+     setColor(record.color_code);
+     setEditModalOpen(true);
   };
 
   const handleDefectChange = (value) => {
@@ -76,7 +82,6 @@ const Defects = ({ defectsdata }) => {
   };
   const [data, setData] = useState("")
   const handlePost = async () => {
-    // const data = form.getFieldValue('name');
     if (!data) {
       notificationApi.open({
         message: 'Please fill out required fields',
@@ -105,7 +110,7 @@ const Defects = ({ defectsdata }) => {
 
       setModalOpen(false);
     } catch (err) {
-      //console.log(err);
+      console.log(err);
     }
   };
 
@@ -138,7 +143,7 @@ const Defects = ({ defectsdata }) => {
       });
       setEditModalOpen(false);
     } catch (err) {
-      //console.log(err);
+      console.log(err);
     }
   };
 
@@ -146,7 +151,6 @@ const Defects = ({ defectsdata }) => {
     setTableData(defectsdata)
     setSelectedValue(null);
   };
-console.log(tableData)
   return (
     <>
       {contextHolder}
@@ -208,9 +212,11 @@ console.log(tableData)
               <Form.Item rules={[{ required: true, message: 'Please enter color code *' }]}>
                 <h6>Select Color <span style={{ fontWeight: '600', color: 'red' }}>*</span></h6>
                 <div style={{ display: "flex", gap: "1rem" }}>
-                  <ColorPicker value={color} onChange={(color) => setColor(color.toHexString())} showText={(color) => <span>{color.toHexString()}</span>} />
-
-                </div>
+                <ColorPickerComponent
+        value={color}
+        onChange={ setColor}
+        showText={color}
+      />                </div>
               </Form.Item>
             </Form>
           </Col>
@@ -238,8 +244,11 @@ console.log(tableData)
                 <input type="text" value={editData?.name} style={{ display: 'none' }} />
               </Form.Item>
               <Form.Item label="Select Color">
-                <ColorPicker value={color} onChange={(color) => setColor(color.toHexString())} showText={(color) => <span>{color.toHexString()}</span>} />
-              </Form.Item>
+              <ColorPickerComponent
+        value={color}
+        onChange={ setColor}
+        showText={color}
+      />              </Form.Item>
             </Form>
           </Col>
         </Row>
@@ -249,5 +258,7 @@ console.log(tableData)
     </>
   );
 };
-
+Defects.propTypes= {
+  defectsdata:PropTypes.any
+}
 export default Defects;

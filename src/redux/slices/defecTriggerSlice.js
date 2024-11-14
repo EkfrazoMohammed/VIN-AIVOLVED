@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { defectSignout } from "./defectSlice";
 
 
 const initialState = {
@@ -9,6 +8,8 @@ const initialState = {
         defects: []
     }
 }
+    
+
 
 const defectTriggerSlice = createSlice({
     name: "defectTrigger",

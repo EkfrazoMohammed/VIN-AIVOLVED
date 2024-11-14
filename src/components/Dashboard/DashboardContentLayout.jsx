@@ -4,17 +4,15 @@ import DefectsReport from "./DefectsReport";
 import TotalOverview from "./TotalOverview";
 import { IoMdArrowForward } from "react-icons/io";
 import { useSelector, useDispatch } from "react-redux";
-import { initialDashboardData, getMachines, getSystemStatus, getDepartments, initialDpmuData, initialProductionData, getProducts, getDefects, getRoles, dpmuFilterData, dpmuFilterDate, getAverageDpmu } from "../../services/dashboardApi";
+import { initialDashboardData, getMachines, getSystemStatus, getDepartments, initialDpmuData, initialProductionData, getProducts, getDefects, getRoles, dpmuFilterData, getAverageDpmu } from "../../services/dashboardApi";
 import { setSelectedMachine, setSelectedMachineDpmu } from "../../redux/slices/machineSlice"
 import { setSelectedProduct } from "../../redux/slices/productSlice"
-import { getDashboardSuccess, getDashboardFailure } from "../../redux/slices/dashboardSlice"
+import { getDashboardSuccess } from "../../redux/slices/dashboardSlice"
 import { Link, useLocation } from "react-router-dom";
-import axios from "axios";
-import { DatePicker, Checkbox, Menu } from "antd";
+import { DatePicker, } from "antd";
 import { VideoCameraOutlined, BugOutlined, AlertOutlined, NotificationOutlined } from "@ant-design/icons";
 import StackChart from "../../components/chart/StackChart";
 import PieChart from "../../components/chart/PieChart";
-import { baseURL } from "../../API/API";
 import dayjs from "dayjs";
 import RealTimeManufacturingSection from "./RealTimeManufacturingSection";
 import useApiInterceptor from "../../hooks/useInterceptor";
@@ -23,6 +21,7 @@ import SelectComponent from "../common/Select";
 import { setSelectedShift } from "../../redux/slices/shiftSlice";
 import { getProductVsDefectSuccess } from "../../redux/slices/productvsDefectSlice";
 import DropdownComponent from "../common/DropdownComponent";
+import PropTypes from 'prop-types';
 
 const DashboardContentLayout = ({ children }) => {
   const apiCallInterceptor = useApiInterceptor();
@@ -234,7 +233,8 @@ const DashboardContentLayout = ({ children }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setLoading(true);
+        setLoading(true)
+      
         await Promise.all([
           getRoles(accessToken, apiCallInterceptor),
           getMachines(localPlantData.plant_name, accessToken, apiCallInterceptor),
@@ -242,12 +242,13 @@ const DashboardContentLayout = ({ children }) => {
           getDefects(localPlantData?.plant_name, accessToken, apiCallInterceptor),
           initialDpmuData(localPlantData.id, accessToken, apiCallInterceptor),
           getProducts(localPlantData.plant_name, accessToken, apiCallInterceptor),
-          initialDateRange(),
+          
           initialDashboardData(localPlantData.id, accessToken, apiCallInterceptor),
           initialProductionData(localPlantData.id, accessToken, apiCallInterceptor),
           getSystemStatus(localPlantData.id, accessToken, apiCallInterceptor),
           getAverageDpmu(localPlantData.id, apiCallInterceptor, setTextData)
         ]);
+        initialDateRange()
       } catch (err) {
         console.log(err.message || "Failed to fetch data")
       } finally {
@@ -288,91 +289,26 @@ const DashboardContentLayout = ({ children }) => {
     setCategoryDefects(categorizedData);
   }, [tableDataRedux]);
 
-  const [selectedCheckboxMachine, setSelectedCheckboxMachine] = useState([]);
 
-  const handleMachineCheckBoxChange = (checkedValues) => {
-    setSelectedCheckboxMachine(checkedValues);
-    let url = `${baseURL}/reports?machine=`;
-    checkedValues.forEach((machineId, index) => {
-      if (index !== 0) {
-        url += ",";
-      }
-      url += `machine${machineId}`;
-    });
 
-    axios
-      .get(url)
-      .then((response) => {
-        dispatch(getDashboardSuccess(response.data))
-      })
-      .catch((error) => {
-        getDashboardFailure();
-      });
-  };
 
-  const menu = (
-    <Menu selectable={true}>
-      <Menu.Item key="0">
-        <Checkbox.Group
-          style={{ display: "block", cursor: "default" }}
-          value={selectedCheckboxMachine}
-          onChange={handleMachineCheckBoxChange}
-        >
-          {activeMachines.map((machine) => (
-            <div
-              key={machine.id}
-              style={{ display: "flex", flexDirection: "column" }}
-            >
-              {machine.system_status ? (
-                <p
-                  style={{ fontSize: "1.1rem", width: "100%" }}
-                  value={machine.id}
-                >
-                  {machine.machine_name}
-                </p>
-              ) : null}
-            </div>
-          ))}
-        </Checkbox.Group>
-      </Menu.Item>
-    </Menu>
-  );
-  const defectMenu = (
-    <Menu>
-      <Menu.Item key="0">
-        <Checkbox.Group style={{ display: "block", cursor: "default" }}>
-          {Object.keys(categoryDefects).map((defect) => (
-            <div
-              key={defect.id}
-              style={{ display: "flex", flexDirection: "column" }}
-            >
-              <p style={{ fontSize: "1.1rem", width: "100%" }} value={defect}>
-                {defect}
-              </p>
-            </div>
-          ))}
-        </Checkbox.Group>
-      </Menu.Item>
-    </Menu>
-  );
-  const prodMenu = (
-    <Menu>
-      <Menu.Item key="0">
-        <Checkbox.Group style={{ display: "block", cursor: "default" }}>
-          {Object.values(tableDataReduxActive).map((prod) => (
-            <div
-              key={prod.id}
-              style={{ display: "flex", flexDirection: "column" }}
-            >
-              <p style={{ fontSize: "1.1rem", width: "100%" }} value={prod}>
-                {prod}
-              </p>
-            </div>
-          ))}
-        </Checkbox.Group>
-      </Menu.Item>
-    </Menu>
-  );
+
+  const defectMenu =  Object.entries(categoryDefects).map(([key, value], index) => ({
+      label: `${key}`, // You can adjust this as needed, this will be the display label
+      key: index.toString(), // Use index as the key to maintain uniqueness
+    }));
+    
+
+  const prodMenu =  Object.entries(tableDataReduxActive).map(([key, value], index) => ({
+    label: `${value}`, // You can adjust this as needed, this will be the display label
+    key: index.toString(), // Use index as the key to maintain uniqueness
+  }));
+
+  const menu = Object.entries(activeMachines).map(([key,value], index) => ({
+    label: `${value.machine_name}`, // You can adjust this as needed, this will be the display label
+    key: index.toString(),
+  }))
+
 
   useEffect(() => {
     // Function to handle scroll event
@@ -473,21 +409,23 @@ const DashboardContentLayout = ({ children }) => {
                     />
 
 
-                    <div
+                    <button
                       type="primary"
                       onClick={handleApplyFilters}
+                  
                       className=" bg-red-500 text-white rounded flex items-center justify-center py-2 px-3 cursor-pointer font-bold"
                     >
                       Apply filters
-                    </div>
+                    </button>
                     {filterActive && filterChanged && (
-                      <div
+                      <button
                         type="primary"
+                        
                         onClick={resetFilter}
                         className=" bg-red-500 text-white rounded flex items-center justify-center py-2 px-3 cursor-pointer font-bold"
                       >
                         Reset Filter
-                      </div>
+                      </button>
                     )}
                   </div>
                   <div className="grid grid-cols-4 gap-4">
@@ -496,21 +434,21 @@ const DashboardContentLayout = ({ children }) => {
                         <span>Active Machines</span>
                         <VideoCameraOutlined />
                       </div>
-                      <DropdownComponent menu={menu} data={activeMachines} />
+                      <DropdownComponent items={menu} data={activeMachines} />
                     </div>
                     <div className="bg-gray-100 rounded-xl text-left flex flex-col">
                       <div className="flex justify-between items-center p-3 flex-1 text-lg w-full gap-3">
                         <span>Defect Classification</span>
                         <BugOutlined />
                       </div>
-                      <DropdownComponent menu={defectMenu} data={categoryDefects} />
+                      <DropdownComponent items={defectMenu} data={categoryDefects} />
                     </div>
                     <div className="bg-gray-100 rounded-xl text-left flex flex-col">
                       <div className="flex justify-between items-center p-3 flex-1 text-lg w-full gap-3">
                         <span>No. of SKU</span>
                         <AlertOutlined />
                       </div>
-                      <DropdownComponent menu={prodMenu} data={tableDataReduxActive} />
+                      <DropdownComponent items={prodMenu} data={tableDataReduxActive} />
                     </div>
                     <Link
                       to="/insights"
@@ -551,6 +489,11 @@ const DashboardContentLayout = ({ children }) => {
       )}
     </>
   );
+};
+// PROP VALIDATION 
+DashboardContentLayout.propTypes = {
+  // children should be a valid React node (e.g., string, number, element, array of elements, etc.)
+  children: PropTypes.node.isRequired,
 };
 
 export default DashboardContentLayout;

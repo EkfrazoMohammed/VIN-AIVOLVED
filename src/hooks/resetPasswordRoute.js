@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
-import axios from 'axios';
+import PropTypes from "prop-types";
+
 
 const ResetPasswordRoute = ({ children }) => {
   // const [isValidToken, setIsValidToken] = useState(true);
@@ -35,6 +34,9 @@ const ResetPasswordRoute = ({ children }) => {
   // }
 
   return children;
+};
+ResetPasswordRoute.propTypes = {
+  children: PropTypes.node.isRequired,
 };
 
 export default ResetPasswordRoute;

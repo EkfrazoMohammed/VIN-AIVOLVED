@@ -1,6 +1,6 @@
 // In aisSmartViewSlice.js
 import { createSlice } from "@reduxjs/toolkit";
-import { act } from "react";
+
 
 const aismartviewSlice = createSlice({
     name: "aismartview",

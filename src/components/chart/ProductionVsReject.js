@@ -1,6 +1,7 @@
 import React from "react";
 import ReactApexChart from "react-apexcharts";
 import { Typography } from "antd";
+import PropTypes from "prop-types";
 
 function ProductionVsReject({ data }) {
 
@@ -84,5 +85,9 @@ function ProductionVsReject({ data }) {
     </div>
   );
 }
+
+ProductionVsReject.propTypes = {
+ data:PropTypes.any
+};
 
 export default ProductionVsReject;

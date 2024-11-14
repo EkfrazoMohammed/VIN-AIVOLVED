@@ -1,6 +1,6 @@
 import React from "react";
+import PropTypes from "prop-types";
 import { Bar } from "react-chartjs-2";
-import { IoFilterSharp } from "react-icons/io5";
 import Chart from 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
@@ -136,7 +136,7 @@ const ProductAndDefect = ({ chartData }) => {
       },
       datalabels: {
         anchor: "end",
-        align: chartData.length === 1 ? "end" : "end",
+        align: chartData.length ===  "end",
         color: 'black',
         font: {
           weight: 'bold',
@@ -242,5 +242,9 @@ const ProductAndDefect = ({ chartData }) => {
     </div>
   );
 };
+ProductAndDefect.propTypes = {
+  chartData: PropTypes.any,
+};
+
 
 export default ProductAndDefect;

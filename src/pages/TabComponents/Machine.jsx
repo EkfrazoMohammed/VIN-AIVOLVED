@@ -1,5 +1,6 @@
 import React from 'react';
-import {Table, notification } from 'antd';
+import {Table } from 'antd';
+import PropTypes from 'prop-types';
 const Machine = ({machinesdata}) => {
 
 // Table Columns
@@ -20,18 +21,17 @@ const columns = [
 
   ];
 
-  const [api, contextHolder] = notification.useNotification();
 
  
   return (
-<>
-{contextHolder}
 
 
 <Table columns={columns} dataSource={machinesdata} pagination={{ pageSize: 6 }}/>
 
-</>
   )
+}
+Machine.propTypes = {
+  machinesdata:PropTypes.any
 }
 
 export default Machine

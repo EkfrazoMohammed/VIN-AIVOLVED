@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import ReactApexChart from "react-apexcharts";
 import { Typography } from "antd";
 import { useNavigate } from "react-router-dom";
-import LoaderIcon from "../LoaderIcon";
 import { setSelectedDefectReports } from "./../../redux/slices/defectSlice"
 import { updatePage } from "./../../redux/slices/reportSlice";
 import { useSelector, useDispatch } from "react-redux";
+import PropTypes from "prop-types";
 
 function PieChart({ data, selectedDate, loading }) {
   const accessToken = useSelector((state) => state.auth.authData[0].accessToken);
@@ -52,7 +52,7 @@ function PieChart({ data, selectedDate, loading }) {
   // if (!data || Object.keys(data).length === 0) {
   //   return <div className="flex items-center justify-center w-full  font-extrabold h-52 ">NO DATA</div>;
   // }
-  if (!chartData || !chartData.labels || !chartData.series) {
+  if (!chartData?.labels || !chartData?.series) {
     return <div>Loading chart...</div>;
   }
   return (
@@ -173,5 +173,9 @@ function PieChart({ data, selectedDate, loading }) {
     </div>
   );
 }
-
+PieChart.propTypes = {
+data:PropTypes.any,
+selectedDate:PropTypes.any,
+loading:PropTypes.any
+};
 export default PieChart;

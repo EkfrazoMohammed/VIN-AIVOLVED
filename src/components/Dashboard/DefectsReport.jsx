@@ -1,4 +1,6 @@
 import React from "react";
+import PropTypes from "prop-types";
+
 import {
   Chart as ChartJS,
   ArcElement,
@@ -39,6 +41,10 @@ const ProductAndDefect = ({ chart1, chart2 }) => {
       </div>
     </div>
   );
+};
+ProductAndDefect.propTypes = {
+  chart1:PropTypes.any,
+  chart2:PropTypes.any
 };
 
 export default ProductAndDefect;

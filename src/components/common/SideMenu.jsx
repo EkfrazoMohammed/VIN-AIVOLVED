@@ -8,7 +8,6 @@ import { RiListSettingsLine } from "react-icons/ri";
 import { MdSignalWifiStatusbarConnectedNoInternet1 } from "react-icons/md";
 import { CiSettings } from "react-icons/ci";
 import { IoMdLogOut } from "react-icons/io";
-import { FaMapLocationDot } from "react-icons/fa6";
 import { Button, Modal, notification } from "antd";
 import { AuthToken } from "../../API/API";
 import CurrentTime from "./CurrentTime";
@@ -26,7 +25,7 @@ import { reportSignout } from "../../redux/slices/reportSlice";
 import { userSignOut } from "../../redux/slices/userSlice";
 import useApiInterceptor from "../../hooks/useInterceptor";
 import { encryptAES } from "../../redux/middleware/encryptPayloadUtils";
-import { setSelectedShift, ShiftSignout } from "../../redux/slices/shiftSlice";
+import { setSelectedShift } from "../../redux/slices/shiftSlice";
 import { defectTriggerSignOut } from "../../redux/slices/defecTriggerSlice";
 const linkStyle =
   "sidemenu-link h-[45px] no-underline flex justify-start items-center px-3 rounded-[3px] gap-2";
@@ -38,7 +37,6 @@ const SideMenu = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const refreshToken = useSelector((state) => state.auth.authData[0].refreshToken);
-  const role = useSelector(state => state.role.selectedRole)
 
   const isActive = (path) => {
     return location.pathname === path ||
@@ -107,7 +105,7 @@ const SideMenu = () => {
   const handleLogout = async () => {
     setModal1Open(false);
     navigate("/login");
-    await openNotification();
+    openNotification();
     localStorage.clear();
     clearSessionandLocalStorage();
     sessionStorage.clear();

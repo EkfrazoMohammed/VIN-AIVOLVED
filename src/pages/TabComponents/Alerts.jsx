@@ -1,5 +1,6 @@
 import React from 'react';
-import { Table,notification  } from 'antd';
+import { Table  } from 'antd';
+import PropTypes from 'prop-types';
 
 const Alert = ({ productsData }) => {
   
@@ -21,14 +22,15 @@ const Alert = ({ productsData }) => {
 
   ];
 
-  const [api, contextHolder] = notification.useNotification();
 
   return (
-    <>
-      {contextHolder}
       <Table columns={columns} dataSource={productsData} pagination={{ pageSize: 6 }} />
-    </>
   )
+}
+
+
+Alert.propTypes = {
+  productsData:PropTypes.any
 }
 
 export default Alert

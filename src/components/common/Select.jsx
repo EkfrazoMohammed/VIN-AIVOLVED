@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react'
 import { Select } from 'antd'
+import PropTypes from 'prop-types';
 
-const SelectComponent = ({ placeholder, valueType, action, data, selectedData, style, size, setSelectedData }) => {
+const SelectComponent = ({ placeholder, valueType, action, data, selectedData, style, size }) => {
 
 
     const [dropdownVisible, setDropdownVisible] = React.useState(false);
@@ -58,6 +59,15 @@ const SelectComponent = ({ placeholder, valueType, action, data, selectedData, s
 
         </Select>
     )
+}
+SelectComponent.propTypes = {
+    placeholder:PropTypes.any,
+    valueType:PropTypes.any,
+    action:PropTypes.any,
+    data:PropTypes.any,
+    selectedData:PropTypes.any,
+    style:PropTypes.any,
+    size:PropTypes.any
 }
 
 export default SelectComponent

@@ -1,43 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { Table, Select, DatePicker, Button, Image, Tag } from 'antd';
-import axios from 'axios';
-import * as XLSX from 'xlsx';
-import moment from 'moment';
-import {
-  VideoCameraOutlined,
-  BugOutlined,
-  AlertOutlined,
-  RightOutlined,
-  DownloadOutlined,
-} from '@ant-design/icons';
-import { baseURL } from '../API/API';
-const { RangePicker } = DatePicker;
+import React from 'react';
+
+
 
 const MachinesParameter = () => {
 
 
-  const [data, setData] = useState([])
-  const getData = async () => {
-    await axios.get(`${baseURL}machine_temprature/`)
-      .then((res) => {
-        //console.log(res.data)
-        setData(res.data)
-      }).catch((err) => {
-        //console.log(err)
-      })
-  }
-  // useEffect(() => {
-  //   getData();  
-  // }, []); 
 
-
+ 
   return (
     <div className="layout-content">
 
 
       <div className="machineParameterContainer">
 
-        {data.map((item) => (
+        {/* {data?.map((item) => (
           <div className='mycardContainer' key={item.id}>
             <div className="cardUpper">
               <div className='cardHeading'>
@@ -63,13 +39,13 @@ const MachinesParameter = () => {
                 <div className='secondLinecolumnData'>
                   <div className='secondLinecolumnDataHeading'>Vertical</div>
                   {JSON.parse(item.vertical).map((value, index) => (
-                    <div key={index} className='secondLinecolumnDataValue'>{value}</div>
+                    <div key={value} className='secondLinecolumnDataValue'>{value}</div>
                   ))}
                 </div>
               </div>
             </div>
           </div>
-        ))}
+        ))} */}
       </div>
 
     </div>

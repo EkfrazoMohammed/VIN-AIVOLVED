@@ -2,16 +2,12 @@ import React, { useEffect } from "react";
 import { Bar } from "react-chartjs-2";
 import { useDispatch } from "react-redux";
 import { setSelectedMachineDpmu } from "../../redux/slices/machineSlice";
+import PropTypes from "prop-types";
 
 export default function RealTimeManufacturingSection({
   loading,
   categoryDefects,
   productionData,
-  selectedMachineDpmu,
-  machines,
-  machineChangeAction,
-  accessToken,
-  plant_id,
 }) {
   const dispatch = useDispatch();
 
@@ -66,9 +62,6 @@ export default function RealTimeManufacturingSection({
     dispatch(setSelectedMachineDpmu(null));
   }, [dispatch]);
 
-  // Dynamically calculate if the chart should be scrollable
-  const chartWidth = productionData?.length > 15 ? `${(productionData.length + 100) * 200}px` : "100%"; // Added +1 to allow extra space for the last bar
-
   return (
     <div className="py-4 px-0">
       <h1 className="section-title text-red-700 mb-4">
@@ -98,7 +91,7 @@ export default function RealTimeManufacturingSection({
               ) : (
                 Object.keys(categoryDefects).map((category, index) => (
                   <li
-                    key={index}
+                    key={category}
                     className="flex justify-between items-center bg-[#ff676e] p-2 mb-2 rounded"
                   >
                     <span className="max-w-32 text-wrap font-bold text-white break-words">
@@ -148,3 +141,10 @@ export default function RealTimeManufacturingSection({
     </div>
   );
 }
+
+RealTimeManufacturingSection.propTypes = {
+  loading:PropTypes.any,
+  categoryDefects:PropTypes.any,
+  productionData:PropTypes.any
+};
+

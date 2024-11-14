@@ -1,13 +1,12 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, {  useRef, useState } from "react";
 import Slider from "react-slick";
-import { Button, Select } from "antd";
+import {  Select } from "antd";
 import { useSelector } from "react-redux";
 import { RightOutlined, LeftOutlined } from "@ant-design/icons";
 import { Hourglass } from "react-loader-spinner";
-import gridBg from "../assets/images/grid-bg.jpg";
 import useApiInterceptor from "../hooks/useInterceptor";
 import { decryptAES } from "../redux/middleware/encryptPayloadUtils";
-import { getDefects, getAiSmartView } from "../services/dashboardApi";
+import {getAiSmartView } from "../services/dashboardApi";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
@@ -16,8 +15,6 @@ const AiSmartView = () => {
   const [selectedDefect, setSelectedDefect] = useState(null);
   const localPlantData = useSelector((state) => state.plant.plantData[0]);
   const AuthToken = useSelector((state) => state.auth.authData[0].accessToken);
-  const next = useSelector((state) => state.aismartview.next);
-  const prev = useSelector((state) => state.aismartview.prev);
   const defectsData = useSelector((state) => state.defect.defectsData);
 
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
@@ -145,22 +142,19 @@ const AiSmartView = () => {
 
                         <Slider {...settings} ref={sliderRef} className="max-w-[100vh]">
                           {aismartviewData?.map((item, index) => (
-                            <>
-                              <div key={index} className="aismart-item">
+                              <div key={index + 1} className="aismart-item">
                                 <img
                                   src={decryptAES(item.image)}
-                                  alt={`Slide ${index}`}
+                                  alt={`Slide ${index + 1}`}
                                   style={{ maxHeight: "70vh", width: '40vw', display: "block", margin: "0 auto" }}
                                 />
 
                               </div>
-                            </>
                           ))}
                         </Slider>
                       </div>
 
                       <div className="flex items-center justify-between mt-4">
-                        <>
 
                         {
                           aismartviewData.length > 2 &&
@@ -179,14 +173,13 @@ const AiSmartView = () => {
                         {
                           aismartviewData.length > 2 &&
                           <button
-                            onClick={(i) => handleNext(i)}
+                            onClick={(i) => handleNext()}
                             disabled={currentSlideIndex === 10}
                             className="bg-[#f50909] py-2 px-3 rounded-lg text-white"
                           >
                             <RightOutlined />
                           </button>
                         }
-                        </>
                       </div>
                     </>
                     : <div className="" style={{ height: "100%", maxHeight: "70vh", width: '100%', display: "flex", fontWeight: "800", justifyContent: "center", alignItems: "center" }}>NO DATA</div>

@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import { Card, Col, notification } from "antd";
-import axios from "axios";
-import { baseURL } from "../../API/API";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { encryptAES } from "../../redux/middleware/encryptPayloadUtils";
@@ -40,10 +38,10 @@ const ResetPasswordEmail = () => {
   };
 
   const validateEmail = (email) => {
-    // Basic email validation regex
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return emailRegex.test(email);
   };
+
 
   const confirmEmail = async () => {
     try {

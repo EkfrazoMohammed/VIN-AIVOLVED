@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import ReactApexChart from "react-apexcharts";
 import { Typography } from "antd";
 import { useSelector } from "react-redux";
+import PropTypes from "prop-types";
 
 function StackChart({ data }) {
   const accessToken = useSelector((state) => state.auth.authData[0].accessToken);
@@ -125,6 +126,16 @@ function StackChart({ data }) {
       [defectName]: !prev[defectName],
     }));
   };
+  const getChartWidth = () => {
+    if (sortedDates.length <= 5) {
+      return "150%";
+    } else if (sortedDates.length > 5) {
+      return `${sortedDates.length * 22}%`;
+    } else {
+      return `${sortedDates.length * 50}%`;
+    }
+  };
+
 
   return (
     <div>
@@ -191,13 +202,8 @@ function StackChart({ data }) {
                 series={chartData.series}
                 type="bar"
                 height={350}
-                width={
-                  sortedDates.length <= 5
-                    ? 450
-                    : sortedDates.length > 5
-                    ? `${sortedDates.length * 22}%`
-                    : `${sortedDates.length * 50}%`
-                }                            />
+                width={getChartWidth()} // Call the function to get the width
+                />
             </div>
           </div>
         )
@@ -205,6 +211,10 @@ function StackChart({ data }) {
      </div>
     </div>
   );
+}
+
+StackChart.propTypes ={
+  data:PropTypes.any
 }
 
 export default StackChart;

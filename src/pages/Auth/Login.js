@@ -1,14 +1,12 @@
 // src/pages/Auth/Login.js
-import React, { useEffect, useState } from 'react';
-import { Card, Col, Input, Checkbox, notification, message } from 'antd';
-import { useNavigate } from 'react-router-dom';
+import React, {  useState } from 'react';
+import { Card, Col, Input, Checkbox, notification } from 'antd';
+import { useNavigate,Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import axiosInstance from '../../API/axiosInstance'; // Ensure this is correctly imported
 import { signInFailure, signInSuccess } from '../../redux/slices/authSlice'; // Import the setAuthData action
 import { userSignInSuccess } from '../../redux/slices/userSlice'; // Import the setAuthData action
-// import { decrypTion, encrypTion } from '../../redux/middleware/queryParamUtils';
 import { encryptAES, decryptAES } from '../../redux/middleware/encryptPayloadUtils';
-import { Link } from 'react-router-dom'
 
 const Login = () => {
   const [loading, setLoading] = useState(false);
@@ -38,8 +36,8 @@ const [saveUserLocal,setSaveUserLocal] = useState(false);
 
     // Validate email or mobile number
     const validateInput = (input) => {
-      const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-      const mobilePattern = /^\+?[0-9]{8,15}$/;
+      const emailPattern = /^[a-zA-Z\d._%+-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$/;
+      const mobilePattern = /^\+?\d{8,15}$/;
       return emailPattern.test(input) || mobilePattern.test(input);
     };
 
@@ -103,7 +101,7 @@ const [saveUserLocal,setSaveUserLocal] = useState(false);
 
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value,  checked } = e.target;
 
 
     setLoginPayload(prev => ({ ...prev, [name]: value }));
@@ -141,11 +139,12 @@ const [saveUserLocal,setSaveUserLocal] = useState(false);
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <h3 className='flex justify-center items-center font-semibold text-lg'>Login</h3>
             <div>
-              <label style={{ fontWeight: "600", fontSize: '1rem' }}>
-                Email ID / Mobile number
+              <label  htmlFor="emailOrMobile"  style={{ fontWeight: "600", fontSize: '1rem' }}>
+                Email ID / Mobile number {' '}
                 <span style={{ color: 'red', fontWeight: '900', fontSize: '1rem', marginLeft: '0.1rem' }}>*</span>
               </label>
               <Input
+                id='emailOrMobile'
                 placeholder="Enter Email id /Mobile number"
                 className='h-[45px] pl-2 py-0'
                 name="email_or_phone"
@@ -155,11 +154,12 @@ const [saveUserLocal,setSaveUserLocal] = useState(false);
               {error.UserError && <span style={{ color: 'red', fontWeight: '700', fontSize: '0.8rem', marginLeft: '0.5rem' }}>{error.UserError}</span>}
             </div>
             <div>
-              <label style={{ fontWeight: "600", fontSize: '1rem' }}>
-                Password
+              <label htmlFor='password' style={{ fontWeight: "600", fontSize: '1rem' }}>
+                Password {' '}
                 <span style={{ color: 'red', fontWeight: '900', fontSize: '1rem', marginLeft: '0.1rem' }}>*</span>
               </label>
               <Input.Password
+              id='password'
                 placeholder="Enter password"
                 className='h-[45px] pl-2 py-0'
                 name='password'

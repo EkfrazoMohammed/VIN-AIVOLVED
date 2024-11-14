@@ -1,42 +1,34 @@
 import { useState, useEffect } from "react";
-import { ExclamationCircleOutlined } from "@ant-design/icons";
-import { Link, useNavigate, useNavigation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import moment from "moment";
 import {
   Card,
   notification,
-  Space,
   Col,
   Row,
   Typography,
   Select,
   DatePicker,
-  Checkbox,
   Button,
   Dropdown,
-  Menu,
 } from "antd";
 import Paragraph from "antd/lib/typography/Paragraph";
 import {
-  VideoCameraOutlined,
   BugOutlined,
   AlertOutlined,
   NotificationOutlined,
 } from "@ant-design/icons";
 import StackChart from "../components/chart/StackChart";
-import LineChart from "../components/chart/LineChart";
 import PieChart from "../components/chart/PieChart";
-import MachinesParameter from "./MachinesParameterWithPagination";
-import MachinesParameterWithPagination from "./MachinesParameterWithPagination";
+
 import MachineParam from "../components/chart/MachineParam";
-import { API, baseURL, AuthToken, localPlantData } from "./../API/API";
+import {  baseURL, AuthToken } from "./../API/API";
 import ProductionVsReject from "../components/chart/ProductionVsReject";
 import dayjs from "dayjs";
 import { Hourglass } from "react-loader-spinner";
 import { useSelector } from "react-redux";
 import SelectComponent from "../components/common/Select";
-import { current } from "@reduxjs/toolkit";
 
 
 
@@ -52,8 +44,8 @@ function Dashboard() {
   const dateFormat = "YYYY/MM/DD";
 
   const [selectedMachine, setSelectedMachine] = useState(null);
-  const [selectedDepartment, setSelectedDepartment] = useState(null);
-  const [selectedDefect, setSelectedDefect] = useState(null);
+  const selectedDepartment = null;
+  const selectedDefect =  null
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const [loaderData, setLoaderData] = useState(false);
@@ -64,24 +56,18 @@ function Dashboard() {
   const [tableData, setTableData] = useState([]);
   const [productionData, setProductionData] = useState([]);
   const [machineOptions, setMachineOptions] = useState([]);
-  const [departmentOptions, setDepartmentOptions] = useState([]);
   const [productOptions, setProductOptions] = useState([]);
-  const [activeMachines, setActiveMachines] = useState([]);
   const [activeProd, setActiveProd] = useState([]);
 
   const handleMachineChange = (value) => {
     setSelectedMachine(value);
   };
-  const handleDepartmentChange = (value) => {
-    setSelectedDepartment(value);
-  };
+
   const handleProductChange = (value) => {
     setSelectedProduct(value);
   };
 
-  const handleChange = (value) => { };
 
-  const navigate = useNavigate();
 
   // const localItems = localStorage.getItem("PlantData");
   // const localPlantData = JSON.parse(localItems);
@@ -114,7 +100,6 @@ function Dashboard() {
     const [fromDate, toDate] = dateRange;
 
     let url = `${domain}dashboard/?`;
-    // url += `plant_id=${localPlantData.id}&from_date=${fromDate}&to_date=${toDate}&machine_id=${selectedMachine}&department_id=${selectedDepartment}&product_id=${selectedProduct}&defect_id=${selectedDefect}`;
     if (localPlantData.id) {
       url += `plant_id=${localPlantData.id}&`;
     }
@@ -146,9 +131,7 @@ function Dashboard() {
     if (url.endsWith("?")) {
       url = url.slice(0, -1);
     }
-    // if (fromDate && toDate) {
-    //   url += `&from_date=${fromDate}&to_date=${toDate}`;
-    // }
+ 
     axios
       .get(url, {
         headers: {
@@ -163,7 +146,6 @@ function Dashboard() {
         setFilterActive(true);
       })
       .catch((error) => {
-        //console.error("Error:", error);
         setLoaderData(false);
       });
   };
@@ -178,14 +160,10 @@ function Dashboard() {
         },
       })
       .then((response) => {
-        setActiveMachines(
-          response.data.results.filter(
-            (machine) => machine.system_status === true
-          )
-        );
+       return response
       })
       .catch((error) => {
-        //console.error("Error fetching machine data:", error);
+ throw new Error(error)
       });
   };
 
@@ -230,11 +208,8 @@ function Dashboard() {
         },
       })
       .then((response) => {
-        const formattedDepartment = response.data.results.map((department) => ({
-          id: department.id,
-          name: department.name,
-        }));
-        setDepartmentOptions(formattedDepartment);
+      
+        // setDepartmentOptions(formattedDepartment);
       })
       .catch((error) => {
         //console.error("Error fetching department data:", error);
@@ -258,9 +233,7 @@ function Dashboard() {
     setLoaderData(true);
 
     const domain = baseURL;
-    const [fromDate, toDate] = [startDate, endDate].map((date) =>
-      date.toISOString().slice(0, 10)
-    ); // Format dates as YYYY-MM-DD
+ 
     const url = `${domain}dashboard/?plant_id=${localPlantData.id}`;
     // const url = `${domain}dashboard/`;
 
@@ -277,18 +250,14 @@ function Dashboard() {
         setActiveProd(active_products);
       })
       .catch((error) => {
-        //console.error("Error:", error);
         setLoaderData(false);
       });
   };
 
-  // //console.log(Object.keys(tableData).filter(res=>res !== "active_products"),"<<<tabledata")
 
   const initialProductionData = () => {
     const domain = baseURL;
-    // const [fromDate, toDate] = [startDate, endDate].map(date => date.toISOString().slice(0, 10)); // Format dates as YYYY-MM-DD
     const url = `${domain}defct-vs-machine/?plant_id=${localPlantData.id}`;
-    // const url = `${domain}dashboard/`;
     axios
       .get(url, {
         headers: {
@@ -299,7 +268,6 @@ function Dashboard() {
         setProductionData(response.data.data_last_7_days);
       })
       .catch((error) => {
-        //console.error("Error:", error);
       });
   };
   const [alertData, setAlertData] = useState(null);
@@ -323,7 +291,6 @@ function Dashboard() {
   };
 
   const { Title } = Typography;
-  const { RangePicker } = DatePicker;
   const [categoryDefects, setCategoryDefects] = useState([]);
   // Function to categorize defects
   const categorizeDefects = (data) => {
@@ -371,226 +338,20 @@ function Dashboard() {
   //   return categorizedData;
   // };
 
-  const [selectedCheckboxMachine, setSelectedCheckboxMachine] = useState([]);
+  const notifications =[];
+  const prevNotificationLength = 0;
+  const [ contextHolder] = notification.useNotification();
 
-  const handleMachineCheckBoxChange = (checkedValues) => {
-    setSelectedCheckboxMachine(checkedValues);
-    let url = `${baseURL}/reports?machine=`;
-    checkedValues.forEach((machineId, index) => {
-      if (index !== 0) {
-        url += ",";
-      }
-      url += `machine${machineId}`;
-    });
 
-    axios
-      .get(url)
-      .then((response) => {
-        // //console.log(response);
-        setTableData(response.data);
-      })
-      .catch((error) => {
-        //console.error("Error fetching department data:", error);
-      });
-  };
 
-  const menu = (
-    <Menu selectable={true}>
-      <Menu.Item key="0">
-        <Checkbox.Group
-          style={{ display: "block" }}
-          value={selectedCheckboxMachine}
-          onChange={handleMachineCheckBoxChange}
-        >
-          {activeMachines.map((machine) => (
-            <div
-              key={machine.id}
-              style={{ display: "flex", flexDirection: "column" }}
-            >
-              {machine.system_status ? (
-                <p
-                  style={{ fontSize: "1.1rem", width: "100%" }}
-                  value={machine.id}
-                >
-                  {machine.machine_name}
-                </p>
-              ) : null}
-            </div>
-          ))}
-        </Checkbox.Group>
-      </Menu.Item>
-    </Menu>
-  );
-  const defectMenu = (
-    <Menu>
-      <Menu.Item key="0">
-        <Checkbox.Group style={{ display: "block" }}>
-          {Object.keys(categoryDefects).map((defect) => (
-            <div
-              key={defect.id}
-              style={{ display: "flex", flexDirection: "column" }}
-            >
-              <p style={{ fontSize: "1.1rem", width: "100%" }} value={defect}>
-                {defect}
-              </p>
-            </div>
-          ))}
-        </Checkbox.Group>
-      </Menu.Item>
-    </Menu>
-  );
-  const prodMenu = (
-    <Menu>
-      <Menu.Item key="0">
-        <Checkbox.Group style={{ display: "block" }}>
-          {Object.values(activeProd).map((prod) => (
-            <div
-              key={prod.id}
-              style={{ display: "flex", flexDirection: "column" }}
-            >
-              <p style={{ fontSize: "1.1rem", width: "100%" }} value={prod}>
-                {prod}
-              </p>
-            </div>
-          ))}
-        </Checkbox.Group>
-      </Menu.Item>
-    </Menu>
-  );
-  const [notifications, setNotifications] = useState([]);
-  const [isSocketConnected, setIsSocketConnected] = useState(false);
-  const [prevNotificationLength, setPrevNotificationLength] = useState(0);
-  const [api, contextHolder] = notification.useNotification();
 
-  useEffect(() => {
-    const initializeWebSocket = () => {
-      const socket = new WebSocket(
-        `wss://hul.aivolved.in/ws/notifications/${localPlantData.id}/`
-      );
-      socket.onopen = () => {
-        //console.log(`WebSocket connection established ${localPlantData.id}`);
-        setIsSocketConnected(true); // Update connection status
-      };
 
-      socket.onmessage = (event) => {
-        const message = JSON.parse(event.data);
-        setNotifications((prevNotifications) => {
-          const newNotifications = [...prevNotifications, message.notification];
-
-          // Show notification using Ant Design
-          const key = `open${Date.now()}`;
-          //   api.open({
-          //     message: message.notification,
-          //     // description: message.notification,
-          //     onClose: close,
-          //     duration: 5000,
-          //     showProgress: true,
-          // pauseOnHover:true,
-          // icon: (
-
-          //   <ExclamationCircleOutlined
-          //     style={{
-          //       color: '#ec522d',
-          //     }}
-          //   />
-          // ),
-          //     style: { whiteSpace: 'pre-line' },  // Added style for new line character
-          //     btn: (
-          //       <Space>
-          //         <Button type="primary" size="small" onClick={() => api.destroy(key)} style={{color:"#ec522d"}}>
-          //     Close
-          //   </Button>
-          //         {/* <Button type="link" size="small" onClick={() => api.destroy()}>
-          //           Destroy All
-          //         </Button> */}
-          //         <Button type="primary" size="large"  style={{fontSize:"1rem",backgroundColor:"#ec522d"}} onClick={() => api.destroy()}>
-          //          <Link to="/insights">View All Errors </Link>
-          //         </Button>
-          //       </Space>
-          //     ),
-          //   });
-          api.open({
-            message: message.notification,
-            // description: message.notification,
-            onClose: close,
-            duration: 5000,
-            showProgress: true,
-            pauseOnHover: true,
-            key,
-            stack: 2,
-            icon: (
-              <ExclamationCircleOutlined
-                style={{
-                  color: "#fff",
-                }}
-              />
-            ),
-            style: { whiteSpace: "pre-line" }, // Added style for new line character
-            btn: (
-              <Space>
-                <Button
-                  type="link"
-                  size="small"
-                  onClick={() => api.destroy(key)}
-                  style={{ color: "#fff" }}
-                >
-                  Close
-                </Button>
-
-                <Button
-                  type="primary"
-                  size="large"
-                  style={{
-                    fontSize: "1rem",
-                    backgroundColor: "#fff",
-                    color: "orangered",
-                  }}
-                  onClick={() => api.destroy()}
-                >
-                  <Link to="/insights">View All Errors </Link>
-                </Button>
-              </Space>
-            ),
-          });
-
-          return newNotifications;
-        });
-      };
-
-      socket.onclose = () => {
-        //console.log("WebSocket connection closed");
-        setIsSocketConnected(false); // Update connection status
-      };
-
-      socket.onerror = (error) => {
-        //console.error("WebSocket error:", error);
-        setIsSocketConnected(false); // Update connection status
-      };
-
-      return () => {
-        socket.close();
-      };
-    };
-
-    const cleanup = initializeWebSocket();
-    return cleanup;
-  }, [api]);
-  const close = () => {
-    //console.log("Notification was closed");
-  };
-
-  const disableFutureDates = (current) => {
-    // Disable dates after today (including tomorrow)
-    return current && current.isAfter(dayjs().endOf("day"));
-  };
 
 
   return (
     <>
       {contextHolder}
-      {/* <Button type="primary" onClick={openNotification}>
-        Open the notification box
-      </Button> */}
+ 
       <div className="layout-content">
         <Row className="rowgap-vbox" gutter={[24, 0]}>
           <Col
@@ -695,23 +456,7 @@ function Dashboard() {
               style={{ minHeight: "180px" }}
             // style={{ minHeight: "180px" }}
             >
-              <Dropdown overlay={menu} trigger={["click"]}>
-                <div className="number" style={{ cursor: "pointer" }}>
-                  <Row align="middle">
-                    <Col xs={18}>
-                      <Title level={3} style={{ fontSize: "1.5rem" }}>
-                        {`Active Machines`}
-                      </Title>
-                      <span>{activeMachines.length}</span>
-                    </Col>
-                    <Col xs={6}>
-                      <div className="icon-box">
-                        <VideoCameraOutlined />
-                      </div>
-                    </Col>
-                  </Row>
-                </div>
-              </Dropdown>
+      
             </Card>
           </Col>
           <Col key={1} xs={24} sm={24} md={12} lg={6} className="mb-24">
@@ -720,7 +465,7 @@ function Dashboard() {
               className="criclebox "
               style={{ minHeight: "180px" }}
             >
-              <Dropdown overlay={defectMenu} trigger={["click"]}>
+              <Dropdown  trigger={["click"]}>
                 <div className="number" style={{ cursor: "pointer" }}>
                   <Row align="middle">
                     <Col xs={18}>
@@ -728,7 +473,6 @@ function Dashboard() {
                         {`Defect Classification`}
                       </Title>
 
-                      {/* <span>  {Object.keys(categoryDefects).reduce((total, category) => total + category, 0)}</span> */}
                       <span> {Object.keys(categoryDefects).length}</span>
                     </Col>
                     <Col xs={6}>
@@ -747,7 +491,7 @@ function Dashboard() {
               className="criclebox "
               style={{ minHeight: "180px" }}
             >
-              <Dropdown overlay={prodMenu} trigger={["click"]}>
+              <Dropdown trigger={["click"]}>
                 <div className="number" style={{ cursor: "pointer" }}>
                   <Row align="middle">
                     <Col xs={18}>
@@ -833,7 +577,7 @@ function Dashboard() {
             <Card bordered={false} className="h-full">
               {Object.keys(categoryDefects).map((category, index) => (
                 <Card
-                  key={index}
+                  key={category}
                   bordered={true}
                   className="criclebox h-full mb-2 px-2 "
                 >

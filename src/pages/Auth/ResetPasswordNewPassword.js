@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import axiosInstance from "../../API/axiosInstance";
 import { encryptAES } from "../../redux/middleware/encryptPayloadUtils";
@@ -12,7 +12,7 @@ const PasswordResetForm = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
-  const [success, setSuccessMessage] = useState(false);
+  const [success, setSuccess] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
   const [api] = notification.useNotification();
@@ -96,7 +96,7 @@ const PasswordResetForm = () => {
 
       // Handle success
       if (response.status === 200) {
-        setSuccessMessage(true);
+        setSuccess(true);
         openNotification({
           status: "success",
           message: "Password updated successfully",
@@ -182,6 +182,8 @@ const PasswordResetForm = () => {
                     {passwordVisible ? (
                       <EyeOutlined className="text-gray-500" />
                     ) : (
+
+
                       <EyeInvisibleOutlined className="text-gray-500" />
                     )}
                   </button>
@@ -216,7 +218,7 @@ const PasswordResetForm = () => {
                   </button>
                   {confirmPasswordError && <div className="text-red-500 mt-1  text-sm">{confirmPasswordError}</div>}
                 </div>
-                {passwordError === "" || passwordError == null || confirmPasswordError === "" || confirmPasswordError == null ? <>
+                {passwordError === "" || passwordError == null || confirmPasswordError === "" || confirmPasswordError == null ? 
                   <button
 
                     onClick={handleSubmit}
@@ -225,14 +227,14 @@ const PasswordResetForm = () => {
                   >
                     Reset Password
                   </button>
-                </> : <>
+                 : 
                   <button
                     type="submit"
                     className="w-full bg-[#ff4403] text-white font-bold py-2 px-4 rounded hover:bg-red-600 transition-colors duration-300"
                   >
                     Reset Password
                   </button>
-                </>}
+                }
               </>
           }
 

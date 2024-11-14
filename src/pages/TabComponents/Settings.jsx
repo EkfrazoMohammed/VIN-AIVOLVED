@@ -1,26 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Col, Row, Input, notification, Select } from 'antd';
-import { Switch } from 'antd';
-import { Modal } from 'antd';
+import { Button, Col, Row, Input, notification, Select ,Switch ,Modal} from 'antd';
 import { ColorRing } from 'react-loader-spinner'
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { encryptAES } from '../../redux/middleware/encryptPayloadUtils'
 import useApiInterceptor from '../../hooks/useInterceptor';
 
 const Settings = () => {
 
   const apiInterceptor = useApiInterceptor()
-  const dispatch = useDispatch();
+ 
   const accessToken = useSelector((state) => state.auth.authData[0].accessToken);
   const currentUserData = useSelector((state) => (state.user.userData[0]))
-  const localPlantData = useSelector((state) => state?.plant?.plantData[0]);
-  const all_roles = useSelector((state) => state.role.rolesData)
+
   const [api, contextHolder] = notification.useNotification();
   const [loading, setLoading] = useState(false)
   const [modal2Open, setModal2Open] = useState(false);
-  const [all_plants, setAllPlants] = useState([])
+  const [plants, setPlants] = useState([])
 
-  const [locations, setLocations] = useState([
+  const locations = [
     {
       id: 1,
       is_active: true,
@@ -39,7 +36,7 @@ const Settings = () => {
       location_name: "New",
 
     },
-  ]);
+  ];
 
   useEffect(() => {
     const fetchPlantData = async () => {
@@ -53,12 +50,12 @@ const Settings = () => {
         const { results } = res.data
 
         if (results) {
-          setAllPlants(results);
+          setPlants(results);
         } else {
           console.warn("No results found in the response");
         }
       } catch (err) {
-        //console.log("Error fetching plant data:", err);
+        console.log("Error fetching plant data:");
         if (err.response && err.response.data.code === "token_not_valid") {
           console.log("Token is invalid or expired.");
         } else {
@@ -125,30 +122,45 @@ const Settings = () => {
 
   const handlePost = async () => {
     try {
-      const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      const emailPattern = /^[a-zA-Z\d._%+-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$/;
+
+      // Helper function to validate required fields
+      const validateRequired = (field, fieldName) => {
+        return !field ? `*Please Enter ${fieldName}` : null;
+      };
+      
+      // Helper function to validate phone number
+      const validatePhoneNumber = (phoneNumber) => {
+        if (!phoneNumber) return "*Please Enter Phone Number";
+        return phoneNumber.length !== 10 ? "*Please Enter Valid Phone Number" : null;
+      };
+      
+      // Helper function to validate email
+      const validateEmail = (email) => {
+        if (!email) return "*Please Enter Email";
+        return !emailPattern.test(email) ? "*Please Enter Valid Email" : null;
+      };
+      
       let errors = {};
+      
       // Validate fields
-      if (!data.first_name) errors.firstName = "*Please Enter First Name";
-      if (!data.last_name) errors.lastName = "*Please Enter Last Name";
-      if (!data.phone_number) {
-        errors.Phone = "*Please Enter Phone Number";
-      } else if (data.phone_number.length !== 10) {
-        errors.Phone = "*Please Enter Valid Phone Number";
-      }
-      if (!data.email) {
-        errors.email = "*Please Enter Email";
-      } else if (!emailPattern.test(data.email)) {
-        errors.email = "*Please Enter Valid Email";
-      }
-      if (!data.employee_id) errors.employee_id = "*Please Enter Employee ID";
-
+      errors.firstName = validateRequired(data.first_name, "First Name");
+      errors.lastName = validateRequired(data.last_name, "Last Name");
+      errors.Phone = validatePhoneNumber(data.phone_number);
+      errors.email = validateEmail(data.email);
+      errors.employee_id = validateRequired(data.employee_id, "Employee ID");
+      
+      // Remove any null values (empty error messages)
+      errors = Object.fromEntries(Object.entries(errors).filter(([_, v]) => v !== null));
+      
       setError(errors); // Update errors
-
+      
       // If there are any errors, stop execution
       if (Object.keys(errors).length > 0) {
         setLoading(false);
         return;
       }
+      
 
       // Create payload
       const payload = {
@@ -240,11 +252,6 @@ const Settings = () => {
 
 
 
-  const handleRoleChange = (value) => {
-    setData((prev) => ({ ...prev, role: value }));
-    console.log(data)
-  };
-
   const handlePlantChange = (value) => {
     setData((prev) => ({ ...prev, plant: value }));
   };
@@ -334,24 +341,12 @@ const Settings = () => {
                   {error.employee_id ? <span style={{ fontWeight: '600', color: 'red' }}>{error.employee_id}</span> : ""}
                 </div>
                 <div className="">
-                  {/* <Select
-                    size='large'
-                    style={{ minWidth: '100%' }}
-                    placeholder="Select Role"
-                    onChange={handleRoleChange}
-                    value={data.role}
-                  >
-                    {all_roles.map((role, index) => (
-                      <Select.Option key={index} value={role.id}>
-                        {role.role_name}
-                      </Select.Option>
-                    ))}
-                  </Select> */}
+            
                   {error.role_name && <span style={{ fontWeight: '600', color: 'red' }}>{error.role_name}</span>}
 
                 </div>
 
-                {/* location start*/}
+            
                 {data.role == 2 ? (
                   <Select
                     size='large'
@@ -373,7 +368,7 @@ const Settings = () => {
                       placeholder="Select Plant"
                       onChange={handlePlantChange}
                     >
-                      {all_plants.map(({ id, plant_name }) => (
+                      {plants?.map(({ id, plant_name }) => (
                         <Select.Option key={id} value={id}>
                           {plant_name}
                         </Select.Option>
@@ -386,23 +381,7 @@ const Settings = () => {
                 {error.plant && <span style={{ fontWeight: '600', color: 'red' }}>{error.plant}</span>}
 
 
-                {/* location end */}
-                {/* <div className="">
-                  <Select
-                    style={{ minWidth: '100%' }}
-                    placeholder="Select Plant"
-                    onChange={handlePlantChange}
-                    value={data.role_name}
-                  >
-                    {all_plants.map((role, index) => (
-                      <Select.Option key={index} value={role.id}>
-                        {role.plant_name}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                  {error.plant && <span style={{ fontWeight: '600', color: 'red' }}>{error.plant}</span>}
-
-                </div> */}
+        
               </div>
               <div className="" style={{ display: 'flex', justifyContent: 'flex-end', padding: '1rem' }}>
                 

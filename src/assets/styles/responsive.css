@@ -58,17 +58,11 @@
   .layout-dashboard-rtl .ant-layout-sider.sider-primary {
     margin: 20px 20px 0 0;
     height: calc(100vh - 20px);
-  }
-
-  .layout-dashboard-rtl .ant-layout-sider.sider-primary {
     right: 0;
     left: auto;
   }
 
-  .layout-dashboard-rtl .ant-layout-sider.sider-primary {
-    right: 0;
-    left: auto;
-  }
+ 
 
   .layout-dashboard-rtl .ant-layout {
     margin-right: 270px;
@@ -85,4 +79,3 @@
     justify-content: flex-end;
   }
 }
-/*  */

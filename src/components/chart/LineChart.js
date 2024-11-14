@@ -4,6 +4,7 @@ import { Typography } from "antd";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import {baseURL} from "../../API/API"
+import PropTypes from "prop-types";
 function LineChart({ data }) {
   const { Title } = Typography;
   const [defectColors, setDefectColors] = useState({});
@@ -108,5 +109,8 @@ function LineChart({ data }) {
     </div>
   );
 }
+LineChart.propTypes = {
+data:PropTypes.any
+};
 
 export default LineChart;

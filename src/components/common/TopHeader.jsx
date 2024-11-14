@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import React from 'react'
 
 const TopHeader = ({clientName, clientLogoImgUrl}) => {
@@ -14,4 +15,8 @@ const TopHeader = ({clientName, clientLogoImgUrl}) => {
   )
 }
 
+TopHeader.propTypes = {
+  clientName:PropTypes.any,
+  clientLogoImgUrl:PropTypes.any
+}
 export default TopHeader
