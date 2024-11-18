@@ -9,8 +9,8 @@ import { setSelectedMachine, setSelectedMachineDpmu } from "../../redux/slices/m
 import { setSelectedProduct } from "../../redux/slices/productSlice"
 import { getDashboardSuccess } from "../../redux/slices/dashboardSlice"
 import { Link, useLocation } from "react-router-dom";
-import { DatePicker, } from "antd";
-import { VideoCameraOutlined, BugOutlined, AlertOutlined, NotificationOutlined } from "@ant-design/icons";
+import { DatePicker,ConfigProvider } from "antd";
+import { VideoCameraFilled, BugFilled, AlertFilled } from "@ant-design/icons";
 import StackChart from "../../components/chart/StackChart";
 import PieChart from "../../components/chart/PieChart";
 import dayjs from "dayjs";
@@ -36,6 +36,7 @@ const DashboardContentLayout = ({ children }) => {
   const shiftDataRedux = useSelector((state) => state.shift.shiftData)
   const selectedMachineRedux = useSelector((state) => state.machine.selectedMachine);
   const selectedMachineDpmu = useSelector((state) => state.machine.selectedMachineDpmu);
+  const loaderReduxMachine = useSelector((state)=>state.machine.loading)
 
   const selectedProductRedux = useSelector((state) => state.product.selectedProduct);
   const selectedShiftRedux = useSelector((state) => state.shift.selectedShift)
@@ -342,8 +343,8 @@ const DashboardContentLayout = ({ children }) => {
       ) : (
         <>
           <div className="dx-row flex  pb-4 gap-3">
-            <TotalOverview machine={machines} textData={textData} />
-            <div className="overview-container w-9/12 flex flex-col justify-between p-3 rounded-md border-2">
+            <TotalOverview machine={machines} textData={textData} loading={loaderReduxMachine} />
+            <div className="overview-container w-9/12 flex flex-col justify-between p-3 rounded-md ">
               <div className="filter-lg-w">
                 <div className="inner-w">
                   <div className="flex flex-wrap items-start gap-2 mb-4">
@@ -355,46 +356,27 @@ const DashboardContentLayout = ({ children }) => {
                     <SelectComponent placeholder={"Select Shift"} selectedData={selectedShiftRedux} setSelectedData={setSelectedShift} action={(val) => handleShiftChange(val)} data={shiftDataRedux} valueType="name" style={{ minWidth: "180px", zIndex: 1 }} size={"large"} />
 
 
-                    {/* <RangePicker
-                      className="dx-default-date-range"
-                      size="large"
-                      ref={rangePickerRef}
-                      open={visible} // Control the visibility based on scroll
-                      onOpenChange={handleOpenChange} // Update visibility state when user manually opens/closes
-                      style={{ marginRight: "10px", minWidth: "280px", zIndex: 1 }}
-                      onChange={handleDateRangeChange}
-                      allowClear={false}
-                      inputReadOnly
-                      disabledDate={(current) => {
-                        const now = Date.now();
-                        const thirtyDaysAgo = new Date(now);
-                        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
-                        return current && (current.valueOf() > now || current.valueOf() < thirtyDaysAgo);
-                      }} value={
-                        selectedDate
-                          ? [
-                            dayjs(selectedDate[0], "YYYY/MM/DD"),
-                            dayjs(selectedDate[1], "YYYY/MM/DD"),
-                          ]
-                          : []
-                      }
-                    /> */}
-
-                    <RangePicker
+                    <ConfigProvider
+  theme={{
+    token: {
+    
+    },
+  }}
+>
+<RangePicker
                       className="dx-default-date-range"
                       size="large"
                       ref={rangePickerRef}
                       open={visible} // Control visibility based on scroll
                       onOpenChange={handleOpenChange} // Update visibility state when user manually opens/closes
-                      style={{ marginRight: "10px", minWidth: "280px", zIndex: 1 }}
+                      style={{ marginRight: "10px", minWidth: "280px", zIndex: 1 ,background:"#d2d7e9",  }}
                       onChange={handleDateRangeChange}
                       allowClear={false}
                       inputReadOnly
                       disabledDate={(current) => {
                         const now = Date.now();
                         const thirtyDaysAgo = new Date(now);
-                        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+                        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 31);
 
                         return current && (current.valueOf() > now || current.valueOf() < thirtyDaysAgo);
                       }}
@@ -406,14 +388,17 @@ const DashboardContentLayout = ({ children }) => {
                           ]
                           : []
                       }
-                    />
+                    /></ConfigProvider>
+
+
+               
 
 
                     <button
                       type="primary"
                       onClick={handleApplyFilters}
                   
-                      className=" bg-red-500 text-white rounded flex items-center justify-center py-2 px-3 cursor-pointer font-bold"
+                      className=" commButton text-white rounded flex items-center justify-center py-2 px-3 cursor-pointer font-bold"
                     >
                       Apply filters
                     </button>
@@ -422,43 +407,43 @@ const DashboardContentLayout = ({ children }) => {
                         type="primary"
                         
                         onClick={resetFilter}
-                        className=" bg-red-500 text-white rounded flex items-center justify-center py-2 px-3 cursor-pointer font-bold"
+                        className=" commButton text-white rounded flex items-center justify-center py-2 px-3 cursor-pointer font-bold"
                       >
                         Reset Filter
                       </button>
                     )}
                   </div>
                   <div className="grid grid-cols-4 gap-4">
-                    <div className=" bg-gray-100 rounded-xl text-left flex flex-col">
+                    <div className=" bg-[#D2D7E9] rounded-xl text-left flex flex-col">
                       <div className="flex justify-between items-center p-3 flex-1 text-lg w-full gap-3">
                         <span>Active Machines</span>
-                        <VideoCameraOutlined />
+                        <VideoCameraFilled />
                       </div>
                       <DropdownComponent items={menu} data={activeMachines} />
                     </div>
-                    <div className="bg-gray-100 rounded-xl text-left flex flex-col">
+                    <div className="bg-[#D2D7E9] rounded-xl text-left flex flex-col">
                       <div className="flex justify-between items-center p-3 flex-1 text-lg w-full gap-3">
                         <span>Defect Classification</span>
-                        <BugOutlined />
+                        <BugFilled />
                       </div>
                       <DropdownComponent items={defectMenu} data={categoryDefects} />
                     </div>
-                    <div className="bg-gray-100 rounded-xl text-left flex flex-col">
+                    <div className="bg-[#D2D7E9] rounded-xl text-left flex flex-col">
                       <div className="flex justify-between items-center p-3 flex-1 text-lg w-full gap-3">
                         <span>No. of SKU</span>
-                        <AlertOutlined />
+                        <AlertFilled />
                       </div>
                       <DropdownComponent items={prodMenu} data={tableDataReduxActive} />
                     </div>
                     <Link
                       to="/insights"
-                      className={`relative bg-gray-100 rounded-xl text-left flex flex-col group hover:text-white hover:!bg-red-500`}
+                      className={`inisigts_page relative  rounded-xl text-left flex flex-col group text-white font-bold `}
                     >
-                      <div className="flex justify-between items-center p-3 flex-1 text-lg w-full gap-3">
+                       <div className="flex justify-center items-center p-3 flex-1 text-3xl w-full gap-1 flex-col  ">
                         <span>Insights</span>
-                        <NotificationOutlined />
+                        <img src="https://eimkeia.stripocdn.email/content/guids/CABINET_8270216c780e362a1fbcd636b59c67ae376eb446dc5f95e17700b638b8c3f618/images/sparkling.png" alt="" className="w-6 absolute top-3 left-3" />
+                      <IoMdArrowForward className="w-12" />
                       </div>
-                      <IoMdArrowForward className="absolute bottom-5 right-5 text-lg" />
                     </Link>
                   </div>
                 </div>
@@ -480,6 +465,7 @@ const DashboardContentLayout = ({ children }) => {
             <ProductAndDefect loading={loading} chartData={productionVsDefectChartData} />
           </div>
           <DefectsReport
+            className="bg-white"
             loading={loading}
             chartData={tableDataRedux}
             chart1={<StackChart data={tableDataRedux} loading={loading} />}

@@ -189,7 +189,7 @@ const ProductAndDefect = ({ chartData }) => {
         </span>
       </h1>
 
-      <div className="flex gap-4 w-full border-2 rounded-lg p-3  overflow-hidden">
+      <div className="flex gap-4 w-full rounded-lg p-3  overflow-hidden">
         <div className="w-2/12 min-w-52 rounded-lg bg-gray-100  align-middle flex flex-col gap-4 justify-start p-4 items-start">
           <div className="text-lg mr-4 flex flex-col justify-center ">
             <span className="text-gray-500 font-semibold">Total Production:</span>{" "}
@@ -205,7 +205,7 @@ const ProductAndDefect = ({ chartData }) => {
           </div>
         </div>
 
-        <div className="w-9/12 h-full">
+        <div className="w-9/12 h-full bg-white rounded-md">
   {
     !chartData?.every(item => item.total_production === 0 && item.total_defects === 0) ? (
       <div

@@ -27,6 +27,9 @@ const machineSlice = createSlice({
     setActiveMachines: (state, action) => {
       state.activeMachines = action.payload;
     },
+    setLoading:(state,action)=>{
+     state.loading = action.payload
+    },
     getMachineFailure: (state) => {
       state.machinesData = [];
       state.activeMachines = [];
@@ -44,6 +47,6 @@ const machineSlice = createSlice({
   },
 });
 
-export const { getMachineSuccess, getMachineFailure, setSelectedMachine, setActiveMachines, machineSignout, setSelectedMachineDpmu } = machineSlice.actions;
+export const { getMachineSuccess, getMachineFailure, setSelectedMachine, setActiveMachines, machineSignout, setSelectedMachineDpmu ,setLoading } = machineSlice.actions;
 
 export default machineSlice.reducer;

@@ -32,10 +32,10 @@ const ProductAndDefect = ({ chart1, chart2 }) => {
 
       </div>
       <div className="flex w-full gap-3">
-        <div className="w-3/6 text-center border-2 rounded-lg p-3">
+        <div className="w-3/6 text-center  rounded-lg p-3 bg-white  ">
           {chart1}
         </div>
-        <div className="w-3/6 text-center border-2 rounded-lg p-3">
+        <div className="w-3/6 text-center rounded-lg p-3 bg-white">
           {chart2}
         </div>
       </div>

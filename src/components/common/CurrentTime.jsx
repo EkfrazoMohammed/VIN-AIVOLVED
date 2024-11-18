@@ -10,8 +10,8 @@ const CurrentTime = () => {
   }, []);
 
   return (
-    <div>
-      <p className='w-full text-white bg-[#0000003b] text-center py-3 flex gap-3 justify-center'>
+    <div >
+      <p className='w-full text-white bg-[#06175d] text-center py-3 flex gap-2 justify-center font-bold'>
         <span>{currentDateTime.toLocaleDateString()}</span>
         <span>{currentDateTime.toLocaleTimeString()}</span>
       </p>

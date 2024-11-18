@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
-import { Table, Select, DatePicker, Button, Image ,Modal } from "antd";
+import { Table, Select, DatePicker, Button, Image ,Modal ,ConfigProvider } from "antd";
 import * as XLSX from "xlsx";
 import { DownloadOutlined } from "@ant-design/icons";
 import { Hourglass } from "react-loader-spinner";
@@ -597,18 +597,34 @@ const Reports = () => {
               </Select.Option>
             ))}
           </Select>
+          
+    
+
+
+          <ConfigProvider
+  theme={{
+    token: {
+    colorText:"#fff",
+    colorBgContainer:"#d2d7e9"
+    },
+  }}
+>
 
           <RangePicker
-            // showTime
-            className="dx-default-date-range"
-            ref={rangePickerRef}
+                      className="dx-default-date-range"
+                      ref={rangePickerRef}
             size="large"
-            style={{ marginRight: "10px" }}
+            style={{ marginRight: "10px" , backgroundColor:"#d2d7e9"}}
             onChange={handleDateRangeChange}
             allowClear={false}
             inputReadOnly={true}
-            disabledDate={(current) => current && current.valueOf() > Date.now()}
-            value={
+            disabledDate={(current) => {
+              const now = Date.now();
+              const thirtyDaysAgo = new Date(now);
+              thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+              return current && (current.valueOf() > now || current.valueOf() < thirtyDaysAgo);
+            }}            value={
               selectedDate
                 ? [
                   dayjs(selectedDate[0], dateFormat),
@@ -617,6 +633,7 @@ const Reports = () => {
                 : []
             }
           />
+</ConfigProvider>
         </div>
 
       </Modal >
@@ -630,16 +647,30 @@ const Reports = () => {
           <SelectComponent placeholder={"Select Machine"} action={(val) => handleMachineChange(val)} selectedData={selectedMachineRedux} data={machines} size={"large"} style={{ minWidth: "200px", marginRight: "10px" }} />
           <SelectComponent placeholder={"Select Defect"} action={(val) => handleDefectChange(val)} selectedData={selectedDefectRedux} data={defectsData} size={"large"} style={{ minWidth: "200px", marginRight: "10px" }} />
           <SelectComponent placeholder={"Select Shift"} selectedData={selectedShiftRedux} action={(val) => handleShiftChange(val)} data={shiftData} valueType="name" style={{ minWidth: "180px", zIndex: 1 }} size={"large"} />
+          <ConfigProvider
+  theme={{
+    token: {
+    colorText:"#000",
+    colorBgContainer:"#d2d7e9"
+    },
+  }}
+>
+
           <RangePicker
-            // showTime
-            className="dx-default-date-range"
+                      className="dx-default-date-range"
+                      ref={rangePickerRef}
             size="large"
-            style={{ marginRight: "10px" }}
+            style={{ marginRight: "10px" , backgroundColor:"#d2d7e9"}}
             onChange={handleDateRangeChange}
             allowClear={false}
             inputReadOnly={true}
-            disabledDate={(current) => current && current.valueOf() > Date.now()}
-            value={
+            disabledDate={(current) => {
+              const now = Date.now();
+              const thirtyDaysAgo = new Date(now);
+              thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+              return current && (current.valueOf() > now || current.valueOf() < thirtyDaysAgo);
+            }}            value={
               selectedDate
                 ? [
                   dayjs(selectedDate[0], dateFormat),
@@ -648,18 +679,19 @@ const Reports = () => {
                 : []
             }
           />
+</ConfigProvider>
 
           <Button
-            type="primary"
+            // type="primary"
             disabled={!filterChanged}
             onClick={() =>
               handleApplyFilters()
             }
             style={{
-              fontSize: "1rem",
-              backgroundColor: "#ec522d",
+              fontSize: "0.9rem",
               marginRight: "10px",
             }}
+          className="commButton"
           >
             Apply filters
           </Button>
@@ -671,9 +703,9 @@ const Reports = () => {
               onClick={resetFilter}
               style={{
                 fontSize: "1rem",
-                backgroundColor: "#ec522d",
                 marginRight: "10px",
               }}
+              className="commButton"
             >
               Reset Filter
             </Button>
@@ -683,9 +715,9 @@ const Reports = () => {
               type="primary"
               icon={<DownloadOutlined />}
               size="large"
-              style={{ fontSize: "1rem", backgroundColor: "#ec522d" }}
+              style={{ fontSize: "0.9rem"}}
               onClick={downloadExcel}
-            
+                className="commButton"
             >
               Download Excel
             </Button>
@@ -732,7 +764,7 @@ const Reports = () => {
               ariaLabel="hourglass-loading"
               wrapperStyle={{}}
               wrapperClass=""
-              colors={[" #ec522d", "#ec522d"]}
+              colors={[" #06175d", "#06175d"]}
             />
           </div>
         ) : (

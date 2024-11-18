@@ -1,13 +1,13 @@
 // src/pages/Auth/Login.js
 import React, {  useState } from 'react';
-import { Card, Col, Input, Checkbox, notification } from 'antd';
+import {Row, Card, Col, Input, Checkbox, notification ,ConfigProvider } from 'antd';
 import { useNavigate,Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import axiosInstance from '../../API/axiosInstance'; // Ensure this is correctly imported
 import { signInFailure, signInSuccess } from '../../redux/slices/authSlice'; // Import the setAuthData action
 import { userSignInSuccess } from '../../redux/slices/userSlice'; // Import the setAuthData action
 import { encryptAES, decryptAES } from '../../redux/middleware/encryptPayloadUtils';
-
+import  "../../assets/styles/login.css"
 const Login = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -130,63 +130,104 @@ const [saveUserLocal,setSaveUserLocal] = useState(false);
 
 
   return (
-    <div style={{ background: '#faf5f5', height: '100vh', width: '100%', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <Col span={8} style={{ maxWidth: '500px' }}>
-        <Card bordered={false} style={{ padding: '1rem', borderRadius: '25px' }}>
-          <div className='flex items-center m-auto py-2'>
+<div className='login_bg' style={{  }}>
+      <Row gutter={24} className=' h-full flex justify-center items-center'   >
+      <Col  span={16} className='login_logo_bg' >
+      </Col>
+      <Col span={8} className='bg-[#091128] h-full flex justify-center items-center' >
+        <Card bordered={false} className='bg-transparent' style={{ padding: '1rem', borderRadius: '25px' }}>
+          {/* <div className='flex items-center m-auto py-2'>
             <img src="https://aivolved.in/wp-content/uploads/2022/11/ai-logo.png" alt="Logo" style={{ height: '70px' }} />
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <h3 className='flex justify-center items-center font-semibold text-lg'>Login</h3>
+          </div> */}
+          <div className='text-white' style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <h3 className='flex justify-start items-center font-semibold text-2xl'>Login</h3>
             <div>
-              <label  htmlFor="emailOrMobile"  style={{ fontWeight: "600", fontSize: '1rem' }}>
-                Email ID / Mobile number {' '}
-                <span style={{ color: 'red', fontWeight: '900', fontSize: '1rem', marginLeft: '0.1rem' }}>*</span>
+              <label className='font-semibold text-[0.8rem] pb-1' >
+                Email ID / Mobile number
+                <span style={{ color: 'red', fontWeight: '900', fontSize: '0.8rem', marginLeft: '0.1rem' }}>*</span>
               </label>
+              <ConfigProvider
+  theme={{
+    token: {
+      colorTextPlaceholder:"#797e8c",
+        colorText:"#fff",
+        colorBgContainerDisabled	:"#3e4557"
+    },
+  }}
+>
+  
               <Input
-                id='emailOrMobile'
+           
                 placeholder="Enter Email id /Mobile number"
-                className='h-[45px] pl-2 py-0'
+                className='h-[50px] pl-2 py-0 !bg-[#3e4557] border-0 !text-white font-semibold input-custom'
                 name="email_or_phone"
                 onChange={handleChange}
                 status={error.UserError ? "error" : ""}
               />
+</ConfigProvider>
               {error.UserError && <span style={{ color: 'red', fontWeight: '700', fontSize: '0.8rem', marginLeft: '0.5rem' }}>{error.UserError}</span>}
             </div>
             <div>
-              <label htmlFor='password' style={{ fontWeight: "600", fontSize: '1rem' }}>
-                Password {' '}
+              <label className='font-semibold text-[0.8rem] pb-1'>
+                Password
                 <span style={{ color: 'red', fontWeight: '900', fontSize: '1rem', marginLeft: '0.1rem' }}>*</span>
               </label>
+              <ConfigProvider
+  theme={{
+    token: {
+      colorTextPlaceholder:"#797e8c",
+      colorIcon:"#fff",
+      colorText:"#fff",
+     
+    },
+  }}
+>
               <Input.Password
-              id='password'
                 placeholder="Enter password"
-                className='h-[45px] pl-2 py-0'
+                className='h-[50px] pl-2 py-0 !bg-[#3e4557] border-0 !text-white font-semibold'
                 name='password'
                 onChange={handleChange}
                 status={error.PasswordError ? "error" : ""}
               />
+
+</ConfigProvider>
+<Link to="/reset-password-email" className="flex items-center justify-end text-center font-semibold text-[0.8rem] py-1">
+              <span className='text-red-600 pr-1'>Forgot password ?</span>  Click here to reset
+            </Link>
               {error.PasswordError && <span style={{ color: 'red', fontWeight: '700', fontSize: '0.8rem', marginLeft: '0.5rem' }}>{error.PasswordError}</span>}
+           
             </div>
-            <div style={{ display: 'flex', gap: '1rem' }}>
-              <Checkbox style={{ fontWeight: '700' }}  onChange={handleChange} name="rememberMe">Remember Me</Checkbox>
+            <div className="flex gap-4 " >
+            <ConfigProvider
+    theme={{
+      components: {
+   
+        Checkbox: {
+          colorPrimary: '#153da7',
+        },
+      },
+    }}
+  >
+
+              <Checkbox className='font-bold text-white'    onChange={handleChange} name="rememberMe">Remember Me</Checkbox>
+  </ConfigProvider>
             </div>
             <div>
               <button
-                style={{ padding: '0.8rem 3rem', background: '#ff4403', border: 'none', borderRadius: '5px', color: '#fff', fontWeight: '600' }}
+              
+                style={{ padding: '0.8rem 3rem', border: 'none', borderRadius: '5px', color: '#fff', fontWeight: '600' }}
                 onClick={loginPost}
-                className='w-full'
+                className='login_button'
               >
                 {loading ? "Logging in..." : "Login"}
               </button>
             </div>
 
-            <Link to="/reset-password-email" className="flex items-center justify-center text-center font-semibold text-[1rem]">
-              Forgot password ?
-            </Link>
+       
           </div>
         </Card>
       </Col>
+      </Row>
     </div>
   );
 };

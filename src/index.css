@@ -12,6 +12,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+
 }
 
 body {
@@ -20,6 +21,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   padding: 0;
+  background-color: #E6EAFA;;
   overflow-x:hidden ;
 }
 
@@ -34,16 +36,20 @@ body .layout-dashboard .ant-layout-content {
 }
 
 body .ant-layout {
-  background: #ffffff;
+  background: #E6EAFA;
 }
 
 ::-webkit-scrollbar {
   width: 5px;
   height: 5px;
 }
+.inisigts_page{
+  background: linear-gradient(113.24deg, #43996A 7.4%, #261586 50.18%, #3F079E 84.48%);
+
+}
 
 ::-webkit-scrollbar-thumb {
-  background-color: #ff3180;
+  background-color: #43996A;
   height: 5px;
   width: 5px;
 }
@@ -174,7 +180,7 @@ label::after {
 }
 
 :where(.css-dev-only-do-not-override-kghr11).ant-tabs-card.ant-tabs-top>.ant-tabs-nav .ant-tabs-tab-active {
-  background-color: rgb(236, 82, 45) !important;
+  background-color: #43996a !important;
 }
 
 :where(.css-dev-only-do-not-override-kghr11).ant-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
@@ -333,12 +339,13 @@ label::after {
 
 .section-title-overlay {
   position: absolute;
-  top: 50%;
+  bottom: 0%;
   left: 0;
   padding-right: 20px;
   transform: translateY(-50%);
-  background-color: #ffffff;
   z-index: 2;
+  color: #585858;
+  font-weight: 800;
 }
 
 .section-title:after {
@@ -346,41 +353,47 @@ label::after {
   display: block;
   height: 1px;
   width: 100%;
-  background-color: #d3d3d3;
+  background-color: #fff;
   position: absolute;
-  top: 50%;
+  top: 0%;
   left: 0px;
   transform: translateY(-50%);
   z-index: 0;
 }
-
+.commButton{
+  background-color: #43996A !important;
+}
 .menu-items-w .menu-category-name {
-  color: #e4e4e4 !important;
+  color: #43996A !important;
+  font-weight: 700;
 }
 
 .sidemenu-link {
-  color: #e4e4e4 !important;
+  color: #27282e !important;
 }
 
 .sidemenu-link:hover {
-  color: #a7fcff !important;
+  color: #43996a !important;
 }
 
 .ant-btn,
 .sidemenu-link.active {
-  background-color: #f50909;
+  background-color: #43996a;
   color: #ffffff !important;
   height: 42px;
+  font-weight: 700;
 }
 
 .sidemenu-container {
-  background-color: #ad3737;
+  background: linear-gradient(-213deg ,#d2d7e9 , #f2f2f2 );
 }
 
 .overview-container.dashboard-data {
-  background: linear-gradient(-45deg, #ee7752, #8a274d, #ff5125, #0096b1);
   background-size: 400% 400%;
   animation: gradient 15s ease infinite;
+  background: linear-gradient(40deg, #FFFF ,#FFFF, #f0f3ffbc,#c9cee3);
+
+background: radial-gradient();
 }
 
 @keyframes gradient {

@@ -265,9 +265,10 @@ const Settings = () => {
         </Col>
         <Col span={3}  >
 
-          <Button type="primary" style={{ width: '100%', padding: '0' }} danger onClick={() => setModal2Open(true)}>
+          <Button className='commButton' type="primary" style={{ width: '100%', padding: '0' }} danger onClick={() => setModal2Open(true)}>
             User Creation
-          </Button>   </Col>
+          </Button> 
+            </Col> 
       </Row>
       <Row gutter={24} style={{ display: 'flex', flexDirection: 'column', gap: '2rem', margin: '2rem' }} >
 

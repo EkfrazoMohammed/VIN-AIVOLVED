@@ -125,170 +125,180 @@ const SideMenu = () => {
 
   return (
     <>
-      {contextHolder}
-      <Modal
-        title={
-          <div
-            style={{
-              textAlign: "center",
-              padding: "1rem 0",
-              fontWeight: "600",
-              fontSize: "1.2rem",
-            }}
-          >
-            Are You Sure You Want To Logout?
-          </div>
-        }
-        style={{
-          top: 20,
-        }}
-        open={modal1Open}
-        onCancel={() => setModal1Open(false)}
-        footer={null}
-      >
-        <div className="" style={{ display: "flex", justifyContent: "center" }}>
-          <Button
-            onClick={handleLogout}
-            style={{ background: "orangeRed", color: "#fff" }}
-          >
-            LOGOUT
-          </Button>
+    {contextHolder}
+    <Modal
+      title={
+        <div
+          style={{
+            textAlign: "center",
+            padding: "1rem 0",
+            fontWeight: "600",
+            fontSize: "1.2rem",
+          }}
+        >
+          Are You Sure You Want To Logout?
         </div>
-      </Modal>
-      <div className="sidemenu-container flex flex-col min-h-screen w-[270px] fixed left-0 border-r-2">
-        <div className="logo-w h-[75px] flex items-center gap-3 border-b-2 py-3 px-3">
-          <img src={aiLogo} alt="" className="w-[60px]" />
-          <span className="font-bold text-xl">AiVolved</span>
+      }
+      style={{
+        top: 20,
+      }}
+      open={modal1Open}
+      onCancel={() => setModal1Open(false)}
+      footer={null}
+    >
+      <div className="" style={{ display: "flex", justifyContent: "center" }}>
+        <Button
+          onClick={handleLogout}
+         className="commButton"
+        >
+          LOGOUT
+        </Button>
+      </div>
+    </Modal>
+    <div className="sidemenu-container flex flex-col min-h-screen w-[270px] fixed left-0 ">
+      <div className="bg-[#06175d]  h-[75px] flex items-center gap-2 border-b-2 justify-center text-white">
+        <div className='w-[40px] h-[40px] object-contain bg-gray-200 rounded-full'>
+      <img src="https://xtemko.stripocdn.email/content/guids/CABINET_d8f211887c57378d14d80cfb73c09f4b2db394a5cf71f6e0cdda10e02f8c454f/images/vin_logo.jpeg" alt="client logo" className="w-full h-full rounded-full" />
         </div>
-        <div className="menu-items-w h-full flex flex-col flex-1 justify-between">
-          <ul className="menu-list list-none py-3 px-3 flex flex-col gap-2">
-            <li className="text-[13px] font-normal">
-              {/* <div className="mb-1 menu-category-name"> Min</div> */}
-              <ul className="text-[15px] font-normal">
-                <li className="menu-item">
-                  <Link
-                    to="/"
-                    onClick={handleClick}
-                    className={`${linkStyle} ${isActive("/dashboard")}`}
-                  >
-                    <TbLayoutDashboard />
-                    Dashboard
-                  </Link>
-                </li>
-                <li className="menu-item">
-                  <Link
-                    to="/reports"
-                    onClick={handleClick}
-                    className={`${linkStyle} ${isActive("/reports")}`}
-                  >
-                    <HiOutlineDocumentReport />
-                    Reports
-                  </Link>
-                </li>
-                <li className="menu-item">
-                  <Link
-                    to="/ai-smart-view"
-                    onClick={handleClick}
-                    className={`${linkStyle} ${isActive("/ai-smart-view")}`}
-                  >
-                    <LuView />
-                    AI Smart View
-                  </Link>
-                </li>
-                <li className="menu-item">
-                  <Link
-                    to="/machine-parameter"
-                    onClick={handleClick}
-                    className={`${linkStyle} ${isActive("/machine-parameter")}`}
-                  >
-                    <RiListSettingsLine />
-                    Machine Parameter
-                  </Link>
-                </li>
-                <li className="menu-item">
-                  <Link
-                    to="/system-status"
-                    onClick={handleClick}
-                    className={`${linkStyle} ${isActive("/system-status")}`}
-                  >
-                    <MdSignalWifiStatusbarConnectedNoInternet1 />
-                    System Status
-                  </Link>
-                </li>
-              </ul>
-            </li>
-            {/* {
-              role === "super_use" ?
-           
-            } */}
-            <li className="text-[13px] font-normal">
-              <div className="mb-1 menu-category-name"> Organization</div>
-              <ul className="text-[15px] font-normal">
-                {/* <li className="menu-item">
-                  <Link
-                    to="/location"
-                    onClick={handleClick}
-                    className={`${linkStyle} ${isActive("/location")}`}
-                  >
-                    <FaMapLocationDot />
-                    Locations
-                  </Link>
-                </li> */}
-                <li className="menu-item">
-                  <Link
-                    to="/plant"
-                    onClick={handleClick}
-                    className={`${linkStyle} ${isActive("/plant")}`}
-                  >
-                    <HiFlag />
-                    Plant
-                  </Link>
-                </li>
-              </ul>
-            </li>
-            <li className="text-[13px] font-normal">
-              <div className="mb-1 menu-category-name"> Other</div>
-              <ul className="text-[15px] font-normal">
-                {/* {
-                  role === "super_use" ?
-                    <li className="menu-item">
-                      <Link
-                        to="/settings"
-                        onClick={handleClick}
-                        className={`${linkStyle} ${isActive("/settings")}`}
-                      >
-                        <CiSettings />
-                        Settings
-                      </Link>
-                    </li>
-                    : null
-                } */}
-                <li className="menu-item">
-                  <Link
-                    to="/settings"
-                    onClick={handleClick}
-                    className={`${linkStyle} ${isActive("/settings")}`}
-                  >
-                    <CiSettings />
-                    Settings
-                  </Link>
-                </li>
-                <li className="menu-item">
-                  <Link
-                    onClick={() => setModal1Open(true)}
-                    className={`${linkStyle} ${isActive("/logout")}`}
-                  >
-                    <IoMdLogOut />
-                    Logout
-                  </Link>
-                </li>
-              </ul>
-            </li>
-          </ul>
-          <CurrentTime />
+      <span className="font-extrabold text-4xl ">VIN</span>
+      </div>
+      <div className="menu-items-w h-full flex flex-col flex-1 justify-between">
+        <ul className="menu-list list-none py-3 px-3 flex flex-col gap-2">
+          <li className="text-[13px] font-normal">
+            {/* <div className="mb-1 menu-category-name"> Min</div> */}
+            <ul className="text-[15px] font-normal">
+              <li className="menu-item">
+                <Link
+                  to="/"
+                  onClick={handleClick}
+                  className={`${linkStyle} ${isActive("/dashboard")}`}
+                >
+                  <TbLayoutDashboard />
+                  Dashboard
+                </Link>
+              </li>
+              <li className="menu-item">
+                <Link
+                  to="/reports"
+                  onClick={handleClick}
+                  className={`${linkStyle} ${isActive("/reports")}`}
+                >
+                  <HiOutlineDocumentReport />
+                  Reports
+                </Link>
+              </li>
+              <li className="menu-item">
+                <Link
+                  to="/ai-smart-view"
+                  onClick={handleClick}
+                  className={`${linkStyle} ${isActive("/ai-smart-view")}`}
+                >
+                  <LuView />
+                  AI Smart View
+                </Link>
+              </li>
+              <li className="menu-item">
+                <Link
+                  to="/machine-parameter"
+                  onClick={handleClick}
+                  className={`${linkStyle} ${isActive("/machine-parameter")}`}
+                >
+                  <RiListSettingsLine />
+                  Machine Parameter
+                </Link>
+              </li>
+              <li className="menu-item">
+                <Link
+                  to="/system-status"
+                  onClick={handleClick}
+                  className={`${linkStyle} ${isActive("/system-status")}`}
+                >
+                  <MdSignalWifiStatusbarConnectedNoInternet1 />
+                  System Status
+                </Link>
+              </li>
+            </ul>
+          </li>
+          {/* {
+            role === "super_use" ?
+         
+          } */}
+          <li className="text-[13px] font-normal">
+            <div className="mb-1 menu-category-name"> Organization</div>
+            <ul className="text-[15px] font-normal">
+              {/* <li className="menu-item">
+                <Link
+                  to="/location"
+                  onClick={handleClick}
+                  className={`${linkStyle} ${isActive("/location")}`}
+                >
+                  <FaMapLocationDot />
+                  Locations
+                </Link>
+              </li> */}
+              <li className="menu-item">
+                <Link
+                  to="/plant"
+                  onClick={handleClick}
+                  className={`${linkStyle} ${isActive("/plant")}`}
+                >
+                  <HiFlag />
+                  Plant
+                </Link>
+              </li>
+            </ul>
+          </li>
+          <li className="text-[13px] font-normal">
+            <div className="mb-1 menu-category-name"> Other</div>
+            <ul className="text-[15px] font-normal">
+              {/* {
+                role === "super_use" ?
+                  <li className="menu-item">
+                    <Link
+                      to="/settings"
+                      onClick={handleClick}
+                      className={`${linkStyle} ${isActive("/settings")}`}
+                    >
+                      <CiSettings />
+                      Settings
+                    </Link>
+                  </li>
+                  : null
+              } */}
+              <li className="menu-item">
+                <Link
+                  to="/settings"
+                  onClick={handleClick}
+                  className={`${linkStyle} ${isActive("/settings")}`}
+                >
+                  <CiSettings />
+                  Settings
+                </Link>
+              </li>
+              <li className="menu-item">
+                <Link
+                  onClick={() => setModal1Open(true)}
+                  className={`${linkStyle} ${isActive("/logout")}`}
+                >
+                  <IoMdLogOut />
+                  Logout
+                </Link>
+              </li>
+            </ul>
+          </li>
+        </ul>
+        <div className="  h-[75px] flex flex-col justify-center items-center  gap-2   border-dotted border-2 border-[#06175d] mx-3 p-2 rounded-lg text-[#06175d]">
+        <div className="text-start w-full font-bold text-xs ">Powered By</div>
+        <div className="flex justify-around items-center gap-2">
+
+        <img src={aiLogo} alt="" className="w-[40px]" />
+        <span className="font-bold text-xl ">AiVolved</span>
         </div>
       </div>
-    </>
+        <CurrentTime />
+      </div>
+    </div>
+  </>
   );
 };
 

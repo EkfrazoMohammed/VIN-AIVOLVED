@@ -166,7 +166,7 @@ const App = () => {
               colorPrimary: '#000',
               colorFillAlter: '#fff',
               controlHeight: 48,
-              headerBg: '#ad3737',
+              headerBg: '#43996a',
               headerColor: '#fff',
               rowHoverBg: '#e6f7ff',
               padding: '1rem',

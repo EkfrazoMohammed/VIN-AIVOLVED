@@ -54,6 +54,7 @@ function StackChart({ data }) {
         type: "bar",
         height: 350,
         colors:"#000",
+     
        
         stacked: true,
         toolbar: {
@@ -84,6 +85,8 @@ function StackChart({ data }) {
         },
 
       },
+      grid: {
+        show:false},
       
       xaxis: {
         type: "category",
@@ -128,9 +131,9 @@ function StackChart({ data }) {
   };
   const getChartWidth = () => {
     if (sortedDates.length <= 5) {
-      return "150%";
+      return "100%";
     } else if (sortedDates.length > 5) {
-      return `${sortedDates.length * 22}%`;
+      return `${sortedDates.length * 14}%`;
     } else {
       return `${sortedDates.length * 50}%`;
     }
@@ -138,7 +141,7 @@ function StackChart({ data }) {
 
 
   return (
-    <div>
+    <div >
       <div>
         <Title level={5} className="text-left font-semibold">
           Bar Graph for Defects
@@ -177,7 +180,7 @@ function StackChart({ data }) {
           );
         })}
       </div>
-     <div className="w-full ">
+     <div className="w-full flex justify-center ">
       {
         !data || Object.keys(data).length === 0 ? (
           <div className="flex items-center justify-center w-full h-48 font-bold ">
@@ -186,17 +189,11 @@ function StackChart({ data }) {
         ) : (
           <div
             style={{
-              width: "100%",
-           
+              width: "92%",
               overflowX: sortedDates.length > 7 ? "auto" : "hidden", // Enable horizontal scroll if there are more than 7 dates
             }}
           >
-            <div
-              style={{
-                display: "flex",
-                width: `100%`, // Adjust width to accommodate the number of dates
-              }}
-            >
+    
               <ReactApexChart
                 options={chartData.options}
                 series={chartData.series}
@@ -205,7 +202,6 @@ function StackChart({ data }) {
                 width={getChartWidth()} // Call the function to get the width
                 />
             </div>
-          </div>
         )
       }
      </div>

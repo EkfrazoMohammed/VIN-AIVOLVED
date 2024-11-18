@@ -35,11 +35,11 @@ const DropdownComponent = ({ items, data }) => {
   open={visible}
   onOpenChange={handleVisibleChange}
     trigger={['click']}
-    className="text-[35px] text-gray-500 font-semibold bg-gray-200 p-3"
-  >
+    className="text-[35px]  p-3 font-semobold "
+    >
    
-   <div className="number" style={{ cursor: "pointer" }}>
-                <div className="flex items-center justify-between">
+   <div className="number " style={{ cursor: "pointer" }}>
+                <div className="flex items-center justify-between  rounded-md px-2 bg-[#edf0ff]">
                     {Object.keys(data).length}
                     <IoIosArrowDown className="text-[18px]" />
                 </div>

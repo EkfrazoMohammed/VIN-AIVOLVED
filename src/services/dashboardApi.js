@@ -11,6 +11,7 @@ import {
   getMachineSuccess,
   getMachineFailure,
   setActiveMachines,
+  setLoading,
 } from "../redux/slices/machineSlice"; // Import the actions
 
 import {
@@ -47,6 +48,7 @@ export const baseURL =
   process.env.REACT_APP_API_BASE_URL || "https://hul.aivolved.in/api/";
 
 export const getMachines = (plantName, token, apiCallInterceptor) => {
+  store.dispatch(setLoading(true))
   let encryptedPlantName = encryptAES(plantName).replace(/^"|"$|^"+$/g, "");
 
   encryptedPlantName = decodeURIComponent(encryptedPlantName);
@@ -59,7 +61,9 @@ export const getMachines = (plantName, token, apiCallInterceptor) => {
         name: machine.name,
       }));
       // Dispatch action to update Redux state
+      store.dispatch(setLoading(false))
       store.dispatch(getMachineSuccess(formattedMachines));
+
     })
     .catch((error) => {
       //console.error("Error fetching machine data:", error);

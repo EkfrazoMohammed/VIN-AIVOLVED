@@ -6,98 +6,97 @@ margin: 0;
 
 
 .mytab-content{
-    width:100%;
-    padding:1rem;
-    border-radius:10px;
-    overflow-y:scroll;
-    border:15px solid #ababab12;
-    display:flex;
-    flex-direction:column;
-    gap:2rem;
-    background:#fff;
-    height: 95vh;
+  width:100%;
+  border-radius:10px;
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+  gap:2rem;
+  height: 95vh;
+
 }
 .mytab-content::-webkit-scrollbar {
-    width: 4px;
-    /* Width of the scrollbar */
-    height: 90% !important;
-  }
-  
-  .mytab-content::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    height: 90%;
-  }
-  
-  .mytab-content::-webkit-scrollbar-thumb {
-    background: #888;
-    height: 90%;
+  width: 4px;
 
-  }
-  
-  .mytab-content::-webkit-scrollbar-thumb:hover {
-    background: #555;
-    height: 90%;
-  }
-  .image_wrapper{
-    display: flex !important;
-    justify-content: center;
-    margin: 2rem 0;
-    height: 200px;
-    width: 200px,
+}
+
+.mytab-content::-webkit-scrollbar-track {
+  background: #fff;
+  height: 90%;
+}
+
+.mytab-content::-webkit-scrollbar-thumb {
+  background: #888;
+  height: 90%;
+
+}
+
+.mytab-content::-webkit-scrollbar-thumb:hover {
+  background: #555;
+  height: 90%;
+
+}
+.image_wrapper{
+  display: flex !important;
+  width: 100%;
+  justify-content: center;
+  margin: 2rem 0;
+  height: 200px; width: 200px,
+}
+
+.slick-prev{
+  display: none !important;
+}
+
+
+.scroll-container {
+  height: 100%; /* Adjust as needed */
+  width: 100%; /* Adjust as needed */
+  overflow: hidden;
+  position: relative;
+}
+
+.scroll-content {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  animation: scroll 20s linear infinite;
+  transition:ease-in-out;
+}
+
+
+
+
+@keyframes scroll {
+  0% {
+    transform: translateY(0);
   }
 
-  .slick-prev{
-    display: none !important;
+  100% {
+    transform: translateY(-60%); /* Only scroll half because we're duplicating the images */
   }
 
+}
+ 
 
-  .scroll-container {
-    height: 100%; /* Adjust as needed */
-    width: 100%; /* Adjust as needed */
-    overflow: hidden;
-    position: relative;
-  }
-  
-  .scroll-content {
-    display: flex;
-    flex-direction: column;
-    gap: 3rem;
-    animation: scroll 10s linear infinite;
-    transition:ease-in-out;
-  }
-  .scroll-content2 {
-    display: flex;
-    flex-direction: column;
-    gap: 3rem;
-    animation: scroll2 10s linear infinite;
-    transition:ease-in-out;
-    align-items: center;
-  }
-  
-  
-  
-  @keyframes scroll {
-    0% {
-      transform: translateY(0);
-    }
-    100% {
-      transform: translateY(-50%); /* Only scroll half because we're duplicating the images */
-    }
-  }
-   
-  @keyframes scroll2 {
-    0% {
-      transform: translateY(-50%);
-    }
-    100% {
-      transform: translateY(0); /* Only scroll half because we're duplicating the images */
-    }
-  }
-  
-  .image {
-    width: 55%;
-    height: auto;
-    margin-bottom: 10px; /* Adjust spacing between images */
-  }
-  
-  
+
+.image {
+  width: 55%;
+  height: auto;
+  margin-bottom: 10px; /* Adjust spacing between images */
+}
+
+.item{
+  background:linear-gradient(180deg,#c1dece ,#fff);
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+}
+.item img{
+  object-fit: contain;
+  height: auto;
+  width: 50%;
+}

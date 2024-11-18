@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { Select } from 'antd'
+import { Select, ConfigProvider } from 'antd'
 import PropTypes from 'prop-types';
 
 const SelectComponent = ({ placeholder, valueType, action, data, selectedData, style, size }) => {
@@ -32,32 +32,43 @@ const SelectComponent = ({ placeholder, valueType, action, data, selectedData, s
             window.removeEventListener('scroll', handleScroll);
         };
     }, [dropdownVisible]);
+    console.log(data,"data") 
+       return (
+        <ConfigProvider
+        theme={{
+          components: {
+            Select: {
+            selectorBg:"#d2d7e9",
+            colorText:"#000"
+            },
+          },
+        }}
+      >
 
-
-    return (
-        <Select
-            style={{ ...style, }}
-            showSearch
-            placeholder={placeholder}
-            onChange={action}
-            value={selectedData}
-            size={size}
-            filterOption={(input, data) =>
-                (data.children ?? "")
-                    .toLowerCase()
-                    .includes(input.toLowerCase())
-            }
-            open={dropdownVisible}
-            onDropdownVisibleChange={setDropdownVisible}
-        >
-            <Select.Option>{placeholder}</Select.Option>
-            {data.map((prod) => (
-                <Select.Option key={prod.id} value={valueType === "name" ? prod.name : prod.id}>
-                    {prod.name}
-                </Select.Option>
-            ))}
-
-        </Select>
+      <Select
+                  style={{ ...style, }}
+                  showSearch
+                  placeholder={placeholder}
+                  onChange={action}
+                  value={selectedData}
+                  size={size}
+                  filterOption={(input, data) =>
+                      (data.children ?? "")
+                          .toLowerCase()
+                          .includes(input.toLowerCase())
+                  }
+                  open={dropdownVisible}
+                  onDropdownVisibleChange={setDropdownVisible}
+              >
+                  <Select.Option>{placeholder}</Select.Option>
+                  {data.map((prod) => (
+                      <Select.Option key={prod.id} value={valueType === "name" ? prod.name : prod.id}>
+                          {prod.name}
+                      </Select.Option>
+                  ))}
+      
+              </Select>
+      </ConfigProvider>
     )
 }
 SelectComponent.propTypes = {

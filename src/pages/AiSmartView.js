@@ -1,21 +1,28 @@
 import React, {  useRef, useState } from "react";
 import Slider from "react-slick";
-import {  Select } from "antd";
-import { useSelector } from "react-redux";
-import { RightOutlined, LeftOutlined } from "@ant-design/icons";
+import { useDispatch, useSelector } from "react-redux";
+import { CaretRightOutlined , CaretLeftOutlined } from "@ant-design/icons";
 import { Hourglass } from "react-loader-spinner";
 import useApiInterceptor from "../hooks/useInterceptor";
 import { decryptAES } from "../redux/middleware/encryptPayloadUtils";
 import {getAiSmartView } from "../services/dashboardApi";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import SelectComponent from "../components/common/Select";
+import { setSelectedDefect } from "../redux/slices/defectSlice";
 
 const AiSmartView = () => {
+
+ const dispatch = useDispatch()
+
   const [aismartviewData, setAismartviewData] = useState([]);
-  const [selectedDefect, setSelectedDefect] = useState(null);
+  // const [selectedDefect, setSelectedDefect] = useState(null);
   const localPlantData = useSelector((state) => state.plant.plantData[0]);
   const AuthToken = useSelector((state) => state.auth.authData[0].accessToken);
   const defectsData = useSelector((state) => state.defect.defectsData);
+
+  
+  const selectedDefect = useSelector((state) => state.defect.selectedDefect);
 
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [pagination, setPagination] = useState({ currentPage: 1, pageSize: 10 });
@@ -23,12 +30,14 @@ const AiSmartView = () => {
 
   const apiCallInterceptor = useApiInterceptor();
   const sliderRef = useRef(null);
-
+  
 
   const handleDefectChange = async (value) => {
+    if (!value) {
+      return dispatch(setSelectedDefect(null))
+    }
     const selectedId = value;
-    const defect = defectsData.find((defect) => defect.id === selectedId);
-    setSelectedDefect(defect);
+    dispatch(setSelectedDefect(Number(value)))
     setPagination({ ...pagination, currentPage: 1 });
     setCurrentSlideIndex(0);
 
@@ -162,22 +171,22 @@ const AiSmartView = () => {
 
                             onClick={handlePrev}
                             disabled={currentSlideIndex === 0}
-                            className="bg-[#f50909] py-2 px-3 rounded-lg text-white"
+                            className="commButton py-2 px-3 rounded-lg text-white"
                           >
-                            <LeftOutlined />
+                            <CaretLeftOutlined style={{ fontSize: '24px', color: '#fff' }} />
                           </button>
                         }
 
-                                                <div className="bg-red-600 w-20 h-10 text-white font-bold flex justify-center items-center rounded-full"> Page {pagination.currentPage}</div>
+                                                <div className="commButton w-20 h-10 text-white font-bold flex justify-center items-center rounded-full"> Page {pagination.currentPage}</div>
 
                         {
                           aismartviewData.length > 2 &&
                           <button
                             onClick={(i) => handleNext()}
                             disabled={currentSlideIndex === 10}
-                            className="bg-[#f50909] py-2 px-3 rounded-lg text-white"
+                            className="commButton py-2 px-3 rounded-lg text-white"
                           >
-                            <RightOutlined />
+                            <CaretRightOutlined style={{ fontSize: '24px', color: '#fff' }} />
                           </button>
                         }
                       </div>
@@ -193,17 +202,7 @@ const AiSmartView = () => {
         )}
       </div>
       <div className="defect-selection flex flex-col w-3/12 gap-2">
-        <Select
-          placeholder="Select a Defect"
-          onChange={handleDefectChange}
-          style={{ width: "100%" }}
-        >
-          {defectsData.map((defect) => (
-            <Select.Option key={defect.id} value={defect.id}>
-              {defect.name}
-            </Select.Option>
-          ))}
-        </Select>
+      <SelectComponent placeholder={"Select Defects"} selectedData={selectedDefect} setSelectedData={setSelectedDefect} action={(val) => handleDefectChange(val)} data={defectsData} style={{ minWidth: "150px", zIndex: 1 }} size={"large"} />
       </div>
     </div>
   );
