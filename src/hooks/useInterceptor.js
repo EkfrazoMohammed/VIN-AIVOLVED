@@ -1,12 +1,53 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ApiCall from "../API/Apicall";
-import { signInSuccess } from "../redux/slices/authSlice";
+import { signInSuccess, signOut } from "../redux/slices/authSlice";
 import { encryptAES } from "../redux/middleware/encryptPayloadUtils";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { dashboardSignout } from "../redux/slices/dashboardSlice";
+import { defectSignout } from "../redux/slices/defectSlice";
+import { departmentSignout } from "../redux/slices/departmentSlice";
+import { dpmuSignout } from "../redux/slices/dpmuSlice";
+import { machineSignout } from "../redux/slices/machineSlice";
+import { plantSignOut } from "../redux/slices/plantSlice";
+import { productSignout } from "../redux/slices/productSlice";
+import { productVsDefectSignout } from "../redux/slices/productvsDefectSlice";
+import { reportSignout } from "../redux/slices/reportSlice";
+import { userSignOut } from "../redux/slices/userSlice";
+import { defectTriggerSignOut } from "../redux/slices/defecTriggerSlice";
 
 const useApiInterceptor = () => {
-
+    const navigate = useNavigate();
+    const clearReduxData = () => {
+        dispatch(signOut());
+        dispatch(dashboardSignout());
+        dispatch(defectSignout());
+        dispatch(departmentSignout());
+        dispatch(dpmuSignout());
+        dispatch(machineSignout());
+        dispatch(plantSignOut());
+        dispatch(productSignout());
+        dispatch(productVsDefectSignout());
+        dispatch(reportSignout());
+        dispatch(userSignOut());
+        dispatch(defectTriggerSignOut())
+        // dispatch(ShiftSignout())
+      }
+      const clearSessionandLocalStorage = () => {
+        sessionStorage.removeItem("persist:auth");
+        sessionStorage.removeItem("persist:user");
+        sessionStorage.removeItem("persist:plant");
+        sessionStorage.removeItem("persist:report");
+        sessionStorage.removeItem("persist:dashboard");
+        sessionStorage.removeItem("persist:machine");
+        sessionStorage.removeItem("persist:product");
+        sessionStorage.removeItem("persist:department");
+        sessionStorage.removeItem("persist:dpmu");
+        sessionStorage.removeItem("persist:productVsDefect");
+        sessionStorage.removeItem("persist:defect");
+        sessionStorage.removeItem("persist:shift");
+      }
 
     let isRefreshing = false;
     let failedQueue = [];
@@ -22,11 +63,19 @@ const useApiInterceptor = () => {
         }
         failedQueue = [];
     };
-
     const dispatch = useDispatch();
     const refreshToken = useSelector((state) => state.auth.authData[0].refreshToken);
     const accessToken = useSelector((state) => state.auth.authData.access_token);
     const [refresh, setRefresh] = useState(false);
+
+  
+    const handleRefreshTokenExpiry = async () => {
+        navigate("/login");
+        localStorage.clear();
+        clearSessionandLocalStorage();
+        sessionStorage.clear();
+        clearReduxData();
+      };
 
     useEffect(() => {
         const interceptor = ApiCall.interceptors.response.use(
@@ -71,6 +120,7 @@ const useApiInterceptor = () => {
                         return ApiCall(originalRequest);
                     } catch (refreshError) {
                         processQueue(refreshError, null);
+                        handleRefreshTokenExpiry()
                         return Promise.reject(new Error (refreshError));
                     } finally {
                         setRefresh(false);

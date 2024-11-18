@@ -436,3 +436,12 @@ label::after {
   font-weight: 600; /* Change this value to desired font weight */
 }
 
+
+:where(.css-kghr11).ant-tabs-card >.ant-tabs-nav .ant-tabs-tab-active{
+  background-color: rgb(236, 82, 45) !important;
+}
+
+:where(.css-kghr11).ant-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #fff !important;
+
+}
