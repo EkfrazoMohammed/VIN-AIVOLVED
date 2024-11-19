@@ -98,7 +98,7 @@ export default function RealTimeManufacturingSection({
             ) : (
               Object.keys(categoryDefects).map((category, index) => (
                 <li
-                  key={index}
+                  key={category.id}
                   className="flex justify-between items-center bg-[#ff676e] p-2 mb-2 rounded"
                 >
                   <span className="max-w-32 text-wrap font-bold  break-words ">

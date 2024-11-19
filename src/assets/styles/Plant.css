@@ -38,7 +38,7 @@ margin: 0;
 }
 .image_wrapper{
   display: flex !important;
-  width: 100%;
+
   justify-content: center;
   margin: 2rem 0;
   height: 200px; width: 200px,
@@ -81,7 +81,7 @@ margin: 0;
 
 
 .image {
-  width: 55%;
+  width: 100%;
   height: auto;
   margin-bottom: 10px; /* Adjust spacing between images */
 }
@@ -98,5 +98,5 @@ margin: 0;
 .item img{
   object-fit: contain;
   height: auto;
-  width: 50%;
+  width: 35%;
 }

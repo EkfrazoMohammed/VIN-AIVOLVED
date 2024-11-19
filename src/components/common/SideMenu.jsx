@@ -157,10 +157,11 @@ const SideMenu = () => {
     </Modal>
     <div className="sidemenu-container flex flex-col min-h-screen w-[270px] fixed left-0 ">
       <div className="bg-[#06175d]  h-[75px] flex items-center gap-2 border-b-2 justify-center text-white">
-        <div className='w-[40px] h-[40px] object-contain bg-gray-200 rounded-full'>
-      <img src="https://xtemko.stripocdn.email/content/guids/CABINET_d8f211887c57378d14d80cfb73c09f4b2db394a5cf71f6e0cdda10e02f8c454f/images/vin_logo.jpeg" alt="client logo" className="w-full h-full rounded-full" />
+        <div className='   rounded-full'>
+      <img 
+                src="https://eimkeia.stripocdn.email/content/guids/CABINET_8270216c780e362a1fbcd636b59c67ae376eb446dc5f95e17700b638b8c3f618/images/indus_logo_dev.png"
+                alt="client logo" className="w-40 h-auto " />
         </div>
-      <span className="font-extrabold text-4xl ">VIN</span>
       </div>
       <div className="menu-items-w h-full flex flex-col flex-1 justify-between">
         <ul className="menu-list list-none py-3 px-3 flex flex-col gap-2">

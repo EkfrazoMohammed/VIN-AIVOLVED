@@ -173,12 +173,12 @@ const Defects = ({ defectsdata }) => {
               </Select.Option>
             ))}
           </Select>
-          <Button onClick={handleRefresh} className='flex items-center justify-center' style={{ background: '#EC522D', color: '#fff' }}>
+          <Button onClick={handleRefresh} className='commButton flex items-center justify-center' style={{ background: '#EC522D', color: '#fff' }}>
             <ReloadOutlined style={{ width: '50px' }} />
           </Button>
         </div>
         <div style={{ display: 'flex', gap: '1rem' }}>
-          <Button type="primary" style={{ background: '#EC522D', color: '#fff' }} onClick={() => setModalOpen(true)}>
+          <Button className='commButton' style={{ color: '#fff' }} onClick={() => setModalOpen(true)}>
             Add Defects
           </Button>
         </div>
@@ -189,12 +189,12 @@ const Defects = ({ defectsdata }) => {
         title="Create Defects"
         onCancel={() => setModalOpen(false)}
         footer={[
-          <Button key="cancel" type="primary" style={{ background: '#EC522D', color: '#fff' }} onClick={() => setModalOpen(false)}>
+          <Button key="cancel" type="primary" style={{  color: '#fff' }} onClick={() => setModalOpen(false)}>
             Cancel
 
 
           </Button>,
-          <Button key="submit" type="primary" style={{ background: '#EC522D', color: '#fff' }} onClick={handlePost}>
+          <Button key="submit" type="primary" style={{  color: '#fff' }} onClick={handlePost}>
             Create Defects
           </Button>,
         ]}

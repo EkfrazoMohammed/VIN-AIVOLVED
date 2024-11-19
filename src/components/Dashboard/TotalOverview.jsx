@@ -40,5 +40,6 @@ const TotalOverview = ({ machine, textData , loading }) => {
 TotalOverview.propTypes = {
   textData: PropTypes.any,
   machine:PropTypes.any,
+  loading:PropTypes.any
 };
 export default TotalOverview;

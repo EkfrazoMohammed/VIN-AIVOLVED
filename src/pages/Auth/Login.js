@@ -130,9 +130,13 @@ const [saveUserLocal,setSaveUserLocal] = useState(false);
 
 
   return (
-<div className='login_bg' style={{  }}>
+<div className='login_bg'>
       <Row gutter={24} className=' h-full flex justify-center items-center'   >
-      <Col  span={16} className='login_logo_bg' >
+      <Col  span={16} className='login_logo_bg flex justify-center items-center' >
+      <div className=' w-2/3 h-2/4 text-5xl font-extrabold text-white font-michroma '>
+    <img alt='loadingLogoErr'  src='https://eimkeia.stripocdn.email/content/guids/CABINET_8270216c780e362a1fbcd636b59c67ae376eb446dc5f95e17700b638b8c3f618/images/indus_logo_dev.png' className='w-80 h-auto' />
+    <div >See the  unseen,<br/>Secure the future</div>
+      </div>
       </Col>
       <Col span={8} className='bg-[#091128] h-full flex justify-center items-center' >
         <Card bordered={false} className='bg-transparent' style={{ padding: '1rem', borderRadius: '25px' }}>
@@ -143,11 +147,9 @@ const [saveUserLocal,setSaveUserLocal] = useState(false);
             <h3 className='flex justify-start items-center font-semibold text-2xl'>Login</h3>
             <div>
               <label className='font-semibold text-[0.8rem] pb-1' >
-                Email ID / Mobile number
-                <span style={{ color: 'red', fontWeight: '900', fontSize: '0.8rem', marginLeft: '0.1rem' }}>*</span>
-              </label>
+                Email ID / Mobile number<span style={{ color: 'red', fontWeight: '900', fontSize: '0.8rem', marginLeft: '0.1rem' }}>*</span>
               <ConfigProvider
-  theme={{
+                 theme={{
     token: {
       colorTextPlaceholder:"#797e8c",
         colorText:"#fff",
@@ -165,13 +167,12 @@ const [saveUserLocal,setSaveUserLocal] = useState(false);
                 status={error.UserError ? "error" : ""}
               />
 </ConfigProvider>
+              </label>
               {error.UserError && <span style={{ color: 'red', fontWeight: '700', fontSize: '0.8rem', marginLeft: '0.5rem' }}>{error.UserError}</span>}
             </div>
-            <div>
-              <label className='font-semibold text-[0.8rem] pb-1'>
-                Password
-                <span style={{ color: 'red', fontWeight: '900', fontSize: '1rem', marginLeft: '0.1rem' }}>*</span>
-              </label>
+            <div >
+              <label className='font-semibold text-[0.8rem] pb-1 w-full'>
+                Password<span style={{ color: 'red', fontWeight: '900', fontSize: '1rem', marginLeft: '0.1rem' }}>*</span>
               <ConfigProvider
   theme={{
     token: {
@@ -184,13 +185,14 @@ const [saveUserLocal,setSaveUserLocal] = useState(false);
 >
               <Input.Password
                 placeholder="Enter password"
-                className='h-[50px] pl-2 py-0 !bg-[#3e4557] border-0 !text-white font-semibold'
+                className='h-[50px] w-full py-0 !bg-[#3e4557] border-0 !text-white font-semibold'
                 name='password'
                 onChange={handleChange}
                 status={error.PasswordError ? "error" : ""}
               />
 
 </ConfigProvider>
+              </label>
 <Link to="/reset-password-email" className="flex items-center justify-end text-center font-semibold text-[0.8rem] py-1">
               <span className='text-red-600 pr-1'>Forgot password ?</span>  Click here to reset
             </Link>
