@@ -449,7 +449,7 @@ label::after {
 
 
 :where(.css-kghr11).ant-tabs-card >.ant-tabs-nav .ant-tabs-tab-active{
-  background-color: rgb(236, 82, 45) !important;
+  background-color: #43996A !important;
 }
 
 :where(.css-kghr11).ant-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {

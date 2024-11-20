@@ -113,10 +113,11 @@ export default function RealTimeManufacturingSection({
       </div>
 
       {/* Right Panel - Bar Chart */}
-      <div className="flex w-[75%]">
+      <div className="flex w-[75%] bg-white rounded-md">
 {
   !productionData?.every(item => item.defect_percentage === 0) ? (
     <div
+    className=""
       style={{
         width: "100%",
         maxWidth: "100%",

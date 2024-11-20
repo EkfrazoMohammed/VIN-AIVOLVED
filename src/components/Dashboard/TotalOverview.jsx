@@ -12,11 +12,11 @@ const TotalOverview = ({ machine, textData , loading }) => {
 <>
 <div className="title-w">
         <p className="avd-desc text-[#838383] text-base">
-          {textData?.message.split("_").join(" ")}
+          {textData?.message?.split("_").join(" ")}
 
         </p>
         <p className="avd-title text-[#585858] text-lg py-2">
-          {textData?.average_params_count.toFixed(2)}
+          {textData?.average_params_count?.toFixed(2)}
         </p>
       </div>
 

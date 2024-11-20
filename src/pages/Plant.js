@@ -136,7 +136,7 @@ const Plant = () => {
                           /> 
               </div>
             <Card
-                        className=" bg-[#06175d] h-[80px]"
+                        className=" bg-[#06175d] h-[90px]"
                       >
                         <div className=" flex justify-center items-center gap-2">
                           <img
@@ -164,7 +164,7 @@ const Plant = () => {
                         className="custom-card bg-[#f6f6f6] h-full text-black hover:bg-[#43996a] hover:!text-white"
                         onClick={() => handleStorage([plant])}
                       >
-                        <div className="custom-card-content flex justify-between items-center h-[30px] gap-2">
+                        <div className="custom-card-content flex justify-between items-center h-[16px] gap-2">
                           <div className="w-14 h-12  rounded-full bg-white">
                             <img className="w-full h-full rounded-full" alt="loadingImageError" src="https://eimkeia.stripocdn.email/content/guids/CABINET_8270216c780e362a1fbcd636b59c67ae376eb446dc5f95e17700b638b8c3f618/images/plant.png" />
                             </div> 

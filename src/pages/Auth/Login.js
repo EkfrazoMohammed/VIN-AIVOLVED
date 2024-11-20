@@ -133,7 +133,7 @@ const [saveUserLocal,setSaveUserLocal] = useState(false);
 <div className='login_bg'>
       <Row gutter={24} className=' h-full flex justify-center items-center'   >
       <Col  span={16} className='login_logo_bg flex justify-center items-center' >
-      <div className=' w-2/3 h-2/4 text-5xl font-extrabold text-white font-michroma '>
+      <div className=' w-2/3 h-[40%] text-5xl font-extrabold text-white font-michroma flex flex-col gap-4  '>
     <img alt='loadingLogoErr'  src='https://eimkeia.stripocdn.email/content/guids/CABINET_8270216c780e362a1fbcd636b59c67ae376eb446dc5f95e17700b638b8c3f618/images/indus_logo_dev.png' className='w-80 h-auto' />
     <div >See the  unseen,<br/>Secure the future</div>
       </div>

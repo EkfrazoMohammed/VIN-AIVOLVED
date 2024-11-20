@@ -293,7 +293,7 @@ const SideMenu = () => {
         <div className="flex justify-around items-center gap-2">
 
         <img src={aiLogo} alt="" className="w-[40px]" />
-        <span className="font-bold text-xl ">AiVolved</span>
+        <span className="font-bold text-xl ">AIvolved</span>
         </div>
       </div>
         <CurrentTime />

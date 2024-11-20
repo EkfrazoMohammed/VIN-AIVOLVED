@@ -8,7 +8,7 @@ const TopHeader = ({clientName, clientLogoImgUrl}) => {
         <span className=" bg-slate-200 w-16 h-16 rounded-md ">
         <img src="https://eimkeia.stripocdn.email/content/guids/CABINET_8270216c780e362a1fbcd636b59c67ae376eb446dc5f95e17700b638b8c3f618/images/unileverremovebgpreview.png" alt="" className='w-full h-full object-contain bg-gray-200 rounded-full border' />
         </span>
-        <span>Hindusthan Unilever Limited</span>
+        <span>Hindustan Unilever Limited</span>
       </div>
       <div className="client-name-w text-[20px] font-bold flex items-center text-white">
         {clientName}
