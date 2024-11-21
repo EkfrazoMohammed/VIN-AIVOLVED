@@ -10,13 +10,12 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import SelectComponent from "../components/common/Select";
 import { setSelectedDefect } from "../redux/slices/defectSlice";
-
+import { Pagination ,ConfigProvider } from 'antd';
 const AiSmartView = () => {
 
  const dispatch = useDispatch()
 
   const [aismartviewData, setAismartviewData] = useState([]);
-  // const [selectedDefect, setSelectedDefect] = useState(null);
   const localPlantData = useSelector((state) => state.plant.plantData[0]);
   const AuthToken = useSelector((state) => state.auth.authData[0].accessToken);
   const defectsData = useSelector((state) => state.defect.defectsData);
@@ -25,7 +24,7 @@ const AiSmartView = () => {
   const selectedDefect = useSelector((state) => state.defect.selectedDefect);
 
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
-  const [pagination, setPagination] = useState({ currentPage: 1, pageSize: 10 });
+  const [pagination, setPagination] = useState({ currentPage: 1, pageSize: 10 , total:0 });
   const [loader, setLoader] = useState(false);
 
   const apiCallInterceptor = useApiInterceptor();
@@ -34,6 +33,7 @@ const AiSmartView = () => {
 
   const handleDefectChange = async (value) => {
     if (!value) {
+      setAismartviewData(null);
       return dispatch(setSelectedDefect(null))
     }
     const selectedId = value;
@@ -44,53 +44,54 @@ const AiSmartView = () => {
     try {
       setLoader(true);
       const aiSmartViewData = await getAiSmartView(localPlantData.id, AuthToken, apiCallInterceptor, 1, selectedId);
-      //console.log(aismartviewData.results)
       setAismartviewData(aiSmartViewData.results);
+      setPagination({...pagination,total:aiSmartViewData.total_pages})
     } catch (error) {
-      //console.error("Failed to fetch AI Smart View data:", error.message);
+      throw new Error(error)
     } finally {
       setLoader(false);
     }
   };
 
   const handleNext = async () => {
-    if (currentSlideIndex === pagination.pageSize - 1) {
-      const nextPage = pagination.currentPage + 1;
-      setPagination((prev) => ({ ...prev, currentPage: nextPage }));
+    // if (currentSlideIndex === pagination.pageSize - 1) {
+    //   const nextPage = pagination.currentPage + 1;
+    //   setPagination((prev) => ({ ...prev, currentPage: nextPage }));
 
-      try {
-        setLoader(true);
-        const aiSmartViewData = await getAiSmartView(localPlantData.id, AuthToken, apiCallInterceptor, nextPage, selectedDefect.id);
-        setAismartviewData(aiSmartViewData.results);
-        setCurrentSlideIndex(0);
-      } catch (error) {
-        //console.error("Failed to fetch AI Smart View data:", error.message);
-      } finally {
-        setLoader(false);
-      }
-    } else if (sliderRef.current) {
-      sliderRef.current.slickNext();
-    }
+    //   try {
+    //     setLoader(true);
+    //     const aiSmartViewData = await getAiSmartView(localPlantData.id, AuthToken, apiCallInterceptor, nextPage, selectedDefect.id);
+    //     setAismartviewData(aiSmartViewData.results);
+    //     setCurrentSlideIndex(0);
+    //   } catch (error) {
+    //     //console.error("Failed to fetch AI Smart View data:", error.message);
+    //   } finally {
+    //     setLoader(false);
+    //   }
+    // } else if (sliderRef.current) {
+    // }
+    sliderRef.current.slickNext();
+
   };
 
   const handlePrev = async () => {
-    if (currentSlideIndex === 0 && pagination.currentPage !== 1) {
-      const prevPage = pagination.currentPage - 1;
-      setPagination((prev) => ({ ...prev, currentPage: prevPage }));
+    // if (currentSlideIndex === 0 && pagination.currentPage !== 1) {
+    //   const prevPage = pagination.currentPage - 1;
+    //   setPagination((prev) => ({ ...prev, currentPage: prevPage }));
 
-      try {
-        setLoader(true);
-        const aiSmartViewData = await getAiSmartView(localPlantData.id, AuthToken, apiCallInterceptor, prevPage, selectedDefect.id);
-        setAismartviewData(aiSmartViewData);
-        setCurrentSlideIndex(0);
-      } catch (error) {
-        //console.error("Failed to fetch AI Smart View data:", error.message);
-      } finally {
-        setLoader(false);
-      }
-    } else if (sliderRef.current) {
-      sliderRef.current.slickPrev();
-    }
+    //   try {
+    //     setLoader(true);
+    //     const aiSmartViewData = await getAiSmartView(localPlantData.id, AuthToken, apiCallInterceptor, prevPage, selectedDefect.id);
+    //     setAismartviewData(aiSmartViewData);
+    //     setCurrentSlideIndex(0);
+    //   } catch (error) {
+    //     //console.error("Failed to fetch AI Smart View data:", error.message);
+    //   } finally {
+    //     setLoader(false);
+    //   }
+    // } else if (sliderRef.current) {
+    // }
+    sliderRef.current.slickPrev();
   };
 
   const settings = {
@@ -101,7 +102,58 @@ const AiSmartView = () => {
     slidesToScroll: 1,
     afterChange: (index) => setCurrentSlideIndex(index),
   };
-  console.log(aismartviewData.length)
+
+
+
+   const handleClickNext  = async() =>{
+    try {
+      const nextPage = pagination.currentPage + 1;
+      setLoader(true);
+          const aiSmartViewData = await getAiSmartView(localPlantData.id, AuthToken, apiCallInterceptor, nextPage, selectedDefect);
+          setAismartviewData(aiSmartViewData.results);
+          setCurrentSlideIndex(0);
+          setPagination((prev) => ({ ...prev, currentPage: nextPage }));
+    } catch (error) {
+      console.log(error)
+
+    }
+    finally{
+      setLoader(false)
+    }
+   }
+   const handleChange  = async(pagination)=>{
+    try {
+      console.log(pagination)
+  setLoader(true);
+      const aiSmartViewData = await getAiSmartView(localPlantData.id, AuthToken, apiCallInterceptor, pagination, selectedDefect);
+      setAismartviewData(aiSmartViewData.results);
+      setCurrentSlideIndex(0);
+      setPagination((prev)=>({...prev,currentPage:pagination}))
+    } catch (error) {
+      throw new Error(error)
+    }
+    finally{
+      setLoader(false)
+    }
+   }
+   const handleClickPrev  = async () =>{
+    try {
+      const prevPage = pagination.currentPage - 1;
+      setLoader(true);
+          const aiSmartViewData = await getAiSmartView(localPlantData.id, AuthToken, apiCallInterceptor, prevPage, selectedDefect);
+          setAismartviewData(aiSmartViewData.results);
+          setCurrentSlideIndex(0);
+          setPagination((prev) => ({ ...prev, currentPage: prevPage }));
+
+    } catch (error) {
+     console.log(error)
+    
+    }
+    finally{
+      setLoader(false)
+    }
+   }
+
   return (
     <div className="flex min-h-[calc(100vh-120px)] gap-2">
       <div
@@ -126,7 +178,7 @@ const AiSmartView = () => {
               height="40"
               width="40"
               ariaLabel="hourglass-loading"
-              colors={["#ec522d", "#ec522d"]}
+              colors={["#06175d"]}
             />
           </div>
         ) : (
@@ -134,7 +186,7 @@ const AiSmartView = () => {
             {selectedDefect !== null ? (
               <>
                 {
-                  aismartviewData.length > 0 ?
+                  aismartviewData?.length > 0 ?
                     <>
                       <div className="AISmartContainer">
                         <div className="AISmartContainer-top">
@@ -149,46 +201,48 @@ const AiSmartView = () => {
                         </div>
 
 
-                        <Slider {...settings} ref={sliderRef} className="max-w-[100vh]">
+                        <Slider {...settings} ref={sliderRef} className=" w-full flex items-center justify-center p-3 !relative">
                           {aismartviewData?.map((item, index) => (
-                              <div key={index + 1} className="aismart-item">
+                              <div key={index + 1} className="w-full aismart-item flex items-center justify-center ">
                                 <img
                                   src={decryptAES(item.image)}
                                   alt={`Slide ${index + 1}`}
-                                  style={{ maxHeight: "70vh", width: '40vw', display: "block", margin: "0 auto" }}
+                                  style={{ maxHeight: "60vh", width: '40vw', display: "block", margin: "0 auto" }}
                                 />
 
                               </div>
                           ))}
                         </Slider>
-                      </div>
-
-                      <div className="flex items-center justify-between mt-4">
-
+                     
                         {
-                          aismartviewData.length > 2 &&
+                          aismartviewData?.length > 2 &&
                           <button
 
                             onClick={handlePrev}
-                            disabled={currentSlideIndex === 0}
-                            className="commButton py-2 px-3 rounded-lg text-white"
+                            // disabled={currentSlideIndex === 0}
+                            className="commButton py-2 px-3 rounded-lg text-white absolute top-1/2 "
                           >
                             <CaretLeftOutlined style={{ fontSize: '24px', color: '#fff' }} />
                           </button>
-                        }
-
-                                                <div className="commButton w-20 h-10 text-white font-bold flex justify-center items-center rounded-full"> Page {pagination.currentPage}</div>
-
+}
+                        
+                        
                         {
                           aismartviewData.length > 2 &&
                           <button
                             onClick={(i) => handleNext()}
-                            disabled={currentSlideIndex === 10}
-                            className="commButton py-2 px-3 rounded-lg text-white"
+                            // disabled={currentSlideIndex === 10}
+                            className="commButton py-2 px-3 rounded-lg text-white absolute top-1/2 right-1/4"
                           >
                             <CaretRightOutlined style={{ fontSize: '24px', color: '#fff' }} />
                           </button>
                         }
+                      </div>
+
+                      <div className="flex items-center justify-between mt-4">
+
+
+
                       </div>
                     </>
                     : <div className="" style={{ height: "100%", maxHeight: "70vh", width: '100%', display: "flex", fontWeight: "800", justifyContent: "center", alignItems: "center" }}>NO DATA</div>
@@ -201,8 +255,55 @@ const AiSmartView = () => {
           </>
         )}
       </div>
-      <div className="defect-selection flex flex-col w-3/12 gap-2">
+      <div className="defect-selection flex flex-col w-3/12  gap-2 ">
+      <div className="bg-[#43996a] flex flex-col p-2 gap-1 rounded-md text-white font-bold border-0">
+      <label>Select Defect</label>
       <SelectComponent placeholder={"Select Defects"} selectedData={selectedDefect} setSelectedData={setSelectedDefect} action={(val) => handleDefectChange(val)} data={defectsData} style={{ minWidth: "150px", zIndex: 1 }} size={"large"} />
+      </div>
+      {
+        
+        loader ? 
+        <div className="flex justify-center items-center h-full">
+
+          <Hourglass
+          visible={true}
+          height="40"
+          width="40"
+          ariaLabel="hourglass-loading"
+          colors={["#06175d"]}
+        />
+          </div>
+        :
+        
+         aismartviewData?.length > 0 ? 
+      <div className="flex flex-wrap gap-3 justify-center items-center ">
+        {
+          aismartviewData?.map((item, index)=>{
+            const decrypt = decryptAES(item?.image);
+            return(
+              <img src={decrypt} className="w-20 h-20 " />
+            )
+          })
+        }
+      <div className="flex justify-around w-full ">
+      <ConfigProvider
+  theme={{
+    token: {
+     colorText:"#43996a" ,
+     itemLinkBg:"#000",
+      },
+    
+  }}
+>
+      <Pagination className="font-bold text-[#06175d]
+      " size="large" simple defaultCurrent={pagination.currentPage} total={pagination.total} showSizeChanger={false} onChange={handleChange} />
+</ConfigProvider>
+
+        
+      </div>
+      </div>
+      : <div className="h-full flex justify-center items-center w-full font-bold"> {selectedDefect !== null ? "NO DATA" : "Please Select Defect"} </div>
+      }
       </div>
     </div>
   );

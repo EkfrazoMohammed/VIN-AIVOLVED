@@ -4,6 +4,7 @@ import { ColorRing } from 'react-loader-spinner'
 import { useSelector } from 'react-redux';
 import { encryptAES } from '../../redux/middleware/encryptPayloadUtils'
 import useApiInterceptor from '../../hooks/useInterceptor';
+import { clearConfig } from 'dompurify';
 
 const Settings = () => {
 
@@ -115,7 +116,7 @@ const Settings = () => {
   const openNotification = (param) => {
     const { status, message } = param
     api[status]({
-      message: <div style={{ whiteSpace: "pre-line" }}>{message}</div> || "",
+      message: <div style={{ whiteSpace: "pre-line"  }}>{message}</div> || "",
       duration: 5,
     });
   };
@@ -196,13 +197,14 @@ const Settings = () => {
     } catch (error) {
       // Handle error response
       setLoading(false);
-      if (error.response.status === 400) {
-        if (error.response.data.message === "Token is invalid or expired") {
+      console.log(error)
+   
+        if (error?.response?.message === "Token is invalid or expired") {
           openNotification({ status: "error", message: 'Unable to create user, Please Try again!' });
         } else {
-          openNotification({ status: "error", message: error.response.data.message });
+          openNotification({ status: "error", message: error?.response?.message });
         }
-      }
+      
     }
     
   };
@@ -270,16 +272,16 @@ const Settings = () => {
           </Button> 
             </Col> 
       </Row>
-      <Row gutter={24} style={{ display: 'flex', flexDirection: 'column', gap: '2rem', margin: '2rem' }} >
+      <Row gutter={24} className='bg-white p-3 rounded-md shadow-lg' style={{ display: 'flex', flexDirection: 'column', gap: '2rem', margin: '2rem' }} >
 
-        <Col span={16} style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <Col span={16}  style={{ display: 'flex', justifyContent: 'space-between'  }}>
           <div className="flex flex-col gap-2">
             <h6 className='font-bold'>User ID:</h6>
-            <h6>{currentUserData?.userId}</h6>
+            <h6 className='font-medium'>{currentUserData?.userId}</h6>
           </div>
           <div className="flex flex-col gap-2">
             <h6 className='font-bold'>Email:</h6>
-            <h6>{currentUserData?.userName}</h6>
+            <h6 className='font-medium'>{currentUserData?.userName}</h6>
           </div>
 
         </Col>
@@ -319,26 +321,26 @@ const Settings = () => {
             <>
               <div className="" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', padding: '1rem', fontWeight: '600' }}>
                 <div className="">
-                  <Input placeholder="*Enter First Name" type='text' name='first_name' value={data.first_name} onChange={handleChange} helper className='p-2 custom-input' />
+                  <Input autoComplete='off' placeholder="*Enter First Name" type='text' name='first_name' value={data.first_name} onChange={handleChange} helper className='p-2 custom-input' />
                   {error.firstName ? <span style={{ fontWeight: '600', color: 'red' }}>{error.firstName}</span> : ""}
                 </div>
                 <div className="">
-                  <Input placeholder="*Enter Last Name" type='text' name='last_name' value={data.last_name} onChange={handleChange} className='p-2 custom-input' />
+                  <Input autoComplete='off'  placeholder="*Enter Last Name" type='text' name='last_name' value={data.last_name} onChange={handleChange} className='p-2 custom-input' />
                   {error.lastName ? <span style={{ fontWeight: '600', color: 'red' }}>{error.lastName}</span> : ""}
                 </div>
 
 
                 <div className="">
-                  <Input placeholder="*Enter Phone Number" type='number' name='phone_number' value={data.phone_number} onChange={handleChange} className='p-2 custom-input' />
+                  <Input autoComplete='off'  placeholder="*Enter Phone Number" type='number' name='phone_number' value={data.phone_number} onChange={handleChange} className='p-2 custom-input' />
                   {error.Phone ? <span style={{ fontWeight: '600', color: 'red' }}>{error.Phone}</span> : ""}
                 </div>
 
                 <div className="">
-                  <Input placeholder="*Enter Email" type='text' name='email' value={data.email} onChange={handleChange} className='p-2 custom-input' />
+                  <Input autoComplete='off'  placeholder="*Enter Email" type='text' name='email' value={data.email} onChange={handleChange} className='p-2 custom-input' />
                   {error.email ? <span style={{ fontWeight: '600', color: 'red' }}>{error.email}</span> : ""}
                 </div>
                 <div className="">
-                  <Input placeholder="*Enter Employee Id" type='text' name='employee_id' value={data.employee_id} onChange={handleChange} className='p-2 custom-input' />
+                  <Input autoComplete='off'  placeholder="*Enter Employee Id" type='text' name='employee_id' value={data.employee_id} onChange={handleChange} className='p-2 custom-input' />
                   {error.employee_id ? <span style={{ fontWeight: '600', color: 'red' }}>{error.employee_id}</span> : ""}
                 </div>
                 <div className="">
@@ -386,7 +388,7 @@ const Settings = () => {
               </div>
               <div className="" style={{ display: 'flex', justifyContent: 'flex-end', padding: '1rem' }}>
                 
-                <Button type="primary" style={{ width: '20%', padding: '0' }} danger onClick={() => handlePost()}>
+                <Button className='commButton' type="primary" style={{ width: '20%', padding: '0' }} danger onClick={() => handlePost()}>
                   Submit
                 </Button>
               </div>

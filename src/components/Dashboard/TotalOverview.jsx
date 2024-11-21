@@ -5,7 +5,7 @@ import LoaderIcon from "../LoaderIcon";
 
 const TotalOverview = ({ machine, textData , loading }) => {
   return (
-    <div className={`overview-container dashboard-data w-3/12 h-[257px] bg-no-repeat flex flex-col ${!loading ? "justify-between" : "justify-around"}  p-3 rounded-md object-cover bg-cover`}>
+    <div className={`overview-container dashboard-data w-3/12 my-2  bg-no-repeat flex flex-col ${!loading ? "justify-between" : "justify-around"}  p-3 rounded-md object-cover bg-cover`}>
         <h4 className="avd-title text-[#313131] text-lg">Total Overview</h4>
         {
           !loading ? 

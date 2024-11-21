@@ -8,7 +8,7 @@ const CurrentTime = () => {
     }, 1000);
     return () => clearInterval(timer);
   }, []);
-console.log(currentDateTime.toLocaleDateString())
+
   return (
     <div >
       <p className='w-full text-white bg-[#06175d] text-center py-3 flex gap-2 justify-center font-bold'>

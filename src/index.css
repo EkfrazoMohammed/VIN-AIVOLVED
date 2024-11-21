@@ -389,9 +389,10 @@ label::after {
 }
 
 .overview-container.dashboard-data {
-  background: linear-gradient(40deg, #FFFF ,#FFFF, #f0f3ffbc,#c9cee3);
+  background: linear-gradient(40deg, #FFFF ,#FFFF,#FFFF,#FFFF,#d8dce8,#FFFF,#FFFF,#FFFF,#FFFF ,#FFFF);
   animation: gradient 15s ease infinite;
-  background-size: 400% 400%;
+  background-size: 6
+  00% 500%;
 }
 
 @keyframes gradient {
