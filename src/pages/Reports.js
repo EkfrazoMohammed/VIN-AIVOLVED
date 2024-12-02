@@ -1,12 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef , useReducer} from "react";
 import { useLocation } from "react-router-dom";
-import { Table, Select, DatePicker, Button, Image ,Modal ,ConfigProvider } from "antd";
+import { Table, Select, DatePicker, Button, Image ,Modal ,ConfigProvider, Pagination } from "antd";
 import * as XLSX from "xlsx";
 import { DownloadOutlined } from "@ant-design/icons";
 import { Hourglass } from "react-loader-spinner";
 import dayjs from "dayjs";
 import { useSelector, useDispatch } from "react-redux";
-import { getDefects } from "./../services/dashboardApi";
 import { reportApi } from "./../services/reportsApi";
 
 import {
@@ -23,7 +22,8 @@ import { decryptAES, encryptAES } from "../redux/middleware/encryptPayloadUtils"
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import SelectComponent from "../components/common/Select";
-import { setSelectedShift } from "../redux/slices/shiftSlice";
+import { debounce } from 'lodash';
+
 
 
 const columns = [
@@ -32,8 +32,6 @@ const columns = [
     dataIndex: "product",
     key: "alert_name",
     id: "alert_name",
-    sorter: (a, b) => a.product.localeCompare(b.product),
-    sortDirections: ["ascend", "descend", "cancel"],
     render: (text) => {
       const decrypData = decryptAES(text)
       return (
@@ -50,9 +48,6 @@ const columns = [
     title: "Defect Name",
     dataIndex: "defect",
     key: "defect_name",
-    sorter: (a, b) => a.defect.localeCompare(b.defect),
-
-    sortDirections: ["ascend", "descend", "cancel"],
     render: (text) => {
       const decrypData = decryptAES(text)
       return (
@@ -68,8 +63,7 @@ const columns = [
     title: "Machine Name",
     dataIndex: "machine",
     key: "machine_name",
-    sorter: (a, b) => a.machine.localeCompare(b.machine),
-    sortDirections: ["ascend", "descend", "cancel"],
+
     render: (text) => {
       const decrypData = decryptAES(text)
       return (
@@ -86,8 +80,7 @@ const columns = [
     title: "Department Name",
     dataIndex: "department",
     key: "department_name",
-    sorter: (a, b) => a.department.localeCompare(b.department),
-    sortDirections: ["ascend", "descend", "cancel"],
+
     render: (text) => {
       const decrypData = decryptAES(text)
       return (
@@ -177,10 +170,6 @@ const Reports = () => {
   // INTERCEPTOR API CALLING
   const apiCallInterceptor = useApiInterceptor()
   const rangePickerRef = useRef(null);
-
-  // REDUX CALLING
-  const dispatch = useDispatch()
-  const reportData = useSelector((state) => state.report.reportData);
   const localPlantData = useSelector((state) => state.plant.plantData[0]);
   const accessToken = useSelector(
     (state) => state.auth.authData[0].accessToken
@@ -189,16 +178,66 @@ const Reports = () => {
   const defectsData = useSelector((state) => state.defect.defectsData)
   const productsData = useSelector((state) => state.product.productsData)
   const shiftData = useSelector((state) => state.shift.shiftData)
-
-  const selectedMachineRedux = useSelector((state) => state.machine.selectedMachine);
-  const selectedProductRedux = useSelector((state) => state.product.selectedProduct);
-  const selectedShiftRedux = useSelector((state) => state.shift.selectedShift)
-  const selectedDefectRedux = useSelector((state) => state.defect.selectedDefectReports);
-
-
-  const dateFormat = "YYYY/MM/DD";
   const location = useLocation();
-  let defectProp = location?.state?.filterActive;
+
+let defectProp = location?.state;
+const initailState = {
+  reportData:[],
+  selectedMachine: null,
+  selectedProduct: null,
+  selectedDefect: defectProp,
+  selectedShift: null,
+  apiCallInProgress:false,
+  pagination:{
+      current: 1,
+      pageSize: 10,
+      total: 0,
+      position: ["topRight"],
+      showSizeChanger: true,
+  }
+}
+
+const reducer = (state ,  action) => {
+  switch(action.type){
+    case 'REPORT_DATA':
+      return {...state , reportData:action.payload}
+    case 'SET_SELECTED_MACHINE':
+      return {...state,selectedMachine :action.payload };
+    case 'SET_SELECTED_PRODUCT':
+      return {...state , selectedProduct:action.payload};
+    case 'SET_SELECTED_DEFECT':
+      return {...state , selectedDefect:action.payload};
+    case 'SET_SELECTED_SHIFT':
+      return {...state , selectedShift:action.payload};
+    case 'API_CALLPROGESS':
+      return {...state , apiCallInProgress:action.payload} ;
+    case 'SET_PAGINATION':
+      return {...state ,pagination:{
+...state.pagination,
+...action.payload
+      } };
+
+    case 'RESET_PAGINATION':
+        return {
+          ...state,
+          pagination: {
+          current: 1,
+          pageSize: 10,
+          total: 0,
+          position: ["topRight"],
+          showSizeChanger: true,
+          }
+        };
+  
+    default:
+      return state      
+  }
+}
+
+
+
+  const [ state , dispatch] = useReducer(reducer , initailState)
+  const dateFormat = "YYYY/MM/DD";
 
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - 7); // 7 days ago
@@ -212,34 +251,17 @@ const Reports = () => {
 
   const [loader, setLoader] = useState(false);
   const [modal, setModal] = useState(false)
-  // PAGINATION
-
-  const [pagination, setPagination] = useState(
-    {
-      current: 1,
-      pageSize: 10,
-      total: 0,
-      position: ["topRight"],
-      showSizeChanger: true,
-
-    }
-  )
-
 
   const messages  = [];
   const ws = null;
-
-
-
-
   const handleDownload = async () => {
     const params = {
       plant_id: localPlantData?.id || undefined,
       from_date: dateRange?.[0] || undefined,
       to_date: dateRange?.[1] || undefined,
-      machine_id: selectedMachineRedux || undefined,
-      product_id: selectedProductRedux || undefined,
-      defect_id: selectedDefectRedux || undefined,
+      machine_id: state.selectedMachine || undefined,
+      product_id: state.selectedProduct || undefined,
+      defect_id: state.selectedDefect || undefined,
     };
     // Filter out undefined or null values from query parameters
     const filteredQueryParams = Object.fromEntries(
@@ -250,10 +272,6 @@ const Reports = () => {
 
      sendMessage(filteredQueryParams)
   }
-
-
-
-
 
 
   useEffect(() => {
@@ -289,80 +307,82 @@ const Reports = () => {
     }
   };
 
-  const initialReportData = () => {
 
+  const initialReportData = async (page = 1, pageSize = 10) => {
     setLoader(true)
-    reportApi(localPlantData?.id, pagination.pageSize, accessToken, pagination.current, apiCallInterceptor)
-      .then(res => {
-        const { page_size, total_count, results } = res;
-        dispatch(getReportData({
-          reportData: results,
-          current: pagination.current,
-          pageSize: pagination.pageSize,
-          total: total_count,
-        }));
-        setPagination((prev) => ({ ...prev, pageSize: page_size, total: total_count }))
+    dispatch({type:"API_CALLPROGESS", payload:true})
+    try {
+          const res = await reportApi(localPlantData?.id, pageSize, accessToken, page, apiCallInterceptor)
+      const { page_size, total_count, results } = res;
+      dispatch({type:"REPORT_DATA" , payload:results})
+      setPagination(page, page_size, total_count);
+      setTimeout(()=>{
         setLoader(false)
-      })
-      .catch(err => {
-        //console.error(err)
-        setLoader(false)
-
-      });
-  }
-  // Fetch filtered data when filters are applied or pagination changes while filters are active
-  useEffect(() => {
-    if (filterActive) {
-      handleApplyFilters(pagination.current);
-    } else {
-      initialReportData()
+      },[1000])
+    } catch (error) {
+      setLoader(false)
     }
-  }, [pagination.current, pagination.pageSize, accessToken]);
+ 
+    
+  }
 
+  useEffect(() => {
+      initialReportData(state.pagination.current, state.pagination.pageSize);
+  }, []);
+  
 
+  
+  const handleTableChange = (pagination) => {
 
-  const handleTableChange = (pagtn) => {
-    setPagination((prev) => ({ ...prev, current: pagtn.current, pageSize: pagtn.pageSize, }))
-    dispatch(updatePage({
-      current: pagtn.current,
-      pageSize: pagtn.pageSize
-    }))
+    setPagination(pagination.current, pagination.pageSize); // Update pagination state
+    // dispatch(updatePage({ current: pagination.current, pageSize: pagination.pageSize }));
+    if (filterActive) {
+      handleApplyFilters(pagination.current,pagination.pageSize);
+    } else {
+      initialReportData(pagination.current, pagination.pageSize);
+    }
   };
+  
 
 
   const handleDefectChange = (value) => {
     if (!value) {
-      return dispatch(setSelectedDefectReports(null))
+      return dispatch({type:"SET_SELECTED_DEFECT" , payload:null})
     }
-    dispatch(setSelectedDefectReports(Number(value)))
+    dispatch({type:"SET_SELECTED_DEFECT", payload:value})
     setFilterChanged(true)
   };
 
   const handleMachineChange = (value) => {
     if (!value) {
-      return dispatch(setSelectedMachine(null))
+      return dispatch({type:'SET_SELECTED_MACHINE', payload:null})
     };
-    dispatch(setSelectedMachine(Number(value))); // Dispatching action    
+    dispatch({type:'SET_SELECTED_MACHINE', payload:Number(value)}) 
     setFilterChanged(true)
 
   };
 
   const handleProductChange = (value) => {
     if (!value) {
-      return dispatch(setSelectedProduct(null))
+      return dispatch({type:'SET_SELECTED_PRODUCT', payload:null})
     }
-    dispatch(setSelectedProduct(Number(value))); // Dispatching action    
+    dispatch({type:'SET_SELECTED_PRODUCT', payload:value})    
     setFilterChanged(true)
   }
 
   const handleShiftChange = (value) => {
     if (!value) {
-      return dispatch(setSelectedShift(null))
+      return dispatch({type:'SET_SELECTED_SHIFT', payload:null})
     }
-    dispatch(setSelectedShift(value));
+    dispatch({type:'SET_SELECTED_SHIFT', payload:value}) 
     setFilterChanged(true)
   }
 
+
+  const setPagination = (current, pageSize, total) => {
+    dispatch({ type: "SET_PAGINATION", payload: { current, pageSize, total } });
+  };
+  
 
   const handleDateRangeChange = (dates, dateStrings) => {
     if (dateStrings) {
@@ -372,26 +392,27 @@ const Reports = () => {
     } 
   };
 
-  const handleApplyFilters = (page = 1) => {
+
+  const handleApplyFilters = async(page,pageSize) => {
+    setLoader(true);
     const params = {
-      page: page, // Ensure this uses the provided page (default is 1)
-      page_size: pagination.pageSize,
+      page, // Ensure this uses the provided page (default is 1)
+      page_size: pageSize,
       plant_id: encryptAES(JSON.stringify(localPlantData?.id)) || undefined,
       from_date: dateRange?.[0] || undefined,
       to_date: dateRange?.[1] || undefined,
-      machine_id: selectedMachineRedux || undefined,
-      product_id: selectedProductRedux || undefined,
-      defect_id: selectedDefectRedux,
-      shift: selectedShiftRedux
+      machine_id: state.selectedMachine || undefined,
+      product_id: state.selectedProduct || undefined,
+      defect_id: state.selectedDefect,
+      shift: state.selectedShift
     };
-
-    // Filter out undefined or null values from query parameters
+    console.log(params.from_date,"from date")
+    console.log(params.to_date,"to date")
     const filteredQueryParams = Object.fromEntries(
       Object.entries(params).filter(
         ([_, value]) => value !== undefined && value !== null
       )
     );
-
     const encryptedUrl = Object.fromEntries(
       Object.entries(filteredQueryParams).map(([key, val]) => {
         if (key !== "page" && key !== "page_size" && key !== "plant_id") {
@@ -403,54 +424,29 @@ const Reports = () => {
         return [key, val];
       })
     );
-// console.log(encryptedUrl)
-//     const decrypt = decryptAES(encryptedUrl.machine_id)
-//     console.log(decrypt,"<")
-
     const queryString = new URLSearchParams(encryptedUrl).toString();
     const url = `reports/?${queryString}`;
-
-    setLoader(true);
-    //console.log(url)
-
-    apiCallInterceptor
-      .get(url, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
-      .then((response) => {
-        const { results, total_count, page_size } = response.data;
-
-        dispatch(getReportData({
-          reportData: results,
-          current: pagination.current,
-          pageSize: pagination.pageSize,
-          total: total_count,
-        }));
-        setPagination((prev) => ({
-          ...prev,
-          current: page, // Update current page
-          pageSize: page_size,
-          total: total_count,
-        })); setLoader(false);
-        setFilterActive(true);
-      })
-      .catch((error) => {
-        //console.error("Error fetching filtered reports data:", error);
-        setLoader(false); // Ensure loader is stopped in case of error
-      });
+   console.log(decryptAES("fa2rjzPQXt5N2ro+lZTz2w=="),"<<")
+   try {
+    const response  = await apiCallInterceptor(url);
+    const { results, total_count, page_size } = response.data;
+    dispatch({type:"REPORT_DATA", payload:results})
+    setPagination(page,page_size,total_count)
+    setTimeout(()=>{
+      setLoader(false);
+    },[1000])
+    setFilterActive(true);
+   } catch (error) {
+    setLoader(false); // Ensure loader is stopped in case of error
+  }
+  finally {
+     dispatch({type:"API_CALLPROGESS", payload:false})
+  }
   };
-
-  useEffect(() => {
-    getDefects(localPlantData?.plant_name, accessToken, apiCallInterceptor)
-  }, []);
-
-
 
 
   const downloadAllImages = async () => {
-    //console.log((messages))
+  
     const zip = new JSZip();
     const folder = zip.folder('VIN IMAGES'); // Single folder for all images
 
@@ -479,7 +475,7 @@ const Reports = () => {
 
   const downloadExcel = () => {
     // Prepare the table data with correct headers
-    const formattedTableData = reportData.map((item) => ({
+    const formattedTableData = state.reportData.map((item) => ({
       "Product Name": decryptAES(item.product),
       "Defect Name": decryptAES(item.defect),
       "Machine Name": decryptAES(item.machine),
@@ -521,16 +517,17 @@ const Reports = () => {
     }, 0);
   };
 
-  const resetFilter = async () => {
+  const resetFilter =  () => {
     setFilterActive(false);
+    dispatch({ type: 'RESET_PAGINATION' });
+    setDateRange(null)
     setSelectedDate(null);
-    dispatch(setSelectedMachine(null));
-    dispatch(setSelectedProduct(null));
-    dispatch(setSelectedDefectReports(null));
-    dispatch(setSelectedShift(null))
-    initialReportData()
-    setPagination((prev) => ({ ...prev, current: 1, pageSize: 10, }))
+    dispatch({type:'SET_SELECTED_SHIFT', payload:null})
+    dispatch({type:'SET_SELECTED_PRODUCT', payload:null})
+    dispatch({type:'SET_SELECTED_MACHINE', payload:null})
+    dispatch({type:"SET_SELECTED_DEFECT" , payload:null})
     setFilterChanged(false)
+    initialReportData()
   };
 
 
@@ -538,7 +535,6 @@ const Reports = () => {
   return (
     <>
       {/* <ToastContainer /> */}
-
       <Modal
         title={<div style={{ padding: "1rem", textAlign: "center" }}>Apply filters to download the images
         </div>}
@@ -561,7 +557,7 @@ const Reports = () => {
             showSearch
             placeholder="Select Product"
             onChange={handleProductChange}
-            value={selectedProductRedux}
+            value={state.selectedProduct}
             size="large"
             filterOption={(input, productsData) =>
               (productsData.children ?? "")
@@ -582,7 +578,7 @@ const Reports = () => {
             showSearch
             placeholder="Select Defect"
             onChange={handleDefectChange}
-            value={selectedDefectRedux}
+            value={state.selectedDefect}
             size="large"
             filterOption={(input, defectsData) =>
               // ( productOptions.children ?? "".toLowerCase() ).includes(input.toLowerCase() )
@@ -637,16 +633,15 @@ const Reports = () => {
         </div>
 
       </Modal >
-
       <div className="layout-content">
         <div
           className=""
           style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}
         >
-          <SelectComponent placeholder={"Select Product"} action={(val) => handleProductChange(val)} selectedData={selectedProductRedux} data={productsData} size={"large"} style={{ minWidth: "200px", marginRight: "10px", }} />
-          <SelectComponent placeholder={"Select Machine"} action={(val) => handleMachineChange(val)} selectedData={selectedMachineRedux} data={machines} size={"large"} style={{ minWidth: "200px", marginRight: "10px" }} />
-          <SelectComponent placeholder={"Select Defect"} action={(val) => handleDefectChange(val)} selectedData={selectedDefectRedux} data={defectsData} size={"large"} style={{ minWidth: "200px", marginRight: "10px" }} />
-          <SelectComponent placeholder={"Select Shift"} selectedData={selectedShiftRedux} action={(val) => handleShiftChange(val)} data={shiftData} valueType="name" style={{ minWidth: "180px", zIndex: 1 }} size={"large"} />
+          <SelectComponent placeholder={"Select Product"} action={(val) => handleProductChange(val)} selectedData={state.selectedProduct} data={productsData} size={"large"} style={{ minWidth: "200px", marginRight: "10px", }} />
+          <SelectComponent placeholder={"Select Machine"} action={(val) => handleMachineChange(val)} selectedData={state.selectedMachine} data={machines} size={"large"} style={{ minWidth: "200px", marginRight: "10px" }} />
+          <SelectComponent placeholder={"Select Defect"} action={(val) => handleDefectChange(val)} selectedData={state.selectedDefect} data={defectsData} size={"large"} style={{ minWidth: "200px", marginRight: "10px" }} />
+          <SelectComponent placeholder={"Select Shift"} selectedData={state.selectedShift} action={(val) => handleShiftChange(val)} data={shiftData} valueType="name" style={{ minWidth: "180px", zIndex: 1 }} size={"large"} />
           <ConfigProvider
   theme={{
     token: {
@@ -710,7 +705,7 @@ const Reports = () => {
               Reset Filter
             </Button>
           ) : null}
-          {reportData?.length > 0 ? (
+          {state.reportData?.length > 0 ? (
             <Button
               type="primary"
               icon={<DownloadOutlined />}
@@ -768,15 +763,37 @@ const Reports = () => {
             />
           </div>
         ) : (
+          <ConfigProvider
+          theme={{
+            components: {
+              Table: {
+                colorBgContainer: '#fff',
+                colorPrimary: '#000',
+                colorFillAlter: '#fff',
+                controlHeight: 48,
+                headerBg: '#43996a',
+                headerColor: '#fff',
+                rowHoverBg: '#e6f7ff',
+                padding: '1rem',
+                boxShadowSecondary:
+                  '0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05)',
+                fontWeightStrong: 500,
+              },
+            },
+          }}
+        >
+
           <Table
             columns={columns}
-            dataSource={reportData}
-            pagination={pagination}
+            dataSource={state.reportData}
+            pagination={state.pagination}
             locale={locale.Table}
             style={{ margin: "1rem 0", fontSize: "1.5rem" }}
             loading={loader}
             onChange={handleTableChange}
+            className="custom-table"
           />
+        </ConfigProvider>
         )}
       </div>
     </>

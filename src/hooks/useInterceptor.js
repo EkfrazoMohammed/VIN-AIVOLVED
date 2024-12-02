@@ -94,7 +94,7 @@ const useApiInterceptor = () => {
                                 return ApiCall(originalRequest);
                             })
                             .catch((err) => {
-                                return Promise.reject(new Error(err));
+                                return Promise.reject(err);
                             });
                     }
 
@@ -121,14 +121,14 @@ const useApiInterceptor = () => {
                     } catch (refreshError) {
                         processQueue(refreshError, null);
                         handleRefreshTokenExpiry()
-                        return Promise.reject(new Error (refreshError));
+                        return Promise.reject(refreshError);
                     } finally {
                         setRefresh(false);
                         isRefreshing = false;
                     }
                 }
 
-                return Promise.reject( new Error(error));
+                return Promise.reject(error);
             }
         );
 

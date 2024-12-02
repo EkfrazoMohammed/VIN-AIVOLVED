@@ -197,12 +197,11 @@ const Settings = () => {
     } catch (error) {
       // Handle error response
       setLoading(false);
-      console.log(error)
    
         if (error?.response?.message === "Token is invalid or expired") {
           openNotification({ status: "error", message: 'Unable to create user, Please Try again!' });
         } else {
-          openNotification({ status: "error", message: error?.response?.message });
+          openNotification({ status: "error", message: error?.response?.data?.message });
         }
       
     }

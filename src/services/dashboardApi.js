@@ -137,8 +137,6 @@ export const getDefects = (plantName, token, apiCallInterceptor) => {
       store.dispatch(getDefectSuccess(formattedDefects));
     })
     .catch((error) => {
-      //console.error("Error fetching department data:", error);
-      // Dispatch action to update Redux state
       store.dispatch(getDefectFailure());
     });
 };
@@ -170,32 +168,32 @@ export const getAiSmartView = async (
 };
 
 
-export const initialDpmuData = (plantId, token, apiCallInterceptor) => {
+export const initialDpmuData = async(plantId, token, apiCallInterceptor) => {
   const encryptedPlantId = encodeURIComponent(
     encryptAES(JSON.stringify(plantId))
   );
   const url = `params_graph/?plant_id=${encryptedPlantId}`;
-  apiCallInterceptor
-    .get(url)
-    .then((response) => {
-      const filteredProductionData = response.data.results?.filter((item) => {
-        const itemDate = new Date(item.date_time);
-        const currentDate = new Date();
-        const diffInTime = currentDate - itemDate;
-        const diffInDays = diffInTime / (1000 * 3600 * 24); // Convert time difference from milliseconds to days
+  try {
+    const response = await apiCallInterceptor.get(url);
+    const filteredProductionData = response.data.results?.filter((item) => {
+      const itemDate = new Date(item.date_time);
+      const currentDate = new Date();
+      const diffInTime = currentDate - itemDate;
+      const diffInDays = diffInTime / (1000 * 3600 * 24); // Convert time difference from milliseconds to days
+  
+      return diffInDays <= 15; // Only include data from the last 30 days
+    }
+  );
+  return filteredProductionData
+  } catch (error) {
+    return error
+  }
 
-        return diffInDays <= 15; // Only include data from the last 30 days
-      });
-      store.dispatch(getDpmuSuccess(filteredProductionData));
-    })
-    .catch((error) => {
-      //console.error("Error:", error);
-      store.dispatch(getDpmuFailure());
-    });
+
 };
 
-export const dpmuFilterData = (apiCallInterceptor, machineId, plantId, dateRange, selectedDate) => {
-  console.log('filtered dpmu')
+export const dpmuFilterData = async(apiCallInterceptor, machineId, plantId, dateRange, selectedDate) => {
+ let dpmuData ;
   const encrypt = encryptAES(JSON.stringify(machineId));
   const encryptedPlantId = encodeURIComponent(
     encryptAES(JSON.stringify(plantId))
@@ -208,50 +206,46 @@ export const dpmuFilterData = (apiCallInterceptor, machineId, plantId, dateRange
     url = `params_graph/?plant_id=${encryptedPlantId}`;
 
   }
-  apiCallInterceptor.get(url)
-    .then((response) => {
-      if (!selectedDate) {
-        store.dispatch(getDpmuSuccess(response.data.results.slice(-15)));
-      }
-      else {
-        const [fromDate, toDate] = dateRange;
-        const from = new Date(fromDate);
-        const to = new Date(toDate);
-
-        const filteredData = response.data.results.filter((item) => {
-          const itemDate = new Date(item.date_time); // Convert item date to Date object
-          return itemDate >= from && itemDate <= to; // Check if itemDate is within the range
-        });
-    
-        store.dispatch(getDpmuSuccess(filteredData));
-      }
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-      store.dispatch(getDpmuFailure());
-    });
+  try {
+    const response = await apiCallInterceptor.get(url);
+    if (!selectedDate) {
+      // store.dispatch(getDpmuSuccess(response.data.results.slice(-15)));
+       dpmuData  = response.data.results.slice(-15)
+      return dpmuData
+    }
+    else {
+      const [fromDate, toDate] = dateRange;
+      const from = new Date(fromDate);
+      const to = new Date(toDate);
+  
+       dpmuData = response.data.results.filter((item) => {
+        const itemDate = new Date(item.date_time); // Convert item date to Date object
+        return itemDate >= from && itemDate <= to; // Check if itemDate is within the range
+      });
+      // store.dispatch(getDpmuSuccess(filteredData))
+    } 
+    return dpmuData
+  } catch (error) {
+    return error
+  }
 };
 
 
 
 
 
-export const initialProductionData = (plantId, token, apiCallInterceptor) => {
+export const initialProductionData = async(plantId, token, apiCallInterceptor) => {
   const encryptedPlantId = encodeURIComponent(
     encryptAES(JSON.stringify(plantId))
   );
   const url = `defct-vs-machine/?plant_id=${encryptedPlantId}`;
-  apiCallInterceptor
-    .get(url)
-    .then((response) => {
-      // console.log(response.data.data_last_7_days.toSpliced(0,1))
-      store.dispatch(getProductVsDefectSuccess(response.data.data_last_7_days.toSpliced(0,1)));
-      // return response.data.data_last_7_days;
-    })
-    .catch((error) => {
-      //console.error("Error:", error);
-      store.dispatch(getProductVsDefectFailure());
-    });
+  try {
+    const response = await apiCallInterceptor(url);
+    const prodData = response.data.data_last_7_days.toSpliced(0,1)
+    return prodData
+  } catch (error) {
+    return error
+  }
 };
 
 export const getSystemStatus = (plantId, token, apiCallInterceptor) => {
@@ -301,39 +295,36 @@ const isEmptyDashboardResponse = (data) => {
   );
 };
 
-export const initialDashboardData = (plantId, token, apiCallInterceptor) => {
+
+export const initialDashboardData = async (plantId, token, apiCallInterceptor) => {
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - 6); // 7 days ago
   const formattedStartDate = startDate.toISOString().slice(0, 10);
-  // Format startDate as YYYY-MM-DD
 
   const endDate = new Date(); // Today's date
   const formattedEndDate = endDate.toISOString().slice(0, 10); // Format endDate as YYYY-MM-DD
 
-  const encryptedPlantId = encodeURIComponent(
-    encryptAES(JSON.stringify(plantId))
+  const encryptedPlantId = encodeURIComponent(   encryptAES(JSON.stringify(plantId))
   );
   const encryptedfromDate = encodeURIComponent(encryptAES(formattedStartDate));
   const encryptedtodate = encodeURIComponent(encryptAES(formattedEndDate));
-
   const url = `dashboard/?plant_id=${encryptedPlantId}&from_date=${encryptedfromDate}&to_date=${encryptedtodate}`;
-  apiCallInterceptor
-    .get(url)
-    .then((response) => {
-      const { active_products, ...datesData } = response.data;
-
-      if (isEmptyDashboardResponse(response.data)) {
-        store.dispatch(getDashboardFailure("No meaningful data available."));
-      } else {
-        store.dispatch(
-          getDashboardSuccess({ datesData, activeProducts: active_products })
-        );
-      }
-    })
-    .catch((error) => {
-      //console.error("Error fetching dashboard data:", error);
-      store.dispatch(getDashboardFailure(error.message));
-    });
+  try {
+    const response = await apiCallInterceptor.get(url);
+    const { active_products, ...datesData } = response.data;
+          // if (isEmptyDashboardResponse(response.data)) {
+          //   // store.dispatch(getDashboardFailure("No meaningful data available."));
+          //   return 
+          // } else {
+          //   store.dispatch(
+          //     getDashboardSuccess({ datesData, activeProducts: active_products })
+          //   );
+          // }
+          return response.data
+  } catch (error) {
+    // store.dispatch(getDashboardFailure(error.message));
+    return error?.message
+  }
 };
 export const dpmuFilterDate = async (DpmuData, dateRange) => {
   try {

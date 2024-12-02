@@ -18,6 +18,7 @@ import ResetPasswordRoute from "./hooks/resetPasswordRoute";
 import ProtectedRouteForPlant from "./hooks/protectedRouteForPlant";
 import Location from "./pages/Location";
 const App = () => {
+  console.log("Hey You Sneaky Developer")
   return (
     <Router>
       <Routes>

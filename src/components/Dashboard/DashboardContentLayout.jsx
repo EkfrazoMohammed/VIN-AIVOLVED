@@ -1,20 +1,15 @@
-import { useState, useEffect, useRef } from "react";
-import ProductAndDefect from "./ProductAndDefect";
-import DefectsReport from "./DefectsReport";
+import { useState, useEffect, useRef ,Suspense , lazy, useReducer } from "react";
 import TotalOverview from "./TotalOverview";
 import { IoMdArrowForward } from "react-icons/io";
 import { useSelector, useDispatch } from "react-redux";
 import { initialDashboardData, getMachines, getSystemStatus, getDepartments, initialDpmuData, initialProductionData, getProducts, getDefects, getRoles, dpmuFilterData, getAverageDpmu } from "../../services/dashboardApi";
 import { setSelectedMachine, setSelectedMachineDpmu } from "../../redux/slices/machineSlice"
 import { setSelectedProduct } from "../../redux/slices/productSlice"
-import { getDashboardSuccess } from "../../redux/slices/dashboardSlice"
 import { Link, useLocation } from "react-router-dom";
-import { DatePicker,ConfigProvider } from "antd";
+import { DatePicker,ConfigProvider, Spin } from "antd";
 import { VideoCameraFilled, BugFilled, AlertFilled } from "@ant-design/icons";
-import StackChart from "../../components/chart/StackChart";
-import PieChart from "../../components/chart/PieChart";
+
 import dayjs from "dayjs";
-import RealTimeManufacturingSection from "./RealTimeManufacturingSection";
 import useApiInterceptor from "../../hooks/useInterceptor";
 import { encryptAES } from "../../redux/middleware/encryptPayloadUtils";
 import SelectComponent from "../common/Select";
@@ -23,6 +18,15 @@ import { getProductVsDefectSuccess } from "../../redux/slices/productvsDefectSli
 import DropdownComponent from "../common/DropdownComponent";
 import PropTypes from 'prop-types';
 
+
+const StackChart = lazy(()=>import("../../components/chart/StackChart"))
+const PieChart = lazy(()=>import("../../components/chart/PieChart"))
+const RealTimeManufacturingSection  = lazy(()=>import("./RealTimeManufacturingSection"))
+const ProductAndDefect  = lazy(()=>import("./ProductAndDefect"))
+const DefectsReport  = lazy(()=>import("./DefectsReport"))
+
+
+
 const DashboardContentLayout = ({ children }) => {
   const apiCallInterceptor = useApiInterceptor();
   const dispatch = useDispatch();
@@ -30,14 +34,11 @@ const DashboardContentLayout = ({ children }) => {
   const accessToken = useSelector((state) => state.auth.authData[0].accessToken);
   const machines = useSelector((state) => state.machine.machinesData)
   const activeMachines = useSelector((state) => state.machine.activeMachines)
-  const dpmuChartData = useSelector((state) => state.dpmu.dpmuData)
-  const productionVsDefectChartData = useSelector((state) => state.productVsDefect.productvsdefectData)
   const productsData = useSelector((state) => state.product.productsData)
   const shiftDataRedux = useSelector((state) => state.shift.shiftData)
   const selectedMachineRedux = useSelector((state) => state.machine.selectedMachine);
   const selectedMachineDpmu = useSelector((state) => state.machine.selectedMachineDpmu);
   const loaderReduxMachine = useSelector((state)=>state.machine.loading)
-
   const selectedProductRedux = useSelector((state) => state.product.selectedProduct);
   const selectedShiftRedux = useSelector((state) => state.shift.selectedShift)
 
@@ -49,9 +50,11 @@ const DashboardContentLayout = ({ children }) => {
   const formattedStartDate = startDate.toISOString().slice(0, 10);
   const endDate = new Date();
   const formattedEndDate = endDate.toISOString().slice(0, 10);
+
   const [filterActive, setFilterActive] = useState(false);
   const [filterChanged, setFilterChanged] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
+
   const [dateRange, setDateRange] = useState([
     formattedStartDate,
     formattedEndDate,
@@ -62,9 +65,38 @@ const DashboardContentLayout = ({ children }) => {
   const rangePickerRef = useRef(null);
   const [visible, setVisible] = useState(false);
   const currentUrlPath = useLocation();
+
+const initialState = {
+  tableDataState:[],
+  activeProducts:[],
+  dpmuData:[],
+  prodData:[],
+  loading:false
+}
+
+const reducer = ( state ,  action) =>{
+  switch(action.type){
+   case 'SET_TABLE_DATA':
+    return {...state , tableDataState:action.payload};
+   case 'SET_ACTIVE_PRODCUTS':
+    return {...state , activeProducts:action.payload};
+  case 'SET_DPMU_DATA':
+    return {...state , dpmuData : action.payload}  
+  case "SET_PROD_DATA":
+    return{...state , prodData:action.payload}
+  case "SET_LOADING":
+    return{...state,loading:action.payload }    
+  default:
+      return state
+  }
+}
+
+const [state, dispatchReducer] = useReducer( reducer ,initialState)
+
+ 
+
   const handleMachineChange = (value) => {
     setFilterActive(false)
-
     if (!value) {
       return dispatch(setSelectedMachine(null))
     }
@@ -108,10 +140,21 @@ const DashboardContentLayout = ({ children }) => {
     resetFilter()
   }, [localPlantData, currentUrlPath])
 
-  const resetFilter = () => {
-    initialDashboardData(localPlantData.id, accessToken, apiCallInterceptor);
-    initialDpmuData(localPlantData.id, accessToken, apiCallInterceptor);
-    initialProductionData(localPlantData.id, accessToken, apiCallInterceptor)
+  const resetFilter = async () => {
+    const [{active_products , ...datesData} , dpmuData , prodData] = await Promise.all([
+      initialDashboardData(localPlantData.id, accessToken, apiCallInterceptor),
+      initialDpmuData(localPlantData.id, accessToken, apiCallInterceptor),
+      initialProductionData(localPlantData.id, accessToken, apiCallInterceptor)
+    ])
+    dispatchReducer({type:'SET_TABLE_DATA', payload:datesData})
+    // setTableData(datesData);
+    dispatchReducer({type:'SET_ACTIVE_PRODCUTS', payload:active_products})
+    // setActiveProducts(active_products)
+    // setDpmuData(dpmuData);
+    dispatchReducer({type:"SET_DPMU_DATA" , payload:dpmuData})
+    // setProdata(prodData);
+    dispatchReducer({type:"SET_PROD_DATA" ,payload:prodData })
+
     initialDateRange();
     dispatch(setSelectedMachine(null));
     dispatch(setSelectedProduct(null));
@@ -124,7 +167,7 @@ const DashboardContentLayout = ({ children }) => {
   // FILTER DATA FROM BACKEND
   const handelFilterProduction = async () => {
     try {
-      dpmuFilterData(apiCallInterceptor, selectedMachineRedux, localPlantData.id, dateRange, selectedDate)
+     const dpmuFilter = await dpmuFilterData(apiCallInterceptor, selectedMachineRedux, localPlantData.id, dateRange, selectedDate)
       setLoading(true)
       const [fromDate, toDate] = dateRange;
       const queryParams = {
@@ -159,7 +202,13 @@ const DashboardContentLayout = ({ children }) => {
       if (defectResponse) {
         setLoading(false)
       }
-      dispatch(getProductVsDefectSuccess(defectResponse.data.data_last_7_days));
+      // setDpmuData(dpmuFilter)
+      dispatchReducer({type:"SET_DPMU_DATA" , payload:dpmuFilter})
+
+      // setProdata(defectResponse.data.data_last_7_days)
+      dispatchReducer({type:"SET_PROD_DATA" ,payload:defectResponse?.data?.data_last_7_days })
+
+      // dispatch(getProductVsDefectSuccess(defectResponse.data.data_last_7_days));
     } catch (error) {
       console.log("Error:", error);
       setLoading(false)
@@ -167,16 +216,16 @@ const DashboardContentLayout = ({ children }) => {
   }
 
 
-  const handleApplyFilters = () => {
-
+  const handleApplyFilters = async() => {
     if (!selectedMachineRedux) {
-      initialDpmuData(localPlantData.id, accessToken, apiCallInterceptor);
-      // initialProductionData(localPlantData.id, accessToken, apiCallInterceptor)
+      const dpmuData =  await initialDpmuData(localPlantData.id, accessToken, apiCallInterceptor);
+      dispatchReducer({type:"SET_DPMU_DATA" , payload:dpmuData});
       setFilterActive(false)
     }
     if (selectedDate || selectedMachineRedux) {
       handelFilterProduction()
     }
+   
 
     const [fromDate, toDate] = dateRange;
 
@@ -211,31 +260,28 @@ const DashboardContentLayout = ({ children }) => {
     const queryString = new URLSearchParams(encryptedUrl).toString();
     const url = `dashboard/?${queryString}`;
     setLoading(true)
-    apiCallInterceptor
-      .get(url, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
-      .then((response) => {
-        const { active_products, ...datesData } = response.data;
-        dispatch(getDashboardSuccess({ datesData, activeProducts: active_products }))
-        console.log(response.data)
-        setFilterActive(true);
-        setLoading(false)
-      })
-      .catch((error) => {
-        setLoading(false)
-        console.log("Error:", error);
-      });
-  };
+    try {
+      const res = await apiCallInterceptor
+      .get(url) 
+      const { active_products , ...datesData} = res.data
+      setFilterActive(true);
+      // setTableData(datesData);
+      dispatchReducer({type:'SET_TABLE_DATA', payload:datesData})
 
+      // setActiveProducts(active_products)
+      dispatchReducer({type:"SET_ACTIVE_PRODCUTS" , payload:active_products})
+
+      setLoading(false)
+    } catch (error) {
+      setLoading(false)
+      console.log("Error:", error);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true)
-      
         await Promise.all([
           getRoles(accessToken, apiCallInterceptor),
           getMachines(localPlantData.plant_name, accessToken, apiCallInterceptor),
@@ -243,13 +289,31 @@ const DashboardContentLayout = ({ children }) => {
           getDefects(localPlantData?.plant_name, accessToken, apiCallInterceptor),
           initialDpmuData(localPlantData.id, accessToken, apiCallInterceptor),
           getProducts(localPlantData.plant_name, accessToken, apiCallInterceptor),
-          
-          initialDashboardData(localPlantData.id, accessToken, apiCallInterceptor),
           initialProductionData(localPlantData.id, accessToken, apiCallInterceptor),
           getSystemStatus(localPlantData.id, accessToken, apiCallInterceptor),
           getAverageDpmu(localPlantData.id, apiCallInterceptor, setTextData)
         ]);
         initialDateRange()
+
+        const [prodData , dpmuData , {active_products , ...datesData}] = await Promise.all([
+          initialProductionData(localPlantData.id, accessToken, apiCallInterceptor),
+          initialDpmuData(localPlantData.id, accessToken, apiCallInterceptor),
+          initialDashboardData(localPlantData.id, accessToken, apiCallInterceptor)
+        ])
+ 
+        // setDpmuData(dpmuData)
+        dispatchReducer({type:"SET_DPMU_DATA" , payload:dpmuData})
+
+        // setProdata(prodData)
+        dispatchReducer({type:"SET_PROD_DATA" ,payload:prodData })
+
+        // setTableData(datesData)
+        dispatchReducer({type:'SET_TABLE_DATA', payload:datesData})
+
+        // setActiveProducts(active_products)
+        dispatchReducer({type:"SET_ACTIVE_PRODCUTS" , payload:active_products})
+
+       
       } catch (err) {
         console.log(err.message || "Failed to fetch data")
       } finally {
@@ -262,7 +326,7 @@ const DashboardContentLayout = ({ children }) => {
 
   const initialDateRange = () => {
     const startDate = new Date();
-    startDate.setDate(startDate.getDate() - 7); // 7 days ago
+    startDate.setDate(startDate.getDate() - 6); // 7 days ago
     const formattedStartDate = startDate.toISOString().slice(0, 10);
     const endDate = new Date(); // Today's date
     const formattedEndDate = endDate.toISOString().slice(0, 10); // Format endDate as YYYY-MM-DD
@@ -270,7 +334,9 @@ const DashboardContentLayout = ({ children }) => {
   };
 
   const { RangePicker } = DatePicker;
+
   const [categoryDefects, setCategoryDefects] = useState([]);
+
   const categorizeDefects = (data) => {
     const categories = {};
     Object.keys(data).forEach((date) => {
@@ -286,11 +352,9 @@ const DashboardContentLayout = ({ children }) => {
   };
 
   useEffect(() => {
-    const categorizedData = categorizeDefects(tableDataRedux);
+    const categorizedData = categorizeDefects(state?.tableDataState);
     setCategoryDefects(categorizedData);
-  }, [tableDataRedux]);
-
-
+  }, [state?.tableDataState]);
 
 
 
@@ -376,7 +440,7 @@ const DashboardContentLayout = ({ children }) => {
                       disabledDate={(current) => {
                         const now = Date.now();
                         const thirtyDaysAgo = new Date(now);
-                        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 31);
+                        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
                         return current && (current.valueOf() > now || current.valueOf() < thirtyDaysAgo);
                       }}
@@ -433,7 +497,7 @@ const DashboardContentLayout = ({ children }) => {
                         <span>No. of SKU</span>
                         <AlertFilled />
                       </div>
-                      <DropdownComponent items={prodMenu} data={tableDataReduxActive} />
+                      <DropdownComponent items={prodMenu} data={state.activeProducts} />
                     </div>
                     <Link
                       to="/insights"
@@ -450,27 +514,49 @@ const DashboardContentLayout = ({ children }) => {
               </div>
             </div>
           </div>
+          
+
+          <Suspense fallback={"Loading..."} >
 
           <RealTimeManufacturingSection
             loading={loading}
             categoryDefects={categoryDefects}
-            productionData={dpmuChartData}
+            productionData={state.dpmuData}
             selectedMachineDpmu={selectedMachineDpmu}
             machines={machines}
             machineChangeAction={(val) => handleMachineChangeDpmu(val)}
             plant_id={localPlantData.id}
             accessToken={accessToken}
           />
+          </Suspense> 
+
+
+          
           <div className="production-defect-report-container flex">
-            <ProductAndDefect loading={loading} chartData={productionVsDefectChartData} />
+          <Suspense fallback="Loading...">
+            <ProductAndDefect loading={loading} chartData={state.prodData}  localPlantData={localPlantData}/>
+          </Suspense>
           </div>
+          <Suspense fallback={"Loading..."} >
+
           <DefectsReport
             className="bg-white"
             loading={loading}
-            chartData={tableDataRedux}
-            chart1={<StackChart data={tableDataRedux} loading={loading} />}
-            chart2={<PieChart data={tableDataRedux} selectedDate={selectedDate} loading={loading} />}
+            chartData={state.tableDataState}
+            chart1={
+              <Suspense fallback={"Loading..."} >
+                <StackChart data={state.tableDataState}  localPlantData={localPlantData} loading={loading} />
+              </Suspense>
+          }
+            chart2={
+              <Suspense fallback={"Loading..."} >
+                <PieChart data={state.tableDataState
+
+} localPlantData={localPlantData} selectedDate={selectedDate} loading={loading} />
+              </Suspense>
+          }
           />
+          </Suspense>
         </>
       )}
     </>
@@ -478,7 +564,6 @@ const DashboardContentLayout = ({ children }) => {
 };
 // PROP VALIDATION 
 DashboardContentLayout.propTypes = {
-  // children should be a valid React node (e.g., string, number, element, array of elements, etc.)
   children: PropTypes.node.isRequired,
 };
 

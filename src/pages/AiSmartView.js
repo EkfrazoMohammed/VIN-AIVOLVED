@@ -11,6 +11,7 @@ import "slick-carousel/slick/slick-theme.css";
 import SelectComponent from "../components/common/Select";
 import { setSelectedDefect } from "../redux/slices/defectSlice";
 import { Pagination ,ConfigProvider } from 'antd';
+import { current } from "@reduxjs/toolkit";
 const AiSmartView = () => {
 
  const dispatch = useDispatch()
@@ -20,7 +21,7 @@ const AiSmartView = () => {
   const AuthToken = useSelector((state) => state.auth.authData[0].accessToken);
   const defectsData = useSelector((state) => state.defect.defectsData);
 
-  
+
   const selectedDefect = useSelector((state) => state.defect.selectedDefect);
 
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
@@ -29,6 +30,7 @@ const AiSmartView = () => {
 
   const apiCallInterceptor = useApiInterceptor();
   const sliderRef = useRef(null);
+  const sideImage = useRef();
   
 
   const handleDefectChange = async (value) => {
@@ -38,14 +40,14 @@ const AiSmartView = () => {
     }
     const selectedId = value;
     dispatch(setSelectedDefect(Number(value)))
-    setPagination({ ...pagination, currentPage: 1 });
+    
     setCurrentSlideIndex(0);
 
     try {
       setLoader(true);
       const aiSmartViewData = await getAiSmartView(localPlantData.id, AuthToken, apiCallInterceptor, 1, selectedId);
       setAismartviewData(aiSmartViewData.results);
-      setPagination({...pagination,total:aiSmartViewData.total_pages})
+      setPagination({...pagination,currentPage:1,total:aiSmartViewData.total_pages})
     } catch (error) {
       throw new Error(error)
     } finally {
@@ -53,44 +55,14 @@ const AiSmartView = () => {
     }
   };
 
-  const handleNext = async () => {
-    // if (currentSlideIndex === pagination.pageSize - 1) {
-    //   const nextPage = pagination.currentPage + 1;
-    //   setPagination((prev) => ({ ...prev, currentPage: nextPage }));
+ 
 
-    //   try {
-    //     setLoader(true);
-    //     const aiSmartViewData = await getAiSmartView(localPlantData.id, AuthToken, apiCallInterceptor, nextPage, selectedDefect.id);
-    //     setAismartviewData(aiSmartViewData.results);
-    //     setCurrentSlideIndex(0);
-    //   } catch (error) {
-    //     //console.error("Failed to fetch AI Smart View data:", error.message);
-    //   } finally {
-    //     setLoader(false);
-    //   }
-    // } else if (sliderRef.current) {
-    // }
+  const handleNext = async (val) => {
     sliderRef.current.slickNext();
-
-  };
+    
+   };
 
   const handlePrev = async () => {
-    // if (currentSlideIndex === 0 && pagination.currentPage !== 1) {
-    //   const prevPage = pagination.currentPage - 1;
-    //   setPagination((prev) => ({ ...prev, currentPage: prevPage }));
-
-    //   try {
-    //     setLoader(true);
-    //     const aiSmartViewData = await getAiSmartView(localPlantData.id, AuthToken, apiCallInterceptor, prevPage, selectedDefect.id);
-    //     setAismartviewData(aiSmartViewData);
-    //     setCurrentSlideIndex(0);
-    //   } catch (error) {
-    //     //console.error("Failed to fetch AI Smart View data:", error.message);
-    //   } finally {
-    //     setLoader(false);
-    //   }
-    // } else if (sliderRef.current) {
-    // }
     sliderRef.current.slickPrev();
   };
 
@@ -105,25 +77,8 @@ const AiSmartView = () => {
 
 
 
-   const handleClickNext  = async() =>{
-    try {
-      const nextPage = pagination.currentPage + 1;
-      setLoader(true);
-          const aiSmartViewData = await getAiSmartView(localPlantData.id, AuthToken, apiCallInterceptor, nextPage, selectedDefect);
-          setAismartviewData(aiSmartViewData.results);
-          setCurrentSlideIndex(0);
-          setPagination((prev) => ({ ...prev, currentPage: nextPage }));
-    } catch (error) {
-      console.log(error)
-
-    }
-    finally{
-      setLoader(false)
-    }
-   }
    const handleChange  = async(pagination)=>{
     try {
-      console.log(pagination)
   setLoader(true);
       const aiSmartViewData = await getAiSmartView(localPlantData.id, AuthToken, apiCallInterceptor, pagination, selectedDefect);
       setAismartviewData(aiSmartViewData.results);
@@ -136,23 +91,7 @@ const AiSmartView = () => {
       setLoader(false)
     }
    }
-   const handleClickPrev  = async () =>{
-    try {
-      const prevPage = pagination.currentPage - 1;
-      setLoader(true);
-          const aiSmartViewData = await getAiSmartView(localPlantData.id, AuthToken, apiCallInterceptor, prevPage, selectedDefect);
-          setAismartviewData(aiSmartViewData.results);
-          setCurrentSlideIndex(0);
-          setPagination((prev) => ({ ...prev, currentPage: prevPage }));
 
-    } catch (error) {
-     console.log(error)
-    
-    }
-    finally{
-      setLoader(false)
-    }
-   }
 
   return (
     <div className="flex min-h-[calc(100vh-120px)] gap-2">
@@ -226,7 +165,6 @@ const AiSmartView = () => {
                           </button>
 }
                         
-                        
                         {
                           aismartviewData.length > 2 &&
                           <button
@@ -276,12 +214,12 @@ const AiSmartView = () => {
         :
         
          aismartviewData?.length > 0 ? 
-      <div className="flex flex-wrap gap-3 justify-center items-center ">
+      <div className="flex flex-wrap gap-3 justify-center items-center mt-3 ">
         {
           aismartviewData?.map((item, index)=>{
             const decrypt = decryptAES(item?.image);
             return(
-              <img src={decrypt} className="w-20 h-20 " />
+              <img src={decrypt} ref={sideImage} className={`w-20 h-20 ${currentSlideIndex === index ? " border-2 border-[#43996a] scale-125" : ""}`} />
             )
           })
         }

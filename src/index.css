@@ -391,8 +391,7 @@ label::after {
 .overview-container.dashboard-data {
   background: linear-gradient(40deg, #FFFF ,#FFFF,#FFFF,#FFFF,#d8dce8,#FFFF,#FFFF,#FFFF,#FFFF ,#FFFF);
   animation: gradient 15s ease infinite;
-  background-size: 6
-  00% 500%;
+  background-size: 600% 500%;
 }
 
 @keyframes gradient {
@@ -464,4 +463,8 @@ input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
     transition: background-color 5000s ease-in-out 0s;
     -webkit-text-fill-color: #fff !important;
+}
+
+.ant-spin-dot-item {
+  background-color: #072266 !important;
 }

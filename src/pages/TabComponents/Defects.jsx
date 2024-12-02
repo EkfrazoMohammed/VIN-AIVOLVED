@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Modal, Select, Table, Form, Input, notification, Row, Col } from 'antd';
+import { Button, Modal, Select, Table, Form, Input, notification, Row, Col ,ConfigProvider } from 'antd';
 import axios from 'axios';
 import { EditOutlined, ReloadOutlined } from '@ant-design/icons';
 import { useSelector } from 'react-redux';
@@ -9,11 +9,7 @@ import useApiInterceptor from '../../hooks/useInterceptor';
 import axiosInstance from '../../API/axiosInstance';
 import PropTypes from 'prop-types';
 import ColorPickerComponent from '../../components/common/ColorPickerComponent';
-
-
-
-
-
+import SelectComponent from '../../components/common/Select';
 
 
 const Defects = ({ defectsdata }) => {
@@ -26,7 +22,6 @@ const Defects = ({ defectsdata }) => {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editData, setEditData] = useState(null);
 
-  console.log(defectsdata)
   const [tableData, setTableData] = useState(defectsdata);
   const [selectedValue, setSelectedValue] = useState(null);
   const [color, setColor] = useState('#1677ff');
@@ -45,7 +40,6 @@ const Defects = ({ defectsdata }) => {
     {
       title: 'Defect Name',
       dataIndex: 'name',
-      sorter: (a, b) => a.name.localeCompare(b.name),
       render: (text) => <div>{text}</div>,
     },
     {
@@ -76,9 +70,14 @@ const Defects = ({ defectsdata }) => {
   };
 
   const handleDefectChange = (value) => {
+    if(value == null){
+     return setTableData(defectsdata)
+    }
     setSelectedValue(value);
-    const filteredData = tableData.filter((item) => value === item.id);
+    const filteredData = defectsdata.filter((item) => value === item.id);
+    
     setTableData(filteredData);
+ 
   };
   const [data, setData] = useState("")
   const handlePost = async () => {
@@ -116,13 +115,13 @@ const Defects = ({ defectsdata }) => {
 
   const handlePut = async () => {
     const data = form.getFieldValue('name');
-    if (!data) {
-      notificationApi.open({
-        message: 'Please fill out required fields',
-        placement: 'top',
-      });
-      return;
-    }
+    // if (!data) {
+    //   notificationApi.open({
+    //     message: 'Please fill out required fields',
+    //     placement: 'top',
+    //   });
+    //   return;
+    // }
 
     const payload = {
       name: data,
@@ -130,21 +129,21 @@ const Defects = ({ defectsdata }) => {
       plant: localPlantData.id,
     };
 
-    try {
-      const url = `${baseURL}defect/${editData.id}/`;
-      await axios.put(url, payload, {
-        headers: {
-          Authorization: `Bearer ${AuthToken}`,
-        },
-      });
-      notificationApi.open({
-        message: 'Defect updated',
-        placement: 'top',
-      });
-      setEditModalOpen(false);
-    } catch (err) {
-      console.log(err);
-    }
+    // try {
+    //   const url = `${baseURL}defect/${editData.id}/`;
+    //   await axios.put(url, payload, {
+    //     headers: {
+    //       Authorization: `Bearer ${AuthToken}`,
+    //     },
+    //   });
+    //   notificationApi.open({
+    //     message: 'Defect updated',
+    //     placement: 'top',
+    //   });
+    //   setEditModalOpen(false);
+    // } catch (err) {
+    //   console.log(err);
+    // }
   };
 
   const handleRefresh = () => {
@@ -156,23 +155,8 @@ const Defects = ({ defectsdata }) => {
       {contextHolder}
       <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', margin: '1rem 0' }}>
         <div style={{ display: 'flex', gap: '1rem' }}>
-          <Select
-            showSearch
-            value={selectedValue}
-            style={{ width: 200, height: '40px' }}
-            placeholder="Search or Select Defects"
-            optionFilterProp="children"
-            onChange={handleDefectChange}
-            filterOption={(input, option) =>
-              option.children.toLowerCase().includes(input.toLowerCase())
-            }
-          >
-            {tableData.map((defect) => (
-              <Select.Option key={defect.id} value={defect.id}>
-                {defect.name}
-              </Select.Option>
-            ))}
-          </Select>
+        <SelectComponent placeholder={"Select Defects"} selectedData={selectedValue}  action={(val) => handleDefectChange(val)} data={defectsdata} style={{ minWidth: "200px", zIndex: 1 }} size={"large"} />
+
           <Button onClick={handleRefresh} className='commButton flex items-center justify-center' style={{ background: '#EC522D', color: '#fff' }}>
             <ReloadOutlined style={{ width: '50px' }} />
           </Button>
@@ -189,12 +173,12 @@ const Defects = ({ defectsdata }) => {
         title="Create Defects"
         onCancel={() => setModalOpen(false)}
         footer={[
-          <Button key="cancel" type="primary" style={{  color: '#fff' }} onClick={() => setModalOpen(false)}>
+          <Button  className='commButton border-0' type="primary" style={{  color: '#fff' }} onClick={() => setModalOpen(false)}>
             Cancel
 
 
           </Button>,
-          <Button key="submit" type="primary" style={{  color: '#fff' }} onClick={handlePost}>
+          <Button yy className='commButton border-0' type="primary" style={{  color: '#fff' }} onClick={handlePost}>
             Create Defects
           </Button>,
         ]}
@@ -228,10 +212,10 @@ const Defects = ({ defectsdata }) => {
         title="Edit Defect"
         onCancel={() => setEditModalOpen(false)}
         footer={[
-          <Button key="cancel" onClick={() => { setEditModalOpen(false) }}>
+          <Button className='commButton border-0' key="cancel" onClick={() => { setEditModalOpen(false) }}>
             Cancel
           </Button>,
-          <Button key="submit" type="primary" style={{ background: '#EC522D', color: '#fff' }} onClick={handlePut}>
+          <Button className='commButton border-0' key="submit"   onClick={handlePut}>
             Edit Defect
           </Button>,
         ]}
@@ -253,8 +237,27 @@ const Defects = ({ defectsdata }) => {
           </Col>
         </Row>
       </Modal>
-
-      <Table columns={columns} dataSource={tableData} pagination={{ pageSize: 6 }} locale={{ triggerAsc: 'Click to sort in ascending order', triggerDesc: 'Click to sort in descending order', cancelSort: 'Click to cancel sorting' }} />
+      <ConfigProvider
+          theme={{
+            components: {
+              Table: {
+                colorBgContainer: '#fff',
+                colorPrimary: '#000',
+                colorFillAlter: '#fff',
+                controlHeight: 48,
+                headerBg: '#43996a',
+                headerColor: '#fff',
+                rowHoverBg: '#e6f7ff',
+                padding: '1rem',
+                boxShadowSecondary:
+                  '0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05)',
+                fontWeightStrong: 500,
+              },
+            },
+          }}
+        >
+      <Table className='custom-table' columns={columns} dataSource={tableData} pagination={{ pageSize: 6 }} locale={{ triggerAsc: 'Click to sort in ascending order', triggerDesc: 'Click to sort in descending order', cancelSort: 'Click to cancel sorting' }} />
+        </ConfigProvider>
     </>
   );
 };

@@ -168,7 +168,10 @@ const [saveUserLocal,setSaveUserLocal] = useState(false);
               />
 </ConfigProvider>
               </label>
+              <div>
+
               {error.UserError && <span style={{ color: 'red', fontWeight: '700', fontSize: '0.8rem', marginLeft: '0.5rem' }}>{error.UserError}</span>}
+              </div>
             </div>
             <div >
               <label className='font-semibold text-[0.8rem] pb-1 w-full'>
@@ -193,10 +196,13 @@ const [saveUserLocal,setSaveUserLocal] = useState(false);
 
 </ConfigProvider>
               </label>
+              <div>
+                
+              {error.PasswordError && <span style={{ color: 'red', fontWeight: '700', fontSize: '0.8rem', marginLeft: '0.5rem' }}>{error.PasswordError}</span>}
+              </div>
 <Link to="/reset-password-email" className="flex items-center justify-end text-center font-semibold text-[0.8rem] py-1">
               <span className='text-red-600 pr-1'>Forgot password ?</span>  Click here to reset
             </Link>
-              {error.PasswordError && <span style={{ color: 'red', fontWeight: '700', fontSize: '0.8rem', marginLeft: '0.5rem' }}>{error.PasswordError}</span>}
            
             </div>
             <div className="flex gap-4 " >

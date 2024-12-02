@@ -28,7 +28,7 @@ const Camera = () => {
                     <div
                       key={item}
                       className=""
-                      style={{ width: '200px', height: '50px', borderRadius: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center', boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px', cursor: 'pointer', fontWeight: '700', fontSize: '1.2rem', background: item.system_status ? "green" : "#b30d0d", color: "#fff" }}
+                      style={{ width: '200px', height: '50px', borderRadius: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center', boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px', fontWeight: '700', fontSize: '1.2rem', background: item.system_status ? "green" : "#b30d0d", color: "#fff" }}
                     >
                       {item.system_status ? "Active" : "Inactive"}
                     </div>

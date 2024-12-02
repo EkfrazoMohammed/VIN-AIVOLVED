@@ -32,7 +32,6 @@ const SelectComponent = ({ placeholder, valueType, action, data, selectedData, s
             window.removeEventListener('scroll', handleScroll);
         };
     }, [dropdownVisible]);
-    console.log(data,"data") 
        return (
         <ConfigProvider
         theme={{
