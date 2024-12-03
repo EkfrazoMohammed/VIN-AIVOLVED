@@ -6,9 +6,11 @@ import { API, AuthToken, baseURL, localPlantData } from '../../API/API';
 
 import {  EditOutlined} from '@ant-design/icons';
 import Alerts from './Settings';
+import useApiInterceptor from '../../hooks/Interceptor';
 
 
 const Alert = () => {
+  const apicallInterceptor = useApiInterceptor();
   const localItems = localStorage.getItem("PlantData")
   const localPlantData = JSON.parse(localItems) 
 
@@ -32,22 +34,31 @@ const columns = [
 
   ];
 useEffect(()=>{
-    const url = `${baseURL}product/?plant_name=${localPlantData.plant_name}`
-    axios.get(url,{
-      headers:{
-        Authorization:`Bearer ${AuthToken}`
-      }
-    })
-    .then(res =>
-        setTableData(res.data.results)
-    )
-    .catch(err=> console.log(err))
+
+  const url = `product/?plant_name=${localPlantData.plant_name}`;
+   const getProdData = async ()=>{
+    try {
+      const response = await useApiInterceptor.get(url)
+    } catch (error) {
+      console.log(error)
+    }
+   }
+
+    getProdData();
+    // axios.get(url,{
+    //   headers:{
+    //     Authorization:`Bearer ${AuthToken}`
+    //   }
+    // })
+    // .then(res =>
+    //     setTableData(res.data.results)
+    // )
+    // .catch(err=> console.log(err))
     
     },[]);
 
 
 
-console.log(tableData,"<<<")
 
   const [api, contextHolder] = notification.useNotification();
 
@@ -75,17 +86,23 @@ if(data === '' || data === undefined || data === null){
     }
     
     const PostData = async()=>{
-        const url = `${baseURL}alerts`
-      const res = await axios.post(`${url}/`,payload)
-      try{
-        api.open({
-          message: `Alert created`,
-          placement:'top',
-               });
-      }
-      catch(err){
-        console.log(err)
-      }
+        const url = `alerts`
+        try {
+          const response = await apicallInterceptor.post(url, payload)
+        } catch (error) {
+          console.log(error)
+
+        }
+      // const res = await axios.post(`${url}/`,payload)
+      // try{
+      //   api.open({
+      //     message: `Alert created`,
+      //     placement:'top',
+      //          });
+      // }
+      // catch(err){
+      //   console.log(err)
+      // }
 
     }
     PostData()

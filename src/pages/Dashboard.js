@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import "../App.css"
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Link, useNavigate, useNavigation } from "react-router-dom";
-import axios from 'axios';
 import { Card, notification, Space, Col, Row, Typography, Select, DatePicker, Checkbox, Button, Dropdown, Menu } from "antd";
 import Paragraph from "antd/lib/typography/Paragraph";
 import { VideoCameraOutlined, BugOutlined, AlertOutlined, NotificationOutlined } from '@ant-design/icons';
@@ -17,9 +16,10 @@ import { API, baseURL, AuthToken, localPlantData } from "./../API/API"
 import ProductionVsReject from "../components/chart/ProductionVsReject"
 import dayjs from 'dayjs';
 import { Hourglass } from "react-loader-spinner";
+import useApiInterceptor from "../hooks/Interceptor";
 
 function Dashboard() {
-
+  const apiInterceptor = useApiInterceptor()
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - 7);
   const formattedStartDate = startDate.toISOString().slice(0, 10);
@@ -81,12 +81,11 @@ function Dashboard() {
     setSelectedDate(null)
   }
 
-  const handleApplyFilters = () => {
+  const handleApplyFilters = async () => {
     setLoaderData(true)
-    const domain = `${baseURL}`;
     const [fromDate, toDate] = dateRange;
 
-    let url = `${domain}dashboard/?`;
+    let url = `dashboard/?`;
     // url += `plant_id=${localPlantData.id}&from_date=${fromDate}&to_date=${toDate}&machine_id=${selectedMachine}&department_id=${selectedDepartment}&product_id=${selectedProduct}&defect_id=${selectedDefect}`;
     if (localPlantData.id) {
       url += `plant_id=${localPlantData.id}&`;
@@ -122,38 +121,56 @@ function Dashboard() {
     // if (fromDate && toDate) {
     //   url += `&from_date=${fromDate}&to_date=${toDate}`;
     // }
-    axios.get(url, {
-      headers: {
-        Authorization: `Bearer ${AuthToken}`
-      }
-    })
-      .then(response => {
-        setLoaderData(false)
-        const { active_products, ...filterData } = response.data
-        setTableData(filterData);
-        setActiveProd(active_products)
-        setFilterActive(true)
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        setLoaderData(false)
-      });
+
+    try {
+      const response = await apiInterceptor.get(url)
+      const { active_products, ...filterData } = response.data
+      setTableData(filterData);
+      setActiveProd(active_products)
+      setLoaderData(false)
+      setFilterActive(true)
+    } catch (error) {
+      console.error('Error:', error);
+      setLoaderData(false)
+    }
+
+    // axios.get(url, {
+    //   headers: {
+    //     Authorization: `Bearer ${AuthToken}`
+    //   }
+    // })
+    //   .then(response => {
+    //     setLoaderData(false)
+    //     const { active_products, ...filterData } = response.data
+    //     setTableData(filterData);
+    //     setActiveProd(active_products)
+    //     setFilterActive(true)
+    //   })
+    //   .catch(error => {
+    //     console.error('Error:', error);
+    //     setLoaderData(false)
+    //   });
   };
 
-  const getSystemStatus = () => {
-    const domain = `${baseURL}`;
-    let url = `${domain}system-status/?plant_id=${localPlantData.id}`;
-    axios.get(url, {
-      headers: {
-        'Authorization': `Bearer ${AuthToken}`
-      }
-    })
-      .then(response => {
-        setActiveMachines(response.data.results.filter(machine => machine.system_status === true));
-      })
-      .catch(error => {
-        console.error('Error fetching machine data:', error);
-      });
+  const getSystemStatus = async () => {
+    let url = `system-status/?plant_id=${localPlantData.id}`;
+    try {
+      const response = await apiInterceptor.get(url)
+      setActiveMachines(response.data.results.filter(machine => machine.system_status === true));
+    } catch (error) {
+      console.error('Error fetching System Status:', error);
+    }
+    // axios.get(url, {
+    //   headers: {
+    //     'Authorization': `Bearer ${AuthToken}`
+    //   }
+    // })
+    //   .then(response => {
+    //     setActiveMachines(response.data.results.filter(machine => machine.system_status === true));
+    //   })
+    //   .catch(error => {
+    //     console.error('Error fetching machine data:', error);
+    //   });
   };
 
 
@@ -167,45 +184,65 @@ function Dashboard() {
     getSystemStatus()
   }, []);
 
-  const getMachines = () => {
-    const domain = `${baseURL}`;
-    let url = `${domain}machine/?plant_name=${localPlantData.plant_name}`;
-    axios.get(url, {
-      headers: {
-        'Authorization': `Bearer ${AuthToken}`
-      }
-    })
-      .then(response => {
-        console.log(response)
-        const formattedMachines = response.data.results.map(machine => ({
-          id: machine.id,
-          name: machine.name,
-        }));
-        setMachineOptions(formattedMachines);
-      })
-      .catch(error => {
-        console.error('Error fetching machine data:', error);
-      });
+  const getMachines = async() => {
+    let url = `machine/?plant_name=${localPlantData.plant_name}`;
+
+    try {
+      const response = await apiInterceptor.get(url);
+      const formattedMachines = response.data.results.map(machine => ({
+        id: machine.id,
+        name: machine.name,
+      }));
+      setMachineOptions(formattedMachines);
+    } catch (error) {
+      console.error('Error fetching machine data:', error);
+    }
+    // axios.get(url, {
+    //   headers: {
+    //     'Authorization': `Bearer ${AuthToken}`
+    //   }
+    // })
+    //   .then(response => {
+    //     console.log(response)
+    //     const formattedMachines = response.data.results.map(machine => ({
+    //       id: machine.id,
+    //       name: machine.name,
+    //     }));
+    //     setMachineOptions(formattedMachines);
+    //   })
+    //   .catch(error => {
+    //      console.error('Error fetching department data:', error);
+    //   });
   };
 
-  const getDepartments = () => {
-    const domain = `${baseURL}`;
-    let url = `${domain}department/?plant_name=${localPlantData.plant_name}`;
-    axios.get(url, {
-      headers: {
-        Authorization: ` Bearer ${AuthToken}`
-      }
-    })
-      .then(response => {
-        const formattedDepartment = response.data.results.map(department => ({
-          id: department.id,
-          name: department.name,
-        }));
-        setDepartmentOptions(formattedDepartment);
-      })
-      .catch(error => {
-        console.error('Error fetching department data:', error);
-      });
+  const getDepartments =async () => {
+    let url = `department/?plant_name=${localPlantData.plant_name}`;
+
+    try {
+      const response = await apiInterceptor.get(url);
+      const formattedDepartment = response.data.results.map(department => ({
+        id: department.id,
+        name: department.name,
+      }));
+      setDepartmentOptions(formattedDepartment);
+    } catch (error) {
+      console.error('Error fetching department data:', error);
+    }
+    // axios.get(url, {
+    //   headers: {
+    //     Authorization: ` Bearer ${AuthToken}`
+    //   }
+    // })
+    //   .then(response => {
+    //     const formattedDepartment = response.data.results.map(department => ({
+    //       id: department.id,
+    //       name: department.name,
+    //     }));
+    //     setDepartmentOptions(formattedDepartment);
+    //   })
+    //   .catch(error => {
+    //     console.error('Error fetching department data:', error);
+    //   });
   };
   const initialDateRange = () => {
     const startDate = new Date();
@@ -221,70 +258,94 @@ function Dashboard() {
 
   const [filterActive, setFilterActive] = useState(false)
 
-  const initialTableData = () => {
+
+  const initialTableData =async () => {
 
     setLoaderData(true)
 
-    const domain = baseURL;
     const [fromDate, toDate] = [startDate, endDate].map(date => date.toISOString().slice(0, 10)); // Format dates as YYYY-MM-DD
-    const url = `${domain}dashboard/?plant_id=${localPlantData.id}`;
+    const url = `dashboard/?plant_id=${localPlantData.id}`;
     // const url = `${domain}dashboard/`;
-
-    axios.get(url, {
-      headers: {
-        Authorization: ` Bearer ${AuthToken}`
-      }
-    })
-      .then(response => {
-        setLoaderData(false)
-        const { active_products, ...datesData } = response.data;
-        setTableData(datesData);
-        setActiveProd(active_products);
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        setLoaderData(false)
-      });
+try {
+  const response = await apiInterceptor.get(url);
+  setLoaderData(false)
+  const { active_products, ...datesData } = response.data;
+  setTableData(datesData);
+  setActiveProd(active_products);
+} catch (error) {
+  console.error('Error:', error);
+  setLoaderData(false)
+}
+    // axios.get(url, {
+    //   headers: {
+    //     Authorization: ` Bearer ${AuthToken}`
+    //   }
+    // })
+    //   .then(response => {
+    //     setLoaderData(false)
+    //     const { active_products, ...datesData } = response.data;
+    //     setTableData(datesData);
+    //     setActiveProd(active_products);
+    //   })
+    //   .catch(error => {
+    //     console.error('Error:', error);
+    //     setLoaderData(false)
+    //   });
   };
 
 
 
   // console.log(Object.keys(tableData).filter(res=>res !== "active_products"),"<<<tabledata")
 
-  const initialProductionData = () => {
-    const domain = baseURL;
+  const initialProductionData = async() => {
+    
     // const [fromDate, toDate] = [startDate, endDate].map(date => date.toISOString().slice(0, 10)); // Format dates as YYYY-MM-DD
-    const url = `${domain}defct-vs-machine/?plant_id=${localPlantData.id}`;
+    const url = `defct-vs-machine/?plant_id=${localPlantData.id}`;
     // const url = `${domain}dashboard/`;
-    axios.get(url, {
-      headers: {
-        Authorization: ` Bearer ${AuthToken}`
-      }
-    })
-      .then(response => {
-        setProductionData(response.data.data_last_7_days);
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
+    try {
+      const response = await apiInterceptor.get(url);
+      setProductionData(response.data.data_last_7_days);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+
+    // axios.get(url, {
+    //   headers: {
+    //     Authorization: ` Bearer ${AuthToken}`
+    //   }
+    // })
+    //   .then(response => {
+    //     setProductionData(response.data.data_last_7_days);
+    //   })
+    //   .catch(error => {
+    //     console.error('Error:', error);
+    //   });
   };
   const [alertData, setAlertData] = useState(null);
 
-  const prodApi = () => {
-    const domain = `${baseURL}`;
-    const url = `${domain}product/?plant_name=${localPlantData.plant_name}`;
-    axios.get(url, {
-      headers: {
-        Authorization: `Bearer ${AuthToken}`
-      }
-    }).then((res) => {
-      console.log(res.data, "prod")
-      setAlertData(res.data.results)
-      setProductOptions(res.data.results)
-    })
-      .catch((err) => {
-        console.log(err)
-      })
+  const prodApi = async  () => {
+    const url = `product/?plant_name=${localPlantData.plant_name}`;
+   
+    try {
+      const response = await apiInterceptor.get(url);
+      setAlertData(response.data.results)
+      setProductOptions(response.data.results)
+    } catch (error) {
+      console.log(error)
+    }
+
+    // axios.get(url, {
+    //   headers: {
+    //     Authorization: `Bearer ${AuthToken}`
+    //   }
+    // }).then((res) => {
+    //   console.log(res.data, "prod")
+    //   setAlertData(res.data.results)
+    //   setProductOptions(res.data.results)
+    // })
+    //   .catch((err) => {
+    //     console.log(err)
+    //   })
   }
 
   const { Title } = Typography;
@@ -340,24 +401,31 @@ function Dashboard() {
 
   const [selectedCheckboxMachine, setSelectedCheckboxMachine] = useState([]);
 
-  const handleMachineCheckBoxChange = (checkedValues) => {
+  const handleMachineCheckBoxChange = async(checkedValues) => {
     setSelectedCheckboxMachine(checkedValues);
-    let url = `${baseURL}/reports?machine=`;
+    let url = `reports?machine=`;
     checkedValues.forEach((machineId, index) => {
       if (index !== 0) {
         url += ',';
       }
       url += `machine${machineId}`;
     });
+    
+    try {
+      const response = await apiInterceptor.get(url);
+      setTableData(response.data);
+    } catch (error) {
+      console.error('Error fetching department data:', error);
 
-    axios.get(url)
-      .then(response => {
-        console.log(response)
-        // setTableData(response.data);
-      })
-      .catch(error => {
-        console.error('Error fetching department data:', error);
-      });
+    }
+    // axios.get(url)
+    //   .then(response => {
+    //     console.log(response)
+    //     setTableData(response.data);
+    //   })
+    //   .catch(error => {
+    //     console.error('Error fetching department data:', error);
+    //   });
   };
 
   const menu = (

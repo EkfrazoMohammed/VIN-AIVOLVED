@@ -1,33 +1,50 @@
 import React, { useState, useEffect } from "react";
 import ReactApexChart from "react-apexcharts";
 import { Typography } from "antd";
-import axios from "axios";
 import { createGlobalStyle } from "styled-components";
 import {API, AuthToken, baseURL} from "../../API/API"
+import useApiInterceptor from "../../hooks/Interceptor";
 function LineChart({ data }) {
+
+  const apiCallInterceptor = useApiInterceptor();
   const { Title } = Typography;
   const [defectColors, setDefectColors] = useState({});
   console.log(data,"<<<line")
 
   useEffect(() => {
     // Fetch defect colors from the API
-    axios.get(`${baseURL}defect/`,{
-      headers:{
-        Authorization:`Bearer ${AuthToken}`
-      }
-    })
-      .then(response => {
-        // Organize the response data as an object with defect names as keys and color codes as values
-        const colors = {};
-        response.data.results.forEach(defect => {
-          colors[defect.name] = defect.color_code;
-        });
-        // Set the defect colors state
-        setDefectColors(colors);
-      })
-      .catch(error => {
-        console.error('Error fetching defect colors:', error);
-      });
+    const getDefectsData = async () =>{
+try {
+  const response = await apiCallInterceptor.get(`defect`);
+  const colors = {};
+  response.data.results.forEach(defect => {
+    colors[defect.name] = defect.color_code;
+  });
+  // Set the defect colors state
+  setDefectColors(colors);
+} catch (error) {
+  console.error('Error fetching defect colors:', error);
+}
+    }
+    getDefectsData()
+
+    // axios.get(`${baseURL}defect/`,{
+    //   headers:{
+    //     Authorization:`Bearer ${AuthToken}`
+    //   }
+    // })
+    //   .then(response => {
+    //     // Organize the response data as an object with defect names as keys and color codes as values
+    //     const colors = {};
+    //     response.data.results.forEach(defect => {
+    //       colors[defect.name] = defect.color_code;
+    //     });
+    //     // Set the defect colors state
+    //     setDefectColors(colors);
+    //   })
+    //   .catch(error => {
+    //     console.error('Error fetching defect colors:', error);
+    //   });
   }, []);
 
   if (!data || Object.keys(data).length === 0) {

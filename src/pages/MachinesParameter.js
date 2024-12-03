@@ -11,20 +11,29 @@ import {
   DownloadOutlined,
 } from '@ant-design/icons';
 import { baseURL } from '../API/API';
+import useApiInterceptor from '../hooks/Interceptor';
 const { RangePicker } = DatePicker;
 
 const MachinesParameter = () => {
-
+ const apiCallInterceptor = useApiInterceptor();
   
 const [data,setData]=useState([])
+
   const getData=async ()=>{
-    await axios.get(`${baseURL}machine_temprature/`)
-    .then((res)=>{
-      console.log(res.data)
-      setData(res.data)
-    }).catch((err)=>{
-      console.log(err)
-    })
+    try {
+      let url = `machine_temprature/`
+      const response = await apiCallInterceptor.get(url);
+      setData(response.data)
+    } catch (error) {
+      console.log(error)
+    }
+    // await axios.get(`${baseURL}machine_temprature/`)
+    // .then((res)=>{
+    //   console.log(res.data)
+    //   setData(res.data)
+    // }).catch((err)=>{
+    //   console.log(err)
+    // })
   }
   useEffect(() => {
     getData();  

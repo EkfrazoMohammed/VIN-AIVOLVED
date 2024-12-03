@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import ReactApexChart from "react-apexcharts";
 import { Typography } from "antd";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { AuthToken, baseURL } from "../../API/API";
+import useApiInterceptor from "../../hooks/Interceptor";
 
 function PieChart({data,selectedDate} ) {
-
+ const apiCallInterceptor= useApiInterceptor();
   const navigate = useNavigate()
   const { Title } = Typography;
   const [defectColors, setDefectColors] = useState({});
@@ -15,22 +15,40 @@ function PieChart({data,selectedDate} ) {
 
   useEffect(() => {
     // Fetch defect colors from the API
-    axios.get(`${baseURL}defect/`, {
-      headers: {
-        Authorization: `Bearer ${AuthToken}`
-      }
-    })
-      .then(response => {
+
+    const getDefectsData = async () =>{
+      try {
+        const response = await apiCallInterceptor.get(`defect`);
         setDefectData(response.data.results)
         const colors = {};
         response.data.results.forEach(defect => {
           colors[defect.name] = defect.color_code;
         });
         setDefectColors(colors);
-      })
-      .catch(error => {
+      } catch (error) {
         console.error('Error fetching defect colors:', error);
-      });
+      }
+          }
+          getDefectsData()
+
+
+    
+    // axios.get(`${baseURL}defect/`, {
+    //   headers: {
+    //     Authorization: `Bearer ${AuthToken}`
+    //   }
+    // })
+    //   .then(response => {
+    //     setDefectData(response.data.results)
+    //     const colors = {};
+    //     response.data.results.forEach(defect => {
+    //       colors[defect.name] = defect.color_code;
+    //     });
+    //     setDefectColors(colors);
+    //   })
+    //   .catch(error => {
+    //     console.error('Error fetching defect colors:', error);
+    //   });
   }, []);
 
   useEffect(() => {

@@ -2,10 +2,11 @@ import React, { useState } from 'react'
 import { Card, Col, Row ,Input,Checkbox} from 'antd';
 import axios from "axios";
 import { baseURL } from '../../API/API';
-import { Button, notification } from 'antd';
+import {  notification } from 'antd';
 import { useNavigate } from 'react-router-dom';
 const Login = () => {
   const navigate = useNavigate()
+
 const [api, contextHolder] = notification.useNotification();
 
 const [loginPayload ,setloginPayload] = useState( {
@@ -83,7 +84,6 @@ if(name === "password" ){
 
 setloginPayload((prev)=>({...prev,[name]:value}))
 }
-console.log(loginPayload)
   return (
     <>
        {contextHolder}

@@ -5,9 +5,13 @@ import axios from "axios";
 import { AuthToken, baseURL } from '../../API/API';
 
 import {  EditOutlined} from '@ant-design/icons';
+import useApiInterceptor from '../../hooks/Interceptor';
 
 
 const Machine = () => {
+
+  const apicallInterceptor = useApiInterceptor();
+
   const localItems = localStorage.getItem("PlantData")
   const localPlantData = JSON.parse(localItems) 
     const [tableData,setTableData]= useState()
@@ -31,17 +35,26 @@ const columns = [
 
   useEffect(()=>{
     // const url = `${baseURL}machine`
-    const url = `${baseURL}machine/?plant_name=${localPlantData.plant_name}`
+    const url = `${baseURL}machine/?plant_name=${localPlantData.plant_name}`;
 
-    axios.get(url,{
-      headers:{
-        Authorization:`Bearer ${AuthToken}`
+    const getMachineData = async()=>{
+      try {
+        const response =  await apicallInterceptor.get(url)
+        setTableData(response.data.results)
+      } catch (error) {
+        console.log(error)
       }
-    })
-    .then(res =>
-        setTableData(res.data.results)
-    )
-    .catch(err=> console.log(err))
+    }
+ getMachineData()
+    // axios.get(url,{
+    //   headers:{
+    //     Authorization:`Bearer ${AuthToken}`
+    //   }
+    // })
+    // .then(res =>
+    //     setTableData(res.data.results)
+    // )
+    // .catch(err=> console.log(err))
     
     },[]);
 
@@ -75,7 +88,7 @@ if(data === '' || data === undefined || data === null){
     
     const PostData = async()=>{
         const url = `${baseURL}machine`
-      const res = await axios.post(`${url}/`,payload)
+      const res = await apicallInterceptor.post(`${url}/`,payload)
       try{
         api.open({
           message:  `Machine Created`,

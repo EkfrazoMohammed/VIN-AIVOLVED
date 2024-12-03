@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
 import {Button, Select ,Space, Card, Col, Row ,Typography} from 'antd';
 import "../index.css"
 import {RightOutlined ,LeftOutlined} from '@ant-design/icons';
 import { AuthToken,baseURL } from "../API/API";
 import { Puff} from "react-loader-spinner"
+import useApiInterceptor from "../hooks/Interceptor";
 const { Title } = Typography;
 
 
 const Camera = () => {
+  const apiCallInterceptor = useApiInterceptor()
   const localItems = localStorage.getItem("PlantData")
   const localPlantData = JSON.parse(localItems) 
 
@@ -24,21 +25,27 @@ const Camera = () => {
     // });
 
 
-    const getSystemStatus = () => {
-      const domain = `${baseURL}`;
-      let url = `${domain}system-status/?plant_id=${localPlantData.id}`;
-      axios.get(url,{
-        headers:{
-          'Authorization': `Bearer ${AuthToken}`
-        }
-      })
-        .then(response => {
-          console.log(response.data.results)
-          setCamera(response.data.results);
-        })
-        .catch(error => {
-          console.error('Error fetching machine data:', error);
-        });
+    const getSystemStatus = async() => {
+      let url = `system-status/?plant_id=${localPlantData.id}`;
+      try {
+        const response = await apiCallInterceptor.get(url)
+        setCamera(response.data.results);
+      } catch (error) {
+        console.error('Error fetching machine data:', error);
+
+      }
+    //   axios.get(url,{
+    //     headers:{
+    //       'Authorization': `Bearer ${AuthToken}`
+    //     }
+    //   })
+    //     .then(response => {
+    //       console.log(response.data.results)
+    //       setCamera(response.data.results);
+    //     })
+    //     .catch(error => {
+    //       console.error('Error fetching machine data:', error);
+    //     });
     };
 
     useEffect(()=>{

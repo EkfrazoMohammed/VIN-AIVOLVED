@@ -16,12 +16,15 @@ import {
 } from '@ant-design/icons';
 import { Hourglass } from 'react-loader-spinner'
 import dayjs from 'dayjs';
+import useApiInterceptor from '../hooks/Interceptor';
 
 const { RangePicker } = DatePicker;
 
 
 
 const Reports = () => {
+
+  const apiCallInterceptor = useApiInterceptor();
   const dateFormat = 'YYYY/MM/DD';
 
   const location = useLocation();
@@ -155,9 +158,8 @@ const Reports = () => {
 
   let url;
 
-  const handleApplyFilters = (page, pageSize) => {
+  const handleApplyFilters = async(page, pageSize) => {
 
-    const domain = `${baseURL}`;
 
     let fromDate, toDate;
 
@@ -165,7 +167,7 @@ const Reports = () => {
     if (Array.isArray(dateRange) && dateRange.length === 2) {
       [fromDate, toDate] = dateRange;
     }
-    url = `${domain}reports/?page=1&page_size=${pageSize}&`;
+    url = `reports/?page=${page}&page_size=${pageSize}&`;
     // url += `machine=${selectedMachine}&department=${selectedDepartment}`;
     // url += `?plant_id=${localPlantData.id}&from_date=${fromDate}&to_date=${toDate}&machine_id=${selectedMachine}&department_id=${selectedDepartment}&product_id=${selectedProduct}&defect_id=${selectedDefect}`;
     // if (fromDate && toDate) {
@@ -203,27 +205,43 @@ const Reports = () => {
       url = url.slice(0, -1);
     }
     setLoader(true)
-    axios.get(url, {
-      headers: {
-        Authorization: `Bearer ${AuthToken}`
-      }
-    })
-      .then(response => {
-        const { results, total_count, page_size } = response.data
-        setLoader(false)
-        setTableData(results);
-        setfilterActive(true);
+    try {
+      const response = await apiCallInterceptor.get(url)
+      const { results, total_count, page_size } = response.data
+      setLoader(false)
+      setTableData(results);
+      setfilterActive(true);
 
-        setPagination({
-          ...pagination,
-          current: page,
-          pageSize: page_size,
-          total: total_count,
-        });
-      })
-      .catch(error => {
-        console.error('Error:', error);
+      setPagination({
+        ...pagination,
+        current: page,
+        pageSize: page_size,
+        total: total_count,
       });
+    } catch (error) {
+      console.error('Error:', error);
+    }
+    // axios.get(url, {
+    //   headers: {
+    //     Authorization: `Bearer ${AuthToken}`
+    //   }
+    // })
+    //   .then(response => {
+    //     const { results, total_count, page_size } = response.data
+    //     setLoader(false)
+    //     setTableData(results);
+    //     setfilterActive(true);
+
+    //     setPagination({
+    //       ...pagination,
+    //       current: page,
+    //       pageSize: page_size,
+    //       total: total_count,
+    //     });
+    //   })
+    //   .catch(error => {
+    //     console.error('Error:', error);
+    //   });
   };
   const { RangePicker } = DatePicker;
 
@@ -233,67 +251,99 @@ const Reports = () => {
 
 
 
+  const getMachines = async() => {
+    let url = `machine/?plant_name=${localPlantData.plant_name}`;
 
-  const getMachines = () => {
-    const domain = `${baseURL}`;
-    let url = `${domain}machine/?plant_name=${localPlantData.plant_name}`;
-    axios.get(url, {
-      headers: {
-        Authorization: `Bearer ${AuthToken}`
-      }
-    })
-      .then(response => {
-        const formattedMachines = response.data.results.map(machine => ({
-          id: machine.id,
-          name: machine.name,
-        }));
-        setMachineOptions(formattedMachines);
-      })
-      .catch(error => {
-        console.error('Error fetching machine data:', error);
-      });
-  }
+    try {
+      const response = await apiCallInterceptor.get(url);
+      const formattedMachines = response.data.results.map(machine => ({
+        id: machine.id,
+        name: machine.name,
+      }));
+      setMachineOptions(formattedMachines);
+    } catch (error) {
+      console.error('Error fetching machine data:', error);
+    }
+    // axios.get(url, {
+    //   headers: {
+    //     'Authorization': `Bearer ${AuthToken}`
+    //   }
+    // })
+    //   .then(response => {
+    //     console.log(response)
+    //     const formattedMachines = response.data.results.map(machine => ({
+    //       id: machine.id,
+    //       name: machine.name,
+    //     }));
+    //     setMachineOptions(formattedMachines);
+    //   })
+    //   .catch(error => {
+    //      console.error('Error fetching department data:', error);
+    //   });
+  };
 
-  const getDefects = () => {
-    let url = `${baseURL}defect/?plant_name=${localPlantData.plant_name}`;
-    axios.get(url, {
-      headers: {
-        Authorization: `Bearer ${AuthToken}`
-      }
-    })
-      .then(response => {
-        const formattedMachines = response.data.results.map(machine => ({
-          id: machine.id,
-          name: machine.name,
-        }));
-        setDefectsOptions(formattedMachines);
-      })
-      .catch(error => {
-        console.error('Error fetching machine data:', error);
-      });
+
+  const getDefects = async() => {
+    let url = `defect/?plant_name=${localPlantData.plant_name}`;
+
+    try {
+      const response = await apiCallInterceptor.get(url);
+      const formattedMachines = response.data.results.map(machine => ({
+        id: machine.id,
+        name: machine.name,
+      }));
+      setDefectsOptions(formattedMachines);
+    } catch (error) {
+      console.error('Error fetching machine data:', error);
+
+    }
+    // axios.get(url, {
+    //   headers: {
+    //     Authorization: `Bearer ${AuthToken}`
+    //   }
+    // })
+    //   .then(response => {
+    //     const formattedMachines = response.data.results.map(machine => ({
+    //       id: machine.id,
+    //       name: machine.name,
+    //     }));
+    //     setDefectsOptions(formattedMachines);
+    //   })
+    //   .catch(error => {
+    //     console.error('Error fetching machine data:', error);
+    //   });
   }
 
   const [departmentOptions, setDepartmentOptions] = useState([]);
-  const getDepartments = () => {
-    const domain = `${baseURL}`;
-    let url = `${domain}department/?plant_name=${localPlantData.plant_name}`;
-    axios.get(url, {
-      headers: {
-        Authorization: `Bearer ${AuthToken}`
-      }
-    })
-      .then(response => {
-        const formattedDepartment = response.data.results.map(department => ({
-          id: department.id,
-          name: department.name,
-        }));
-        setDepartmentOptions(formattedDepartment);
-      })
-      .catch(error => {
-        console.error('Error fetching machine data:', error);
-      });
-  }
+  const getDepartments =async () => {
+    let url = `department/?plant_name=${localPlantData.plant_name}`;
 
+    try {
+      const response = await apiCallInterceptor.get(url);
+      const formattedDepartment = response.data.results.map(department => ({
+        id: department.id,
+        name: department.name,
+      }));
+      setDepartmentOptions(formattedDepartment);
+    } catch (error) {
+      console.error('Error fetching department data:', error);
+    }
+    // axios.get(url, {
+    //   headers: {
+    //     Authorization: ` Bearer ${AuthToken}`
+    //   }
+    // })
+    //   .then(response => {
+    //     const formattedDepartment = response.data.results.map(department => ({
+    //       id: department.id,
+    //       name: department.name,
+    //     }));
+    //     setDepartmentOptions(formattedDepartment);
+    //   })
+    //   .catch(error => {
+    //     console.error('Error fetching department data:', error);
+    //   });
+  };
   // const initialDateRange = () => {
   //   const startDate = new Date();
   //   startDate.setDate(startDate.getDate() - 7); // 7 days ago
@@ -305,46 +355,68 @@ const Reports = () => {
   //   setDateRange([formattedStartDate, formattedEndDate]);
   // };
 
-  const initialTableData = (page, pageSize) => {
-    // const domain = `http://143.110.184.45:8100/`;
+  const initialTableData = async(page, pageSize) => {
     setLoader(true)
-    console.log(pageSize)
-    const url = `${baseURL}reports/?page=${page}&plant_id=${localPlantData.id}&page_size=${pageSize}`;
-    axios.get(url, {
-      headers: {
-        Authorization: `Bearer ${AuthToken}`
-      }
-    })
-      .then(response => {
+    const url = `reports/?page=${page}&plant_id=${localPlantData.id}&page_size=${pageSize}`;
+    try {
+      const response = await apiCallInterceptor.get(url);
+      const { results, total_count, page_size } = response.data
 
-        const { results, total_count, page_size } = response.data
-
-        setTableData(results);
-        setLoader(false)
-        setPagination({
-          ...pagination,
-          current: 1,
-          pageSize: page_size,
-          total: total_count,
-        });
-      })
-      .catch(error => {
-        console.error('Error:', error);
+      setTableData(results);
+      setLoader(false)
+      setPagination({
+        ...pagination,
+        current: 1,
+        pageSize: page_size,
+        total: total_count,
       });
+    } catch (error) {
+      console.error('Error:', error);
+    }
+
+    // axios.get(url, {
+    //   headers: {
+    //     Authorization: `Bearer ${AuthToken}`
+    //   }
+    // })
+    //   .then(response => {
+
+    //     const { results, total_count, page_size } = response.data
+
+    //     setTableData(results);
+    //     setLoader(false)
+    //     setPagination({
+    //       ...pagination,
+    //       current: 1,
+    //       pageSize: page_size,
+    //       total: total_count,
+    //     });
+    //   })
+    //   .catch(error => {
+    //     console.error('Error:', error);
+    //   });
   };
-  const prodApi = () => {
-    const domain = `${baseURL}`;
-    const url = `${domain}product/?plant_name=${localPlantData.plant_name}`;
-    axios.get(url, {
-      headers: {
-        Authorization: `Bearer ${AuthToken}`
-      }
-    }).then((res) => {
-      setProductOptions(res.data.results)
-    })
-      .catch((err) => {
-        console.log(err)
-      })
+
+  const prodApi = async() => {
+    const url = `product/?plant_name=${localPlantData.plant_name}`;
+
+    try {
+      const response = await apiCallInterceptor.get(url);
+      setProductOptions(response.data.results)
+    } catch (error) {
+      console.log(error)
+    }
+
+    // axios.get(url, {
+    //   headers: {
+    //     Authorization: `Bearer ${AuthToken}`
+    //   }
+    // }).then((res) => {
+    //   setProductOptions(res.data.results)
+    // })
+    //   .catch((err) => {
+    //     console.log(err)
+    //   })
   }
 
   useEffect(() => {
@@ -518,7 +590,6 @@ const Reports = () => {
             value={selectedProduct}
             size="large"
             filterOption={(input, productOptions) =>
-              // ( productOptions.children ?? "".toLowerCase() ).includes(input.toLowerCase() )
               (productOptions.children ?? "").toLowerCase().includes(input.toLowerCase())
 
             }

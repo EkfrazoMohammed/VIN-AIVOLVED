@@ -2,15 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { Pagination } from 'antd';
 import axios from 'axios';
 import { baseURL } from '../API/API';
+import useApiInterceptor from '../hooks/Interceptor';
 
 const MachinesParameterWithPagination = () => {
+  const apiCallInterceptor = useApiInterceptor();
   const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(4); // Number of cards per page
 
   const getData = async () => {
     try {
-      const response = await axios.get(`${baseURL}machine_temprature/`);
+      const response = await apiCallInterceptor.get(`machine_temprature/`);
       setData(response.data);
     } catch (error) {
       console.log(error);

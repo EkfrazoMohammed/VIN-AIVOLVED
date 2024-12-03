@@ -6,9 +6,11 @@ import {  Modal } from 'antd';
 import {  EditOutlined} from '@ant-design/icons';
 import { baseURL } from '../../API/API';
 import { ColorRing } from 'react-loader-spinner'
+import useApiInterceptor from '../../hooks/Interceptor';
 
 
 const Alerts = () => {
+  const apiCallInterceptor = useApiInterceptor();
   const [api, contextHolder] = notification.useNotification();
   const [loading,setLoading] = useState(false)
   const [modal2Open, setModal2Open] = useState(false);
@@ -72,7 +74,7 @@ if(data.email === ""){
 
     if(data.first_name !== "" && data.last_name !== "" && data.phone_number !== "" && data.email !== "" && error.fistName === "" && error.lastName === "" && error.email === "" && error.Phone ==="" ){
       setLoading(true)
-      const postRequest =  await axios.post(`${baseURL}user/`,payload)
+      const postRequest =  await apiCallInterceptor.post(`${baseURL}user/`,payload)
       if(postRequest){
         openNotification({status:"success",message:"User Created Successfully"});
         setLoading(false)

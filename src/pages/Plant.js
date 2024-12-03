@@ -2,14 +2,15 @@ import { Row, Col, Button, Card, Space, Modal } from "antd";
 import React, { useEffect, useState } from "react";
 import { Link ,useLocation, useNavigate} from "react-router-dom";
 import { AuthToken, baseURL } from "../API/API";
-import axios from "axios";
 import { Switch } from "antd";
 import Slider from "react-slick";
 import "../assets/styles/Plant.css"
 import { Hourglass } from 'react-loader-spinner'
+import useApiInterceptor from "../hooks/Interceptor";
 
 
 const Organisation = () => {
+  const apiCallInterceptor = useApiInterceptor()
   const [modal2Open, setModal2Open] = useState(false);
   const [ImageFile, setImageFile] = useState(null);
   const [organization, setOrganization] = useState();
@@ -70,36 +71,28 @@ useEffect(()=>{
 },[])
 
   useEffect(() => {
-    axios
-      .get(`${baseURL}plant/`,
 
-        {
+const getPlantData = async ()=>{
+  const url = `plant/`
+  try {
+    const res = await apiCallInterceptor.get(url);
+    if(res.data.results){
+      setLoader(false)
+  }
+  setOrganization(res.data.results);
+  } catch (error) {
+    console.log(error);
+  }
+}
 
-          headers: {
-     Authorization: `Bearer ${AuthToken}`,
-   } 
-   }
-      )
+getPlantData()
 
-      .then((res) => {
-
-        if(res.data.results){
-            setLoader(false)
-        }
-        setOrganization(res.data.results);
-        console.log(res.data)
-       
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
+}, []);
 
   const createOrganization = async () => {
     try {
-      const res = await axios.post(`${baseURL}organization/`, formData, {
-      
-      });
+
+      const res = await apiCallInterceptor.post(`organization/`, formData);
       if(res.status == 201){
         setModal2Open(false);
           window.location.reload()

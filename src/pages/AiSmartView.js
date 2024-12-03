@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
 import Slider from "react-slick";
 import LazyLoad from "react-lazyload";
 import "slick-carousel/slick/slick.css";
@@ -10,8 +9,12 @@ import { RightOutlined, LeftOutlined } from '@ant-design/icons';
 import { AuthToken, baseURL } from "../API/API";
 import { Hourglass } from 'react-loader-spinner';
 import "../assets/styles/ai-smart.css";
+import useApiInterceptor from "../hooks/Interceptor";
 
 const AiSmartView = () => {
+const apiCallInterceptor = useApiInterceptor();
+
+
   const localItems = localStorage.getItem("PlantData");
   const localPlantData = JSON.parse(localItems);
   const [defectImages, setDefectImages] = useState([]);
@@ -29,15 +32,17 @@ const AiSmartView = () => {
   const [nextFourIndexes, setNextFourIndexes] = useState([]);
 
   useEffect(() => {
-    axios.get(`${baseURL}defect/?plant_name=${localPlantData.plant_name}`, {
-      headers: { Authorization: `Bearer ${AuthToken}` }
-    })
-      .then(response => {
-        setDefects(response.data.results);
-      })
-      .catch(error => {
-        console.error("Error fetching defects:", error);
-      });
+const getAiamrtviewData = async()=>{
+  let url = `defect/?plant_name=${localPlantData.plant_name}`
+  try {
+    const response = apiCallInterceptor.get(url);
+    setDefects(response.data.results);
+  } catch (error) {
+    console.error("Error fetching defects:", error);
+  }
+}
+getAiamrtviewData()
+
   }, []);
 
   useEffect(() => {
@@ -56,35 +61,31 @@ const AiSmartView = () => {
     updateNextFourIndexes();
   }, [currentSlideIndex, defectImages]);
 
-  const aiViewAPi = () => {
+  const aiViewAPi = async() => {
     if (selectedDefect) {
       setLoader(true);
-      axios.get(
-        `${baseURL}ai-smart/?plant_id=${localPlantData.id}&page=${pagination.currentPage}&defect_id=${selectedDefect.id}`, {
-        headers: {
-          Authorization: `Bearer ${AuthToken}`
+      try {
+        const url = `ai-smart/?plant_id=${localPlantData.id}&page=${pagination.currentPage}&defect_id=${selectedDefect.id}`
+        const response = await apiCallInterceptor.get(url)
+        if (response.data.results.length > 0) {
+          setErrorMessage("");
+          setDefectImages(response.data.results);
+          setPagination(prev => ({
+            ...prev,
+            pageSize: response.data.page_size,
+            totalPages: Math.ceil(response.data.total_count / response.data.page_size)
+          }));
+        } else {
+          setDefectImages([]);
+          setErrorMessage("NO DATA");
         }
-      })
-        .then(response => {
-          if (response.data.results.length > 0) {
-            setErrorMessage("");
-            setDefectImages(response.data.results);
-            setPagination(prev => ({
-              ...prev,
-              pageSize: response.data.page_size,
-              totalPages: Math.ceil(response.data.total_count / response.data.page_size)
-            }));
-          } else {
-            setDefectImages([]);
-            setErrorMessage("NO DATA");
-          }
-          setLoader(false);
-        })
-        .catch(error => {
-          setLoader(false);
-          console.error("Error fetching defect images:", error);
-          setErrorMessage("No Images to display for this selected defect");
-        });
+        setLoader(false);
+      } catch (error) {
+        setLoader(false);
+        console.error("Error fetching defect images:", error);
+        setErrorMessage("No Images to display for this selected defect");
+      }
+
     } else {
       setDefectImages([]);
       setErrorMessage("");

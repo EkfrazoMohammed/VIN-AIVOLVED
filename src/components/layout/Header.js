@@ -38,7 +38,8 @@ import {
 import { NavLink, Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import avtar from "../../assets/images/team-2.jpg";
-import { baseURL,AuthToken } from "../../API/API";
+import { baseURL,accessToken } from "../../API/API";
+import useApiInterceptor from "../../hooks/Interceptor";
 const ButtonContainer = styled.div`
   .ant-btn-primary {
     background-color: #ec522d;
@@ -260,6 +261,8 @@ function Header({
   handleFixedNavbar,
 }) {
   const { Title, Text } = Typography;
+  const apiCallInterceptor = useApiInterceptor();
+ 
   const navigate = useNavigate()
 const localData =  localStorage.getItem("PlantData");
 const PlantName = JSON.parse(localData)
@@ -312,26 +315,20 @@ const PlantName = JSON.parse(localData)
   }
   const logout = async()=>{
     try {
-      await axios.post(`${baseURL}logout/`,{
+    await apiCallInterceptor.post(`logout/`,{
         refresh_token:refreshTokens
-      },{
-        headers:{
-          Authorization: `Bearer ${AuthToken}`
-        }
       })
-      
-      
     } catch (error) {
       console.log(error)
     }
   }
   const handleLogout  = async ()=>{
-     await setModal1Open(false)
-    await openNotification()
+      setModal1Open(false)
+     openNotification()
   
-      await navigate('/login');
-     await logout()
-     await localStorage.clear();
+       navigate('/login');
+      logout()
+      localStorage.clear();
 
   }
   return (

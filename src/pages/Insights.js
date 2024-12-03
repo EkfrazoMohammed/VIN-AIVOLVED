@@ -5,10 +5,12 @@ import axios from 'axios';
 import * as XLSX from 'xlsx';
 import {API, baseURL} from "./../API/API"
 import { Hourglass } from 'react-loader-spinner';
+import useApiInterceptor from '../hooks/Interceptor';
 const { RangePicker } = DatePicker;
 
 
 const Insights = () => {
+  const apiCallInterceptor = useApiInterceptor();
   const [loader,setLoader] = useState(false)
 
   const localItems = localStorage.getItem("PlantData")
@@ -75,58 +77,60 @@ const Insights = () => {
     }
   };
   
-  const handleApplyFilters = () => {
-    const domain = `${baseURL}`;
+  const handleApplyFilters = async() => {
     const [fromDate, toDate] = dateRange;
-    let url = `${domain}reports/?`;
+    let url = `reports/?`;
     url += `machine=${selectedMachine}&department=${selectedDepartment}`;
     if (fromDate && toDate) {
       url += `&from_date=${fromDate}&to_date=${toDate}`;
     }
-    axios.get(url)
-      .then(response => {
-        setTableData(response.data);
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
+    try {
+      const response = await apiCallInterceptor.get(url);
+      setTableData(response.data);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+    // axios.get(url)
+    //   .then(response => {
+    //     setTableData(response.data);
+    //   })
+    //   .catch(error => {
+    //     console.error('Error:', error);
+    //   });
   };
   const { RangePicker } = DatePicker;
 
   const [machineOptions, setMachineOptions] = useState([]);
-  const getMachines=()=>{
+  const getMachines=async()=>{
     const domain = `${baseURL}`;
-    let url = `${domain}machine/?`;
-    axios.get(url)
-      .then(response => {
-        const formattedMachines = response.data.map(machine => ({
-          id: machine.id,
-          name: machine.name,
-        }));
-        setMachineOptions(formattedMachines);
-      })
-      .catch(error => {
-        console.error('Error fetching machine data:', error);
-      });
+    let url = `machine/?`;
+    try {
+      const response = await apiCallInterceptor.get(url);
+      const formattedMachines = response.data.results.map(machine => ({
+        id: machine.id,
+        name: machine.name,
+      }));
+      setMachineOptions(formattedMachines);
+    } catch (error) {
+      console.error('Error fetching machine data:', error);
+    }
   }
   const [departmentOptions, setDepartmentOptions] = useState([]);
-  const getDepartments=()=>{
-    const domain = `${baseURL}`;
-    let url = `${domain}department/?`;
-    axios.get(url)
-      .then(response => {
-        const formattedDepartment = response.data.map(department => ({
-          id: department.id,
-          name: department.name,
-        }));
-        setDepartmentOptions(formattedDepartment);
-      })
-      .catch(error => {
-        console.error('Error fetching machine data:', error);
-      });
+  const getDepartments=async()=>{
+    let url = `department/?`;
+    try {
+      const response = await apiCallInterceptor.get(url);
+      const formattedDepartment = response.data.map(department => ({
+        id: department.id,
+        name: department.name,
+      }));
+      setDepartmentOptions(formattedDepartment);
+    } catch (error) {
+      console.error('Error fetching machine data:', error);
+    }
   }
   
-  const initialDateRange = () => {
+  const initialDateRange =async () => {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - 7); // 7 days ago
     const formattedStartDate = startDate.toISOString().slice(0, 10); // Format startDate as YYYY-MM-DD
@@ -136,19 +140,26 @@ const Insights = () => {
     
     setDateRange([formattedStartDate, formattedEndDate]);
   };
-  const initialTableData = () => {
+  const initialTableData = async() => {
     setLoader(true)
-    const domain = `http://localhost:8010/`;
-   const url = `${baseURL}defect-notifications/?plant_id=${localPlantData.id}`;
-    axios.get(url)
-      .then(response => {
-        setTableData(response.data.results);
-        setLoader(false)
-      })
-      .catch(error => {
-        console.error('Error:', error);
+    // const domain = `http://localhost:8010/`;
+   const url = `defect-notifications/?plant_id=${localPlantData.id}`;
+   try {
+    const response = await apiCallInterceptor.get(url)
+    setTableData(response.data.results);
+    setLoader(false)
+   } catch (error) {
+    console.error('Error:', error);
+   }
+    // axios.get(url)
+    //   .then(response => {
+    //     setTableData(response.data.results);
+    //     setLoader(false)
+    //   })
+    //   .catch(error => {
+    //     console.error('Error:', error);
 
-      });
+    //   });
   };
 
   useEffect(() => {

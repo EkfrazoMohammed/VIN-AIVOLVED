@@ -9,10 +9,28 @@ import axios from "axios";
 const baseURL = 'http://localhost:8000/api/';
 
 const token = localStorage.getItem("token");
-const AuthToken = JSON.parse(token)
+const accessToken = JSON.parse(token)
 const localItems = localStorage.getItem("PlantData")
 const localPlantData = JSON.parse(localItems)
+
 const API = axios.create({
     baseURL,
 })
-export { baseURL, API, AuthToken, localPlantData }
+
+API.interceptors.request.use(
+    (config) => {
+        // const accessToken = store.getState().auth.authData[0].accessToken; // Get the latest accessToken
+        // const accessToken = useSelector((state) => state.auth.authData[0].accessToken); from the Redux store
+        if (accessToken) {
+            config.headers.Authorization = `Bearer ${accessToken}`;
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(new Error(error));
+    }
+);
+
+export { baseURL, API, accessToken, localPlantData }
+
+export default API;

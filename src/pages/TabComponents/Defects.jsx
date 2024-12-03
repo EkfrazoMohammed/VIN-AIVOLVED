@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Modal, Select, Table, Form, Input, ColorPicker, notification, Row, Col } from 'antd';
-import axios from 'axios';
 import { EditOutlined, ReloadOutlined } from '@ant-design/icons';
 import { baseURL, AuthToken } from '../../API/API';
+import useApiInterceptor from '../../hooks/Interceptor';
 
 const Defects = () => {
+  const apicallInterceptor = useApiInterceptor();
   const localItems = localStorage.getItem('PlantData');
   const localPlantData = JSON.parse(localItems);
   const [modalOpen, setModalOpen] = useState(false);
@@ -57,13 +58,9 @@ const Defects = () => {
   
 
   const fetchData = async () => {
-    const url = `${baseURL}defect/?plant_name=${localPlantData.plant_name}`;
+    const url = `defect/?plant_name=${localPlantData.plant_name}`;
     try {
-      const res = await axios.get(url, {
-        headers: {
-          Authorization: `Bearer ${AuthToken}`,
-        },
-      });
+      const res = await apicallInterceptor.get(url);
       setTableData(res.data.results);
     } catch (err) {
       console.log(err);
@@ -99,11 +96,7 @@ const Defects = () => {
 
     try {
       const url = `${baseURL}defect/`;
-      await axios.post(url, payload, {
-        headers: {
-          Authorization: `Bearer ${AuthToken}`,
-        },
-      });
+      await apicallInterceptor.post(url, payload)
       notificationApi.open({
         message: 'Defect created',
         placement: 'top',
@@ -133,11 +126,7 @@ const Defects = () => {
 
     try {
       const url = `${baseURL}defect/${editData.id}/`;
-      await axios.put(url, payload, {
-        headers: {
-          Authorization: `Bearer ${AuthToken}`,
-        },
-      });
+      await apicallInterceptor.put(url, payload);
       notificationApi.open({
         message: 'Defect updated',
         placement: 'top',

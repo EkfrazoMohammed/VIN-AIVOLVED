@@ -4,32 +4,49 @@ import { Typography } from "antd";
 import axios from 'axios'
 import { AuthToken, baseURL } from "../../API/API";
 import { Hourglass } from 'react-loader-spinner'
+import useApiInterceptor from "../../hooks/Interceptor";
 
 function StackChart({ data }) {
+  const apiCallInterceptor = useApiInterceptor();
+
   const { Title } = Typography;
   const [defectColors, setDefectColors] = useState({});
 
 
   useEffect(() => {
     // Fetch defect colors from the API
-    axios.get(`${baseURL}defect/`, {
-      headers: {
-        Authorization: `Bearer ${AuthToken}`
-      }
-    })
-      .then(response => {
-        // Organize the response data as an object with defect names as keys and color codes as values
+    const getDefects = async()=>{
+      try {
+        const response = await apiCallInterceptor.get(`defect/`)
         const colors = {};
         response.data.results.forEach(defect => {
           colors[defect.name] = defect.color_code;
         });
-        // Set the defect colors state
         setDefectColors(colors);
-
-      })
-      .catch(error => {
+      } catch (error) {
         console.error('Error fetching defect colors:', error);
-      });
+
+      }
+    }
+    getDefects()
+    // axios.get(`${baseURL}defect/`, {
+    //   headers: {
+    //     Authorization: `Bearer ${AuthToken}`
+    //   }
+    // })
+    //   .then(response => {
+    //     // Organize the response data as an object with defect names as keys and color codes as values
+    //     const colors = {};
+    //     response.data.results.forEach(defect => {
+    //       colors[defect.name] = defect.color_code;
+    //     });
+    //     // Set the defect colors state
+    //     setDefectColors(colors);
+
+    //   })
+    //   .catch(error => {
+    //     console.error('Error fetching defect colors:', error);
+    //   });
   }, []);
 
 
