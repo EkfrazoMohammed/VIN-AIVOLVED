@@ -140,20 +140,19 @@ setLoading(false)
           width: "100%",
           height: "500px", 
           maxHeight: "100%", 
-          overflowY: chartData?.length > 15 ? "auto" : "visible", 
+          overflowY: chartData?.length >= 13 ? "auto" : "visible", 
           background:"#fff",
           borderRadius:"10px"
         }}
       >
         <div
           style={{
-            height: chartData?.length * 60 + "px", 
+            height: chartData?.length * 40 + "px", 
             minHeight: "100%", 
             width: "100%", 
             display: "flex", 
             justifyContent: "flex-start", 
             flexDirection: "column", 
-            
           }}
         >
           {/* Render your Bar chart here */}

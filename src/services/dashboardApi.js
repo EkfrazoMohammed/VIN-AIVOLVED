@@ -95,15 +95,46 @@ export const getDepartments = (plantName, token, apiCallInterceptor) => {
     });
 };
 
-export const getAverageDpmu = (plantId, apiCallInterceptor, setTextData) => {
+export const getAverageDpmuCount =async (plantId, apiCallInterceptor, setCountData ) => {
   const encryptedPlantId = encryptAES(JSON.stringify(plantId))
-  let url = `average-dpmu/?plant_id=${encryptedPlantId}`
-  apiCallInterceptor.get(url).then((res) => {
-    setTextData(res.data);
-  })
-    .catch((err) => {
-      console.log(err)
-    })
+  // let url = `average-dpmu/?plant_id=${encryptedPlantId}`
+  const url = `params_graph/?plant_id=${encryptedPlantId}`;
+  try {
+    const response =  await apiCallInterceptor.get(url)
+    const fullData = await response.data.results?.filter((item) => {
+      const itemDate = new Date(item.date_time);
+      const currentDate = new Date();
+      const diffInTime = currentDate - itemDate;
+      const diffInDays = diffInTime / (1000 * 3600 * 24); // Convert time difference from milliseconds to days
+      return diffInDays <= 31; // Only include data from the last 30 days
+    });
+    // const fullData =  response.data.results.slice(-29)
+    console.log(fullData)
+    const totalData = fullData.reduce((accumulator, item) => {
+      return accumulator + item.defect_percentage;
+    }, 0);
+    setCountData(totalData/30);
+    // dispatchReducer({type:"SET_COUNTDATA",payload:totalData})
+  } catch (error) {
+    console.log(error)
+  }
+
+}
+export const getAverageDpmu =async (plantId, apiCallInterceptor, setTextData) => {
+  const encryptedPlantId = encryptAES(JSON.stringify(plantId))
+  let url = `average-dpmu/?plant_id=${encryptedPlantId}`;
+  // const url = `params_graph/?plant_id=${encryptedPlantId}`;
+  try {
+    const response =  await apiCallInterceptor.get(url)
+    // const fullData =  response.data.results.slice(-30)
+    // const totalData = fullData.reduce((accumulator, item) => {
+    //   return accumulator + item.defect_percentage;
+    // }, 0);
+    setTextData(response.data);
+  } catch (error) {
+    console.log(error)
+  }
+
 }
 
 export const getProducts = (plantName, token, apiCallInterceptor) => {
@@ -168,28 +199,26 @@ export const getAiSmartView = async (
 };
 
 
-export const initialDpmuData = async(plantId, token, apiCallInterceptor) => {
+export const initialDpmuData = async(plantId, token, apiCallInterceptor,setCountData) => {
   const encryptedPlantId = encodeURIComponent(
     encryptAES(JSON.stringify(plantId))
   );
   const url = `params_graph/?plant_id=${encryptedPlantId}`;
   try {
     const response = await apiCallInterceptor.get(url);
-    const filteredProductionData = response.data.results?.filter((item) => {
+       const filteredProductionData = await response.data.results?.filter((item) => {
       const itemDate = new Date(item.date_time);
       const currentDate = new Date();
       const diffInTime = currentDate - itemDate;
       const diffInDays = diffInTime / (1000 * 3600 * 24); // Convert time difference from milliseconds to days
-  
       return diffInDays <= 15; // Only include data from the last 30 days
     }
   );
+
   return filteredProductionData
   } catch (error) {
     return error
   }
-
-
 };
 
 export const dpmuFilterData = async(apiCallInterceptor, machineId, plantId, dateRange, selectedDate) => {
@@ -210,8 +239,9 @@ export const dpmuFilterData = async(apiCallInterceptor, machineId, plantId, date
     const response = await apiCallInterceptor.get(url);
     if (!selectedDate) {
       // store.dispatch(getDpmuSuccess(response.data.results.slice(-15)));
+       const fullData =  response.data.results
        dpmuData  = response.data.results.slice(-15)
-      return dpmuData
+      return {dpmuData ,fullData}
     }
     else {
       const [fromDate, toDate] = dateRange;

@@ -3,7 +3,7 @@ import { FaGears } from "react-icons/fa6";
 import PropTypes from "prop-types";
 import LoaderIcon from "../LoaderIcon";
 
-const TotalOverview = ({ machine, textData , loading }) => {
+const TotalOverview = ({ machine, textData , loading , countData}) => {
   return (
     <div className={`overview-container dashboard-data w-3/12 my-2  bg-no-repeat flex flex-col ${!loading ? "justify-between" : "justify-around"}  p-3 rounded-md object-cover bg-cover`}>
         <h4 className="avd-title text-[#313131] text-lg">Total Overview</h4>
@@ -16,7 +16,7 @@ const TotalOverview = ({ machine, textData , loading }) => {
 
         </p>
         <p className="avd-title text-[#585858] text-lg py-2">
-          {textData?.average_params_count?.toFixed(2)}
+          {countData?.toFixed(2)}
         </p>
       </div>
 

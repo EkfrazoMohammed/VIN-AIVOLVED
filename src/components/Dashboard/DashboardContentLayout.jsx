@@ -2,7 +2,7 @@ import { useState, useEffect, useRef ,Suspense , lazy, useReducer } from "react"
 import TotalOverview from "./TotalOverview";
 import { IoMdArrowForward } from "react-icons/io";
 import { useSelector, useDispatch } from "react-redux";
-import { initialDashboardData, getMachines, getSystemStatus, getDepartments, initialDpmuData, initialProductionData, getProducts, getDefects, getRoles, dpmuFilterData, getAverageDpmu } from "../../services/dashboardApi";
+import { initialDashboardData, getMachines, getSystemStatus, getDepartments, initialDpmuData, initialProductionData, getProducts, getDefects, getRoles, dpmuFilterData, getAverageDpmu, getAverageDpmuCount } from "../../services/dashboardApi";
 import { setSelectedMachine, setSelectedMachineDpmu } from "../../redux/slices/machineSlice"
 import { setSelectedProduct } from "../../redux/slices/productSlice"
 import { Link, useLocation } from "react-router-dom";
@@ -62,6 +62,7 @@ const DashboardContentLayout = ({ children }) => {
 
 
   const [textData, setTextData] = useState(null);
+  const[countData , setCountData] = useState(0)
   const rangePickerRef = useRef(null);
   const [visible, setVisible] = useState(false);
   const currentUrlPath = useLocation();
@@ -164,10 +165,14 @@ const [state, dispatchReducer] = useReducer( reducer ,initialState)
     setFilterChanged(false)
   };
 
+
+
+
   // FILTER DATA FROM BACKEND
   const handelFilterProduction = async () => {
     try {
-     const dpmuFilter = await dpmuFilterData(apiCallInterceptor, selectedMachineRedux, localPlantData.id, dateRange, selectedDate)
+     const dpmuFilter = await dpmuFilterData(apiCallInterceptor, selectedMachineRedux, localPlantData.id, dateRange, selectedDate);
+     console.log(dpmuFilter)
       setLoading(true)
       const [fromDate, toDate] = dateRange;
       const queryParams = {
@@ -291,18 +296,22 @@ const [state, dispatchReducer] = useReducer( reducer ,initialState)
           getProducts(localPlantData.plant_name, accessToken, apiCallInterceptor),
           initialProductionData(localPlantData.id, accessToken, apiCallInterceptor),
           getSystemStatus(localPlantData.id, accessToken, apiCallInterceptor),
-          getAverageDpmu(localPlantData.id, apiCallInterceptor, setTextData)
+          getAverageDpmu(localPlantData.id, apiCallInterceptor, setTextData),
+          getAverageDpmuCount(localPlantData.id, apiCallInterceptor,setCountData)
         ]);
         initialDateRange()
 
-        const [prodData , dpmuData , {active_products , ...datesData}] = await Promise.all([
+        const [prodData , filteredProductionData , {active_products , ...datesData}] = await Promise.all([
           initialProductionData(localPlantData.id, accessToken, apiCallInterceptor),
           initialDpmuData(localPlantData.id, accessToken, apiCallInterceptor),
           initialDashboardData(localPlantData.id, accessToken, apiCallInterceptor)
         ])
- 
+
+
+        // totalOverviewData(fullData);
+       
         // setDpmuData(dpmuData)
-        dispatchReducer({type:"SET_DPMU_DATA" , payload:dpmuData})
+        dispatchReducer({type:"SET_DPMU_DATA" , payload:filteredProductionData})
 
         // setProdata(prodData)
         dispatchReducer({type:"SET_PROD_DATA" ,payload:prodData })
@@ -364,7 +373,7 @@ const [state, dispatchReducer] = useReducer( reducer ,initialState)
     }));
     
 
-  const prodMenu =  Object.entries(tableDataReduxActive).map(([key, value], index) => ({
+  const prodMenu =  Object.entries(state.activeProducts).map(([key, value], index) => ({
     label: `${value}`, // You can adjust this as needed, this will be the display label
     key: index.toString(), // Use index as the key to maintain uniqueness
   }));
@@ -407,7 +416,7 @@ const [state, dispatchReducer] = useReducer( reducer ,initialState)
       ) : (
         <>
           <div className="dx-row flex  pb-4 gap-3">
-            <TotalOverview machine={machines} textData={textData} loading={loaderReduxMachine} />
+            <TotalOverview machine={machines} textData={textData} countData={countData} loading={loaderReduxMachine} />
             <div className="overview-container w-9/12 flex flex-col justify-between p-3 rounded-md ">
               <div className="filter-lg-w">
                 <div className="inner-w">
@@ -521,7 +530,7 @@ const [state, dispatchReducer] = useReducer( reducer ,initialState)
           <RealTimeManufacturingSection
             loading={loading}
             categoryDefects={categoryDefects}
-            productionData={state.dpmuData}
+            productionData={state?.dpmuData}
             selectedMachineDpmu={selectedMachineDpmu}
             machines={machines}
             machineChangeAction={(val) => handleMachineChangeDpmu(val)}

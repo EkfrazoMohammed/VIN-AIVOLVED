@@ -181,6 +181,7 @@ const Reports = () => {
   const location = useLocation();
 
 let defectProp = location?.state;
+
 const initailState = {
   reportData:[],
   selectedMachine: null,
@@ -233,8 +234,6 @@ const reducer = (state ,  action) => {
       return state      
   }
 }
-
-
 
   const [ state , dispatch] = useReducer(reducer , initailState)
   const dateFormat = "YYYY/MM/DD";
@@ -327,7 +326,11 @@ const reducer = (state ,  action) => {
   }
 
   useEffect(() => {
+    if (filterActive) {
+      handleApplyFilters(state.pagination.current, state.pagination.pageSize);
+    } else {
       initialReportData(state.pagination.current, state.pagination.pageSize);
+    }
   }, []);
   
 
@@ -426,6 +429,17 @@ const reducer = (state ,  action) => {
     );
     const queryString = new URLSearchParams(encryptedUrl).toString();
     const url = `reports/?${queryString}`;
+
+const obj = {
+  plant_id: '6bqFrMzOccpSQ9NLolXQOQ==',
+machine_id: "+9278vXQIh1QPjOpnX8zxQ==",
+product_id: "+9278vXQIh1QPjOpnX8zxQ==",
+defect_id: "iaySg6QJdU5iuct/Q5T7Ng=="
+}
+Object.values(obj).map((item)=>{
+  console.log(decryptAES(item),"<<<")
+})
+
    console.log(decryptAES("fa2rjzPQXt5N2ro+lZTz2w=="),"<<")
    try {
     const response  = await apiCallInterceptor(url);

@@ -46,6 +46,7 @@ function StackChart({ data, localPlantData, loading }) {
           name: defectName,
           data: sortedDates.map((date) => data[date][defectName] || 0),
           color: defectColors[defectName],
+          minBarLength: 150,
         };
       });
   }, [defectNames, visibleSeries, sortedDates, defectColors, data]);
@@ -65,7 +66,7 @@ function StackChart({ data, localPlantData, loading }) {
         enabled: true,
         formatter: (val) => val.toFixed(0),
         style: {
-          fontSize: "12px",
+          fontSize: "9px",
           fontWeight: "bold",
           colors: ["#000"],
         },

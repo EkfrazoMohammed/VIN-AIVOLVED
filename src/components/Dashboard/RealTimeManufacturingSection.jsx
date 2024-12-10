@@ -14,7 +14,6 @@ export default function RealTimeManufacturingSection({
   const [isLoading, setIsLoading] = useState(true);
 
 
-
   useEffect(() => {
     const timeout = setTimeout(() => {
       setIsLoading(false);
@@ -60,7 +59,7 @@ export default function RealTimeManufacturingSection({
       datalabels: {
         color: "#ffff",
         font: {
-          size: productionData?.length > 15 ? 7 : 10,
+          size:productionData?.length > 15 ? 7 : 10,
         },
       },
     },

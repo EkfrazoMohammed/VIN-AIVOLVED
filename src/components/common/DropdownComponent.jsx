@@ -34,8 +34,23 @@ const DropdownComponent = ({ items, data }) => {
   }}
   open={visible}
   onOpenChange={handleVisibleChange}
+  arrow
     trigger={['click']}
-    className="text-[35px]  p-3 font-semobold "
+    className="text-[35px]  p-3 font-semobold"
+    placement="bottom"
+  
+    dropdownRender={(menu) => (
+        <div
+          style={{
+            maxHeight: "200px", // Fixed height
+            overflow: "hidden", // Hide overflow
+            overflowY: "auto", // Optional: Enable scrolling if necessary
+    cursor:"none"
+          }}
+        >
+          {menu}
+        </div>
+      )}
     >
    
    <div className="number " style={{ cursor: "pointer" }}>

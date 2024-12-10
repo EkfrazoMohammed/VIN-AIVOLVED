@@ -468,3 +468,6 @@ input:-webkit-autofill:active {
 .ant-spin-dot-item {
   background-color: #072266 !important;
 }
+:where(.css-dev-only-do-not-override-kghr11).ant-dropdown .ant-dropdown-menu .ant-dropdown-menu-item{
+  cursor: default !important;
+}
