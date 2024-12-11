@@ -165,7 +165,7 @@ const Reports = () => {
     if (Array.isArray(dateRange) && dateRange.length === 2) {
       [fromDate, toDate] = dateRange;
     }
-    url = `${domain}reports/?page=1&page_size=${pageSize}&`;
+    url = `${domain}reports/?page=${page}&page_size=${pageSize}&`;
     // url += `machine=${selectedMachine}&department=${selectedDepartment}`;
     // url += `?plant_id=${localPlantData.id}&from_date=${fromDate}&to_date=${toDate}&machine_id=${selectedMachine}&department_id=${selectedDepartment}&product_id=${selectedProduct}&defect_id=${selectedDefect}`;
     // if (fromDate && toDate) {
