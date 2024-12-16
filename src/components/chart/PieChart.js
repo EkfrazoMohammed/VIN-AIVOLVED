@@ -7,7 +7,7 @@ import { updatePage } from "./../../redux/slices/reportSlice";
 import { useSelector, useDispatch , shallowEqual } from "react-redux";
 import PropTypes from "prop-types";
 
-function PieChart({ data, selectedDate, loading, localPlantData }) {
+function PieChart({ data,  dateRange, loading, localPlantData }) {
  
   const accessToken = useSelector((state) => state.auth.authData[0].accessToken);
   const dispatch = useDispatch();
@@ -70,9 +70,8 @@ function PieChart({ data, selectedDate, loading, localPlantData }) {
     <div>
       <div>
         <Title level={5} className="text-left semibold">
-          {selectedDate
-            ? `Pie Chart from ${selectedDate[0]} to ${selectedDate[1]}`
-            : "Defect Distribution Analysis (Last 7 Days)"}
+       Pie Chart from {dateRange[0]} to {dateRange[1]}
+           
         </Title>
       </div>
 
@@ -89,6 +88,7 @@ function PieChart({ data, selectedDate, loading, localPlantData }) {
           <div style={{ width: "100%" }}>
             <ReactApexChart
               options={{
+                
                 chart: {
                   width: 380,
                   type: "pie",
@@ -145,6 +145,7 @@ function PieChart({ data, selectedDate, loading, localPlantData }) {
                     highlightDataSeries: false,
                   },
                 },
+             
                 plotOptions: {
                   pie: {
                     dataLabels: {
@@ -152,6 +153,7 @@ function PieChart({ data, selectedDate, loading, localPlantData }) {
                     },
                   },
                 },
+                
                 responsive: [
                   {
                     breakpoint: 480,

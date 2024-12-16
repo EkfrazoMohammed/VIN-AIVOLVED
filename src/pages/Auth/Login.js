@@ -1,5 +1,5 @@
 // src/pages/Auth/Login.js
-import React, {  useState } from 'react';
+import React, {  useState ,useEffect } from 'react';
 import {Row, Card, Col, Input, Checkbox, notification ,ConfigProvider } from 'antd';
 import { useNavigate,Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
@@ -30,6 +30,7 @@ const Login = () => {
     });
   };
 const [saveUserLocal,setSaveUserLocal] = useState(false);
+
   const loginPost = async () => {
     setError({ UserError: "", PasswordError: "" });
     setLoading(true);
@@ -101,6 +102,7 @@ const [saveUserLocal,setSaveUserLocal] = useState(false);
 
 
   const handleChange = (e) => {
+
     const { name, value,  checked } = e.target;
 
 
@@ -126,6 +128,15 @@ const [saveUserLocal,setSaveUserLocal] = useState(false);
 
   }
   };
+
+
+const handleKeydown =  (event)=>{
+  if(event.key === "Enter"){
+    console.log("enter key Pressed")
+    console.log(loginPayload)
+    loginPost()
+  }
+}
 
 
 
@@ -165,6 +176,7 @@ const [saveUserLocal,setSaveUserLocal] = useState(false);
                 name="email_or_phone"
                 onChange={handleChange}
                 status={error.UserError ? "error" : ""}
+                onKeyDown={handleKeydown}
               />
 </ConfigProvider>
               </label>
@@ -192,6 +204,7 @@ const [saveUserLocal,setSaveUserLocal] = useState(false);
                 name='password'
                 onChange={handleChange}
                 status={error.PasswordError ? "error" : ""}
+                onKeyDown={handleKeydown}
               />
 
 </ConfigProvider>

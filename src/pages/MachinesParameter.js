@@ -11,7 +11,9 @@ const MachinesParameter = () => {
     <div className="layout-content">
 
 
-      <div className="machineParameterContainer">
+      <div className="machineParameterContainer flex justify-center items-center h-[50vh]">
+
+    <span className='text-3xl font-bold'>Coming soon...</span>
 
         {/* {data?.map((item) => (
           <div className='mycardContainer' key={item.id}>
@@ -46,6 +48,7 @@ const MachinesParameter = () => {
             </div>
           </div>
         ))} */}
+
       </div>
 
     </div>

@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import { useDispatch } from "react-redux";
-import { setSelectedMachineDpmu } from "../../redux/slices/machineSlice";
 import PropTypes from "prop-types";
-import { Spin ,ConfigProvider } from "antd";
+import { Spin  } from "antd";
 
 export default function RealTimeManufacturingSection({
   loading: externalLoading,
@@ -17,7 +16,7 @@ export default function RealTimeManufacturingSection({
   useEffect(() => {
     const timeout = setTimeout(() => {
       setIsLoading(false);
-    }, 4000); 
+    }, 2000); 
    return () => clearTimeout(timeout);
   }, [productionData]);
 
@@ -41,6 +40,8 @@ export default function RealTimeManufacturingSection({
         ),
         backgroundColor: "#5190dd",
         minBarLength: 15,
+      
+      
       },
     ],
   };

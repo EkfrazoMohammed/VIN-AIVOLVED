@@ -147,7 +147,9 @@ const columns = [
       return (
         <>{
           image_b64 ? (
-            <Image src={decrypData} alt="Defect Image" width={50} height={50} />
+            <div className="w-12 h-12 bg-black object-contain p-0 m-0 flex justify-center" >
+              <Image src={decrypData} alt="Defect Image" style={{width:"100%",height:"3rem"}} />
+            </div>
           ) : null}
         </>
       )

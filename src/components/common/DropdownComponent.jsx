@@ -34,7 +34,7 @@ const DropdownComponent = ({ items, data }) => {
   }}
   open={visible}
   onOpenChange={handleVisibleChange}
-  arrow
+  
     trigger={['click']}
     className="text-[35px]  p-3 font-semobold"
     placement="bottom"

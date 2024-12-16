@@ -3,6 +3,7 @@
 import store from "../redux/store"; // Import the store
 import {
 
+  decryptAES,
   encryptAES,
 
 } from "../redux/middleware/encryptPayloadUtils";
@@ -106,14 +107,14 @@ export const getAverageDpmuCount =async (plantId, apiCallInterceptor, setCountDa
       const currentDate = new Date();
       const diffInTime = currentDate - itemDate;
       const diffInDays = diffInTime / (1000 * 3600 * 24); // Convert time difference from milliseconds to days
-      return diffInDays <= 31; // Only include data from the last 30 days
+      return diffInDays <= 30; // Only include data from the last 30 days
     });
     // const fullData =  response.data.results.slice(-29)
-    console.log(fullData)
+    const totalDefectPercentage = fullData.reduce((total, current) => total + current.defect_percentage, 0);
     const totalData = fullData.reduce((accumulator, item) => {
       return accumulator + item.defect_percentage;
     }, 0);
-    setCountData(totalData/30);
+    setCountData(totalDefectPercentage/30);
     // dispatchReducer({type:"SET_COUNTDATA",payload:totalData})
   } catch (error) {
     console.log(error)
@@ -206,6 +207,7 @@ export const initialDpmuData = async(plantId, token, apiCallInterceptor,setCount
   const url = `params_graph/?plant_id=${encryptedPlantId}`;
   try {
     const response = await apiCallInterceptor.get(url);
+   
        const filteredProductionData = await response.data.results?.filter((item) => {
       const itemDate = new Date(item.date_time);
       const currentDate = new Date();
@@ -223,36 +225,46 @@ export const initialDpmuData = async(plantId, token, apiCallInterceptor,setCount
 
 export const dpmuFilterData = async(apiCallInterceptor, machineId, plantId, dateRange, selectedDate) => {
  let dpmuData ;
+ const [fromDate, toDate] = dateRange;
   const encrypt = encryptAES(JSON.stringify(machineId));
   const encryptedPlantId = encodeURIComponent(
     encryptAES(JSON.stringify(plantId))
   );
+  const encryptedfromDate = encryptAES(fromDate)
+  const encryptedtodate = encryptAES(toDate)
+  console.log(fromDate)
+  console.log(toDate)
+  console.log(decryptAES(encryptedfromDate))
+  console.log(decryptAES(encryptedtodate))
   let url;
   if (machineId && machineId !== null) {
     url = `params_graph/?plant_id=${encryptedPlantId}&machine_id=${encrypt}`;
   }
   else {
-    url = `params_graph/?plant_id=${encryptedPlantId}`;
+    url = `params_graph/?plant_id=${encryptedPlantId}&from_date=${encryptedfromDate}&to_date=${encryptedtodate}`;
 
   }
   try {
     const response = await apiCallInterceptor.get(url);
     if (!selectedDate) {
       // store.dispatch(getDpmuSuccess(response.data.results.slice(-15)));
-       const fullData =  response.data.results
-       dpmuData  = response.data.results.slice(-15)
-      return {dpmuData ,fullData}
+       dpmuData  = response.data.results.slice(-15);
+      return dpmuData 
     }
     else {
-      const [fromDate, toDate] = dateRange;
-      const from = new Date(fromDate);
-      const to = new Date(toDate);
+     
+      // const from = new Date(fromDate);
+      // const to = new Date(toDate);
   
-       dpmuData = response.data.results.filter((item) => {
-        const itemDate = new Date(item.date_time); // Convert item date to Date object
-        return itemDate >= from && itemDate <= to; // Check if itemDate is within the range
-      });
+      //  dpmuData = response.data.results.filter((item) => {
+      //   const itemDate = new Date(item.date_time); // Convert item date to Date object
+      //   return itemDate >= from && itemDate <= to; // Check if itemDate is within the range
+      // });
       // store.dispatch(getDpmuSuccess(filteredData))
+
+      dpmuData  = response.data.results
+      const totalDefectPercentage = dpmuData.reduce((total, current) => total + current.defect_percentage, 0);
+      console.log(totalDefectPercentage)
     } 
     return dpmuData
   } catch (error) {
@@ -338,7 +350,9 @@ export const initialDashboardData = async (plantId, token, apiCallInterceptor) =
   );
   const encryptedfromDate = encodeURIComponent(encryptAES(formattedStartDate));
   const encryptedtodate = encodeURIComponent(encryptAES(formattedEndDate));
-  const url = `dashboard/?plant_id=${encryptedPlantId}&from_date=${encryptedfromDate}&to_date=${encryptedtodate}`;
+  // const url = `dashboard/?plant_id=${encryptedPlantId}&from_date=${encryptedfromDate}&to_date=${encryptedtodate}`;
+  const url = `dashboard/?plant_id=${encryptedPlantId}`;
+
   try {
     const response = await apiCallInterceptor.get(url);
     const { active_products, ...datesData } = response.data;

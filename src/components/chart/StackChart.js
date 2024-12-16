@@ -1,10 +1,14 @@
 import React, { useState, useEffect, useMemo } from "react";
-import ReactApexChart from "react-apexcharts";
+import { Bar } from "react-chartjs-2";
 import { Typography, Spin } from "antd";
 import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Tooltip, Legend } from "chart.js";
 
-function StackChart({ data, localPlantData, loading }) {
+// Register chart.js components
+ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
+
+function StackChart({ data, localPlantData, loading ,dateRange }) {
   const { Title } = Typography;
   const defectsData = useSelector((state) => state.defect.defectsData);
 
@@ -43,53 +47,18 @@ function StackChart({ data, localPlantData, loading }) {
       .filter((defectName) => visibleSeries[defectName])
       .map((defectName) => {
         return {
-          name: defectName,
+          label: defectName,
           data: sortedDates.map((date) => data[date][defectName] || 0),
-          color: defectColors[defectName],
-          minBarLength: 150,
+          backgroundColor: defectColors[defectName] || "#cccccc", // Default color if not loaded
+          barThickness: 40,
         };
       });
   }, [defectNames, visibleSeries, sortedDates, defectColors, data]);
 
   const chartData = useMemo(() => ({
-    series: seriesData,
-    options: {
-      chart: {
-        type: "bar",
-        height: 350,
-        stacked: true,
-        toolbar: { show: false },
-        zoom: { enabled: true },
-        animations: { enabled: false },
-      },
-      dataLabels: {
-        enabled: true,
-        formatter: (val) => val.toFixed(0),
-        style: {
-          fontSize: "9px",
-          fontWeight: "bold",
-          colors: ["#000"],
-        },
-      },
-      grid: { show: false },
-      xaxis: {
-        type: "category",
-        categories: sortedDates,
-        labels: {
-          rotate: -45,
-          style: { fontSize: "12px", fontWeight: 600, colors: ["#000"] },
-        },
-      },
-      yaxis: {
-        min: 0,
-        labels: { style: { fontWeight: 600, colors: ["#000"] } },
-      },
-      legend: { show: false },
-      fill: { opacity: 1 },
-      plotOptions: {
-        bar: { columnWidth: sortedDates.length > 7 ? "80%" : "50%" },
-      },
-    },
+    labels: sortedDates,
+    datasets: seriesData,
+   
   }), [seriesData, sortedDates]);
 
   const handleCheckboxChange = (defectName) => {
@@ -99,22 +68,21 @@ function StackChart({ data, localPlantData, loading }) {
     }));
   };
 
-
-  const getChartWidth = () => {
+  // Calculate dynamic barThickness based on the number of dates
+  const getBarThickness = () => {
     if (sortedDates.length <= 5) {
-      return "100%";
-    } else if (sortedDates.length > 5 && sortedDates.length <= 10) {
-      return `${sortedDates.length * 14}%`; // Adjust for better scaling
+      return "20%"; // Wide bars for few data points
+    } else if (sortedDates.length <= 10) {
+      return "30%"; // Medium bars for moderate data points
     } else {
-      return `${sortedDates.length * 15}%`; // Adjust for large datasets
+      return  "100%"; // Narrow bars for many data points
     }
   };
-
   return (
     <div>
       <div>
         <Title level={5} className="text-left font-semibold">
-          Bar Graph for Defects
+          Bar Graph for Defects ({dateRange[0]} to {dateRange[1]})
         </Title>
       </div>
       <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
@@ -145,9 +113,8 @@ function StackChart({ data, localPlantData, loading }) {
       <div className="w-full flex justify-center">
         {loading || !isDataReady ? (
           <div className="flex items-center justify-center w-full h-48">
-   <Spin tip="Loading" size="medium" />
- 
-             </div>
+            <Spin tip="Loading" size="medium" />
+          </div>
         ) : Object.keys(data).length === 0 ? (
           <div className="flex items-center justify-center w-full h-48 font-bold">
             NO DATA
@@ -156,16 +123,103 @@ function StackChart({ data, localPlantData, loading }) {
           <div
             style={{
               width: "100%",
-              overflowX: sortedDates.length > 7 ? "auto" : "hidden",
+              overflowX: sortedDates.length > 10 ? "auto" : "visible", // Only apply scroll for more than 10 dates
             }}
           >
-            <ReactApexChart
-              options={chartData.options}
-              series={chartData.series}
-              type="bar"
-              height={350}
-              width={getChartWidth()}
-            />
+            <div
+               style={{
+                width: sortedDates?.length * 14 + "%",
+                minWidth: "100%",
+                height: "400px",
+                display: "flex",
+                justifyContent: "flex-start",
+              }}
+            >
+
+       <Bar
+  data={chartData}
+  options={{
+    responsive: true,
+    maintainAspectRatio: false,
+    animation:false,
+    plugins: {
+      tooltip: {
+        mode: "index",
+        intersect: false,
+        display: false,
+      },
+      legend: {
+        display: false,
+        position: "top",
+      },
+      tooltip: {
+        callbacks: {
+          label: (tooltipItem) => `${tooltipItem.raw}M`,
+        },
+      },
+      datalabels: {
+        display:false,
+        display: (context) => {
+          const datasetIndex = context.datasetIndex; // Current dataset index
+          const dataIndex = context.dataIndex; // Current data index
+          const value = context.dataset.data[dataIndex]; // Current value
+    
+          // Get all values for the current bar (across all datasets)
+          const barValues = context.chart.data.datasets.map(
+            (dataset) => dataset.data[dataIndex]
+          );
+    
+          // Find the top 4 largest values for the current bar
+          const topValues = [...barValues]
+            .sort((a, b) => b - a)
+            .slice(0, 3);
+    
+          // Display label only if the current value is in the top 4 for this bar
+          return value > 0 && topValues.includes(value);
+        },
+               color: "#000",
+               fontWeight:"bold",
+        font: {
+          size:sortedDates?.length > 15 ? 7 : 10,
+        },
+        formatter: (value) => (value > 0 ? value : "")
+      },
+    },
+    scales: {
+      x: {
+        stacked: true,
+        ticks: {
+          font: {
+            size: 12 ,
+            weight: "600",
+          },
+        },
+        // Ensure categoryPercentage is set to 1, this prevents bars from being too narrow
+        categoryPercentage: 5,
+        barPercentage: 1,
+      },
+      y: {
+        stacked: true,
+        beginAtZero: true,
+        ticks: {
+          font: {
+            weight: "600",
+     
+          },
+          callback: (value) => `${value}M`,
+        },
+      },
+    },
+    elements: {
+      bar: {
+        // Dynamically set the barThickness
+        barThickness: 30,
+      },
+    },
+  }}
+/>
+
+            </div>
           </div>
         )}
       </div>

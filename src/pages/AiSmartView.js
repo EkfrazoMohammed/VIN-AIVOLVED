@@ -11,7 +11,6 @@ import "slick-carousel/slick/slick-theme.css";
 import SelectComponent from "../components/common/Select";
 import { setSelectedDefect } from "../redux/slices/defectSlice";
 import { Pagination ,ConfigProvider } from 'antd';
-import { current } from "@reduxjs/toolkit";
 const AiSmartView = () => {
 
  const dispatch = useDispatch()
@@ -142,11 +141,13 @@ const AiSmartView = () => {
 
                         <Slider {...settings} ref={sliderRef} className=" w-full flex items-center justify-center p-3 !relative">
                           {aismartviewData?.map((item, index) => (
-                              <div key={index + 1} className="w-full aismart-item flex items-center justify-center ">
+                              <div key={index + 1} className="w-[300px] aismart-item flex items-center justify-center  h-[50vh]">
                                 <img
                                   src={decryptAES(item.image)}
+                              
+            
                                   alt={`Slide ${index + 1}`}
-                                  style={{ maxHeight: "60vh", width: '40vw', display: "block", margin: "0 auto" }}
+                                  style={{ minWidth:"300px", width:"100%", height:"100%", display: "block", margin: "0 auto" , objectFit:"contain" }}
                                 />
 
                               </div>
@@ -219,7 +220,10 @@ const AiSmartView = () => {
           aismartviewData?.map((item, index)=>{
             const decrypt = decryptAES(item?.image);
             return(
-              <img src={decrypt} ref={sideImage} className={`w-20 h-20 ${currentSlideIndex === index ? " border-2 border-[#43996a] scale-125" : ""}`} />
+              <div className={`w-20 h-20 bg-black ${currentSlideIndex === index ? " border-2 border-[#43996a] scale-125" : ""}`}>
+                <img src={decrypt} ref={sideImage} className="w-full h-full object-contain"  />
+              </div>
+
             )
           })
         }
@@ -240,7 +244,7 @@ const AiSmartView = () => {
         
       </div>
       </div>
-      : <div className="h-full flex justify-center items-center w-full font-bold"> {selectedDefect !== null ? "NO DATA" : "Please Select Defect"} </div>
+      : <div className="h-full flex justify-center items-center w-full font-bold"> {selectedDefect !== null ? "NO DATA" : ""} </div>
       }
       </div>
     </div>

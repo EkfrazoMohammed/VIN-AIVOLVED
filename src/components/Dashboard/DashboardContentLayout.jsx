@@ -137,6 +137,9 @@ const [state, dispatchReducer] = useReducer( reducer ,initialState)
       console.log("Invalid date range:", dates, dateStrings);
     }
   };
+  
+
+
   useEffect(() => {
     resetFilter()
   }, [localPlantData, currentUrlPath])
@@ -172,7 +175,6 @@ const [state, dispatchReducer] = useReducer( reducer ,initialState)
   const handelFilterProduction = async () => {
     try {
      const dpmuFilter = await dpmuFilterData(apiCallInterceptor, selectedMachineRedux, localPlantData.id, dateRange, selectedDate);
-     console.log(dpmuFilter)
       setLoading(true)
       const [fromDate, toDate] = dateRange;
       const queryParams = {
@@ -554,14 +556,14 @@ const [state, dispatchReducer] = useReducer( reducer ,initialState)
             chartData={state.tableDataState}
             chart1={
               <Suspense fallback={"Loading..."} >
-                <StackChart data={state.tableDataState}  localPlantData={localPlantData} loading={loading} />
+                <StackChart data={state.tableDataState}  localPlantData={localPlantData} loading={loading} dateRange={dateRange}  />
               </Suspense>
           }
             chart2={
               <Suspense fallback={"Loading..."} >
                 <PieChart data={state.tableDataState
 
-} localPlantData={localPlantData} selectedDate={selectedDate} loading={loading} />
+} localPlantData={localPlantData} selectedDate={selectedDate} loading={loading}  dateRange={dateRange} />
               </Suspense>
           }
           />

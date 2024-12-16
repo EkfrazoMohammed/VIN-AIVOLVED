@@ -12,7 +12,6 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-
 }
 
 body {
@@ -21,8 +20,8 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   padding: 0;
-  background-color: #E6EAFA;
-  overflow-x:hidden ;
+  background-color: #e6eafa;
+  overflow-x: hidden;
 }
 
 body :where(.css-dev-only-do-not-override-kghr11).ant-layout {
@@ -36,27 +35,30 @@ body .layout-dashboard .ant-layout-content {
 }
 
 body .ant-layout {
-  background: #E6EAFA;
+  background: #e6eafa;
 }
 
 ::-webkit-scrollbar {
   width: 5px;
   height: 5px;
 }
-.inisigts_page{
-  background: linear-gradient(113.24deg, #43996A 7.4%, #261586 50.18%, #3F079E 84.48%);
-
+.inisigts_page {
+  background: linear-gradient(
+    113.24deg,
+    #43996a 7.4%,
+    #261586 50.18%,
+    #3f079e 84.48%
+  );
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #43996A;
+  background-color: #43996a;
   height: 5px;
   width: 5px;
 }
 
 ::-webkit-scrollbar-track {
   background-color: #cfcfcf;
-
 }
 
 code {
@@ -179,11 +181,15 @@ label::after {
   content: "" !important;
 }
 
-:where(.css-dev-only-do-not-override-kghr11).ant-tabs-card.ant-tabs-top>.ant-tabs-nav .ant-tabs-tab-active {
+:where(.css-dev-only-do-not-override-kghr11).ant-tabs-card.ant-tabs-top
+  > .ant-tabs-nav
+  .ant-tabs-tab-active {
   background-color: #43996a !important;
 }
 
-:where(.css-dev-only-do-not-override-kghr11).ant-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+:where(.css-dev-only-do-not-override-kghr11).ant-tabs
+  .ant-tabs-tab.ant-tabs-tab-active
+  .ant-tabs-tab-btn {
   color: #fff;
 }
 
@@ -191,12 +197,11 @@ label::after {
   font-weight: 600 !important;
 }
 
-
-:where(.css-dev-only-do-not-override-kghr11).ant-tabs>.ant-tabs-nav .ant-tabs-nav-list {
+:where(.css-dev-only-do-not-override-kghr11).ant-tabs
+  > .ant-tabs-nav
+  .ant-tabs-nav-list {
   gap: 1rem;
 }
-
-
 
 :where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper table {
   box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.243) !important;
@@ -206,7 +211,6 @@ label::after {
   border-collapse: separate;
   border-spacing: 0;
 }
-
 
 .notification-change {
   animation: backgroundChange 10s infinite;
@@ -229,29 +233,44 @@ label::after {
   border-radius: 0 0 8px 8px;
   display: flex;
   flex-direction: column;
-
 }
 
-:where(.css-dev-only-do-not-override-kghr11).ant-checkbox-wrapper:not(.ant-checkbox-wrapper-disabled):hover .ant-checkbox-checked:not(.ant-checkbox-disabled) .ant-checkbox-inner {
+:where(.css-dev-only-do-not-override-kghr11).ant-checkbox-wrapper:not(
+    .ant-checkbox-wrapper-disabled
+  ):hover
+  .ant-checkbox-checked:not(.ant-checkbox-disabled)
+  .ant-checkbox-inner {
   background-color: orangered !important;
   border: orangered !important;
 }
 
-:where(.css-dev-only-do-not-override-kghr11).ant-checkbox-checked .ant-checkbox-inner {
+:where(.css-dev-only-do-not-override-kghr11).ant-checkbox-checked
+  .ant-checkbox-inner {
   background-color: orangered !important;
   border: orangered !important;
 }
 
-:where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper .ant-table-thead>tr>th {
+:where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper
+  .ant-table-thead
+  > tr
+  > th {
   font-size: 1rem;
 }
 
-:where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper .ant-table-tbody>tr>th,
-:where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper .ant-table-tbody>tr>td {
+:where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper
+  .ant-table-tbody
+  > tr
+  > th,
+:where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper
+  .ant-table-tbody
+  > tr
+  > td {
   font-weight: 500;
 }
 
-:where(.css-dev-only-do-not-override-kghr11).ant-notification .ant-notification-notice-wrapper .ant-notification-notice {
+:where(.css-dev-only-do-not-override-kghr11).ant-notification
+  .ant-notification-notice-wrapper
+  .ant-notification-notice {
   padding: 20px 24px !important;
   width: 384px !important;
   background-color: orangered !important;
@@ -262,14 +281,19 @@ label::after {
   word-wrap: break-word !important;
 }
 
-:where(.css-dev-only-do-not-override-kghr11).ant-notification .ant-notification-notice-wrapper .ant-notification-notice-with-icon .ant-notification-notice-message {
+:where(.css-dev-only-do-not-override-kghr11).ant-notification
+  .ant-notification-notice-wrapper
+  .ant-notification-notice-with-icon
+  .ant-notification-notice-message {
   margin-bottom: 8px !important;
   margin-inline-start: 36px !important;
   color: #fff !important;
   font-size: 16px !important;
 }
 
-:where(.css-dev-only-do-not-override-kghr11).ant-notification .ant-notification-notice-wrapper .ant-notification-notice-close {
+:where(.css-dev-only-do-not-override-kghr11).ant-notification
+  .ant-notification-notice-wrapper
+  .ant-notification-notice-close {
   position: absolute !important;
   top: 20px !important;
   inset-inline-end: 24px !important;
@@ -308,11 +332,9 @@ label::after {
   color: #414040 !important;
 }
 
-
 .ant-select-selection-placeholder {
   color: #414040 !important;
 }
-
 
 /* ui enhancement */
 /* side menu */
@@ -360,11 +382,11 @@ label::after {
   transform: translateY(-50%);
   z-index: 0;
 }
-.commButton{
-  background-color: #43996A !important;
+.commButton {
+  background-color: #43996a !important;
 }
 .menu-items-w .menu-category-name {
-  color: #43996A !important;
+  color: #43996a !important;
   font-weight: 700;
 }
 
@@ -385,11 +407,23 @@ label::after {
 }
 
 .sidemenu-container {
-  background: linear-gradient(-213deg ,#d2d7e9 , #f2f2f2 );
+  background: linear-gradient(-213deg, #d2d7e9, #f2f2f2);
 }
 
 .overview-container.dashboard-data {
-  background: linear-gradient(40deg, #FFFF ,#FFFF,#FFFF,#FFFF,#d8dce8,#FFFF,#FFFF,#FFFF,#FFFF ,#FFFF);
+  background: linear-gradient(
+    40deg,
+    #ffff,
+    #ffff,
+    #ffff,
+    #ffff,
+    #d8dce8,
+    #ffff,
+    #ffff,
+    #ffff,
+    #ffff,
+    #ffff
+  );
   animation: gradient 15s ease infinite;
   background-size: 600% 500%;
 }
@@ -417,8 +451,6 @@ label::after {
   opacity: 0 !important;
 }
 
-
-
 .custom-input::placeholder {
   color: #191919;
 }
@@ -427,13 +459,23 @@ label::after {
   top: 100%;
   font-size: 12px;
 }
-.custom-table.ant-table-wrapper .ant-table-tbody >tr >td >.ant-table-wrapper:only-child .ant-table{
+.custom-table.ant-table-wrapper
+  .ant-table-tbody
+  > tr
+  > td
+  > .ant-table-wrapper:only-child
+  .ant-table {
   margin-inline: 0 !important;
 }
-.custom-table.ant-spin-nested-loading{
+.custom-table.ant-spin-nested-loading {
   margin: 1rem !important;
 }
-:where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper tr.ant-table-expanded-row >td, :where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper tr.ant-table-expanded-row:hover >td{
+:where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper
+  tr.ant-table-expanded-row
+  > td,
+:where(.css-dev-only-do-not-override-kghr11).ant-table-wrapper
+  tr.ant-table-expanded-row:hover
+  > td {
   background: #fff !important;
 }
 
@@ -447,27 +489,31 @@ label::after {
   font-weight: 600; /* Change this value to desired font weight */
 }
 
-
-:where(.css-kghr11).ant-tabs-card >.ant-tabs-nav .ant-tabs-tab-active{
-  background-color: #43996A !important;
+:where(.css-kghr11).ant-tabs-card > .ant-tabs-nav .ant-tabs-tab-active {
+  background-color: #43996a !important;
 }
 
-:where(.css-kghr11).ant-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+:where(.css-kghr11).ant-tabs
+  .ant-tabs-tab.ant-tabs-tab-active
+  .ant-tabs-tab-btn {
   color: #fff !important;
-
 }
 
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
-    transition: background-color 5000s ease-in-out 0s;
-    -webkit-text-fill-color: #fff !important;
+  transition: background-color 5000s ease-in-out 0s;
+  -webkit-text-fill-color: #fff !important;
 }
 
 .ant-spin-dot-item {
   background-color: #072266 !important;
 }
-:where(.css-dev-only-do-not-override-kghr11).ant-dropdown .ant-dropdown-menu .ant-dropdown-menu-item{
+/* :where(.css-dev-only-do-not-override-kghr11).ant-dropdown
+  .ant-dropdown-menu
+  .ant-dropdown-menu-item {
+  } */
+:where(.css-kghr11).ant-dropdown .ant-dropdown-menu .ant-dropdown-menu-item {
   cursor: default !important;
 }

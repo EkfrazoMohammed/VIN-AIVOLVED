@@ -9,10 +9,13 @@ const Camera = () => {
 
   return (
     <div className="">
+             {
+              camera.length > 0 ? 
       <div className="flex">
         <Space direction="vertical" size={16}>
           <Row style={{}}>
             <Col style={{ width: '100%', display: 'flex', flexWrap: 'wrap', gap: '3rem' }}>
+     
               {camera?.map((item, index) => (
                 <Card
                   key={item}
@@ -42,17 +45,23 @@ const Camera = () => {
                           ariaLabel="puff-loading"
                           wrapperStyle={{}}
                           wrapperClass=""
-                        /> : null
+                        /> : 
+                      null
                     }
 
                   </Row>
                 </Card>
               ))}
-
+              
+       
             </Col>
           </Row>
         </Space>
       </div>
+             :
+             <div className=" h-[60vh] font-bold text-2xl flex justify-center items-center w-full">No System Data...</div>
+           }
+
     </div>
   );
 }
