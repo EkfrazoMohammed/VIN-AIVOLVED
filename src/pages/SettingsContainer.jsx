@@ -15,7 +15,7 @@ const SettingsContainer = () => {
   const defectsData = useSelector((state) => state.defect.defectsData)
   const productsData = useSelector((state) => state.product.productsData)
   const departmentsData = useSelector((state) => state.department.departmentsData)
-
+  const plantData = useSelector((state)=> state?.plant?.plantData[0])
 
 
 
@@ -38,18 +38,18 @@ const SettingsContainer = () => {
     {
       key: '4',
       label: 'Machine',
-      children: <Machine machinesdata={machines} />,
+      children: <Machine machinesdata={machines} defectsData={defectsData} plantData={plantData} />,
     },
     {
       key: '5',
       label: 'Products',
       children: <Alerts productsData={productsData} />,
     },
-    {
-      key: '6',
-      label: 'Defect Trigger',
-      children: <DefectTrigger machinesdata={machines} defectsdata={defectsData} />,
-    },
+    // {
+    //   key: '6',
+    //   label: 'Defect Trigger',
+    //   children: <DefectTrigger machinesdata={machines} defectsdata={defectsData} />,
+    // },
   ];
   return (
       <Tabs type="card"
