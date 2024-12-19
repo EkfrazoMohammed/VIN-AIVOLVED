@@ -11,7 +11,6 @@ import ModalComponent from "../../components/common/ModalComponent";
 import defectImage from "../../assets/images/add_defects_icon.png"
 
 const Machine = ({ machinesdata, defectsData, plantData }) => {
-  console.log(machinesdata,"<<")
   const apiCallInterceptor = useApiInterceptor();
   const [expandedRowKey, setExpandedRowKey] = useState(null);
   const [reloadKey, setReloadKey] = useState(0); // Used to force re-render
@@ -216,10 +215,8 @@ const Machine = ({ machinesdata, defectsData, plantData }) => {
                     status:e ? 1 : 0
                 };
     
-                console.log("Payload to be sent:", payload);
                 const data = encryptAES(JSON.stringify(payload));
                 const response = await apiCallInterceptor.put(url, { data });
-                console.log("API Response:", response);
              
                 dispatchModalReducer({type:"MACHINE_DEFECTS_DATA", payload:payload.defect_status})
     

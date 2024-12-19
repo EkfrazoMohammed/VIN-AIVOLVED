@@ -14,7 +14,6 @@ const handleCancel = () => {
  
     const handlePostData = async () => {
         try {
-            console.log(state?.machineNameCreate)
             if(!state?.machineNameCreate || state.machineNameCreate.length === 0 ){
                 dispatchModalReducer({type:"MACHINE_ERROR", payload:"Please Fill Machine Name"})
             }
@@ -27,15 +26,15 @@ const handleCancel = () => {
                     defect_status: null
                 };
     
-                console.log("Payload to be sent:", payload);
                 const data = encryptAES(JSON.stringify(payload));
                 const response = await apiCallInterceptor.post(url, { data });
-                console.log("API Response:", response);
                 dispatchModalReducer({ type: 'MODAL_MACHINE_OPEN', payload: false });  
             }
 
         } catch (error) {
             console.error("Error submitting data:", error);
+            dispatchModalReducer({ type: 'MODAL_MACHINE_OPEN', payload: false });  
+
         }
     };
 

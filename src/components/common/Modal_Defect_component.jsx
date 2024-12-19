@@ -43,10 +43,7 @@ const defectsData  = data?.filter((item, index)=>  !machineDefectsData?.active_d
                 }
             }
       
-            const defect_status = {
-                active_defects:activeDefects,
-                non_active_defects:nonActiveDefects
-            }
+    
             
             // dispatchModalReducer({type:"MACHINE_DEFECTS_DATA", payload:defect_status})
 
@@ -72,7 +69,6 @@ const defectsData  = data?.filter((item, index)=>  !machineDefectsData?.active_d
 
     const handlePostData = async () => {
         try {
-            console.log(machineDefectsData)
         
            
             const encryptedMachineId = encryptAES(JSON.stringify(machineActive?.id));
@@ -86,11 +82,8 @@ const defectsData  = data?.filter((item, index)=>  !machineDefectsData?.active_d
                 },
             };
 
-            console.log("Payload to be sent:", payload);
             const data = encryptAES(JSON.stringify(payload));
             const response = await apiCallInterceptor.put(url, { data });
-            console.log("API Response:", response);
-            callBack(payload.defect_status)
             dispatchModalReducer({ type: 'MODAL_OPEN', payload: false });  
             dispatchModalReducer({type:"MACHINE_DEFECTS_DATA", payload:payload.defect_status})
 
