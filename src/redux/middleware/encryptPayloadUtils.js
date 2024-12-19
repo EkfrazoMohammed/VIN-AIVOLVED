@@ -9,8 +9,20 @@ export const encryptAES = (plaintext) => {
         mode: CryptoJS.mode.ECB,
         padding: CryptoJS.pad.Pkcs7
     });
-
     return encrypted.toString();
+};
+
+export const encryptAESlash = (plaintext) => {
+    const encrypted = CryptoJS.AES.encrypt(plaintext, AES_KEY, {
+        mode: CryptoJS.mode.ECB,
+        padding: CryptoJS.pad.Pkcs7,
+    });
+
+    // Convert to Base64 and make it URL-safe
+    let encryptedBase64 = encrypted.toString();
+    encryptedBase64 = encryptedBase64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+
+    return encryptedBase64;
 };
 
 export const decryptAES = (encryptedData) => {

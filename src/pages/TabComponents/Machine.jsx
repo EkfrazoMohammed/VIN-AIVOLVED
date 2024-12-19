@@ -308,7 +308,7 @@ const Machine = ({ machinesdata, defectsData, plantData }) => {
         data={defectsData}
         machineDefectsData={state.machineDefectsDatas}
         machineActive={state.machineActive}
-        plantData
+        plantData={plantData}
         callBack={() => {}}
       />
       <ConfigProvider

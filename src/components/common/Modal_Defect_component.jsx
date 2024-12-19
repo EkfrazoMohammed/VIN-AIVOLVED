@@ -6,7 +6,7 @@ import { decryptAES, encryptAES } from '../../redux/middleware/encryptPayloadUti
 const App = ({ open, data, loading, dispatchModalReducer, machineActive, machineDefectsData, plantData ,callBack}) => {
 
 
-    const apiCallInterceptor = useApiInterceptor();
+const apiCallInterceptor = useApiInterceptor();
 
 
 const defectsData  = data?.filter((item, index)=>  !machineDefectsData?.active_defects?.includes(item.id) && !machineDefectsData?.non_active_defects?.includes(item.id) )
@@ -15,10 +15,11 @@ const defectsData  = data?.filter((item, index)=>  !machineDefectsData?.active_d
         dispatchModalReducer({ type: "MODAL_OPEN", payload: false });
     };
 
+    const activeDefects = machineDefectsData?.active_defects || [];
+    const nonActiveDefects = machineDefectsData?.non_active_defects || [];
+
     const handleChange = async (checked, item) => {
         try {
-            const activeDefects = machineDefectsData?.active_defects || [];
-            const nonActiveDefects = machineDefectsData?.non_active_defects || [];
 
             if (checked) {
                 // Add to active_defects
@@ -42,6 +43,10 @@ const defectsData  = data?.filter((item, index)=>  !machineDefectsData?.active_d
                 }
             }
       
+            const defect_status = {
+                active_defects:activeDefects,
+                non_active_defects:nonActiveDefects
+            }
             
             // dispatchModalReducer({type:"MACHINE_DEFECTS_DATA", payload:defect_status})
 
@@ -67,17 +72,17 @@ const defectsData  = data?.filter((item, index)=>  !machineDefectsData?.active_d
 
     const handlePostData = async () => {
         try {
-            console.log(machineActive)
+            console.log(machineDefectsData)
+        
            
             const encryptedMachineId = encryptAES(JSON.stringify(machineActive?.id));
-            console.log(decryptAES(encryptedMachineId))
             const url = `machine/${encryptedMachineId}/`;
             const payload = {
                 name: machineActive.name,
                 plant: plantData.id,
                 defect_status: {
-                    active_defects: machineDefectsData?.active_defects,
-                    non_active_defects: machineDefectsData?.non_active_defects,
+                    active_defects: activeDefects,
+                    non_active_defects: nonActiveDefects,
                 },
             };
 
