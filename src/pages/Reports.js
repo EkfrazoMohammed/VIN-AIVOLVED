@@ -18,7 +18,7 @@ import { getReportData, updatePage } from ".././redux/slices/reportSlice";
 import { setSelectedMachine } from "../redux/slices/machineSlice"
 import { setSelectedProduct } from "../redux/slices/productSlice";
 import useApiInterceptor from "../hooks/useInterceptor";
-import { decryptAES, encryptAES } from "../redux/middleware/encryptPayloadUtils";
+import {  decryptAES,  encryptAES } from "../redux/middleware/encryptPayloadUtils";
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import SelectComponent from "../components/common/Select";
@@ -32,8 +32,8 @@ const columns = [
     dataIndex: "product",
     key: "alert_name",
     id: "alert_name",
-    render: (text) => {
-      const decrypData = decryptAES(text)
+    render: async (text) => {
+      const decrypData = await decryptAES(text)
       return (
 
         <>
@@ -48,8 +48,8 @@ const columns = [
     title: "Defect Name",
     dataIndex: "defect",
     key: "defect_name",
-    render: (text) => {
-      const decrypData = decryptAES(text)
+    render: async (text) => {
+      const decrypData = await decryptAES(text)
       return (
         <>
           {
@@ -64,8 +64,8 @@ const columns = [
     dataIndex: "machine",
     key: "machine_name",
 
-    render: (text) => {
-      const decrypData = decryptAES(text)
+    render: async (text) => {
+      const decrypData = await decryptAES(text)
       return (
 
         <>
@@ -81,8 +81,8 @@ const columns = [
     dataIndex: "department",
     key: "department_name",
 
-    render: (text) => {
-      const decrypData = decryptAES(text)
+    render: async (text) => {
+      const decrypData = await decryptAES(text)
       return (
 
         <>
@@ -98,8 +98,8 @@ const columns = [
     title: "Recorded Date Time",
     dataIndex: "recorded_date_time",
     key: "recorded_date_time",
-    render: (text) => {
-      const decrypData = decryptAES(text);
+    render: async (text) => {
+      const decrypData = await decryptAES(text);
       const formattedDateTime = decrypData ? decrypData.replace("T", " ") : null;
       return (
         <>
@@ -113,8 +113,8 @@ const columns = [
     dataIndex: "shift",
     key: "shift",
 
-    render: (text) => {
-      const decrypData = decryptAES(text);
+    render: async (text) => {
+      const decrypData = await decryptAES(text);
       return (
         <>
           {decrypData ? <div>{decrypData}</div> : null}
@@ -127,8 +127,8 @@ const columns = [
     dataIndex: "ocr",
     key: "ocr",
 
-    render: (text) => {
-      const decrypData = decryptAES(text);
+    render: async (text) => {
+      const decrypData = await decryptAES(text);
       return (
         <>
           {decrypData ? <div>{decrypData}</div> : null}
@@ -141,9 +141,9 @@ const columns = [
     title: "Image",
     dataIndex: "image",
     key: "image",
-    render: (image_b64) => {
+    render: async (image_b64) => {
 
-      const decrypData = decryptAES(image_b64)
+      const decrypData = await decryptAES(image_b64)
       return (
         <>{
           image_b64 ? (
@@ -403,7 +403,7 @@ const reducer = (state ,  action) => {
     const params = {
       page, // Ensure this uses the provided page (default is 1)
       page_size: pageSize,
-      plant_id: encryptAES(JSON.stringify(localPlantData?.id)) || undefined,
+      plant_id: await encryptAES(JSON.stringify(localPlantData?.id)) || undefined,
       from_date: dateRange?.[0] || undefined,
       to_date: dateRange?.[1] || undefined,
       machine_id: state.selectedMachine || undefined,
@@ -419,30 +419,22 @@ const reducer = (state ,  action) => {
       )
     );
     const encryptedUrl = Object.fromEntries(
-      Object.entries(filteredQueryParams).map(([key, val]) => {
-        if (key !== "page" && key !== "page_size" && key !== "plant_id") {
-          if (key === "from_date" || key === "to_date") {
-            return [key, encryptAES(val)];
+      await Promise.all(
+        Object.entries(filteredQueryParams).map(async ([key, val]) => {
+          if (key !== "page" && key !== "page_size" && key !== "plant_id") {
+            if (key === "from_date" || key === "to_date") {
+              return [key, await encryptAES(val)];
+            }
+            return [key, await encryptAES(JSON.stringify(val))];
           }
-          return [key, encryptAES(JSON.stringify(val))];
-        }
-        return [key, val];
-      })
-    );
+          return [key, val];
+        })
+      )
+      )
     const queryString = new URLSearchParams(encryptedUrl).toString();
     const url = `reports/?${queryString}`;
 
-const obj = {
-  plant_id: '6bqFrMzOccpSQ9NLolXQOQ==',
-machine_id: "+9278vXQIh1QPjOpnX8zxQ==",
-product_id: "+9278vXQIh1QPjOpnX8zxQ==",
-defect_id: "iaySg6QJdU5iuct/Q5T7Ng=="
-}
-Object.values(obj).map((item)=>{
-  console.log(decryptAES(item),"<<<")
-})
 
-   console.log(decryptAES("fa2rjzPQXt5N2ro+lZTz2w=="),"<<")
    try {
     const response  = await apiCallInterceptor(url);
     const { results, total_count, page_size } = response.data;
@@ -491,16 +483,16 @@ Object.values(obj).map((item)=>{
 
   const downloadExcel = () => {
     // Prepare the table data with correct headers
-    const formattedTableData = state.reportData.map((item) => ({
-      "Product Name": decryptAES(item.product),
-      "Defect Name": decryptAES(item.defect),
-      "Machine Name": decryptAES(item.machine),
-      "Department Name": decryptAES(item.department),
-      "Recorded Date Time": decryptAES(item.recorded_date_time).replace("T", " "),
-      // "Image": decryptAES(item.image) ,
+    const formattedTableData = state.reportData.map(async (item) => ({
+      "Product Name": await decryptAES(item.product),
+      "Defect Name": await decryptAES(item.defect),
+      "Machine Name": await decryptAES(item.machine),
+      "Department Name": await decryptAES(item.department),
+      "Recorded Date Time": await decryptAES(item.recorded_date_time).replace("T", " "),
+      // "Image": await decryptAES(item.image) ,
       "Image Link": {
-        v: decryptAES(item.image), // Displayed text
-        l: { Target: decryptAES(item.image), Tooltip: 'Click to view the image' } // Hyperlink
+        v: await decryptAES(item.image), // Displayed text
+        l: { Target: await decryptAES(item.image), Tooltip: 'Click to view the image' } // Hyperlink
       }
     }));
     // Convert JSON to Excel with correct headers

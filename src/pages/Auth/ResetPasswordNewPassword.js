@@ -1,7 +1,7 @@
 import React, {  useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import axiosInstance from "../../API/axiosInstance";
-import { encryptAES } from "../../redux/middleware/encryptPayloadUtils";
+import {  encryptAES } from "../../redux/middleware/encryptPayloadUtils";
 import { notification } from "antd";
 import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 
@@ -91,7 +91,7 @@ const PasswordResetForm = () => {
         new_password: password,
         confirm_password: confirmPassword,
       };
-      const encryptedData = encryptAES(JSON.stringify(payload));
+      const encryptedData = await encryptAES(JSON.stringify(payload));
       const response = await axiosInstance.put(`reset-password/${id}/`, { data: encryptedData });
 
       // Handle success

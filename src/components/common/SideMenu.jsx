@@ -45,7 +45,7 @@ const SideMenu = () => {
       : "text-grey-500";
   };
   const logout = async () => {
-    const encryTedToken = encryptAES(JSON.stringify({ refresh_token: refreshToken }))
+    const encryTedToken = await encryptAES(JSON.stringify({ refresh_token: refreshToken }))
     try {
       await apiCall.post(
         `logout/`,

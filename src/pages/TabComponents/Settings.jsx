@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button, Col, Row, Input, notification, Select ,Switch ,Modal} from 'antd';
 import { ColorRing } from 'react-loader-spinner'
 import { useSelector } from 'react-redux';
-import { encryptAES } from '../../redux/middleware/encryptPayloadUtils'
+import {  encryptAES } from '../../redux/middleware/encryptPayloadUtils'
 import useApiInterceptor from '../../hooks/useInterceptor';
 import { clearConfig } from 'dompurify';
 
@@ -175,7 +175,7 @@ const Settings = () => {
       };
 
       // Encrypt the payload
-      const encryptedData = encryptAES(JSON.stringify(payload));
+      const encryptedData = await encryptAES(JSON.stringify(payload));
       const usersPayload = {
         data: encryptedData,
       };

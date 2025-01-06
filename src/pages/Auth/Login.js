@@ -66,11 +66,12 @@ const [saveUserLocal,setSaveUserLocal] = useState(false);
     // Proceed with login if no errors
 
     try {
-      const encryTedData = encryptAES(JSON.stringify(loginPayload))
+      const encryTedData =  await encryptAES(JSON.stringify(loginPayload))
+      
 
       const res = await axiosInstance.post('/login/', { data: encryTedData });
 
-      const decrypt = await decryptAES(res.data.response)
+      const decrypt =  await decryptAES(res.data.response)
 
       const { access_token, refresh_token, user_id, is_superuser, first_name, last_name, user_name, message } = JSON.parse(decrypt);
       dispatch(signInSuccess({ accessToken: access_token, refreshToken: refresh_token }));

@@ -3,7 +3,6 @@
 import store from "../redux/store"; // Import the store
 import {
 
-  decryptAES,
   encryptAES,
 
 } from "../redux/middleware/encryptPayloadUtils";
@@ -48,9 +47,9 @@ import {
 export const baseURL =
   process.env.REACT_APP_API_BASE_URL || "https://hul.aivolved.in/api/";
 
-export const getMachines = (plantName, token, apiCallInterceptor) => {
+export const getMachines = async (plantName, token, apiCallInterceptor) => {
   store.dispatch(setLoading(true))
-  let encryptedPlantName = encryptAES(plantName).replace(/^"|"$|^"+$/g, "");
+  let encryptedPlantName = await encryptAES(plantName).replace(/^"|"$|^"+$/g, "");
 
   encryptedPlantName = decodeURIComponent(encryptedPlantName);
   let url = `machine/?plant_name=${encryptedPlantName}`;
@@ -73,8 +72,8 @@ export const getMachines = (plantName, token, apiCallInterceptor) => {
     });
 };
 
-export const getDepartments = (plantName, token, apiCallInterceptor) => {
-  let encryptedPlantName = encryptAES(plantName).replace(/^"|"$|^"+$/g, "");
+export const getDepartments = async (plantName, token, apiCallInterceptor) => {
+  let encryptedPlantName = await encryptAES(plantName).replace(/^"|"$|^"+$/g, "");
 
   encryptedPlantName = decodeURIComponent(encryptedPlantName);
   let url = `department/?plant_name=${encryptedPlantName}`;
@@ -97,7 +96,7 @@ export const getDepartments = (plantName, token, apiCallInterceptor) => {
 };
 
 export const getAverageDpmuCount =async (plantId, apiCallInterceptor, setCountData ) => {
-  const encryptedPlantId = encryptAES(JSON.stringify(plantId))
+  const encryptedPlantId = await encryptAES(JSON.stringify(plantId))
   // let url = `average-dpmu/?plant_id=${encryptedPlantId}`
   const url = `params_graph/?plant_id=${encryptedPlantId}`;
   try {
@@ -122,7 +121,7 @@ export const getAverageDpmuCount =async (plantId, apiCallInterceptor, setCountDa
 
 }
 export const getAverageDpmu =async (plantId, apiCallInterceptor, setTextData) => {
-  const encryptedPlantId = encryptAES(JSON.stringify(plantId))
+  const encryptedPlantId = await encryptAES(JSON.stringify(plantId))
   let url = `average-dpmu/?plant_id=${encryptedPlantId}`;
   // const url = `params_graph/?plant_id=${encryptedPlantId}`;
   try {
@@ -138,8 +137,8 @@ export const getAverageDpmu =async (plantId, apiCallInterceptor, setTextData) =>
 
 }
 
-export const getProducts = (plantName, token, apiCallInterceptor) => {
-  let encryptedPlantName = encryptAES(plantName).replace(/^"|"$|^"+$/g, "");
+export const getProducts = async(plantName, token, apiCallInterceptor) => {
+  let encryptedPlantName = await encryptAES(plantName).replace(/^"|"$|^"+$/g, "");
 
   encryptedPlantName = decodeURIComponent(encryptedPlantName);
   let url = `product/?plant_name=${encryptedPlantName}`;
@@ -156,8 +155,8 @@ export const getProducts = (plantName, token, apiCallInterceptor) => {
       store.dispatch(getProductFailure());
     });
 };
-export const getDefects = (plantName, token, apiCallInterceptor) => {
-  let encryptedPlantName = encryptAES(plantName).replace(/^"|"$|^"+$/g, "");
+export const getDefects = async(plantName, token, apiCallInterceptor) => {
+  let encryptedPlantName = await encryptAES(plantName).replace(/^"|"$|^"+$/g, "");
   encryptedPlantName = decodeURIComponent(encryptedPlantName);
 
   let url = `defect/?plant_name=${encryptedPlantName}`;
@@ -182,10 +181,10 @@ export const getAiSmartView = async (
 ) => {
   // Encrypt the values and then URL encode them
   const encryptedPlantId = encodeURIComponent(
-    encryptAES(JSON.stringify(plantId))
+    await encryptAES(JSON.stringify(plantId))
   );
   const encryptedDefectId = encodeURIComponent(
-    encryptAES(JSON.stringify(defectId))
+    await encryptAES(JSON.stringify(defectId))
   );
   const url = `ai-smart/?plant_id=${encryptedPlantId}&defect_id=${encryptedDefectId}&page=${currentPage}`;
   try {
@@ -202,7 +201,7 @@ export const getAiSmartView = async (
 
 export const initialDpmuData = async(plantId, token, apiCallInterceptor,setCountData) => {
   const encryptedPlantId = encodeURIComponent(
-    encryptAES(JSON.stringify(plantId))
+    await encryptAES(JSON.stringify(plantId))
   );
   const url = `params_graph/?plant_id=${encryptedPlantId}`;
   try {
@@ -226,16 +225,15 @@ export const initialDpmuData = async(plantId, token, apiCallInterceptor,setCount
 export const dpmuFilterData = async(apiCallInterceptor, machineId, plantId, dateRange, selectedDate) => {
  let dpmuData ;
  const [fromDate, toDate] = dateRange;
-  const encrypt = encryptAES(JSON.stringify(machineId));
+  const encrypt = await encryptAES(JSON.stringify(machineId));
   const encryptedPlantId = encodeURIComponent(
-    encryptAES(JSON.stringify(plantId))
+    await encryptAES(JSON.stringify(plantId))
   );
-  const encryptedfromDate = encryptAES(fromDate)
-  const encryptedtodate = encryptAES(toDate)
+  const encryptedfromDate = await encryptAES(fromDate)
+  const encryptedtodate = await encryptAES(toDate)
   console.log(fromDate)
   console.log(toDate)
-  console.log(decryptAES(encryptedfromDate))
-  console.log(decryptAES(encryptedtodate))
+
   let url;
   if (machineId && machineId !== null) {
     url = `params_graph/?plant_id=${encryptedPlantId}&machine_id=${encrypt}`;
@@ -278,7 +276,7 @@ export const dpmuFilterData = async(apiCallInterceptor, machineId, plantId, date
 
 export const initialProductionData = async(plantId, token, apiCallInterceptor) => {
   const encryptedPlantId = encodeURIComponent(
-    encryptAES(JSON.stringify(plantId))
+    await encryptAES(JSON.stringify(plantId))
   );
   const url = `defct-vs-machine/?plant_id=${encryptedPlantId}`;
   try {
@@ -290,10 +288,10 @@ export const initialProductionData = async(plantId, token, apiCallInterceptor) =
   }
 };
 
-export const getSystemStatus = (plantId, token, apiCallInterceptor) => {
+export const getSystemStatus = async (plantId, token, apiCallInterceptor) => {
   const domain = `${baseURL}`;
   const encryptedPlantId = encodeURIComponent(
-    encryptAES(JSON.stringify(plantId))
+    await encryptAES(JSON.stringify(plantId))
   );
 
   let url = `${domain}system-status/?plant_id=${encryptedPlantId}`;
@@ -346,10 +344,10 @@ export const initialDashboardData = async (plantId, token, apiCallInterceptor) =
   const endDate = new Date(); // Today's date
   const formattedEndDate = endDate.toISOString().slice(0, 10); // Format endDate as YYYY-MM-DD
 
-  const encryptedPlantId = encodeURIComponent(   encryptAES(JSON.stringify(plantId))
+  const encryptedPlantId = encodeURIComponent(   await encryptAES(JSON.stringify(plantId))
   );
-  const encryptedfromDate = encodeURIComponent(encryptAES(formattedStartDate));
-  const encryptedtodate = encodeURIComponent(encryptAES(formattedEndDate));
+  const encryptedfromDate = encodeURIComponent(await encryptAES(formattedStartDate));
+  const encryptedtodate = encodeURIComponent(await encryptAES(formattedEndDate));
   // const url = `dashboard/?plant_id=${encryptedPlantId}&from_date=${encryptedfromDate}&to_date=${encryptedtodate}`;
   const url = `dashboard/?plant_id=${encryptedPlantId}`;
 

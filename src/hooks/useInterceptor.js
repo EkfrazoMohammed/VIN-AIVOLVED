@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ApiCall from "../API/Apicall";
 import { signInSuccess, signOut } from "../redux/slices/authSlice";
-import { encryptAES } from "../redux/middleware/encryptPayloadUtils";
+import {  encryptAES } from "../redux/middleware/encryptPayloadUtils";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { dashboardSignout } from "../redux/slices/dashboardSlice";
@@ -101,7 +101,7 @@ const useApiInterceptor = () => {
                     originalRequest._retry = true;
                     setRefresh(true);
                     isRefreshing = true;
-                    const encryptedData = encryptAES(JSON.stringify({ refresh_token: refreshToken }));
+                    const encryptedData = await encryptAES(JSON.stringify({ refresh_token: refreshToken }));
 
                     try {
                         const response = await axios.post('https://hul.aivolved.in/api/refresh_token/', {

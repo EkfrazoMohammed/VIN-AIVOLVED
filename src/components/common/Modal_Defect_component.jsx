@@ -71,7 +71,7 @@ const defectsData  = data?.filter((item, index)=>  !machineDefectsData?.active_d
         try {
         
            
-            const encryptedMachineId = encryptAES(JSON.stringify(machineActive?.id));
+            const encryptedMachineId = await encryptAES(JSON.stringify(machineActive?.id));
             const url = `machine/${encryptedMachineId}/`;
             const payload = {
                 name: machineActive.name,
@@ -82,7 +82,7 @@ const defectsData  = data?.filter((item, index)=>  !machineDefectsData?.active_d
                 },
             };
 
-            const data = encryptAES(JSON.stringify(payload));
+            const data = await encryptAES(JSON.stringify(payload));
             const response = await apiCallInterceptor.put(url, { data });
             dispatchModalReducer({ type: 'MODAL_OPEN', payload: false });  
             dispatchModalReducer({type:"MACHINE_DEFECTS_DATA", payload:payload.defect_status})

@@ -123,12 +123,12 @@ function StackChart({ data, localPlantData, loading ,dateRange }) {
           <div
             style={{
               width: "100%",
-              overflowX: sortedDates.length > 10 ? "auto" : "visible", // Only apply scroll for more than 10 dates
+              overflowX: sortedDates.length > 7 ? "auto" : "visible", // Only apply scroll for more than 10 dates
             }}
           >
             <div
                style={{
-                width: sortedDates?.length * 14 + "%",
+                width: sortedDates?.length > 7 ? sortedDates?.length * 20 + "%" : sortedDates?.length * 7 + "%"  ,
                 minWidth: "100%",
                 height: "400px",
                 display: "flex",

@@ -26,7 +26,7 @@ const handleCancel = () => {
                     defect_status: null
                 };
     
-                const data = encryptAES(JSON.stringify(payload));
+                const data = await encryptAES(JSON.stringify(payload));
                 const response = await apiCallInterceptor.post(url, { data });
                 dispatchModalReducer({ type: 'MODAL_MACHINE_OPEN', payload: false });  
             }

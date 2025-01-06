@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Card, Col, Input, notification ,ConfigProvider } from "antd";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeftOutlined } from "@ant-design/icons";
-import { encryptAES } from "../../redux/middleware/encryptPayloadUtils";
+import {  encryptAES } from "../../redux/middleware/encryptPayloadUtils";
 import { ColorRing } from 'react-loader-spinner'
 import axiosInstance from "../../API/axiosInstance";
 
@@ -54,7 +54,7 @@ const ResetPasswordEmail = () => {
           email: resetPayload.email,
         }
         setLoading(true)
-        const encryTedData = encryptAES(JSON.stringify(payload))
+        const encryTedData = await encryptAES(JSON.stringify(payload))
         const res = await axiosInstance.post(`reset-password/`, { "data": encryTedData });
 
         if (res.status === 200) {

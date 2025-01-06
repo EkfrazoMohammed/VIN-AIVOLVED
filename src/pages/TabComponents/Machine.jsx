@@ -1,14 +1,16 @@
 import React, { useEffect, useReducer, useState } from 'react';
 import { Badge, Table, Switch, ConfigProvider, Button, Row, Col , Spin } from 'antd';
 import useApiInterceptor from '../../hooks/useInterceptor';
+import {DeleteFilled} from '@ant-design/icons';
 import { useSelector } from 'react-redux';
 // import { getTriggerDefects, postTriggerData } from '../../services/defectTriggerApi';
-import { encryptAES } from '../../redux/middleware/encryptPayloadUtils';
+import {  encryptAES } from '../../redux/middleware/encryptPayloadUtils';
 import Modal from '../../components/common/Modal_Defect_component';
 import ModalComponent from "../../components/common/ModalComponent";
 
 // IMPORTING DEFECT IMAGE
 import defectImage from "../../assets/images/add_defects_icon.png"
+import { render } from '@testing-library/react';
 
 const Machine = ({ machinesdata, defectsData, plantData }) => {
   const apiCallInterceptor = useApiInterceptor();
@@ -57,7 +59,7 @@ const Machine = ({ machinesdata, defectsData, plantData }) => {
   const getDefectsData = async (record) => {
     try {
       dispatchModalReducer({ type: 'MACHINE_ACTIVE', payload: record });
-      const encryptedMachineId = encryptAES(JSON.stringify(record.id));
+      const encryptedMachineId = await encryptAES(JSON.stringify(record.id));
       let url = `machine/${encryptedMachineId}/`;
       const response = await apiCallInterceptor.get(url);
       if (response && response?.data?.results?.defect_status === null) {
@@ -73,12 +75,58 @@ const Machine = ({ machinesdata, defectsData, plantData }) => {
   const handleAddDefectsMachine = async (record) => {
     try {
       getDefectsData(record);
+
       dispatchModalReducer({ type: 'MODAL_OPEN', payload: true });
     } catch (error) {
       console.log(error);
     }
   };
+
+  
  
+
+
+  const handleDelete = async(e,parentRow,id) =>{
+    try {
+      const activeDefects = state?.machineDefectsDatas?.active_defects 
+      const nonActiveDefects = state?.machineDefectsDatas?.non_active_defects;
+      if(activeDefects.includes(id)){
+        const index = activeDefects.indexOf(id);
+            if (index > -1) {
+                activeDefects.splice(index, 1);
+            }
+      }
+
+      if(nonActiveDefects.includes(id)){
+        const index = nonActiveDefects.indexOf(id);
+            if (index > -1) {
+                nonActiveDefects.splice(index, 1);
+            }
+      }
+
+    
+
+      const encryptedMachineId = await encryptAES(JSON.stringify(parentRow.id));
+      const url = `machine/${encryptedMachineId}/`;
+      const payload = {
+          name: parentRow.name,
+          plant: plantData.id,
+          defect_status: {
+              active_defects:activeDefects ,
+              non_active_defects: nonActiveDefects,
+          },
+          machine:null,
+          defect:null,
+          status:null
+      };
+      const data = await encryptAES(JSON.stringify(payload));
+      const response = await apiCallInterceptor.put(url, { data });
+      dispatchModalReducer({type:"MACHINE_DEFECTS_DATA", payload:payload.defect_status})
+   
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   const expandColumns = (parentRow) => [
     {
@@ -147,6 +195,14 @@ const Machine = ({ machinesdata, defectsData, plantData }) => {
         </ConfigProvider>
       ),
     },
+    {
+
+      key: 'color_code',
+      dataIndex:'id',
+      render:(id)=><div className="shadow-lg w-8 h-8 flex justify-center items-center rounded-md cursor-pointer" onClick={(e)=>handleDelete(e, parentRow, id)}>
+        <DeleteFilled style={{color:"red",fontSize:"1rem"}} />
+      </div>
+    },
   ];
 
   const columns = [
@@ -170,12 +226,9 @@ const Machine = ({ machinesdata, defectsData, plantData }) => {
   ];
 
   const handleChange = async (e, parentRow, innerRow) => {
-
       try {
-
         const activeDefects = state?.machineDefectsDatas?.active_defects 
         const nonActiveDefects = state?.machineDefectsDatas?.non_active_defects 
-
         if (e) {
             // Add to active_defects
             if (!activeDefects.includes(innerRow.id)) {
@@ -201,7 +254,7 @@ const Machine = ({ machinesdata, defectsData, plantData }) => {
         }
 
  
-           const encryptedMachineId = encryptAES(JSON.stringify(parentRow.id));
+                const encryptedMachineId = await encryptAES(JSON.stringify(parentRow.id));
                 const url = `machine/${encryptedMachineId}/`;
                 const payload = {
                     name: parentRow.name,
@@ -214,10 +267,8 @@ const Machine = ({ machinesdata, defectsData, plantData }) => {
                     defect:innerRow.id,
                     status:e ? 1 : 0
                 };
-    
-                const data = encryptAES(JSON.stringify(payload));
+                const data = await encryptAES(JSON.stringify(payload));
                 const response = await apiCallInterceptor.put(url, { data });
-             
                 dispatchModalReducer({type:"MACHINE_DEFECTS_DATA", payload:payload.defect_status})
     
 } catch (error) {

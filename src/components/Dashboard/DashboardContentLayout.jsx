@@ -11,7 +11,7 @@ import { VideoCameraFilled, BugFilled, AlertFilled } from "@ant-design/icons";
 
 import dayjs from "dayjs";
 import useApiInterceptor from "../../hooks/useInterceptor";
-import { encryptAES } from "../../redux/middleware/encryptPayloadUtils";
+import {  encryptAES } from "../../redux/middleware/encryptPayloadUtils";
 import SelectComponent from "../common/Select";
 import { setSelectedShift } from "../../redux/slices/shiftSlice";
 import { getProductVsDefectSuccess } from "../../redux/slices/productvsDefectSlice";
@@ -189,16 +189,19 @@ const [state, dispatchReducer] = useReducer( reducer ,initialState)
         )
       );
       const encryptedUrl = Object.fromEntries(
-        Object.entries(filteredQueryParams).map(([key, val]) => {
-          if (key !== "page" && key !== "page_size") {
-            if (key === "from_date" || key === "to_date") {
-              return [key, encryptAES(val)];
+        await Promise.all(
+          Object.entries(filteredQueryParams).map(async ([key, val]) => {
+            if (key !== "page" && key !== "page_size") {
+              if (key === "from_date" || key === "to_date") {
+                return [key, await encryptAES(val)];
+              }
+              return [key, await encryptAES(JSON.stringify(val))];
             }
-            return [key, encryptAES(JSON.stringify(val))];
-          }
-          return [key, val];
-        })
+            return [key, val];
+          })
+        )
       );
+      
       const queryString = new URLSearchParams(encryptedUrl).toString();
 
       const defectUrl = `defct-vs-machine/?${queryString}`;
@@ -253,16 +256,20 @@ const [state, dispatchReducer] = useReducer( reducer ,initialState)
     );
 
     const encryptedUrl = Object.fromEntries(
-      Object.entries(filteredQueryParams).map(([key, val]) => {
-        if (key !== "page" && key !== "page_size") {
-          if (key === "from_date" || key === "to_date") {
-            return [key, encryptAES(val)];
+      await Promise.all(
+        Object.entries(filteredQueryParams).map(async ([key, val]) => {
+          if (key !== "page" && key !== "page_size") {
+            if (key === "from_date" || key === "to_date") {
+              return [key, await encryptAES(val)];
+            }
+            return [key, await encryptAES(JSON.stringify(val))];
           }
-          return [key, encryptAES(JSON.stringify(val))];
-        }
-        return [key, val];
-      })
+          return [key, val];
+        })
+      )
     );
+
+    
 
     const queryString = new URLSearchParams(encryptedUrl).toString();
     const url = `dashboard/?${queryString}`;
