@@ -25,7 +25,8 @@ const useApiInterceptor = () => {
 
     const token = localStorage.getItem("token");
     const accessToken = JSON.parse(token) 
-    const refreshToken  = localStorage.getItem("token")
+    const refresh_Token  = localStorage.getItem("refreshToken");
+    const refreshToken = JSON.parse(refresh_Token) 
     // const refreshToken = useSelector((state) => state.auth.authData[0].refreshToken);
     // const accessToken = useSelector((state) => state.auth.authData.access_token);
     const [refresh, setRefresh] = useState(false);
