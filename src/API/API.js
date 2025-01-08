@@ -19,16 +19,13 @@ const API = axios.create({
 
 API.interceptors.request.use(
     (config) => {
-        // const accessToken = store.getState().auth.authData[0].accessToken; // Get the latest accessToken
-        // const accessToken = useSelector((state) => state.auth.authData[0].accessToken); from the Redux store
-        if (accessToken) {
-            config.headers.Authorization = `Bearer ${accessToken}`;
+        const token = localStorage.getItem("token");
+        if (token) {
+            config.headers.Authorization = Bearer ${JSON.parse(token)};
         }
         return config;
     },
-    (error) => {
-        return Promise.reject(new Error(error));
-    }
+    (error) => Promise.reject(error)
 );
 
 export { baseURL, API, accessToken, localPlantData }
