@@ -1,91 +1,90 @@
-
-import React, { useEffect, useState } from "react";
-import API from "../API/API";
+import React, { useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import API from "../API/API";
 
 const useApiInterceptor = () => {
     const navigate = useNavigate();
 
-
     let isRefreshing = false;
     let failedQueue = [];
 
-    const processQueue = async (error, token = null) => {
-        for (let request of failedQueue) {
+    const processQueue = (error, access = null) => {
+        failedQueue.forEach((request) => {
             if (error) {
-                request.reject(new Error (error));
+                request.reject(error);
             } else {
-                request.resolve(token);
+                request.resolve(access);
             }
-        }
+        });
         failedQueue = [];
     };
 
-
-    const token = localStorage.getItem("token");
-    const accessToken = JSON.parse(token) 
-    const refresh_Token  = localStorage.getItem("refreshToken");
-    const refreshToken = JSON.parse(refresh_Token) 
-    // const refreshToken = useSelector((state) => state.auth.authData[0].refreshToken);
-    // const accessToken = useSelector((state) => state.auth.authData.access_token);
-    const [refresh, setRefresh] = useState(false);
-
-  
-    const handleRefreshTokenExpiry = async () => {
+    const handleRefreshTokenExpiry = () => {
         navigate("/login");
         localStorage.clear();
         sessionStorage.clear();
-      };
+    };
 
     useEffect(() => {
-        const interceptor = API.interceptors.response.use(
+        // Request interceptor to ensure headers use the latest token
+        const requestInterceptor = API.interceptors.request.use(
+            (config) => {
+                const token = localStorage.getItem("token");
+                if (token) {
+                    config.headers.Authorization = Bearer ${JSON.parse(token)};
+                }
+                return config;
+            },
+            (error) => Promise.reject(error)
+        );
+
+        // Response interceptor to handle token refresh
+        const responseInterceptor = API.interceptors.response.use(
             (response) => response,
             async (error) => {
                 const originalRequest = error.config;
 
                 if (error?.response?.status === 401 && !originalRequest._retry) {
                     if (isRefreshing) {
-
                         return new Promise((resolve, reject) => {
                             failedQueue.push({ resolve, reject });
                         })
-                            .then((token) => {
-                                originalRequest.headers['Authorization'] = `Bearer ${token}`;
+                            .then((accessToken) => {
+                                originalRequest.headers['Authorization'] = Bearer ${accessToken};
                                 return API(originalRequest);
                             })
-                            .catch((err) => {
-                                return Promise.reject(err);
-                            });
+                            .catch((err) => Promise.reject(err));
                     }
 
                     originalRequest._retry = true;
-                    setRefresh(true);
                     isRefreshing = true;
-                    // const encryptedData = encryptAES(JSON.stringify({ refresh_token: refreshToken }));
 
                     try {
-                        const response = await axios.post('http://localhost:8000/api/refresh_token/', {
-                            data: refreshToken,
-                        });
+                        const refreshToken = JSON.parse(localStorage.getItem("refreshToken"));
+                        const response = await axios.post(
+                            'http://localhost:8000/api/refresh_token/',
+                            { refresh: refreshToken }
+                        );
 
-                        const { access_token } = response.data;
+                        const { access } = response.data;
 
-                        // dispatch(signInSuccess({ accessToken: access_token, refreshToken }));
-                        localStorage.setItem("token",JSON.stringify(access_token))
+                        // Update localStorage with the new token
+                        localStorage.setItem("token", JSON.stringify(access));
 
-                        API.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
-                        originalRequest.headers['Authorization'] = `Bearer ${access_token}`;
+                        // Apply the new token globally for subsequent requests
+                        API.defaults.headers.common['Authorization'] = Bearer ${access};
 
-                        processQueue(null, access_token);
+                        // Retry the original request with the new token
+                        originalRequest.headers['Authorization'] = Bearer ${access};
 
+                        processQueue(null, access);
                         return API(originalRequest);
                     } catch (refreshError) {
                         processQueue(refreshError, null);
-                        handleRefreshTokenExpiry()
+                        handleRefreshTokenExpiry();
                         return Promise.reject(refreshError);
                     } finally {
-                        setRefresh(false);
                         isRefreshing = false;
                     }
                 }
@@ -95,9 +94,10 @@ const useApiInterceptor = () => {
         );
 
         return () => {
-            API.interceptors.response.eject(interceptor);
+            API.interceptors.request.eject(requestInterceptor);
+            API.interceptors.response.eject(responseInterceptor);
         };
-    }, [refreshToken, accessToken, refresh,]);
+    }, []);
 
     return API;
 };
