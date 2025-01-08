@@ -366,7 +366,7 @@ const Reports = () => {
       setLoader(false)
       setPagination({
         ...pagination,
-        current: 1,
+        current: page,
         pageSize: page_size,
         total: total_count,
       });
