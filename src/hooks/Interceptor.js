@@ -32,7 +32,7 @@ const useApiInterceptor = () => {
             (config) => {
                 const token = localStorage.getItem("token");
                 if (token) {
-                    config.headers.Authorization = Bearer ${JSON.parse(token)};
+                    config.headers.Authorization = `Bearer ${JSON.parse(token)}`;
                 }
                 return config;
             },
@@ -51,7 +51,7 @@ const useApiInterceptor = () => {
                             failedQueue.push({ resolve, reject });
                         })
                             .then((accessToken) => {
-                                originalRequest.headers['Authorization'] = Bearer ${accessToken};
+                                originalRequest.headers['Authorization'] = `Bearer ${accessToken}`;
                                 return API(originalRequest);
                             })
                             .catch((err) => Promise.reject(err));
@@ -73,10 +73,10 @@ const useApiInterceptor = () => {
                         localStorage.setItem("token", JSON.stringify(access));
 
                         // Apply the new token globally for subsequent requests
-                        API.defaults.headers.common['Authorization'] = Bearer ${access};
+                        API.defaults.headers.common['Authorization'] = `Bearer ${access}`;
 
                         // Retry the original request with the new token
-                        originalRequest.headers['Authorization'] = Bearer ${access};
+                        originalRequest.headers['Authorization'] = `Bearer ${access}`;
 
                         processQueue(null, access);
                         return API(originalRequest);
