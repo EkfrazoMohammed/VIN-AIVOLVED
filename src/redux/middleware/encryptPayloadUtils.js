@@ -1,80 +1,40 @@
 import CryptoJS from 'crypto-js';
-import { Buffer } from 'buffer';
 
+// Convert the base64 key to Hex format for AES-256 (equivalent to binascii.unhexlify)
 const base64Key = "03C597A3660D50B59332AE1603A94AC2";
-
 const AES_KEY = CryptoJS.enc.Hex.parse(base64Key);
-const AES_KEY2 = Uint8Array.from(base64Key.match(/.{1,2}/g).map(byte => parseInt(byte, 16))); // Convert hex key to Uint8Array
-const fixedIV = new TextEncoder().encode("293229524557234B823834"); // Ensure IV is 12 bytes long
 
-// // AES-GCM encryption function
-export const encryptAES = async (plaintext) => {
-    try {
-        // Import the AES key into the SubtleCrypto API
-        const key = await crypto.subtle.importKey(
-            "raw",
-            AES_KEY2,
-            { name: "AES-GCM" },
-            false,
-            ["encrypt"]
-        );
+// URL-safe Base64 encoding and decoding functions
+function safeEncode(data) {
+    return CryptoJS.enc.Base64.stringify(data).replace(/=+$/, '').replace(/\+/g, '-').replace(/\//g, '_');
+}
 
-        // Encode the plaintext into a Uint8Array
-        const encodedText = new TextEncoder().encode(plaintext);
+function safeDecode(data) {
+    // Replace URL-safe characters and add necessary padding
+    const paddedData = data.replace(/-/g, '+').replace(/_/g, '/');
+    const base64Data = paddedData + '='.repeat((4 - paddedData.length % 4) % 4);
+    return CryptoJS.enc.Base64.parse(base64Data);
+}
 
-        // Encrypt the plaintext
-        const encryptedBuffer = await crypto.subtle.encrypt(
-            {
-                name: "AES-GCM",
-                iv: fixedIV,
-            },
-            key,
-            encodedText
-        );
-
-        // Convert the encrypted data (ciphertext + tag) to base64
-        const encryptedData = btoa(String.fromCharCode(...new Uint8Array(encryptedBuffer)));
-        return encryptedData
-    } catch (error) {
-        console.error("Encryption error:", error);
-        throw error;
-    }
+// AES Encryption
+export const encryptAES = (plaintext) => {
+    const encrypted = CryptoJS.AES.encrypt(plaintext, AES_KEY, {\
+        mode: CryptoJS.mode.ECB,
+        padding: CryptoJS.pad.Pkcs7
+    });
+    
+    const encryptedBase64 = encrypted.toString(); // Standard Base64 encryption result
+    return safeEncode(CryptoJS.enc.Base64.parse(encryptedBase64)); // URL-safe encoding
 };
 
-export const decryptAES = async (encryptedData) => {
-    try {
-        // Import the AES key into the SubtleCrypto API
-        const key = await crypto.subtle.importKey(
-            "raw",
-            AES_KEY2,
-            { name: "AES-GCM" },
-            false,
-            ["decrypt"]
-        );
-
-        // Decode the base64-encoded encrypted data to a Uint8Array
-        const encryptedArray = Uint8Array.from(atob(encryptedData), char => char.charCodeAt(0));
-
-        // Decrypt the data
-        const decryptedBuffer = await crypto.subtle.decrypt(
-            {
-                name: "AES-GCM",
-                iv: fixedIV,
-            },
-            key,
-            encryptedArray
-        );
-
-        // Decode the decrypted buffer back into a string
-        const decryptedText = new TextDecoder().decode(decryptedBuffer);
-       
-        return decryptedText;
-    } catch (error) {
-        console.error("Decryption error:", error);
-        throw error;
-    }
+export const decryptAES = (ciphertext) => {
+    const decodedCiphertext = safeDecode(ciphertext);  // Decode the URL-safe base64
+    const bytes = CryptoJS.AES.decrypt({ ciphertext: decodedCiphertext }, AES_KEY, {
+        mode: CryptoJS.mode.ECB,
+        padding: CryptoJS.pad.Pkcs7
+    });
+    return bytes.toString(CryptoJS.enc.Utf8);  // Convert to string (plaintext)
 };
-
 
 
 export const encryptAESlash = (plaintext) => {
@@ -130,22 +90,3 @@ const plantId = "B1w%2F0zn7r3%2FledwBqYUsCw%3D%3D";
 const decryptedPlantId = decryptAES(plantId);
 //console.log(decryptedPlantId);
 
-
-
-// OLD MEHTOD OF ENCRYPTION AES-ECB
-// export const encryptAES = (plaintext) => {
-//     const encrypted = CryptoJS.AES.encrypt(plaintext, AES_KEY, {
-//         mode: CryptoJS.mode.ECB,
-//         padding: CryptoJS.pad.Pkcs7
-//     });
-//     return encrypted.toString();
-// };
-
-// export const decryptAES = (encryptedData) => {
-//     const decrypted = CryptoJS.AES.decrypt(encryptedData, AES_KEY, {
-//         mode: CryptoJS.mode.ECB,
-//         padding: CryptoJS.pad.Pkcs7
-//     });
-//     return CryptoJS.enc.Utf8.stringify(decrypted);
-
-// };

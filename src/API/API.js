@@ -2,8 +2,8 @@
 // import axios from 'axios';
 // import { useSelector } from 'react-redux';
 
-// export const baseURL = process.env.REACT_APP_API_BASE_URL || 'https://hul.aivolved.in/api/';
-// export const AuthToken = process.env.REACT_APP_API_BASE_URL || 'https://hul.aivolved.in/api/';
+// export const baseURL = process.env.REACT_APP_API_BASE_URL || 'https://hul.indusvision.ai/api/';
+// export const AuthToken = process.env.REACT_APP_API_BASE_URL || 'https://hul.indusvision.ai/api/';
 
 // export const useAPI = () => {
 //   const baseURL = useSelector((state) => state.api.baseURL || baseURL);

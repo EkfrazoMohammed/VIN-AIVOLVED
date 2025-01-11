@@ -2,7 +2,7 @@ import axios from 'axios';
 import store from '../redux/store';
 
 const ApiCall = axios.create({
-    baseURL: 'https://hul.aivolved.in/api/',
+    baseURL: 'https://hul.indusvision.ai/api/',
 });
 
 ApiCall.interceptors.request.use(

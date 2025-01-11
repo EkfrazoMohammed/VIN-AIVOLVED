@@ -3,7 +3,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 // Base URL should be set in an environment variable or configuration
-const baseURL = process.env.REACT_APP_API_BASE_URL || 'https://hul.aivolved.in/api/';
+const baseURL = process.env.REACT_APP_API_BASE_URL || 'https://hul.indusvision.ai/api/';
 
 // Initial state
 const initialState = {

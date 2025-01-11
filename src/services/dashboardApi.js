@@ -45,7 +45,7 @@ import {
 } from "../redux/slices/dashboardSlice";
 
 export const baseURL =
-  process.env.REACT_APP_API_BASE_URL || "https://hul.aivolved.in/api/";
+  process.env.REACT_APP_API_BASE_URL || "https://hul.indusvision.ai/api/";
 
 export const getMachines = async (plantName, token, apiCallInterceptor) => {
   store.dispatch(setLoading(true))
