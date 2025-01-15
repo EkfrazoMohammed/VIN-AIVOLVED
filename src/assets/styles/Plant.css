@@ -9,7 +9,7 @@ margin: 0;
 .mytab-content{
     width:100%;
     max-width: 1200px;
-    min-width:600px
+    min-width:600px;
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
     padding:1rem;
     height:400px;
