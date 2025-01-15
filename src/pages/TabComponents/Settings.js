@@ -137,30 +137,7 @@ User Creation
   <Col span={16} style={{display:'flex',justifyContent:'space-between'}}>
 <div className="">
   <h6>Email Id</h6>
-  <h6>developer@mail.com</h6>
-</div>
-<div className="">
-<h6>Mobile Number</h6>
-  <h6>987654310</h6>
-</div>
-<div className="">
-<h6>Password</h6>
-  <h6>12345</h6>
-</div>
-  </Col>
-  <Col span={9}><h6 style={{fontWeight:650}}>Users</h6></Col>
-  <Col span={16} style={{display:'flex',justifyContent:'space-between'}}>
-  <div className="">
-  <h6>Email Id</h6>
-  <h6>developer@mail.com</h6>
-</div>
-<div className="">
-<h6>Mobile Number</h6>
-  <h6>987654310</h6>
-</div>
-<div className="">
-<h6>Password</h6>
-  <h6>12345</h6>
+  <h6>vision@inudusvision.ai</h6>
 </div>
   </Col>
 </Row>
