@@ -91,8 +91,8 @@ setloginPayload((prev)=>({...prev,[name]:value}))
     <Col span={8} style={{maxWidth:'500px'}}>
 
       <Card  bordered={false} style={{padding:'2rem',borderRadius:'25px'}}>
-    <div className="" >
-    <img src="https://aivolved.in/wp-content/uploads/2022/11/ai-logo.png" style={{height:'70px'}} alt="" />
+    <div className="" style={{display:"flex", justifyContent:"center"}}>
+    <img src="https://eimkeia.stripocdn.email/content/guids/CABINET_8270216c780e362a1fbcd636b59c67ae376eb446dc5f95e17700b638b8c3f618/images/indus_logo.png" style={{height:'70px'}} alt="" />
     </div>
     <div className="" style={{display:'flex',flexDirection:'column',gap:'1rem',}}>
         <h3 >Login</h3>
