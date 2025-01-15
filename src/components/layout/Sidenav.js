@@ -185,7 +185,7 @@ function Sidenav({ color }) {
 
   return (
     <>
-      <div className="" style={{ display: 'flex', justifyContent: 'center', width: '100%', marginBottom: '1rem' }}>
+      <div className="" style={{ display: 'flex', justifyContent: 'center', width: '100%', marginBottom: '2rem' }}>
         <div className="brand" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', flexDirection: 'column', gap: "0" }}>
           <img src="https://aivolved.in/wp-content/uploads/2022/11/ai-logo.png" style={{ height: '50px' }} alt="" />
           <span>Aivolved</span>
