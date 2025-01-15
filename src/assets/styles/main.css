@@ -3146,4 +3146,6 @@ button.next-button {
   top: 60%;
   right: 5%;
 }
+:where(.css-dev-only-do-not-override-kghr11).ant-select-dropdown{ 
+box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;}
 
