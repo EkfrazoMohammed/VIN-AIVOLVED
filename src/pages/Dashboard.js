@@ -806,7 +806,8 @@ try {
         </Row>
 
         <Row gutter={[24, 24]}>
-          <Col xs={24} sm={24} md={12} lg={6} className="mb-24 overflow-y-auto h-[500px]" >
+          <Col xs={24} sm={24} md={12} lg={6} className="mb-24" style={{height:"500px"  , overflowY:"auto"}}
+>
             <Card bordered={false}>
               {Object.keys(categoryDefects).map((category, index) => (
                 <Card key={index} bordered={true} className="criclebox h-full mb-2 px-2 ">
