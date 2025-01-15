@@ -187,7 +187,7 @@ function Sidenav({ color }) {
     <>
       <div className="" style={{ display: 'flex', justifyContent: 'center', width: '100%', marginBottom: '2rem' }}>
         <div className="brand" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', flexDirection: 'column', gap: "0" }}>
-          <img src="https://aivolved.in/wp-content/uploads/2022/11/ai-logo.png" style={{ height: '50px' }} alt="" />
+          <img src="https://eimkeia.stripocdn.email/content/guids/CABINET_8270216c780e362a1fbcd636b59c67ae376eb446dc5f95e17700b638b8c3f618/images/indus_logo.png" style={{ height: '50px' }} alt="" />
           <span>Aivolved</span>
         </div>
       </div>
