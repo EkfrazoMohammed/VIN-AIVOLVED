@@ -2314,7 +2314,7 @@ section.ant-layout.layout-content .ant-layout-content.content-ant {
 
 .layout-dashboard .ant-card {
   border-radius: 12px;
-  box-shadow: 0 20px 27px rgb(0 0 0 / 5%);
+ box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 
 .card-credit {
