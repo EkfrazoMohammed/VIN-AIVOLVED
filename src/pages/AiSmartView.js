@@ -35,7 +35,7 @@ const apiCallInterceptor = useApiInterceptor();
 const getAiamrtviewData = async()=>{
   let url = `defect/?plant_name=${localPlantData.plant_name}`
   try {
-    const response = apiCallInterceptor.get(url);
+    const response = await apiCallInterceptor.get(url);
     setDefects(response.data.results);
   } catch (error) {
     console.error("Error fetching defects:", error);
