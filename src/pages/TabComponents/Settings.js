@@ -137,7 +137,7 @@ User Creation
   <Col span={16} style={{display:'flex',justifyContent:'space-between'}}>
 <div className="">
   <h6>Email Id</h6>
-  <h6>vision@inudusvision.ai</h6>
+  <h6>vision@indusvision.ai</h6>
 </div>
   </Col>
 </Row>
