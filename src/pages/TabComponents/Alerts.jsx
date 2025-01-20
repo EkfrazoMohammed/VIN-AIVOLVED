@@ -37,7 +37,7 @@ const columns = [
    const getProdData = async ()=>{
     try {
   const url = `product/?plant_name=${localPlantData.plant_name}`;
-      const response = await useApiInterceptor.get(url)
+      const response = await apicallInterceptor.get(url)
       setTableData(res.data.results)
     } catch (error) {
       console.log(error)
