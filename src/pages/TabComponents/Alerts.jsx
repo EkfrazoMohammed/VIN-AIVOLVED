@@ -39,6 +39,7 @@ useEffect(()=>{
    const getProdData = async ()=>{
     try {
       const response = await useApiInterceptor.get(url)
+      setTableData(res.data.results)
     } catch (error) {
       console.log(error)
     }
