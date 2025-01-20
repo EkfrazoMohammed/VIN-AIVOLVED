@@ -33,17 +33,20 @@ const columns = [
 
 
   ];
-useEffect(()=>{
 
-  const url = `product/?plant_name=${localPlantData.plant_name}`;
    const getProdData = async ()=>{
     try {
+  const url = `product/?plant_name=${localPlantData.plant_name}`;
       const response = await useApiInterceptor.get(url)
       setTableData(res.data.results)
     } catch (error) {
       console.log(error)
     }
    }
+  
+useEffect(()=>{
+
+
 
     getProdData();
     // axios.get(url,{
