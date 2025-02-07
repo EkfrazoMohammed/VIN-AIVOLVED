@@ -18,7 +18,7 @@ function safeDecode(data) {
 
 // AES Encryption
 export const encryptAES = (plaintext) => {
-    const encrypted = CryptoJS.AES.encrypt(plaintext, AES_KEY, {\
+    const encrypted = CryptoJS.AES.encrypt(plaintext, AES_KEY, {
         mode: CryptoJS.mode.ECB,
         padding: CryptoJS.pad.Pkcs7
     });

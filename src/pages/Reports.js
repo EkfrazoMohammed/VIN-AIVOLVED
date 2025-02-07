@@ -32,8 +32,8 @@ const columns = [
     dataIndex: "product",
     key: "alert_name",
     id: "alert_name",
-    render: async (text) => {
-      const decrypData = await decryptAES(text)
+    render:  (text) => {
+      const decrypData =  decryptAES(text)
       return (
 
         <>
@@ -48,8 +48,8 @@ const columns = [
     title: "Defect Name",
     dataIndex: "defect",
     key: "defect_name",
-    render: async (text) => {
-      const decrypData = await decryptAES(text)
+    render:  (text) => {
+      const decrypData =  decryptAES(text)
       return (
         <>
           {
@@ -64,8 +64,8 @@ const columns = [
     dataIndex: "machine",
     key: "machine_name",
 
-    render: async (text) => {
-      const decrypData = await decryptAES(text)
+    render:  (text) => {
+      const decrypData =  decryptAES(text)
       return (
 
         <>
@@ -81,8 +81,9 @@ const columns = [
     dataIndex: "department",
     key: "department_name",
 
-    render: async (text) => {
-      const decrypData = await decryptAES(text)
+    render:  (text) => {
+      const decrypData =  decryptAES(text)
+      console.log(decrypData,"department name")
       return (
 
         <>
@@ -98,8 +99,8 @@ const columns = [
     title: "Recorded Date Time",
     dataIndex: "recorded_date_time",
     key: "recorded_date_time",
-    render: async (text) => {
-      const decrypData = await decryptAES(text);
+    render:  (text) => {
+      const decrypData =  decryptAES(text);
       const formattedDateTime = decrypData ? decrypData.replace("T", " ") : null;
       return (
         <>
@@ -113,8 +114,8 @@ const columns = [
     dataIndex: "shift",
     key: "shift",
 
-    render: async (text) => {
-      const decrypData = await decryptAES(text);
+    render:  (text) => {
+      const decrypData =  decryptAES(text);
       return (
         <>
           {decrypData ? <div>{decrypData}</div> : null}
@@ -127,8 +128,8 @@ const columns = [
     dataIndex: "ocr",
     key: "ocr",
 
-    render: async (text) => {
-      const decrypData = await decryptAES(text);
+    render:  (text) => {
+      const decrypData =  decryptAES(text);
       return (
         <>
           {decrypData ? <div>{decrypData}</div> : null}
@@ -141,9 +142,8 @@ const columns = [
     title: "Image",
     dataIndex: "image",
     key: "image",
-    render: async (image_b64) => {
-
-      const decrypData = await decryptAES(image_b64)
+    render:  (image_b64) => {
+      const decrypData = decryptAES(image_b64)
       return (
         <>{
           image_b64 ? (
@@ -183,6 +183,8 @@ const Reports = () => {
   const location = useLocation();
 
 let defectProp = location?.state;
+
+
 
 const initailState = {
   reportData:[],
@@ -481,18 +483,20 @@ const reducer = (state ,  action) => {
     });
   };
 
+  
   const downloadExcel = () => {
+    console.log(state.reportData,"report data") 
     // Prepare the table data with correct headers
-    const formattedTableData = state.reportData.map(async (item) => ({
-      "Product Name": await decryptAES(item.product),
-      "Defect Name": await decryptAES(item.defect),
-      "Machine Name": await decryptAES(item.machine),
-      "Department Name": await decryptAES(item.department),
-      "Recorded Date Time": await decryptAES(item.recorded_date_time).replace("T", " "),
+    const formattedTableData = state.reportData.map( (item) => ({
+      "Product Name":  decryptAES(item.product),
+      "Defect Name":  decryptAES(item.defect),
+      "Machine Name":  decryptAES(item.machine),
+      "Department Name":  decryptAES(item.department),
+      "Recorded Date Time":  decryptAES(item.recorded_date_time).replace("T", " "),
       // "Image": await decryptAES(item.image) ,
       "Image Link": {
-        v: await decryptAES(item.image), // Displayed text
-        l: { Target: await decryptAES(item.image), Tooltip: 'Click to view the image' } // Hyperlink
+        v:  decryptAES(item.image), // Displayed text
+        l: { Target:  decryptAES(item.image), Tooltip: 'Click to view the image' } // Hyperlink
       }
     }));
     // Convert JSON to Excel with correct headers
