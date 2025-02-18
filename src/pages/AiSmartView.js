@@ -171,7 +171,7 @@ const AiSmartView = () => {
                           <button
                             onClick={(i) => handleNext()}
                             // disabled={currentSlideIndex === 10}
-                            className="commButton py-2 px-3 rounded-lg text-white absolute top-1/2 right-1/4"
+                            className="commButton py-2 px-3 rounded-lg text-white absolute top-1/2 right-[23%]"
                           >
                             <CaretRightOutlined style={{ fontSize: '24px', color: '#fff' }} />
                           </button>
@@ -195,6 +195,7 @@ const AiSmartView = () => {
         )}
       </div>
       <div className="defect-selection flex flex-col w-3/12  gap-2 ">
+
       <div className="bg-[#43996a] flex flex-col p-2 gap-1 rounded-md text-white font-bold border-0">
       <label>Select Defect</label>
       <SelectComponent placeholder={"Select Defects"} selectedData={selectedDefect} setSelectedData={setSelectedDefect} action={(val) => handleDefectChange(val)} data={defectsData} style={{ minWidth: "150px", zIndex: 1 }} size={"large"} />
@@ -213,21 +214,11 @@ const AiSmartView = () => {
         />
           </div>
         :
-        
-         aismartviewData?.length > 0 ? 
-      <div className="flex flex-wrap gap-3 justify-center items-center mt-3 ">
-        {
-          aismartviewData?.map((item, index)=>{
-            const decrypt = decryptAES(item?.image);
-            return(
-              <div className={`w-20 h-20 bg-black ${currentSlideIndex === index ? " border-2 border-[#43996a] scale-125" : ""}`}>
-                <img src={decrypt} ref={sideImage} className="w-full h-full object-contain"  />
-              </div>
+     
 
-            )
-          })
-        }
-      <div className="flex justify-around w-full ">
+         aismartviewData?.length > 0 ? 
+         <>
+               <div className="flex justify-end w-full py-2">
       <ConfigProvider
   theme={{
     token: {
@@ -240,11 +231,26 @@ const AiSmartView = () => {
       <Pagination className="font-bold text-[#06175d]
       " size="large" simple defaultCurrent={pagination.currentPage} total={pagination.total} showSizeChanger={false} onChange={handleChange} />
 </ConfigProvider>
+      </div>
+      <div className="flex flex-wrap gap-3 justify-center items-center mt-3 ">
+        {
+          aismartviewData?.map((item, index)=>{
+            const decrypt = decryptAES(item?.image);
+            return(
+              <div className={`w-20 h-20 bg-black ${currentSlideIndex === index ? " border-2 border-[#43996a] scale-125" : ""}`}>
+                <img src={decrypt} ref={sideImage} className="w-full h-full object-contain"  />
+              </div>
 
-        
+            )
+          })
+        }
       </div>
-      </div>
+
+         </>
       : <div className="h-full flex justify-center items-center w-full font-bold"> {selectedDefect !== null ? "NO DATA" : ""} </div>
+
+
+      
       }
       </div>
     </div>

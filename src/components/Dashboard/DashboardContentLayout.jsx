@@ -54,6 +54,7 @@ const DashboardContentLayout = ({ children }) => {
   const [filterActive, setFilterActive] = useState(false);
   const [filterChanged, setFilterChanged] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
+  const [ textActive , setTextActive] = useState(null)
 
   const [dateRange, setDateRange] = useState([
     formattedStartDate,
@@ -97,7 +98,6 @@ const [state, dispatchReducer] = useReducer( reducer ,initialState)
  
 
   const handleMachineChange = (value) => {
-    setFilterActive(false)
     if (!value) {
       return dispatch(setSelectedMachine(null))
     }
@@ -112,7 +112,6 @@ const [state, dispatchReducer] = useReducer( reducer ,initialState)
 
 
   const handleProductChange = (value) => {
-    setFilterActive(false)
     if (!value) {
       return dispatch(setSelectedProduct(null))
     }
@@ -121,7 +120,6 @@ const [state, dispatchReducer] = useReducer( reducer ,initialState)
   }
 
   const handleShiftChange = (value) => {
-    setFilterActive(false)
     if (!value) {
       return dispatch(setSelectedShift(null))
     }
@@ -174,6 +172,7 @@ const [state, dispatchReducer] = useReducer( reducer ,initialState)
   // FILTER DATA FROM BACKEND
   const handelFilterProduction = async () => {
     try {
+      setTextActive(true)
      const dpmuFilter = await dpmuFilterData(apiCallInterceptor, selectedMachineRedux, localPlantData.id, dateRange, selectedDate);
       setLoading(true)
       const [fromDate, toDate] = dateRange;
@@ -232,6 +231,7 @@ const [state, dispatchReducer] = useReducer( reducer ,initialState)
       dispatchReducer({type:"SET_DPMU_DATA" , payload:dpmuData});
       setFilterActive(false)
     }
+
     if (selectedDate || selectedMachineRedux) {
       handelFilterProduction()
     }
@@ -545,6 +545,7 @@ const [state, dispatchReducer] = useReducer( reducer ,initialState)
             machineChangeAction={(val) => handleMachineChangeDpmu(val)}
             plant_id={localPlantData.id}
             accessToken={accessToken}
+            textActive={textActive}
           />
           </Suspense> 
 
@@ -552,7 +553,8 @@ const [state, dispatchReducer] = useReducer( reducer ,initialState)
           
           <div className="production-defect-report-container flex">
           <Suspense fallback="Loading...">
-            <ProductAndDefect loading={loading} chartData={state.prodData}  localPlantData={localPlantData}/>
+            <ProductAndDefect loading={loading} chartData={state.prodData}  localPlantData={localPlantData}             textActive={textActive}
+            />
           </Suspense>
           </div>
           <Suspense fallback={"Loading..."} >

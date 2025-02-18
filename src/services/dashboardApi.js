@@ -231,8 +231,7 @@ export const dpmuFilterData = async(apiCallInterceptor, machineId, plantId, date
   );
   const encryptedfromDate = await encryptAES(fromDate)
   const encryptedtodate = await encryptAES(toDate)
-  console.log(fromDate)
-  console.log(toDate)
+
 
   let url;
   if (machineId && machineId !== null) {
@@ -240,15 +239,24 @@ export const dpmuFilterData = async(apiCallInterceptor, machineId, plantId, date
   }
   else {
     url = `params_graph/?plant_id=${encryptedPlantId}&from_date=${encryptedfromDate}&to_date=${encryptedtodate}`;
-
   }
   try {
     const response = await apiCallInterceptor.get(url);
-    if (!selectedDate) {
-      // store.dispatch(getDpmuSuccess(response.data.results.slice(-15)));
-       dpmuData  = response.data.results.slice(-15);
-      return dpmuData 
-    }
+
+if (!selectedDate) {
+  const todayDate = new Date();
+  const past30DaysDate = new Date();
+  past30DaysDate.setDate(todayDate.getDate() - 29);
+
+  const formattedToday = todayDate.toISOString().split("T")[0];
+  const formattedPast30Days = past30DaysDate.toISOString().split("T")[0]; 
+  dpmuData = response.data.results.filter((item) => {
+    const itemDate = item.date_time.split("T")[0]; 
+    return itemDate >= formattedPast30Days && itemDate <= formattedToday;
+  }).slice(-15);
+
+  return dpmuData;
+}
     else {
      
       // const from = new Date(fromDate);
@@ -259,10 +267,21 @@ export const dpmuFilterData = async(apiCallInterceptor, machineId, plantId, date
       //   return itemDate >= from && itemDate <= to; // Check if itemDate is within the range
       // });
       // store.dispatch(getDpmuSuccess(filteredData))
-
-      dpmuData  = response.data.results
-      const totalDefectPercentage = dpmuData.reduce((total, current) => total + current.defect_percentage, 0);
-      console.log(totalDefectPercentage)
+      if(fromDate === toDate){
+        dpmuData  = response.data.results.filter((item)=>item.date_time === fromDate)
+      }
+      else{
+        const todayDate = new Date();
+        const past30DaysDate = new Date();
+        past30DaysDate.setDate(todayDate.getDate() - 29);
+      
+        const formattedToday = todayDate.toISOString().split("T")[0];
+        const formattedPast30Days = past30DaysDate.toISOString().split("T")[0]; 
+        dpmuData = response.data.results.filter((item) => {
+          const itemDate = item.date_time.split("T")[0]; 
+          return itemDate >= formattedPast30Days && itemDate <= formattedToday;
+        })
+      }
     } 
     return dpmuData
   } catch (error) {

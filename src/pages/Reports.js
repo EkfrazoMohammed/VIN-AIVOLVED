@@ -28,7 +28,7 @@ import { debounce } from 'lodash';
 
 const columns = [
   {
-    title: "Product Name",
+    title: <div className="text-center" >Product Name</div> ,
     dataIndex: "product",
     key: "alert_name",
     id: "alert_name",
@@ -38,14 +38,14 @@ const columns = [
 
         <>
           {
-            decrypData ? <div >{decrypData}</div> : null
+            decrypData ? <div className="text-center" >{decrypData}</div> : null
           }
         </>
       )
     },
   },
   {
-    title: "Defect Name",
+    title:   <div className="text-center" >Defect Name</div>,
     dataIndex: "defect",
     key: "defect_name",
     render:  (text) => {
@@ -53,14 +53,14 @@ const columns = [
       return (
         <>
           {
-            decrypData ? <div >{decrypData}</div> : null
+            decrypData ? <div className="text-center" >{decrypData}</div> : null
           }
         </>
       )
     },
   },
   {
-    title: "Machine Name",
+    title: <div className="text-center" >Machine Name</div> ,
     dataIndex: "machine",
     key: "machine_name",
 
@@ -70,25 +70,24 @@ const columns = [
 
         <>
           {
-            decrypData ? <div >{decrypData}</div> : null
+            decrypData ? <div className="text-center" >{decrypData}</div> : null
           }
         </>
       )
     },
   },
   {
-    title: "Department Name",
+    title:   <div className="text-center"> Department Name</div>,
     dataIndex: "department",
     key: "department_name",
 
     render:  (text) => {
       const decrypData =  decryptAES(text)
-      console.log(decrypData,"department name")
       return (
 
         <>
           {
-            decrypData ? <div >{decrypData}</div> : null
+            decrypData ? <div className="text-center" >{decrypData}</div> : null
           }
         </>
       )
@@ -104,7 +103,7 @@ const columns = [
       const formattedDateTime = decrypData ? decrypData.replace("T", " ") : null;
       return (
         <>
-          {formattedDateTime ? <div>{formattedDateTime}</div> : null}
+          {formattedDateTime ? <div className="text-[0.7rem] xl:text-sm ">{formattedDateTime}</div> : null}
         </>
       );
     },
@@ -157,6 +156,7 @@ const columns = [
   },
 ];
 
+
 const locale = {
   Table: {
     sortTitle: "Sort",
@@ -184,6 +184,12 @@ const Reports = () => {
 
 let defectProp = location?.state;
 
+const [queryParamState, setQueryParamState] = useState({
+  defect: null,
+  machine: null,
+  product: null,
+  shift: null
+});
 
 
 const initailState = {
@@ -344,7 +350,7 @@ const reducer = (state ,  action) => {
     setPagination(pagination.current, pagination.pageSize); // Update pagination state
     // dispatch(updatePage({ current: pagination.current, pageSize: pagination.pageSize }));
     if (filterActive) {
-      handleApplyFilters(pagination.current,pagination.pageSize);
+      handleApplyFiltersPagination(pagination.current,pagination.pageSize);
     } else {
       initialReportData(pagination.current, pagination.pageSize);
     }
@@ -352,38 +358,65 @@ const reducer = (state ,  action) => {
   
 
 
+  // const handleDefectChange = (value) => {
+  //   if (!value) {
+  //     return dispatch({type:"SET_SELECTED_DEFECT" , payload:null})
+  //   }
+  //   dispatch({type:"SET_SELECTED_DEFECT", payload:value})
+  //   setFilterChanged(true)
+  // };
+
+  // const handleMachineChange = (value) => {
+  //   if (!value) {
+  //     return dispatch({type:'SET_SELECTED_MACHINE', payload:null})
+  //   };
+  //   dispatch({type:'SET_SELECTED_MACHINE', payload:Number(value)}) 
+  //   setFilterChanged(true)
+
+  // };
+
+  // const handleProductChange = (value) => {
+  //   if (!value) {
+  //     return dispatch({type:'SET_SELECTED_PRODUCT', payload:null})
+  //   }
+  //   dispatch({type:'SET_SELECTED_PRODUCT', payload:value})    
+  //   setFilterChanged(true)
+  // }
+
+  // const handleShiftChange = (value) => {
+  //   if (!value) {
+  //     return dispatch({type:'SET_SELECTED_SHIFT', payload:null})
+  //   }
+  //   dispatch({type:'SET_SELECTED_SHIFT', payload:value}) 
+  //   setFilterChanged(true)
+  // }
+
   const handleDefectChange = (value) => {
-    if (!value) {
-      return dispatch({type:"SET_SELECTED_DEFECT" , payload:null})
-    }
-    dispatch({type:"SET_SELECTED_DEFECT", payload:value})
-    setFilterChanged(true)
+    const updatedValue = value || null;
+  
+    setQueryParamState((prev) => ({ ...prev, defect: updatedValue }));
+    setFilterChanged(true);
   };
-
   const handleMachineChange = (value) => {
-    if (!value) {
-      return dispatch({type:'SET_SELECTED_MACHINE', payload:null})
-    };
-    dispatch({type:'SET_SELECTED_MACHINE', payload:Number(value)}) 
-    setFilterChanged(true)
-
+    const updatedValue = value ? Number(value) : null;
+  
+    setQueryParamState((prev) => ({ ...prev, machine: updatedValue }));
+    setFilterChanged(true);
   };
-
+  
   const handleProductChange = (value) => {
-    if (!value) {
-      return dispatch({type:'SET_SELECTED_PRODUCT', payload:null})
-    }
-    dispatch({type:'SET_SELECTED_PRODUCT', payload:value})    
-    setFilterChanged(true)
-  }
-
+    const updatedValue = value || null;
+  
+    setQueryParamState((prev) => ({ ...prev, product: updatedValue }));
+    setFilterChanged(true);
+  };
+  
   const handleShiftChange = (value) => {
-    if (!value) {
-      return dispatch({type:'SET_SELECTED_SHIFT', payload:null})
-    }
-    dispatch({type:'SET_SELECTED_SHIFT', payload:value}) 
-    setFilterChanged(true)
-  }
+    const updatedValue = value || null;
+    setQueryParamState((prev) => ({ ...prev, shift: updatedValue }));
+    setFilterChanged(true);
+  };
+  
 
 
   const setPagination = (current, pageSize, total) => {
@@ -400,7 +433,8 @@ const reducer = (state ,  action) => {
   };
 
 
-  const handleApplyFilters = async(page,pageSize) => {
+
+  const handleApplyFiltersPagination = async(page,pageSize) => {
     setLoader(true);
     const params = {
       page, // Ensure this uses the provided page (default is 1)
@@ -413,8 +447,7 @@ const reducer = (state ,  action) => {
       defect_id: state.selectedDefect,
       shift: state.selectedShift
     };
-    console.log(params.from_date,"from date")
-    console.log(params.to_date,"to date")
+
     const filteredQueryParams = Object.fromEntries(
       Object.entries(params).filter(
         ([_, value]) => value !== undefined && value !== null
@@ -453,6 +486,96 @@ const reducer = (state ,  action) => {
      dispatch({type:"API_CALLPROGESS", payload:false})
   }
   };
+
+
+  const handleApplyFilters = async(page = 1, pageSize = 10) => {
+    setLoader(true);
+
+    const params = {
+      page,
+      page_size: pageSize,
+      plant_id: await encryptAES(JSON.stringify(localPlantData?.id)) || undefined,
+      from_date: dateRange?.[0] || undefined,
+      to_date: dateRange?.[1] || undefined,
+      machine_id: queryParamState.machine || undefined,  // Use local state here
+      product_id: queryParamState.product || undefined,  // Use local state here
+      defect_id: queryParamState.defect || undefined,  // Use local state here
+      shift: queryParamState.shift || undefined,  // Use local state here
+    };
+  
+    const hasActiveFilters = Object.entries(params).some(([key, value]) => {
+      return ['from_date', 'to_date', 'machine_id', 'product_id', 'defect_id', 'shift'].includes(key) && value !== undefined;
+    });
+  
+    // if (!hasActiveFilters) {
+    //   setFilterActive(false);
+    //   setFilterChanged(false);
+    //   return initialReportData(page, pageSize);  // Proceed without filters
+    // }
+  
+    // Filter out null or undefined values from the query parameters
+    const filteredQueryParams = Object.fromEntries(
+      Object.entries(params).filter(
+        ([_, value]) => value !== undefined && value !== null
+      )
+    );
+  
+    // Encrypt sensitive parameters
+    const encryptedUrl = Object.fromEntries(
+      await Promise.all(
+        Object.entries(filteredQueryParams).map(async ([key, val]) => {
+          if (key !== "page" && key !== "page_size" && key !== "plant_id") {
+            if (key === "from_date" || key === "to_date") {
+              return [key, await encryptAES(val)];
+            }
+            return [key, await encryptAES(JSON.stringify(val))];
+          }
+          return [key, val];
+        })
+      )
+    );
+  
+    const queryString = new URLSearchParams(encryptedUrl).toString();
+    const url = `reports/?${queryString}`;
+  
+    try {
+      const response = await apiCallInterceptor(url);
+      const { results, total_count, page_size } = response.data;
+  
+      // Dispatch the updated data to global reducer
+      dispatch({ type: "REPORT_DATA", payload: results });
+      dispatch({
+        type: "SET_SELECTED_MACHINE",
+        payload: queryParamState.machine,
+      });
+      dispatch({
+        type: "SET_SELECTED_PRODUCT",
+        payload: queryParamState.product,
+      });
+      dispatch({
+        type: "SET_SELECTED_DEFECT",
+        payload: queryParamState.defect,
+      });
+      dispatch({
+        type: "SET_SELECTED_SHIFT",
+        payload: queryParamState.shift,
+      });
+  
+      // Update pagination state
+      setPagination(page, page_size, total_count);
+      setFilterActive(true);
+      setFilterChanged(true);  // Reset the filter changed flag after applying
+    } catch (error) {
+      // Handle API error
+      console.error("Error applying filters:", error);
+    } finally {
+      setLoader(false);
+      dispatch({ type: "API_CALLPROGESS", payload: false });
+    }
+  };
+  
+
+
 
 
   const downloadAllImages = async () => {
@@ -531,6 +654,12 @@ const reducer = (state ,  action) => {
 
   const resetFilter =  () => {
     setFilterActive(false);
+    setQueryParamState({
+      defect: null,
+      machine: null,
+      product: null,
+      shift: null
+    })
     dispatch({ type: 'RESET_PAGINATION' });
     setDateRange(null)
     setSelectedDate(null);
@@ -650,10 +779,10 @@ const reducer = (state ,  action) => {
           className=""
           style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}
         >
-          <SelectComponent placeholder={"Select Product"} action={(val) => handleProductChange(val)} selectedData={state.selectedProduct} data={productsData} size={"large"} style={{ minWidth: "200px", marginRight: "10px", }} />
-          <SelectComponent placeholder={"Select Machine"} action={(val) => handleMachineChange(val)} selectedData={state.selectedMachine} data={machines} size={"large"} style={{ minWidth: "200px", marginRight: "10px" }} />
-          <SelectComponent placeholder={"Select Defect"} action={(val) => handleDefectChange(val)} selectedData={state.selectedDefect} data={defectsData} size={"large"} style={{ minWidth: "200px", marginRight: "10px" }} />
-          <SelectComponent placeholder={"Select Shift"} selectedData={state.selectedShift} action={(val) => handleShiftChange(val)} data={shiftData} valueType="name" style={{ minWidth: "180px", zIndex: 1 }} size={"large"} />
+          <SelectComponent placeholder={"Select Product"} action={(val) => handleProductChange(val)} selectedData={queryParamState.product} data={productsData} size={"large"} style={{ minWidth: "200px", marginRight: "10px", }} />
+          <SelectComponent placeholder={"Select Machine"} action={(val) => handleMachineChange(val)} selectedData={queryParamState.machine} data={machines} size={"large"} style={{ minWidth: "200px", marginRight: "10px" }} />
+          <SelectComponent placeholder={"Select Defect"} action={(val) => handleDefectChange(val)} selectedData={queryParamState.defect} data={defectsData} size={"large"} style={{ minWidth: "200px", marginRight: "10px" }} />
+          <SelectComponent placeholder={"Select Shift"} selectedData={queryParamState.shift} action={(val) => handleShiftChange(val)} data={shiftData} valueType="name" style={{ minWidth: "180px", zIndex: 1 }} size={"large"} />
           <ConfigProvider
   theme={{
     token: {

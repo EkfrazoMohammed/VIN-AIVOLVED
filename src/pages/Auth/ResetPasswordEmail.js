@@ -53,33 +53,37 @@ const ResetPasswordEmail = () => {
         const payload = {
           email: resetPayload.email,
         }
-        setLoading(true)
-        const encryTedData = await encryptAES(JSON.stringify(payload))
+        setLoading(true);
+        const encryTedData = await encryptAES(JSON.stringify(payload));
         const res = await axiosInstance.post(`reset-password/`, { "data": encryTedData });
-
+  
         if (res.status === 200) {
-          setLoading(false)
+          setLoading(false);
           openNotification({
             status: "success",
             message: "Reset password link sent to your email",
           });
         } else {
+          const errorMessage = res?.data?.message || "Email ID is not registered"; // Default error message if none is provided
           openNotification({
             status: "error",
-            message: "Email ID is not registered",
+            message: errorMessage,
           });
         }
       }
     } catch (error) {
+      
+      const backendErrorMessage = error?.response?.data?.message || error?.message || "An error occurred";
+      
       openNotification({
+        
         status: "error",
-        message: "An error occurred. Please try again.",
+        message: backendErrorMessage,
       });
-      setLoading(false)
-
+      setLoading(false);
     }
   };
-
+  
   return (
     <>
       {contextHolder}

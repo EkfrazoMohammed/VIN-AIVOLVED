@@ -8,6 +8,7 @@ export default function RealTimeManufacturingSection({
   loading: externalLoading,
   categoryDefects,
   productionData,
+  textActive
 }) {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
@@ -171,6 +172,13 @@ export default function RealTimeManufacturingSection({
                 overflowX: productionData?.length > 15 ? "auto" : "visible",
               }}
             >
+{
+  textActive ?
+<div className="p-2 font-semibold">Only the selected machine filter or the selected date filter will affect this graph.</div>
+: null
+}
+
+
               {renderBarChart()}
             </div>
           )}

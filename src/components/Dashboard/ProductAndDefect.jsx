@@ -7,7 +7,7 @@ import { Spin } from "antd";
 
 Chart.register(ChartDataLabels);
 
-const ProductAndDefect = ({ chartData }) => {
+const ProductAndDefect = ({ chartData , textActive }) => {
   const [loading , setLoading] = useState(true)
   useEffect(()=>{
 setTimeout(()=>{
@@ -45,7 +45,7 @@ setLoading(false)
   };
 
   const maxValue = Math.max(...data.datasets[0].data);
-  const newMax  = (maxValue * 1.05)
+  const newMax  = (maxValue * 1.15  )
   const options = {
     responsive: true,
     indexAxis: 'y', // This makes the bar chart horizontal
@@ -77,7 +77,7 @@ setLoading(false)
       padding: {
         top: 10,
         left: 10,
-        right: 10,
+        right: 15,
         bottom: 10,
       },
     },
@@ -116,7 +116,7 @@ setLoading(false)
         </span>
       </h1>
 
-      <div className="flex gap-4 w-full border-2 rounded-lg p-3  overflow-hidden">
+      <div className="flex gap-4 w-full border-2 rounded-lg p-3  overflow-hidden ">
         <div className="w-2/12 min-w-52 rounded-lg bg-gray-100  align-middle flex flex-col gap-4 justify-start p-4 items-start">
           <div className="text-lg mr-4 flex flex-col justify-center ">
             <span className="text-gray-500 font-semibold">Total Production:</span>{" "}
@@ -141,8 +141,10 @@ setLoading(false)
           height: "500px", 
           maxHeight: "100%", 
           overflowY: chartData?.length >= 13 ? "auto" : "visible", 
+          overflowX:"auto",
           background:"#fff",
           borderRadius:"10px"
+
         }}
       >
         <div
@@ -153,8 +155,15 @@ setLoading(false)
             display: "flex", 
             justifyContent: "flex-start", 
             flexDirection: "column", 
+            overflowX:"auto",
+
           }}
         >
+          {
+  textActive ?
+<div className="p-2 font-semibold">Only the selected machine filter or the selected date filter will affect this graph.</div>
+: null
+}
           {/* Render your Bar chart here */}
           <Bar data={data} options={options}  />
         </div>
