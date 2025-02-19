@@ -1,4 +1,4 @@
-import React, {  useRef, useState } from "react";
+import React, {  useRef, useState , forwardRef }  from "react";
 import Slider from "react-slick";
 import { useDispatch, useSelector } from "react-redux";
 import { CaretRightOutlined , CaretLeftOutlined } from "@ant-design/icons";
@@ -10,7 +10,36 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import SelectComponent from "../components/common/Select";
 import { setSelectedDefect } from "../redux/slices/defectSlice";
-import { Pagination ,ConfigProvider } from 'antd';
+import { Pagination ,ConfigProvider, Spin, Image } from 'antd';
+
+
+
+const ImageRenderer = forwardRef(({ image_b64 }, ref , currentSlideIndex , index) => {
+  if (!image_b64) return null;
+
+  return (
+    <div
+      ref={ref}
+      className={`w-20 h-20 flex justify-center items-center overflow-hidden bg-gray-200 rounded-md border-2 border-[#43996a]`}
+    >
+      <Image
+        src={image_b64}
+        alt="Defect Image"
+        style={{ width: "100%", height: "100%", objectFit: "contain" }} // Ensures it stays within the div
+        placeholder={
+          <div className="flex justify-center items-center w-full h-full">
+            <Spin />
+          </div>
+        }
+      />
+    </div>
+  );
+});
+
+
+
+
+
 const AiSmartView = () => {
 
  const dispatch = useDispatch()
@@ -237,9 +266,11 @@ const AiSmartView = () => {
           aismartviewData?.map((item, index)=>{
             const decrypt = decryptAES(item?.image);
             return(
-              <div className={`w-20 h-20 bg-black ${currentSlideIndex === index ? " border-2 border-[#43996a] scale-125" : ""}`}>
-                <img src={decrypt} ref={sideImage} className="w-full h-full object-contain"  />
-              </div>
+              <>
+                {/* <img  src={decrypt} className="h-full w-full object-contain"  ref={sideImage} /> */}
+                <ImageRenderer image_b64={decrypt} ref={sideImage} currentSlideIndex={currentSlideIndex} index={index} />  
+   
+              </>
 
             )
           })

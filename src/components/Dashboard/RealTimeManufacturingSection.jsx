@@ -174,7 +174,7 @@ export default function RealTimeManufacturingSection({
             >
 {
   textActive ?
-<div className="p-2 font-semibold">Only the selected machine filter or the selected date filter will affect this graph.</div>
+<div className="p-2 font-semibold text-center">Only the machine or date filter you select will impact this graph.</div>
 : null
 }
 

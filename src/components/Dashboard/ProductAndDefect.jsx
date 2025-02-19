@@ -135,18 +135,25 @@ setLoading(false)
         <div className="w-9/12 h-full">
   {
     !chartData?.every(item => item.total_production === 0 && item.total_defects === 0) ? (
+      
       <div
         style={{
           width: "100%",
           height: "500px", 
           maxHeight: "100%", 
-          overflowY: chartData?.length >= 13 ? "auto" : "visible", 
+          overflowY: chartData?.length >= 13 ? "auto" : "none", 
           overflowX:"auto",
           background:"#fff",
           borderRadius:"10px"
-
         }}
       >
+
+{
+  textActive ?
+<div className="p-2 font-semibold text-center">Only the machine or date filter you select will impact this graph.</div>
+: null
+}
+        
         <div
           style={{
             height: chartData?.length * 40 + "px", 
@@ -159,12 +166,8 @@ setLoading(false)
 
           }}
         >
-          {
-  textActive ?
-<div className="p-2 font-semibold">Only the selected machine filter or the selected date filter will affect this graph.</div>
-: null
-}
-          {/* Render your Bar chart here */}
+
+
           <Bar data={data} options={options}  />
         </div>
       </div>

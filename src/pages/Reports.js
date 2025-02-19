@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef , useReducer} from "react";
 import { useLocation } from "react-router-dom";
-import { Table, Select, DatePicker, Button, Image ,Modal ,ConfigProvider, Pagination } from "antd";
+import { Table, Select, DatePicker, Button, Image ,Modal ,ConfigProvider, Pagination, Spin } from "antd";
 import * as XLSX from "xlsx";
 import { DownloadOutlined } from "@ant-design/icons";
 import { Hourglass } from "react-loader-spinner";
@@ -23,6 +23,28 @@ import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import SelectComponent from "../components/common/Select";
 import { debounce } from 'lodash';
+
+const ImageRenderer = ({ image_b64 }) => {
+
+  if (!image_b64) return null;
+
+  const decrypData = decryptAES(image_b64);
+
+  return (
+    <div className="w-12 h-12 object-contain p-0 m-0 flex justify-center items-center">
+    <Image
+      src={decrypData}
+      alt="Defect Image"
+      loading={true}
+      style={{ width: "100%", height: "3rem" }}
+      placeholder={
+        <div className="w-full h-full flex justify-center items-center"><Spin/></div>
+      } 
+    />
+    </div>
+  );
+};
+
 
 
 
@@ -141,18 +163,8 @@ const columns = [
     title: "Image",
     dataIndex: "image",
     key: "image",
-    render:  (image_b64) => {
-      const decrypData = decryptAES(image_b64)
-      return (
-        <>{
-          image_b64 ? (
-            <div className="w-12 h-12 bg-black object-contain p-0 m-0 flex justify-center" >
-              <Image src={decrypData} alt="Defect Image" style={{width:"100%",height:"3rem"}} />
-            </div>
-          ) : null}
-        </>
-      )
-    }
+    render: (image_b64) => <ImageRenderer image_b64={image_b64} />,
+
   },
 ];
 
@@ -185,7 +197,7 @@ const Reports = () => {
 let defectProp = location?.state;
 
 const [queryParamState, setQueryParamState] = useState({
-  defect: null,
+  defect: defectProp,
   machine: null,
   product: null,
   shift: null
@@ -346,7 +358,6 @@ const reducer = (state ,  action) => {
 
   
   const handleTableChange = (pagination) => {
-
     setPagination(pagination.current, pagination.pageSize); // Update pagination state
     // dispatch(updatePage({ current: pagination.current, pageSize: pagination.pageSize }));
     if (filterActive) {
@@ -608,7 +619,6 @@ const reducer = (state ,  action) => {
 
   
   const downloadExcel = () => {
-    console.log(state.reportData,"report data") 
     // Prepare the table data with correct headers
     const formattedTableData = state.reportData.map( (item) => ({
       "Product Name":  decryptAES(item.product),
