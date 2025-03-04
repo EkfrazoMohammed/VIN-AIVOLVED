@@ -122,7 +122,7 @@ const PasswordResetForm = () => {
   return (
     <div
       style={{
-        background: "#faf5f5",
+        background: "linear-gradient(-40deg, rgb(7, 34, 102), rgb(7, 34, 102))",
         height: "100vh",
         width: "100%",
         overflow: "hidden",
@@ -132,17 +132,17 @@ const PasswordResetForm = () => {
       }}
     >
 
-      <div className="bg-white p-6 rounded-xl w-full max-w-md">
+      <div className="bg-[#091128] p-6 rounded-xl w-full max-w-md">
         <div className="flex justify-center mb-2">
           <img
-            src="https://aivolved.in/wp-content/uploads/2022/11/ai-logo.png"
+            src="https://eimkeia.stripocdn.email/content/guids/CABINET_8270216c780e362a1fbcd636b59c67ae376eb446dc5f95e17700b638b8c3f618/images/indus_logo_dev.png"
             alt="Logo"
             style={{ height: "60px" }}
           />
         </div>
         <div
 
-          className="max-w-sm mx-auto p-1 bg-white rounded"
+          className="max-w-sm mx-auto p-1  rounded text-white"
         >
           <h2 className="text-xl font-bold text-center mb-4">
             Reset Password
@@ -161,7 +161,7 @@ const PasswordResetForm = () => {
 
                 <div className="mb-4 relative">
                   <label
-                    className="block text-gray-700 text-sm font-bold mb-2"
+                    className="block  text-sm font-bold mb-2"
                     htmlFor="password"
                   >
                     New Password
@@ -171,7 +171,7 @@ const PasswordResetForm = () => {
                     type={passwordVisible ? "text" : "password"}
                     value={password}
                     onChange={handlePasswordChange}
-                    className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="text-black w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     required
                   />
                   <button
@@ -192,7 +192,7 @@ const PasswordResetForm = () => {
 
                 <div className="mb-4 relative">
                   <label
-                    className="block text-gray-700 text-sm font-bold mb-2"
+                    className="block  text-sm font-bold mb-2"
                     htmlFor="confirmPassword"
                   >
                     Confirm Password
@@ -202,7 +202,7 @@ const PasswordResetForm = () => {
                     type={confirmPasswordVisible ? "text" : "password"}
                     value={confirmPassword}
                     onChange={handleConfirmPasswordChange}
-                    className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className=" text-black w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     required
                   />
                   <button
@@ -223,14 +223,14 @@ const PasswordResetForm = () => {
 
                     onClick={handleSubmit}
                     type="submit"
-                    className="w-full bg-[#ff4403] text-white font-bold py-2 px-4 rounded hover:bg-red-600 transition-colors duration-300"
+                    className="w-full bg-[#43996A] text-white font-bold py-2 px-4 rounded hover:bg-red-600 transition-colors duration-300"
                   >
                     Reset Password
                   </button>
                  : 
                   <button
                     type="submit"
-                    className="w-full bg-[#ff4403] text-white font-bold py-2 px-4 rounded hover:bg-red-600 transition-colors duration-300"
+                    className="w-full bg-[#43996A] text-white font-bold py-2 px-4 rounded hover:bg-red-600 transition-colors duration-300"
                   >
                     Reset Password
                   </button>
