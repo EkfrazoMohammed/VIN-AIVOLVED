@@ -1,22 +1,30 @@
-import React, {  useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useParams, useLocation } from "react-router-dom";
 import axiosInstance from "../../API/axiosInstance";
-import {  encryptAES } from "../../redux/middleware/encryptPayloadUtils";
+import { encryptAES } from "../../redux/middleware/encryptPayloadUtils";
 import { notification } from "antd";
 import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
 
-
 const PasswordResetForm = () => {
-  const { id } = useParams(); // Capture the identifier from the route
+  const location = useLocation(); // Use location to access query parameters
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [isTokenValid, setIsTokenValid] = useState(null);
+  const [isTokenExpired, setIsTokenExpired] = useState(false);
+  const [isTokenMissing, setIsTokenMissing] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
-  const [api] = notification.useNotification();
+  const [api, contextHolder] = notification.useNotification();
   const [error, setError] = useState("");
+
+  // Extract token and ID from URL query parameters
+  const queryParams = new URLSearchParams(location.search);
+  const queryToken = queryParams.get('token');
+  const queryId = location.pathname.split('/').filter(Boolean).pop(); // Get the last segment of the path
+
   const openNotification = (param) => {
     const { status, message } = param;
     api[status]({
@@ -25,6 +33,56 @@ const PasswordResetForm = () => {
     });
   };
 
+  // Check Token Validity
+  useEffect(() => {
+    const validateToken = async () => {
+      try {
+        // Check if token exists
+        if (!queryToken) {
+          setIsTokenMissing(true);
+          setError("Token is required");
+          return;
+        }
+
+        const response = await axiosInstance.post(
+          "https://hul.indusvision.ai/api/reset-link-validity/",
+          { token: queryToken }
+        );
+
+        // Handle 200 response
+        if (response.status === 200) {
+          setIsTokenValid(true);
+          setIsTokenExpired(false);
+          setIsTokenMissing(false);
+        }
+      } catch (err) {
+        // Handle error responses
+        if (err.response) {
+          if (err.response.status === 400) {
+            // Check if it's an expired token
+            if (err.response.data.expired === "True") {
+              setIsTokenExpired(true);
+              setError("Link has expired, please request a new one to reset your password.");
+            } else {
+              // It's a missing token
+              setIsTokenMissing(true);
+              setError(err.response.data.message || "Token is required");
+            }
+          } else {
+            // Generic error
+            setError("Reset link is invalid. Please request a new one.");
+          }
+        } else {
+          // Network or other error
+          setError("Could not validate reset link. Please try again.");
+        }
+        setIsTokenValid(false);
+      }
+    };
+
+    validateToken();
+  }, [queryToken]);
+  
   const validatePassword = (password) => {
     // Password validation criteria
     const minLength = 8;
@@ -40,7 +98,6 @@ const PasswordResetForm = () => {
     return "";
   };
 
-
   const handlePasswordChange = (e) => {
     const value = e.target.value;
     setPassword(value);
@@ -48,13 +105,6 @@ const PasswordResetForm = () => {
     // Validate password and set error
     const passwordError = validatePassword(value);
     setPasswordError(passwordError);
-
-    // // Check if confirm password is matching
-    // if (value !== confirmPassword) {
-    //   setConfirmPasswordError("Passwords do not match!");
-    // } else {
-    //   setConfirmPasswordError("");
-    // }
   };
 
   const handleConfirmPasswordChange = (e) => {
@@ -69,16 +119,21 @@ const PasswordResetForm = () => {
     }
   };
 
+  // Handle Submit
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Check if passwords match
+    if (isTokenExpired) {
+      setError("This reset link has expired. Please request a new one.");
+      openNotification({ status: "error", message: "Token has expired. Request a new link." });
+      return;
+    }
+
     if (password !== confirmPassword) {
       setConfirmPasswordError("Passwords do not match!");
       return;
     }
 
-    // Validate the new password
     const passwordValidationError = validatePassword(password);
     if (passwordValidationError) {
       setPasswordError(passwordValidationError);
@@ -86,38 +141,26 @@ const PasswordResetForm = () => {
     }
 
     try {
-      // Call your API to reset the password
-      const payload = {
-        new_password: password,
-        confirm_password: confirmPassword,
-      };
+      const payload = { new_password: password, confirm_password: confirmPassword };
       const encryptedData = await encryptAES(JSON.stringify(payload));
-      const response = await axiosInstance.put(`reset-password/${id}/`, { data: encryptedData });
+      const response = await axiosInstance.put(`reset-password/${queryId}/`, { 
+        data: encryptedData,
+        params: { token: queryToken }
+      });
 
-      // Handle success
       if (response.status === 200) {
         setSuccess(true);
-        openNotification({
-          status: "success",
-          message: "Password updated successfully",
-        });
-        setPassword("");
-        setConfirmPassword("");
-        setPasswordError("");
-        setConfirmPasswordError("");
+        setIsTokenValid(false); // Expire the token after successful reset
+        openNotification({ status: "success", message: "Password updated successfully" });
       }
     } catch (err) {
-      // Handle error
       setError("Failed to reset password. Please try again.");
-      openNotification({
-        status: "error",
-        message: "Password not updated",
-      });
+      openNotification({ status: "error", message: "Password not updated" });
     }
   };
 
-
-
+  // Determine if reset button should be enabled
+  const isResetButtonEnabled = password !== "" && confirmPassword !== "" && passwordError === "" && confirmPasswordError === "";
 
   return (
     <div
@@ -131,6 +174,7 @@ const PasswordResetForm = () => {
         justifyContent: "center",
       }}
     >
+      {contextHolder} {/* Add notification context holder */}
 
       <div className="bg-[#091128] p-6 rounded-xl w-full max-w-md">
         <div className="flex justify-center mb-2">
@@ -140,107 +184,132 @@ const PasswordResetForm = () => {
             style={{ height: "60px" }}
           />
         </div>
-        <div
-
-          className="max-w-sm mx-auto p-1  rounded text-white"
-        >
-          <h2 className="text-xl font-bold text-center mb-4">
+        <div className="max-w-sm mx-auto p-1 rounded">
+          <h2 className="text-xl font-bold text-center mb-4 text-white">
             Reset Password
           </h2>
 
-          {error && <div className="text-red-500 mb-4 text-sm">{error}</div>}
+          {error && <div className="text-red-500 mb-4 text-sm text-center">{error}</div>}
 
-          {
-            success ?
-              <div className="mb-4 text-center">
-                <span className="text-green-500 text-lg font-bold">Password reset successfully. <br />Please login with new password.</span>
-                <Link to={"/login"} className="text-blue-500 font-bold ml-2">Login</Link>
+          {success ? (
+            <div className="mb-4 text-center">
+              <span className="text-green-500 text-lg font-bold">
+                Password reset successfully br. <br />Please login with new password.
+              </span>
+              <Link to={"/login"} className="text-blue-500 font-bold ml-2">
+                Login
+              </Link>
+            </div>
+          ) : isTokenExpired ? (
+            <div className="mb-4 text-center">
+              <span className="text-red-500 text-lg font-bold">
+                This reset link has expired. <br />Please request a new password reset.
+              </span>
+              <div className="mt-4">
+                
+                <Link to={"/login"} className="bg-gray-500 text-white font-bold py-2 px-4 rounded">
+                  Login
+                </Link>
               </div>
-              :
-              <>
+            </div>
+          ) : isTokenMissing ? (
+            <div className="mb-4 text-center">
+              <span className="text-red-500 text-lg font-bold">
+                Token is required. <br />Please request a password reset from the login page.
+              </span>
+              <div className="mt-4">
+                <Link to={"/login"} className="bg-blue-500 text-white font-bold py-2 px-4 rounded">
+                  Go to Login
+                </Link>
+              </div>
+            </div>
+          ) : isTokenValid === false && !isTokenExpired && !isTokenMissing ? (
+            <div className="mb-4 text-center">
+              <span className="text-red-500 text-lg font-bold">
+                This reset link is invalid. <br />Please request a new password reset.
+              </span>
+              
+                <Link to={"/login"} className="bg-gray-500 text-white font-bold py-2 px-4 rounded">
+                  Login
+                </Link>
+              </div>
+            
+          ) : isTokenValid === true ? (
+            <>
+              <div className="mb-4 relative">
+                <label
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                  htmlFor="password"
+                >
+                  New Passworddd
+                </label>
+                <input
+                  id="password"
+                  type={passwordVisible ? "text" : "password"}
+                  value={password}
+                  onChange={handlePasswordChange}
+                  className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-9 right-0 pr-3 flex items-center h-[20px]"
+                  onClick={() => setPasswordVisible(!passwordVisible)}
+                >
+                  {passwordVisible ? (
+                    <EyeOutlined className="text-gray-500" />
+                  ) : (
+                    <EyeInvisibleOutlined className="text-gray-500" />
+                  )}
+                </button>
+                {passwordError && <div className="text-red-500 mt-1 text-sm">{passwordError}</div>}
+              </div>
 
-                <div className="mb-4 relative">
-                  <label
-                    className="block  text-sm font-bold mb-2"
-                    htmlFor="password"
-                  >
-                    New Password
-                  </label>
-                  <input
-                    id="password"
-                    type={passwordVisible ? "text" : "password"}
-                    value={password}
-                    onChange={handlePasswordChange}
-                    className="text-black w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
-                  <button
-                    type="button"
-                    className="absolute inset-y-9 right-0 pr-3 flex items-center h-[20px]"
-                    onClick={() => setPasswordVisible(!passwordVisible)}
-                  >
-                    {passwordVisible ? (
-                      <EyeOutlined className="text-gray-500" />
-                    ) : (
+              <div className="mb-4 relative">
+                <label
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                  htmlFor="confirmPassword"
+                >
+                  Confirm Passwordd
+                </label>
+                <input
+                  id="confirmPassword"
+                  type={confirmPasswordVisible ? "text" : "password"}
+                  value={confirmPassword}
+                  onChange={handleConfirmPasswordChange}
+                  className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-9 right-0 pr-3 flex items-center h-[20px]"
+                  onClick={() => setConfirmPasswordVisible(!confirmPasswordVisible)}
+                >
+                  {confirmPasswordVisible ? (
+                    <EyeOutlined className="text-gray-500" />
+                  ) : (
+                    <EyeInvisibleOutlined className="text-gray-500" />
+                  )}
+                </button>
+                {confirmPasswordError && <div className="text-red-500 mt-1 text-sm">{confirmPasswordError}</div>}
+              </div>
 
-
-                      <EyeInvisibleOutlined className="text-gray-500" />
-                    )}
-                  </button>
-                  {passwordError && <div className="text-red-500 mt-1 text-sm">{passwordError}</div>}
-                </div>
-
-                <div className="mb-4 relative">
-                  <label
-                    className="block  text-sm font-bold mb-2"
-                    htmlFor="confirmPassword"
-                  >
-                    Confirm Password
-                  </label>
-                  <input
-                    id="confirmPassword"
-                    type={confirmPasswordVisible ? "text" : "password"}
-                    value={confirmPassword}
-                    onChange={handleConfirmPasswordChange}
-                    className=" text-black w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
-                  <button
-                    type="button"
-                    className="absolute inset-y-9 right-0 pr-3 flex items-center h-[20px]"
-                    onClick={() => setConfirmPasswordVisible(!confirmPasswordVisible)}
-                  >
-                    {confirmPasswordVisible ? (
-                      <EyeOutlined className="text-gray-500" />
-                    ) : (
-                      <EyeInvisibleOutlined className="text-gray-500" />
-                    )}
-                  </button>
-                  {confirmPasswordError && <div className="text-red-500 mt-1  text-sm">{confirmPasswordError}</div>}
-                </div>
-                {passwordError === "" || passwordError == null || confirmPasswordError === "" || confirmPasswordError == null ? 
-                  <button
-
-                    onClick={handleSubmit}
-                    type="submit"
-                    className="w-full bg-[#43996A] text-white font-bold py-2 px-4 rounded hover:bg-red-600 transition-colors duration-300"
-                  >
-                    Reset Password
-                  </button>
-                 : 
-                  <button
-                    type="submit"
-                    className="w-full bg-[#43996A] text-white font-bold py-2 px-4 rounded hover:bg-red-600 transition-colors duration-300"
-                  >
-                    Reset Password
-                  </button>
-                }
-              </>
-          }
-
-
+              <button
+                onClick={handleSubmit}
+                type="submit"
+                className={`w-full bg-[#ff4403] text-white font-bold py-2 px-4 rounded transition-colors duration-300 ${isResetButtonEnabled ? "hover:bg-red-600" : "opacity-70 cursor-not-allowed"
+                  }`}
+                disabled={!isResetButtonEnabled}
+              >
+                Reset Passwordd
+              </button>
+            </>
+          ) : (
+            <div className="flex justify-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#ff4403]"></div>
+            </div>
+          )}
         </div>
-
       </div>
     </div>
   );

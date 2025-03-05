@@ -61,7 +61,7 @@ const ResetPasswordEmail = () => {
           setLoading(false);
           openNotification({
             status: "success",
-            message: "Reset password link sent to your email",
+            message: "Resett password link sent to your email",
           });
         } else {
           const errorMessage = res?.data?.message || "Email ID is not registered"; // Default error message if none is provided
