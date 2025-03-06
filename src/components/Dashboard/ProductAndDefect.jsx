@@ -132,7 +132,9 @@ setLoading(false)
           </div>
         </div>
 
+
         <div className="w-9/12 h-full">
+
   {
     !chartData?.every(item => item.total_production === 0 && item.total_defects === 0) ? (
       
@@ -147,17 +149,17 @@ setLoading(false)
           borderRadius:"10px"
         }}
       >
-
 {
   textActive ?
 <div className="p-2 font-semibold text-center">Only the machine or date filter you select will impact this graph</div>
 : null
 }
+
         
         <div
           style={{
             height: chartData?.length * 40 + "px", 
-            minHeight: "100%", 
+            minHeight: "90%", 
             width: "100%", 
             display: "flex", 
             justifyContent: "flex-start", 

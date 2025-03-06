@@ -105,7 +105,14 @@ const PasswordResetForm = () => {
     // Validate password and set error
     const passwordError = validatePassword(value);
     setPasswordError(passwordError);
+
+    if (confirmPassword !== value) {
+      setConfirmPasswordError("Passwords do not match!");
+    } else {
+      setConfirmPasswordError("");
+    }
   };
+  
 
   const handleConfirmPasswordChange = (e) => {
     const value = e.target.value;
@@ -224,7 +231,7 @@ const PasswordResetForm = () => {
               </div>
             </div>
           ) : isTokenValid === false && !isTokenExpired && !isTokenMissing ? (
-            <div className="mb-4 text-center">
+            <div className="mb-4 text-center flex flex-col gap-2">
               <span className="text-red-500 text-lg font-bold">
                 This reset link is invalid. <br />Please request a new password reset.
               </span>
@@ -238,10 +245,10 @@ const PasswordResetForm = () => {
             <>
               <div className="mb-4 relative">
                 <label
-                  className="block text-gray-700 text-sm font-bold mb-2"
+                  className="block text-white text-sm font-bold mb-2"
                   htmlFor="password"
                 >
-                  New Passworddd
+                  New Password
                 </label>
                 <input
                   id="password"
@@ -267,10 +274,10 @@ const PasswordResetForm = () => {
 
               <div className="mb-4 relative">
                 <label
-                  className="block text-gray-700 text-sm font-bold mb-2"
+                  className="block text-white text-sm font-bold mb-2"
                   htmlFor="confirmPassword"
                 >
-                  Confirm Passwordd
+                  Confirm Password
                 </label>
                 <input
                   id="confirmPassword"
@@ -297,11 +304,11 @@ const PasswordResetForm = () => {
               <button
                 onClick={handleSubmit}
                 type="submit"
-                className={`w-full bg-[#ff4403] text-white font-bold py-2 px-4 rounded transition-colors duration-300 ${isResetButtonEnabled ? "hover:bg-red-600" : "opacity-70 cursor-not-allowed"
+                className={`w-full bg-[#43996a] text-white font-bold py-2 px-4 rounded transition-colors duration-300 ${isResetButtonEnabled ? "hover:bg-[#43996a]" : "opacity-70 cursor-not-allowed"
                   }`}
                 disabled={!isResetButtonEnabled}
               >
-                Reset Passwordd
+                Reset Password
               </button>
             </>
           ) : (

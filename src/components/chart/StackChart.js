@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { Bar } from "react-chartjs-2";
 import { Typography, Spin } from "antd";
 import { useSelector } from "react-redux";
@@ -78,6 +78,17 @@ function StackChart({ data, localPlantData, loading ,dateRange }) {
       return  "100%"; // Narrow bars for many data points
     }
   };
+
+  const scrollContainerRef = useRef(null);
+
+  useEffect(() => {
+    // Reset the scroll position to the top whenever sortedDates or chartData changes
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollLeft = 0;
+    }
+  }, [sortedDates, chartData]);
+  
+
   return (
     <div>
       <div>
@@ -125,6 +136,7 @@ function StackChart({ data, localPlantData, loading ,dateRange }) {
               width: "100%",
               overflowX: sortedDates.length > 7 ? "auto" : "visible", // Only apply scroll for more than 10 dates
             }}
+            ref={scrollContainerRef}
           >
             <div
                style={{

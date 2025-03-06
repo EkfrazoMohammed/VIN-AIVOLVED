@@ -67,9 +67,9 @@ function PieChart({ data,  dateRange, loading, localPlantData }) {
 
   // Pie chart rendering
   return (
-    <div>
+    <div className="w-full flex flex-col justify-between">
       <div>
-        <Title level={5} className="text-left semibold">
+        <Title level={5} className="text-center semibold">
        Pie Chart from {dateRange[0]} to {dateRange[1]}
            
         </Title>
@@ -85,7 +85,7 @@ function PieChart({ data,  dateRange, loading, localPlantData }) {
             NO DATA
           </div>
         ) : (
-          <div style={{ width: "100%" }}>
+          <div style={{ width: "100%"  }}>
             <ReactApexChart
               options={{
                 

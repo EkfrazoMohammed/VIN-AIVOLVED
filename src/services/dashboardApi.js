@@ -270,6 +270,13 @@ if (!selectedDate) {
       if(fromDate === toDate){
         dpmuData  = response.data.results.filter((item)=>item.date_time === fromDate)
       }
+      else if(fromDate && toDate){
+        dpmuData = response.data.results.filter((item) => {
+          const itemDate = item.date_time.split("T")[0]; 
+          return itemDate >= fromDate && itemDate <= toDate;
+        })
+      }
+
       else{
         const todayDate = new Date();
         const past30DaysDate = new Date();
@@ -283,7 +290,7 @@ if (!selectedDate) {
         })
       }
     } 
-    return dpmuData
+    return dpmuData;
   } catch (error) {
     return error
   }

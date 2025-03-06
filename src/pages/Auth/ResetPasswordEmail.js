@@ -53,6 +53,7 @@ const ResetPasswordEmail = () => {
         const payload = {
           email: resetPayload.email,
         }
+
         setLoading(true);
         const encryTedData = await encryptAES(JSON.stringify(payload));
         const res = await axiosInstance.post(`reset-password/`, { "data": encryTedData });
@@ -61,10 +62,10 @@ const ResetPasswordEmail = () => {
           setLoading(false);
           openNotification({
             status: "success",
-            message: "Resett password link sent to your email",
+            message: res.data.message || "Reset password link sent to your email",
           });
         } else {
-          const errorMessage = res?.data?.message || "Email ID is not registered"; // Default error message if none is provided
+          const errorMessage = res?.data?.message || "User with this email does not exist"; // Default error message if none is provided
           openNotification({
             status: "error",
             message: errorMessage,
@@ -72,8 +73,8 @@ const ResetPasswordEmail = () => {
         }
       }
     } catch (error) {
-      
-      const backendErrorMessage = error?.response?.data?.message || error?.message || "An error occurred";
+      console.log(error,"error")
+      const backendErrorMessage = "User with this email does not exist"  ;
       
       openNotification({
         
@@ -174,8 +175,6 @@ const ResetPasswordEmail = () => {
                       </span>
                     )}
                     <p className="font-semibold py-2 text-red-500">Reset password link will be sent to the respective email id</p>
-                  </div>
-                  <h2>
                     <button
                       style={{
                         padding: "1rem",
@@ -192,7 +191,7 @@ const ResetPasswordEmail = () => {
                     >
                       Send Email
                     </button>
-                  </h2>
+                  </div>
                 </>
             }
           </Card>

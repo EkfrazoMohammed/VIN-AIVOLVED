@@ -60,7 +60,7 @@ const columns = [
 
         <>
           {
-            decrypData ? <div className="text-center" >{decrypData}</div> : null
+            decrypData ? <div className="text-center text-[0.6rem] xl:text-sm" >{decrypData}</div> : null
           }
         </>
       )
@@ -75,7 +75,7 @@ const columns = [
       return (
         <>
           {
-            decrypData ? <div className="text-center" >{decrypData}</div> : null
+            decrypData ? <div className="text-center text-[0.6rem] xl:text-sm" >{decrypData}</div> : null
           }
         </>
       )
@@ -92,7 +92,7 @@ const columns = [
 
         <>
           {
-            decrypData ? <div className="text-center" >{decrypData}</div> : null
+            decrypData ? <div className="text-center text-[0.6rem] xl:text-sm" >{decrypData}</div> : null
           }
         </>
       )
@@ -109,7 +109,7 @@ const columns = [
 
         <>
           {
-            decrypData ? <div className="text-center" >{decrypData}</div> : null
+            decrypData ? <div className="text-center text-[0.6rem] xl:text-sm" >{decrypData}</div> : null
           }
         </>
       )
@@ -125,7 +125,7 @@ const columns = [
       const formattedDateTime = decrypData ? decrypData.replace("T", " ") : null;
       return (
         <>
-          {formattedDateTime ? <div className="text-[0.7rem] xl:text-sm ">{formattedDateTime}</div> : null}
+          {formattedDateTime ? <div className="text-[0.6rem] xl:text-sm ">{formattedDateTime}</div> : null}
         </>
       );
     },
@@ -139,7 +139,7 @@ const columns = [
       const decrypData =  decryptAES(text);
       return (
         <>
-          {decrypData ? <div>{decrypData}</div> : null}
+          {decrypData ? <div className="text-[0.6rem] xl:text-sm">{decrypData}</div> : null}
         </>
       );
     },
@@ -153,7 +153,7 @@ const columns = [
       const decrypData =  decryptAES(text);
       return (
         <>
-          {decrypData ? <div>{decrypData}</div> : null}
+          {decrypData ? <div className="text-[0.6rem] xl:text-sm">{decrypData}</div> : null}
         </>
       );
     },
@@ -354,6 +354,22 @@ const reducer = (state ,  action) => {
       initialReportData(state.pagination.current, state.pagination.pageSize);
     }
   }, []);
+
+  useEffect(()=>{
+const allNull = Object.values(queryParamState).every(value => value === null);
+
+if (allNull) {
+  initialReportData();
+  setFilterActive(false);
+} else {
+  Object.values(queryParamState).forEach((key) => {
+    console.log(key);
+  });
+
+}
+
+  },[queryParamState])
+  
   
 
   

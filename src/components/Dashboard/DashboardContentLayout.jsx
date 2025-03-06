@@ -6,7 +6,7 @@ import { initialDashboardData, getMachines, getSystemStatus, getDepartments, ini
 import { setSelectedMachine, setSelectedMachineDpmu } from "../../redux/slices/machineSlice"
 import { setSelectedProduct } from "../../redux/slices/productSlice"
 import { Link, useLocation } from "react-router-dom";
-import { DatePicker,ConfigProvider, Spin } from "antd";
+import { DatePicker,ConfigProvider, Spin, Button } from "antd";
 import { VideoCameraFilled, BugFilled, AlertFilled } from "@ant-design/icons";
 
 import dayjs from "dayjs";
@@ -476,23 +476,23 @@ const [state, dispatchReducer] = useReducer( reducer ,initialState)
                
 
 
-                    <button
+                    <Button
                       type="primary"
                       onClick={handleApplyFilters}
-                  
+                      disabled={selectedShiftRedux === null && selectedMachineRedux === null && selectedProductRedux === null && selectedDate === null} 
                       className=" commButton text-white rounded flex items-center justify-center py-2 px-3 cursor-pointer font-bold"
                     >
                       Apply filters
-                    </button>
+                    </Button>
                     {filterActive && filterChanged && (
-                      <button
+                      <Button
                         type="primary"
                         
                         onClick={resetFilter}
                         className=" commButton text-white rounded flex items-center justify-center py-2 px-3 cursor-pointer font-bold"
                       >
                         Reset Filter
-                      </button>
+                      </Button>
                     )}
                   </div>
                   <div className="grid grid-cols-4 gap-4">
