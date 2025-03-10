@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import { Table, Select, DatePicker, Button, Image ,Modal ,ConfigProvider, Pagination, Spin } from "antd";
 import * as XLSX from "xlsx";
 import { DownloadOutlined } from "@ant-design/icons";
-import { Hourglass } from "react-loader-spinner";
+import { ColorRing, Hourglass } from "react-loader-spinner";
 import dayjs from "dayjs";
 import { useSelector, useDispatch } from "react-redux";
 import { reportApi } from "./../services/reportsApi";
@@ -23,6 +23,7 @@ import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import SelectComponent from "../components/common/Select";
 import { debounce } from 'lodash';
+import axiosInstance from "../API/axiosInstance";
 
 const ImageRenderer = ({ image_b64 }) => {
 
@@ -60,7 +61,7 @@ const columns = [
 
         <>
           {
-            decrypData ? <div className="text-center text-[0.6rem] xl:text-sm" >{decrypData}</div> : null
+            decrypData ? <div className="text-center xl:text-xs 2xl:text-[0.9rem]" >{decrypData}</div> : null
           }
         </>
       )
@@ -75,7 +76,7 @@ const columns = [
       return (
         <>
           {
-            decrypData ? <div className="text-center text-[0.6rem] xl:text-sm" >{decrypData}</div> : null
+            decrypData ? <div className="text-center xl:text-xs 2xl:text-[0.9rem]" >{decrypData}</div> : null
           }
         </>
       )
@@ -92,7 +93,7 @@ const columns = [
 
         <>
           {
-            decrypData ? <div className="text-center text-[0.6rem] xl:text-sm" >{decrypData}</div> : null
+            decrypData ? <div className="text-center xl:text-xs 2xl:text-[0.9rem]" >{decrypData}</div> : null
           }
         </>
       )
@@ -109,7 +110,7 @@ const columns = [
 
         <>
           {
-            decrypData ? <div className="text-center text-[0.6rem] xl:text-sm" >{decrypData}</div> : null
+            decrypData ? <div className="text-center xl:text-xs 2xl:text-[0.9rem]" >{decrypData}</div> : null
           }
         </>
       )
@@ -125,7 +126,7 @@ const columns = [
       const formattedDateTime = decrypData ? decrypData.replace("T", " ") : null;
       return (
         <>
-          {formattedDateTime ? <div className="text-[0.6rem] xl:text-sm ">{formattedDateTime}</div> : null}
+          {formattedDateTime ? <div className="xl:text-xs 2xl:text-[0.9rem] ">{formattedDateTime}</div> : null}
         </>
       );
     },
@@ -139,7 +140,7 @@ const columns = [
       const decrypData =  decryptAES(text);
       return (
         <>
-          {decrypData ? <div className="text-[0.6rem] xl:text-sm">{decrypData}</div> : null}
+          {decrypData ? <div className=" xl:text-xs 2xl:text-[0.9rem]">{decrypData}</div> : null}
         </>
       );
     },
@@ -153,7 +154,7 @@ const columns = [
       const decrypData =  decryptAES(text);
       return (
         <>
-          {decrypData ? <div className="text-[0.6rem] xl:text-sm">{decrypData}</div> : null}
+          {decrypData ? <div className=" xl:text-xs ">{decrypData}</div> : null}
         </>
       );
     },
@@ -257,7 +258,38 @@ const reducer = (state ,  action) => {
   }
 }
 
-  const [ state , dispatch] = useReducer(reducer , initailState)
+
+const initialExcelState = {
+  defect: null,
+  machine: null,
+  product: null,
+  shift: null,
+  apiCallInProgressExcel:false
+}
+
+const reducerExcel = (state, action) =>{
+  switch(action.type){
+    case 'REPORT_DATA_EXCEL':
+      return {...state , reportData:action.payload}
+    case 'SET_SELECTED_MACHINE_EXCEL':
+      return {...state,machine :action.payload };
+    case 'SET_SELECTED_PRODUCT_EXCEL':
+      return {...state , product:action.payload};
+    case 'SET_SELECTED_DEFECT_EXCEL':
+      return {...state , defect:action.payload};
+    case 'SET_SELECTED_SHIFT_EXCEL':
+      return {...state , shift:action.payload};
+    case 'API_CALLINPROGESS_EXCEL':
+      return {...state , apiCallInProgressExcel:action.payload} ;  
+    default:
+      return state      
+  }
+}
+
+
+  const [ state , dispatch] = useReducer(reducer , initailState);
+  const [ stateExcel , dispatchExcel] = useReducer(reducerExcel , initialExcelState);
+  
   const dateFormat = "YYYY/MM/DD";
 
   const startDate = new Date();
@@ -271,27 +303,64 @@ const reducer = (state ,  action) => {
 
 
   const [loader, setLoader] = useState(false);
+  const [loaderExcel, setLoaderExcel] = useState(false);
   const [modal, setModal] = useState(false)
 
   const messages  = [];
   const ws = null;
-  const handleDownload = async () => {
-    const params = {
-      plant_id: localPlantData?.id || undefined,
-      from_date: dateRange?.[0] || undefined,
-      to_date: dateRange?.[1] || undefined,
-      machine_id: state.selectedMachine || undefined,
-      product_id: state.selectedProduct || undefined,
-      defect_id: state.selectedDefect || undefined,
-    };
-    // Filter out undefined or null values from query parameters
-    const filteredQueryParams = Object.fromEntries(
-      Object.entries(params).filter(
-        ([_, value]) => value !== undefined && value !== null
-      )
-    );
 
-     sendMessage(filteredQueryParams)
+  console.log(selectedDate,"selectedDate")
+
+  const handleDownload = async () => {
+    try {
+      dispatch({ type: "API_CALLINPROGESS_EXCEL", payload: true });
+       
+      setLoaderExcel(true)
+      const params = {
+        plant_id: localPlantData?.id || undefined,
+        from_date: selectedDate?.[0] || undefined,
+        to_date: selectedDate?.[1] || undefined,
+        machine_id: stateExcel.machine || undefined,
+        product_id: stateExcel.product || undefined,
+        defect_id: stateExcel.defect || undefined,
+        shift: stateExcel.shift || undefined
+      };
+      // Filter out undefined or null values from query parameters
+      const filteredQueryParams = Object.fromEntries(
+        Object.entries(params).filter(
+          ([_, value]) => value !== undefined && value !== null
+        )
+      );
+
+      const encryptedUrl = Object.fromEntries(
+        await Promise.all(
+          Object.entries(filteredQueryParams).map(async ([key, val]) => {
+            if (key !== "page" && key !== "page_size") {
+              if (key === "from_date" || key === "to_date") {
+                return [key,  encryptAES(val)];
+              }
+              return [key,  encryptAES(JSON.stringify(val))];
+            }
+            return [key, val];
+          })
+        ));
+
+      const queryString = new URLSearchParams(encryptedUrl).toString();
+      const url = `download-reports/?${queryString}`;
+
+       const response = await apiCallInterceptor(url); 
+       console.log(response.data.results,"response.data.results")
+       if(response.data.results){
+         downloadExcel(response.data.results);
+         setLoaderExcel(false)
+         setModal(false)
+       }
+    } catch (error) {
+      console.log(error)
+      dispatch({ type: "API_CALLINPROGESS_EXCEL", payload: false });
+      setLoaderExcel(false)
+      setModal(false)
+    }
   }
 
 
@@ -359,6 +428,7 @@ const reducer = (state ,  action) => {
 const allNull = Object.values(queryParamState).every(value => value === null);
 
 if (allNull) {
+  setSelectedDate(null)
   initialReportData();
   setFilterActive(false);
 } else {
@@ -418,34 +488,42 @@ if (allNull) {
   //   setFilterChanged(true)
   // }
 
-  const handleDefectChange = (value) => {
+  const handleDefectChange = (value , type) => {
     const updatedValue = value || null;
-  
+      
+    if(type == "excel"){
+      return dispatchExcel({type:'SET_SELECTED_DEFECT_EXCEL', payload:updatedValue})
+     }
     setQueryParamState((prev) => ({ ...prev, defect: updatedValue }));
     setFilterChanged(true);
   };
-  const handleMachineChange = (value) => {
+  const handleMachineChange = (value , type) => {
     const updatedValue = value ? Number(value) : null;
-  
+    if(type == "excel"){
+     return dispatchExcel({type:'SET_SELECTED_MACHINE_EXCEL', payload:updatedValue})
+     }
     setQueryParamState((prev) => ({ ...prev, machine: updatedValue }));
     setFilterChanged(true);
   };
   
-  const handleProductChange = (value) => {
-    const updatedValue = value || null;
-  
+  const handleProductChange = (value , type) => {
+  const updatedValue = value || null;
+   if(type == "excel"){
+    return dispatchExcel({type:'SET_SELECTED_PRODUCT_EXCEL', payload:updatedValue})
+   }
     setQueryParamState((prev) => ({ ...prev, product: updatedValue }));
     setFilterChanged(true);
   };
   
-  const handleShiftChange = (value) => {
+  const handleShiftChange = (value , type = null) => {
     const updatedValue = value || null;
+   if(type == "excel"){
+    return dispatchExcel({type:'SET_SELECTED_SHIFT_EXCEL', payload:updatedValue})
+   }
     setQueryParamState((prev) => ({ ...prev, shift: updatedValue }));
     setFilterChanged(true);
   };
   
-
-
   const setPagination = (current, pageSize, total) => {
     dispatch({ type: "SET_PAGINATION", payload: { current, pageSize, total } });
   };
@@ -595,6 +673,7 @@ if (allNull) {
     } catch (error) {
       // Handle API error
       console.error("Error applying filters:", error);
+      dispatch({ type: "API_CALLPROGESS", payload: false });
     } finally {
       setLoader(false);
       dispatch({ type: "API_CALLPROGESS", payload: false });
@@ -634,13 +713,14 @@ if (allNull) {
   };
 
   
-  const downloadExcel = () => {
+  const downloadExcel = (reportData) => {
     // Prepare the table data with correct headers
-    const formattedTableData = state.reportData.map( (item) => ({
+    const formattedTableData = reportData.map( (item) => ({
       "Product Name":  decryptAES(item.product),
       "Defect Name":  decryptAES(item.defect),
       "Machine Name":  decryptAES(item.machine),
       "Department Name":  decryptAES(item.department),
+      "shift":  decryptAES(item.shift),
       "Recorded Date Time":  decryptAES(item.recorded_date_time).replace("T", " "),
       // "Image": await decryptAES(item.image) ,
       "Image Link": {
@@ -676,7 +756,10 @@ if (allNull) {
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
     }, 0);
+
   };
+
+
 
   const resetFilter =  () => {
     setFilterActive(false);
@@ -703,71 +786,45 @@ if (allNull) {
     <>
       {/* <ToastContainer /> */}
       <Modal
-        title={<div style={{ padding: "1rem", textAlign: "center" }}>Apply filters to download the images
+        title={<div style={{ padding: "1rem", textAlign: "center" }}>Apply filters to download the Excel file
         </div>}
         centered
         open={modal}
         onCancel={() => {
-          setModal(false); setSelectedDate(null); dispatch(setSelectedDefectReports(null)); // Dispatching action    
-          dispatch(setSelectedProduct(null));
-          setFilterChanged(false)
+          setModal(false);
+          dispatchExcel({type:'SET_SELECTED_DEFECT_EXCEL', payload:null})
+          dispatchExcel({type:'SET_SELECTED_MACHINE_EXCEL', payload:null})
+          dispatchExcel({type:'SET_SELECTED_PRODUCT_EXCEL', payload:null})
+          dispatchExcel({type:'SET_SELECTED_SHIFT_EXCEL', payload:null})
+         setSelectedDate(null)
         }}
         footer={[
-            <Button key="submit" type="primary" style={{ backgroundColor: "#ec522d", }} onClick={handleDownload}>Download</Button>
+            <Button key="submit" type="primary"   className="commButton" onClick={handleDownload}>Download Excel</Button>
       
         ]}
       >
+        {
+          loaderExcel ? (
+            <div className="text-center flex justify-center items-center ">
+              <ColorRing
+                height="80"
+                width="80"
+                ariaLabel="color-ring-loading"
+                wrapperClass="color-ring-wrapper"
+                colors={['#43996a', '#43996a', '#43996a', '#43996a', '#43996a']}
+              />
+            </div>
+          ) :
         <div className="" style={{ display: "flex", flexWrap: "wrap", gap: "2rem", justifyContent: "center" }}>
-
-          <Select
-            style={{ minWidth: "200px", marginRight: "10px", }}
-            showSearch
-            placeholder="Select Product"
-            onChange={handleProductChange}
-            value={state.selectedProduct}
-            size="large"
-            filterOption={(input, productsData) =>
-              (productsData.children ?? "")
-                .toLowerCase()
-                .includes(input.toLowerCase())
-            }
-          >
-            {productsData.map((prod) => (
-              <Select.Option key={prod.id} value={prod.id}>
-                {prod.name}
-              </Select.Option>
-            ))}
-
-          </Select>
-
-          <Select
-            style={{ minWidth: "200px", marginRight: "10px" }}
-            showSearch
-            placeholder="Select Defect"
-            onChange={handleDefectChange}
-            value={state.selectedDefect}
-            size="large"
-            filterOption={(input, defectsData) =>
-              // ( productOptions.children ?? "".toLowerCase() ).includes(input.toLowerCase() )
-              (defectsData.children ?? "")
-                .toLowerCase()
-                .includes(input.toLowerCase())
-            }
-          >
-            {defectsData.map((defect) => (
-              <Select.Option key={defect.id} value={defect.id}>
-                {defect.name}
-              </Select.Option>
-            ))}
-          </Select>
+        <SelectComponent placeholder={"Select Product"} action={(val) => handleProductChange(val,"excel")} selectedData={stateExcel.product} data={productsData} size={"large"} style={{ minWidth: "200px", marginRight: "10px", }} />
+          <SelectComponent placeholder={"Select Machine"} action={(val) => handleMachineChange(val,"excel")} selectedData={stateExcel.machine} data={machines} size={"large"} style={{ minWidth: "200px", marginRight: "10px" }} />
+          <SelectComponent placeholder={"Select Defect"} action={(val) => handleDefectChange(val,"excel")} selectedData={stateExcel.defect} data={defectsData} size={"large"} style={{ minWidth: "200px", marginRight: "10px" }} />
+          <SelectComponent placeholder={"Select Shift"} selectedData={stateExcel.shift} action={(val) => handleShiftChange(val,"excel")} data={shiftData} valueType="name" style={{ minWidth: "180px", zIndex: 1 }} size={"large"} />
           
-    
-
-
           <ConfigProvider
   theme={{
     token: {
-    colorText:"#fff",
+    colorText:"#000",
     colorBgContainer:"#d2d7e9"
     },
   }}
@@ -777,7 +834,7 @@ if (allNull) {
                       className="dx-default-date-range"
                       ref={rangePickerRef}
             size="large"
-            style={{ marginRight: "10px" , backgroundColor:"#d2d7e9"}}
+            style={{ marginRight: "10px" , }}
             onChange={handleDateRangeChange}
             allowClear={false}
             inputReadOnly={true}
@@ -798,6 +855,7 @@ if (allNull) {
           />
 </ConfigProvider>
         </div>
+        }
 
       </Modal >
       <div className="layout-content">
@@ -845,7 +903,7 @@ if (allNull) {
 
           <Button
             // type="primary"
-            disabled={!filterChanged}
+            disabled={!filterChanged  || Object.values(queryParamState).every(value => value === null) }
             onClick={() =>
               handleApplyFilters()
             }
@@ -878,7 +936,7 @@ if (allNull) {
               icon={<DownloadOutlined />}
               size="large"
               style={{ fontSize: "0.9rem"}}
-              onClick={downloadExcel}
+              onClick={()=> setModal(true)}
                 className="commButton"
             >
               Download Excel
@@ -886,11 +944,10 @@ if (allNull) {
           ) : null}
           {/* <Button
             type="primary"
-            disabled={!reportData.length > 0}
             icon={<DownloadOutlined />}
             size="large"
             style={{ fontSize: "1rem", backgroundColor: "#ec522d" }}
-            onClick={downloadExcel}
+            onClick={`downloadExcel`}
           >
             Download Excel
           </Button> */}

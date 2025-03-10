@@ -17,6 +17,7 @@ import { setSelectedShift } from "../../redux/slices/shiftSlice";
 import { getProductVsDefectSuccess } from "../../redux/slices/productvsDefectSlice";
 import DropdownComponent from "../common/DropdownComponent";
 import PropTypes from 'prop-types';
+import { use } from "react";
 
 
 const StackChart = lazy(()=>import("../../components/chart/StackChart"))
@@ -141,6 +142,12 @@ const [state, dispatchReducer] = useReducer( reducer ,initialState)
   useEffect(() => {
     resetFilter()
   }, [localPlantData, currentUrlPath])
+
+  useEffect(() => {
+    if(selectedMachineRedux ===null && selectedProductRedux === null && selectedShiftRedux === null && selectedDate === null){
+      resetFilter()
+    }
+  },[selectedMachineRedux, selectedProductRedux, selectedShiftRedux, selectedDate])
 
   const resetFilter = async () => {
     const [{active_products , ...datesData} , dpmuData , prodData] = await Promise.all([

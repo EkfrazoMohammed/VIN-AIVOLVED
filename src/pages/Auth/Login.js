@@ -16,6 +16,7 @@ const Login = () => {
   const [loginPayload, setLoginPayload] = useState({
     email_or_phone: "",
     password: "",
+    remember_me: false,
   });
 
   const [error, setError] = useState({
@@ -88,6 +89,7 @@ const [saveUserLocal,setSaveUserLocal] = useState(false);
       // }
     
       navigate("/plant");
+      console.log(loginPayload,"<<loginPayload")
 
 
     } catch (error) {
@@ -118,13 +120,15 @@ const [saveUserLocal,setSaveUserLocal] = useState(false);
   // Handle Remember Me checkbox
  
     // Handle Remember Me checkbox
-    if (name === "rememberMe") {
+    if (name === "remember_me") {
       if (checked) {
         localStorage.setItem("rememberMeClicked", true); // Set Remember Me immediately
         setSaveUserLocal(true);
+        setLoginPayload(prev => ({ ...prev, remember_me: true }));  
       } else {
         localStorage.setItem("rememberMeClicked", false);
         setSaveUserLocal(false);
+        setLoginPayload(prev => ({ ...prev, remember_me: false }));
       }
 
   }
@@ -231,7 +235,7 @@ const handleKeydown =  (event)=>{
     }}
   >
 
-              <Checkbox className='font-bold text-white'    onChange={handleChange} name="rememberMe">Remember Me</Checkbox>
+              <Checkbox className='font-bold text-white'    onChange={handleChange} name="remember_me">Remember Me</Checkbox>
   </ConfigProvider>
             </div>
             <div>

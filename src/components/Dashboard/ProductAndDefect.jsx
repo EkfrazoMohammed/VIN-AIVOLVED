@@ -158,7 +158,7 @@ setLoading(false)
         
         <div
           style={{
-            height: chartData?.length * 40 + "px", 
+            height: chartData?.length * 60 + "px", 
             minHeight: "90%", 
             width: "100%", 
             display: "flex", 

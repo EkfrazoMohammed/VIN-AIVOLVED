@@ -201,7 +201,7 @@ const PasswordResetForm = () => {
           {success ? (
             <div className="mb-4 text-center">
               <span className="text-green-500 text-lg font-bold">
-                Password reset successfully br. <br />Please login with new password.
+                Password reset successfully. <br />Please login with new password.
               </span>
               <Link to={"/login"} className="text-blue-500 font-bold ml-2">
                 Login
@@ -233,10 +233,10 @@ const PasswordResetForm = () => {
           ) : isTokenValid === false && !isTokenExpired && !isTokenMissing ? (
             <div className="mb-4 text-center flex flex-col gap-2">
               <span className="text-red-500 text-lg font-bold">
-                This reset link is invalid. <br />Please request a new password reset.
+              The reset password link has expired.  <br />Please request a new password reset link.
               </span>
               
-                <Link to={"/login"} className="bg-gray-500 text-white font-bold py-2 px-4 rounded">
+                <Link to={"/login"} className="bg-[43996a] text-white font-bold py-2 px-4 rounded">
                   Login
                 </Link>
               </div>

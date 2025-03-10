@@ -7,8 +7,9 @@ const ProtectedRoutes = () => {
   const isAuthenticated = useSelector(
     (state) => state.auth.authData[0].isAuthenticated
   );
+  const rememberMe = localStorage.getItem("rememberMeClicked");
 
-  return isAuthenticated ? (
+  return isAuthenticated || rememberMe   ? (
     <Layout>
       <Outlet />
     </Layout>
