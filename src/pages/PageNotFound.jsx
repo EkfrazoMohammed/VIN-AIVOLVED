@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 const NotFound = () => {
+
+
+
   return (
     <div className="flex items-center justify-center h-screen bg-gray-100">
       <div className="text-center">

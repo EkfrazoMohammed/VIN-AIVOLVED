@@ -903,7 +903,7 @@ if (allNull) {
 
           <Button
             // type="primary"
-            disabled={!filterChanged  || Object.values(queryParamState).every(value => value === null) }
+            disabled={!filterChanged  || (Object.values(queryParamState).every(value => value === null) && !selectedDate)}
             onClick={() =>
               handleApplyFilters()
             }
