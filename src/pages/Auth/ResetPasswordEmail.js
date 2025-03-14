@@ -22,7 +22,7 @@ const ResetPasswordEmail = () => {
     const { status, message } = param;
 
     api[status]({
-      message: message || "",
+      message: <div style={{ fontSize: "1.1rem", fontWeight: "600" , color:"#000"}}>{message}</div>,
       duration: 3, // Notification will auto-close after 3 seconds
     });
   };

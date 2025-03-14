@@ -413,3 +413,17 @@ export const dpmuFilterDate = async (DpmuData, dateRange) => {
 
   }
 }
+
+export const getDefectNotification = async (plantId, apiCallInterceptor , current , pageSize) => {
+  try {
+    const encryptedPlantId = encodeURIComponent(encryptAES(JSON.stringify(plantId)));
+    let url = `defect-notifications/?plant_id=${encryptedPlantId}&page=${current}&page_size=${pageSize}`;
+    
+    const response = await apiCallInterceptor.get(url); 
+    return response.data; // Ensure the function returns the data
+
+  } catch (error) {
+    console.error("Error fetching defect notification:", error);
+    return []; // Return an empty array or handle the error as needed
+  }
+};

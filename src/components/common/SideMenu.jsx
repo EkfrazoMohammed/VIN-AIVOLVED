@@ -288,14 +288,14 @@ const SideMenu = () => {
             </ul>
           </li>
         </ul>
-        <div className="  h-[75px] flex flex-col justify-center items-center  gap-2   border-dotted border-2 border-[#06175d] mx-3 p-2 rounded-lg text-[#06175d]">
+        {/* <div className="  h-[75px] flex flex-col justify-center items-center  gap-2   border-dotted border-2 border-[#06175d] mx-3 p-2 rounded-lg text-[#06175d]">
         <div className="text-start w-full font-bold text-xs ">Powered By</div>
         <div className="flex justify-around items-center gap-2">
 
         <img src={aiLogo} alt="" className="w-[40px]" />
         <span className="font-bold text-xl ">AIvolved</span>
         </div>
-      </div>
+      </div> */}
         <CurrentTime />
       </div>
     </div>

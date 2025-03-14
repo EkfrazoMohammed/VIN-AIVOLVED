@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef , useReducer} from "react";
 import { useLocation } from "react-router-dom";
-import { Table, Select, DatePicker, Button, Image ,Modal ,ConfigProvider, Pagination, Spin } from "antd";
+import { Table, Select, DatePicker, Button, Image ,Modal ,ConfigProvider, Pagination, Spin , notification } from "antd";
 import * as XLSX from "xlsx";
 import { DownloadOutlined } from "@ant-design/icons";
 import { ColorRing, Hourglass } from "react-loader-spinner";
@@ -24,6 +24,7 @@ import { saveAs } from 'file-saver';
 import SelectComponent from "../components/common/Select";
 import { debounce } from 'lodash';
 import axiosInstance from "../API/axiosInstance";
+import { toast } from "react-toastify";
 
 const ImageRenderer = ({ image_b64 }) => {
 
@@ -297,6 +298,8 @@ const reducerExcel = (state, action) =>{
   const [dateRange, setDateRange] = useState();
 
   const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedDateExcel, setSelectedDateExcel] = useState(null);
+
   const { RangePicker } = DatePicker;
   const [filterActive, setFilterActive] = useState(defectProp);
   const [filterChanged, setFilterChanged] = useState(defectProp);
@@ -309,17 +312,15 @@ const reducerExcel = (state, action) =>{
   const messages  = [];
   const ws = null;
 
-  console.log(selectedDate,"selectedDate")
 
   const handleDownload = async () => {
     try {
       dispatch({ type: "API_CALLINPROGESS_EXCEL", payload: true });
        
-      setLoaderExcel(true)
       const params = {
         plant_id: localPlantData?.id || undefined,
-        from_date: selectedDate?.[0] || undefined,
-        to_date: selectedDate?.[1] || undefined,
+        from_date: selectedDateExcel?.[0] || undefined,
+        to_date: selectedDateExcel?.[1] || undefined,
         machine_id: stateExcel.machine || undefined,
         product_id: stateExcel.product || undefined,
         defect_id: stateExcel.defect || undefined,
@@ -347,18 +348,34 @@ const reducerExcel = (state, action) =>{
 
       const queryString = new URLSearchParams(encryptedUrl).toString();
       const url = `download-reports/?${queryString}`;
+       dispatchExcel({type:'SET_SELECTED_DEFECT_EXCEL', payload:null})
+       dispatchExcel({type:'SET_SELECTED_MACHINE_EXCEL', payload:null})
+       dispatchExcel({type:'SET_SELECTED_PRODUCT_EXCEL', payload:null})
+       dispatchExcel({type:'SET_SELECTED_SHIFT_EXCEL', payload:null})
+       setSelectedDateExcel(null)
+       setLoaderExcel(true)
+      setTimeout(()=>{
+        setModal(false)
+        setLoaderExcel(false)
+
+      },[3000])
 
        const response = await apiCallInterceptor(url); 
-       console.log(response.data.results,"response.data.results")
-       if(response.data.results){
+       if(response.data.results.length > 0){
          downloadExcel(response.data.results);
          setLoaderExcel(false)
-         setModal(false)
-       }
+
+        }
+        else {
+          openNotification("error","No data available for download in Excel format.")
+          setLoaderExcel(false)
+
+        }
+
+      
     } catch (error) {
       console.log(error)
       dispatch({ type: "API_CALLINPROGESS_EXCEL", payload: false });
-      setLoaderExcel(false)
       setModal(false)
     }
   }
@@ -441,7 +458,12 @@ if (allNull) {
   },[queryParamState])
   
   
-
+  const openNotification = (status, message) => {
+    notification[status]({
+      message: <div style={{ fontSize: "1.1rem", fontWeight: "600" , color:"#000"}}>{message}</div>,
+      duration: 2,
+    });
+  };
   
   const handleTableChange = (pagination) => {
     setPagination(pagination.current, pagination.pageSize); // Update pagination state
@@ -536,6 +558,15 @@ if (allNull) {
       setFilterChanged(true)
     } 
   };
+    const handleDateRangeChangeExcel = (dates, dateStrings) => {
+    if (dateStrings) {
+      setSelectedDateExcel(dateStrings);
+      setDateRange(dateStrings);
+      setFilterChanged(true)
+    } 
+  };
+
+
 
 
 
@@ -672,7 +703,6 @@ if (allNull) {
       setFilterChanged(true);  // Reset the filter changed flag after applying
     } catch (error) {
       // Handle API error
-      console.error("Error applying filters:", error);
       dispatch({ type: "API_CALLPROGESS", payload: false });
     } finally {
       setLoader(false);
@@ -755,6 +785,7 @@ if (allNull) {
     setTimeout(() => {
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
+      openNotification("success", "Excel Sheet Downloaded Successfully");
     }, 0);
 
   };
@@ -796,23 +827,24 @@ if (allNull) {
           dispatchExcel({type:'SET_SELECTED_MACHINE_EXCEL', payload:null})
           dispatchExcel({type:'SET_SELECTED_PRODUCT_EXCEL', payload:null})
           dispatchExcel({type:'SET_SELECTED_SHIFT_EXCEL', payload:null})
-         setSelectedDate(null)
+         setSelectedDateExcel(null)
         }}
         footer={[
-            <Button key="submit" type="primary"   className="commButton" onClick={handleDownload}>Download Excel</Button>
+            <Button key="submit" type="primary" disabled={stateExcel.product === null && stateExcel.machine === null && stateExcel.defect === null && selectedDateExcel === null }  className="commButton" onClick={handleDownload}>Download Excel</Button>
       
         ]}
       >
         {
           loaderExcel ? (
             <div className="text-center flex justify-center items-center ">
-              <ColorRing
+              {/* <ColorRing
                 height="80"
                 width="80"
                 ariaLabel="color-ring-loading"
                 wrapperClass="color-ring-wrapper"
                 colors={['#43996a', '#43996a', '#43996a', '#43996a', '#43996a']}
-              />
+              /> */}
+              <span className="text-green-600 font-bold">Download started in the background. Time depends on file size.</span>
             </div>
           ) :
         <div className="" style={{ display: "flex", flexWrap: "wrap", gap: "2rem", justifyContent: "center" }}>
@@ -835,7 +867,7 @@ if (allNull) {
                       ref={rangePickerRef}
             size="large"
             style={{ marginRight: "10px" , }}
-            onChange={handleDateRangeChange}
+            onChange={handleDateRangeChangeExcel}
             allowClear={false}
             inputReadOnly={true}
             disabledDate={(current) => {
@@ -845,10 +877,10 @@ if (allNull) {
 
               return current && (current.valueOf() > now || current.valueOf() < thirtyDaysAgo);
             }}            value={
-              selectedDate
+              selectedDateExcel
                 ? [
-                  dayjs(selectedDate[0], dateFormat),
-                  dayjs(selectedDate[1], dateFormat),
+                  dayjs(selectedDateExcel[0], dateFormat),
+                  dayjs(selectedDateExcel[1], dateFormat),
                 ]
                 : []
             }
@@ -932,6 +964,7 @@ if (allNull) {
           ) : null}
           {state.reportData?.length > 0 ? (
             <Button
+          
               type="primary"
               icon={<DownloadOutlined />}
               size="large"

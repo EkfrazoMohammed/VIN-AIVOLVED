@@ -28,7 +28,7 @@ const PasswordResetForm = () => {
   const openNotification = (param) => {
     const { status, message } = param;
     api[status]({
-      message: message || "",
+      message: <div style={{ fontSize: "1.1rem", fontWeight: "600" , color:"#000"}}>{message}</div>,
       duration: 3, // Notification will auto-close after 3 seconds
     });
   };
@@ -74,7 +74,8 @@ const PasswordResetForm = () => {
           }
         } else {
           // Network or other error
-          setError("Could not validate reset link. Please try again.");
+          // setError("Could not validate reset link. Please try again.");
+          console.log("Could not validate reset link. Please try again.")
         }
         setIsTokenValid(false);
       }

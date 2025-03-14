@@ -273,8 +273,8 @@ label::after {
   .ant-notification-notice {
   padding: 20px 24px !important;
   width: 384px !important;
-  background-color: orangered !important;
-  color: #fff !important;
+  background-color: #ffff !important;
+  color: #000 !important;
   max-width: calc(100vw - 48px) !important;
   overflow: hidden !important;
   line-height: 1.5714285714285714 !important;
