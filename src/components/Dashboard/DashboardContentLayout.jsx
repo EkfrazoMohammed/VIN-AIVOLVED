@@ -61,6 +61,10 @@ const DashboardContentLayout = ({ children }) => {
     formattedStartDate,
     formattedEndDate,
   ]);
+  const [dateRangeFifteen, setDateRangeFifteen] = useState([
+    formattedStartDate,
+    formattedEndDate,
+  ]);
 
 
   const [textData, setTextData] = useState(null);
@@ -131,6 +135,7 @@ const [state, dispatchReducer] = useReducer( reducer ,initialState)
     if (Array.isArray(dateStrings) && dateStrings.length === 2) {
       setSelectedDate(dateStrings);
       setDateRange(dateStrings);
+      setDateRangeFifteen(dateStrings)
       setFilterChanged(true)
     } else {
       console.log("Invalid date range:", dates, dateStrings);
@@ -152,7 +157,7 @@ const [state, dispatchReducer] = useReducer( reducer ,initialState)
   const resetFilter = async () => {
     const [{active_products , ...datesData} , dpmuData , prodData] = await Promise.all([
       initialDashboardData(localPlantData.id, accessToken, apiCallInterceptor),
-      initialDpmuData(localPlantData.id, accessToken, apiCallInterceptor),
+      initialDpmuData(localPlantData.id, accessToken, apiCallInterceptor ,dateRangeFifteen),
       initialProductionData(localPlantData.id, accessToken, apiCallInterceptor)
     ])
     dispatchReducer({type:'SET_TABLE_DATA', payload:datesData})
@@ -180,7 +185,7 @@ const [state, dispatchReducer] = useReducer( reducer ,initialState)
   const handelFilterProduction = async () => {
     try {
       setTextActive(true)
-     const dpmuFilter = await dpmuFilterData(apiCallInterceptor, selectedMachineRedux, localPlantData.id, dateRange, selectedDate);
+     const dpmuFilter = await dpmuFilterData(apiCallInterceptor, selectedMachineRedux, localPlantData.id, dateRangeFifteen, selectedDate);
       setLoading(true)
       const [fromDate, toDate] = dateRange;
       const queryParams = {
@@ -308,7 +313,7 @@ const [state, dispatchReducer] = useReducer( reducer ,initialState)
           getMachines(localPlantData.plant_name, accessToken, apiCallInterceptor),
           getDepartments(localPlantData.plant_name, accessToken, apiCallInterceptor),
           getDefects(localPlantData?.plant_name, accessToken, apiCallInterceptor),
-          initialDpmuData(localPlantData.id, accessToken, apiCallInterceptor),
+          initialDpmuData(localPlantData.id, accessToken, apiCallInterceptor ,dateRangeFifteen),
           getProducts(localPlantData.plant_name, accessToken, apiCallInterceptor),
           initialProductionData(localPlantData.id, accessToken, apiCallInterceptor),
           getSystemStatus(localPlantData.id, accessToken, apiCallInterceptor),
@@ -319,7 +324,7 @@ const [state, dispatchReducer] = useReducer( reducer ,initialState)
 
         const [prodData , filteredProductionData , {active_products , ...datesData}] = await Promise.all([
           initialProductionData(localPlantData.id, accessToken, apiCallInterceptor),
-          initialDpmuData(localPlantData.id, accessToken, apiCallInterceptor),
+          initialDpmuData(localPlantData.id, accessToken, apiCallInterceptor ,dateRangeFifteen),
           initialDashboardData(localPlantData.id, accessToken, apiCallInterceptor)
         ])
 
@@ -350,13 +355,15 @@ const [state, dispatchReducer] = useReducer( reducer ,initialState)
   }, []);
 
   const initialDateRange = () => {
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - 6); // 7 days ago
-    const formattedStartDate = startDate.toISOString().slice(0, 10);
-    const endDate = new Date(); // Today's date
-    const formattedEndDate = endDate.toISOString().slice(0, 10); // Format endDate as YYYY-MM-DD
-    setDateRange([formattedStartDate, formattedEndDate]);
-  };
+    const getFormattedDate = (daysAgo) => {
+        const date = new Date();
+        date.setDate(date.getDate() - daysAgo);
+        return date.toISOString().slice(0, 10);
+    };
+    setDateRange([getFormattedDate(6), getFormattedDate(0)]);
+    setDateRangeFifteen([getFormattedDate(14), getFormattedDate(0)]);
+};
+
 
   const { RangePicker } = DatePicker;
 

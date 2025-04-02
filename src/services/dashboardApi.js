@@ -199,31 +199,30 @@ export const getAiSmartView = async (
 };
 
 
-export const initialDpmuData = async(plantId, token, apiCallInterceptor,setCountData) => {
+export const initialDpmuData = async(plantId, token, apiCallInterceptor ,dateRangeFifteen) => {
   const encryptedPlantId = encodeURIComponent(
     await encryptAES(JSON.stringify(plantId))
   );
-  const url = `params_graph/?plant_id=${encryptedPlantId}`;
+  const getFormattedDate = (daysAgo) => {
+    const date = new Date();
+    date.setDate(date.getDate() - daysAgo);
+    return date.toISOString().slice(0, 10);
+};
+const fromDate = getFormattedDate(14)
+const toDate = getFormattedDate(0)
+
+  const encryptedfromDate = await encryptAES(fromDate)
+  const encryptedtodate = await encryptAES(toDate)
+  const url = `params_graph/?plant_id=${encryptedPlantId}&from_date=${encryptedfromDate}&to_date=${encryptedtodate}`;
   try {
     const response = await apiCallInterceptor.get(url);
-   
-       const filteredProductionData = await response.data.results?.filter((item) => {
-      const itemDate = new Date(item.date_time);
-      const currentDate = new Date();
-      const diffInTime = currentDate - itemDate;
-      const diffInDays = diffInTime / (1000 * 3600 * 24); // Convert time difference from milliseconds to days
-      return diffInDays <= 15; // Only include data from the last 30 days
-    }
-  );
-
-  return filteredProductionData
+  return response.data.results
   } catch (error) {
     return error
   }
 };
 
 export const dpmuFilterData = async(apiCallInterceptor, machineId, plantId, dateRange, selectedDate) => {
- let dpmuData ;
  const [fromDate, toDate] = dateRange;
   const encrypt = await encryptAES(JSON.stringify(machineId));
   const encryptedPlantId = encodeURIComponent(
@@ -235,7 +234,7 @@ export const dpmuFilterData = async(apiCallInterceptor, machineId, plantId, date
 
   let url;
   if (machineId && machineId !== null) {
-    url = `params_graph/?plant_id=${encryptedPlantId}&machine_id=${encrypt}`;
+    url = `params_graph/?plant_id=${encryptedPlantId}&machine_id=${encrypt}&from_date=${encryptedfromDate}&to_date=${encryptedtodate}`;
   }
   else {
     url = `params_graph/?plant_id=${encryptedPlantId}&from_date=${encryptedfromDate}&to_date=${encryptedtodate}`;
@@ -243,54 +242,54 @@ export const dpmuFilterData = async(apiCallInterceptor, machineId, plantId, date
   try {
     const response = await apiCallInterceptor.get(url);
 
-if (!selectedDate) {
-  const todayDate = new Date();
-  const past30DaysDate = new Date();
-  past30DaysDate.setDate(todayDate.getDate() - 29);
+// if (!selectedDate) {
+//   const todayDate = new Date();
+//   const past30DaysDate = new Date();
+//   past30DaysDate.setDate(todayDate.getDate() - 29);
 
-  const formattedToday = todayDate.toISOString().split("T")[0];
-  const formattedPast30Days = past30DaysDate.toISOString().split("T")[0]; 
-  dpmuData = response.data.results.filter((item) => {
-    const itemDate = item.date_time.split("T")[0]; 
-    return itemDate >= formattedPast30Days && itemDate <= formattedToday;
-  }).slice(-15);
+//   const formattedToday = todayDate.toISOString().split("T")[0];
+//   const formattedPast30Days = past30DaysDate.toISOString().split("T")[0]; 
+//   dpmuData = response.data.results.filter((item) => {
+//     const itemDate = item.date_time.split("T")[0]; 
+//     return itemDate >= formattedPast30Days && itemDate <= formattedToday;
+//   }).slice(-15);
 
-  return dpmuData;
-}
-    else {
+//   return dpmuData;
+// }
+//     else {
      
-      // const from = new Date(fromDate);
-      // const to = new Date(toDate);
+//       // const from = new Date(fromDate);
+//       // const to = new Date(toDate);
   
-      //  dpmuData = response.data.results.filter((item) => {
-      //   const itemDate = new Date(item.date_time); // Convert item date to Date object
-      //   return itemDate >= from && itemDate <= to; // Check if itemDate is within the range
-      // });
-      // store.dispatch(getDpmuSuccess(filteredData))
-      if(fromDate === toDate){
-        dpmuData  = response.data.results.filter((item)=>item.date_time === fromDate)
-      }
-      else if(fromDate && toDate){
-        dpmuData = response.data.results.filter((item) => {
-          const itemDate = item.date_time.split("T")[0]; 
-          return itemDate >= fromDate && itemDate <= toDate;
-        })
-      }
+//       //  dpmuData = response.data.results.filter((item) => {
+//       //   const itemDate = new Date(item.date_time); // Convert item date to Date object
+//       //   return itemDate >= from && itemDate <= to; // Check if itemDate is within the range
+//       // });
+//       // store.dispatch(getDpmuSuccess(filteredData))
+//       if(fromDate === toDate){
+//         dpmuData  = response.data.results.filter((item)=>item.date_time === fromDate)
+//       }
+//       else if(fromDate && toDate){
+//         dpmuData = response.data.results.filter((item) => {
+//           const itemDate = item.date_time.split("T")[0]; 
+//           return itemDate >= fromDate && itemDate <= toDate;
+//         })
+//       }
 
-      else{
-        const todayDate = new Date();
-        const past30DaysDate = new Date();
-        past30DaysDate.setDate(todayDate.getDate() - 29);
+//       else{
+//         const todayDate = new Date();
+//         const past30DaysDate = new Date();
+//         past30DaysDate.setDate(todayDate.getDate() - 29);
       
-        const formattedToday = todayDate.toISOString().split("T")[0];
-        const formattedPast30Days = past30DaysDate.toISOString().split("T")[0]; 
-        dpmuData = response.data.results.filter((item) => {
-          const itemDate = item.date_time.split("T")[0]; 
-          return itemDate >= formattedPast30Days && itemDate <= formattedToday;
-        })
-      }
-    } 
-    return dpmuData;
+//         const formattedToday = todayDate.toISOString().split("T")[0];
+//         const formattedPast30Days = past30DaysDate.toISOString().split("T")[0]; 
+//         dpmuData = response.data.results.filter((item) => {
+//           const itemDate = item.date_time.split("T")[0]; 
+//           return itemDate >= formattedPast30Days && itemDate <= formattedToday;
+//         })
+//       }
+//     } 
+    return response.data.results;
   } catch (error) {
     return error
   }

@@ -16,36 +16,36 @@ setLoading(false)
   },[chartData])
 
   const totalProduction = chartData.reduce(
-    (sum, item) => sum + parseInt(item.total_production, 10),
+    (sum, item) => sum + (parseInt(item.total_production, 10) || 0),
     0
   );
-
+  
   const totalDefects = chartData.reduce(
-    (sum, item) => sum + Number(item.total_defects),
+    (sum, item) => sum + (Number(item.total_defects) || 0),
     0
   );
-
-
+  
   const data = {
     labels: chartData.map((item) => item.date),
     datasets: [
       {
         label: "Total Production",
-        data: chartData.map((item) => item.total_production),
+        data: chartData.map((item) => item.total_production || 0), // Ensure zero is shown
         backgroundColor: "#58f558",
-        minBarLength: 10, // Minimum visible size of production bars
+        minBarLength: 10,
       },
       {
         label: "Total Defects",
-        data: chartData.map((item) => item.total_defects),
+        data: chartData.map((item) => item.total_defects || 0), // Ensure zero is shown
         backgroundColor: "#fc5347",
-        minBarLength: 10, // Minimum visible size of defect bars
+        minBarLength: 10,
       },
     ],
   };
 
   const maxValue = Math.max(...data.datasets[0].data);
   const newMax  = (maxValue * 1.15  )
+
   const options = {
     responsive: true,
     indexAxis: 'y', // This makes the bar chart horizontal
@@ -83,7 +83,7 @@ setLoading(false)
     },
     scales: {
       x: {
-        beginAtZero: false,
+        beginAtZero: true,
         grid: {
           display: true, // Show or hide x-axis grid lines if needed
         },
@@ -136,7 +136,7 @@ setLoading(false)
         <div className="w-9/12 h-full">
 
   {
-    !chartData?.every(item => item.total_production === 0 && item.total_defects === 0) ? (
+    !chartData.length > 0 ? (
       
       <div
         style={{

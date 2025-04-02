@@ -128,13 +128,13 @@ const Plant = () => {
     
           <Col className=" w-full">
             <div className="mytab-content  flex gap-3  flex-col w-full justify-start ">
-              <div className="flex  items-center w-full justify-center ">
+              {/* <div className="flex  items-center w-full justify-center ">
                   <img
                             src='https://aivolved.in/wp-content/uploads/2022/11/ai-logo.png'
                             style={{ width: "60px", height: "auto", }}
                             alt="loadingError"
                           /> 
-              </div>
+              </div> */}
             <Card
                         className=" bg-[#06175d] h-[90px]"
                       >
