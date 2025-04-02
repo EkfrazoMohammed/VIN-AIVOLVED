@@ -104,7 +104,7 @@ const useApiInterceptor = () => {
                     const encryptedData = await encryptAES(JSON.stringify({ refresh_token: refreshToken }));
 
                     try {
-                        const response = await axios.post('https://hul.indusvision.ai/api/refresh_token/', {
+                        const response = await axios.post('https://demo.indusvision.ai/api/refresh_token/', {
                             data: encryptedData,
                         });
 

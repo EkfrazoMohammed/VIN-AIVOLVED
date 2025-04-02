@@ -45,7 +45,7 @@ const PasswordResetForm = () => {
         }
 
         const response = await axiosInstance.post(
-          "https://hul.indusvision.ai/api/reset-link-validity/",
+          "https://demo.indusvision.ai/api/reset-link-validity/",
           { token: queryToken }
         );
 

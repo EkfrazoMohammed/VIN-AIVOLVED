@@ -5,7 +5,7 @@
 // // Create and configure axiosInstance
 // const createAxiosInstance = (accessToken) => {
 //   const instance = axios.create({
-//     baseURL: process.env.REACT_APP_API_BASE_URL || "https://hul.indusvision.ai/api/",
+//     baseURL: process.env.REACT_APP_API_BASE_URL || "https://demo.indusvision.ai/api/",
 //     headers: {
 //       "Content-Type": "application/json",
 //       "Authorization": `Bearer ${accessToken}` // Set the accessToken in the headers
