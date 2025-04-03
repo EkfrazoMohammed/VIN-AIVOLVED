@@ -26,7 +26,7 @@ const Login = () => {
 
   const openNotification = (status, message) => {
     notification[status]({
-      message: <div style={{ fontSize: "1.1rem", fontWeight: "600" }}>{message}</div>,
+      message: <div style={{ fontSize: "1.1rem", fontWeight: "600" , color:"#000"}}>{message}</div>,
       duration: 2,
     });
   };
@@ -81,7 +81,8 @@ const [saveUserLocal,setSaveUserLocal] = useState(false);
    }
    
       dispatch(userSignInSuccess({ userId: user_id, userName: user_name, firstName: first_name, lastName: last_name, isSuperUser: is_superuser }))
-      openNotification("success", message);
+      console.log(decrypt,"decrypt")
+      openNotification("success", message );
       // if (is_superuser) {
       //   navigate("/location");
       // } else {
@@ -89,9 +90,6 @@ const [saveUserLocal,setSaveUserLocal] = useState(false);
       // }
     
       navigate("/plant");
-      console.log(loginPayload,"<<loginPayload")
-
-
     } catch (error) {
       dispatch(signInFailure(error.response?.data));
       openNotification("error", error.response?.data?.message
