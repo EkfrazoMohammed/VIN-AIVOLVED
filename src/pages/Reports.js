@@ -466,12 +466,19 @@ if (allNull) {
   };
   
   const handleTableChange = (pagination) => {
-    setPagination(pagination.current, pagination.pageSize); // Update pagination state
-    // dispatch(updatePage({ current: pagination.current, pageSize: pagination.pageSize }));
+    setPagination(prev => {
+      const newPageSize = pagination.pageSize;
+      const newCurrent = prev.pageSize !== newPageSize ? 1 : pagination.current; // Reset to page 1 if pageSize changes
+  
+      return { current: newCurrent, pageSize: newPageSize };
+    });
+  
+    console.log(pagination, "pagination");
+  
     if (filterActive) {
-      handleApplyFiltersPagination(pagination.current,pagination.pageSize);
+      handleApplyFiltersPagination(state.pagination.pageSize !== pagination.pageSize ? 1 : pagination.current, pagination.pageSize);
     } else {
-      initialReportData(pagination.current, pagination.pageSize);
+      initialReportData(state.pagination.pageSize !== pagination.pageSize ? 1 : pagination.current, pagination.pageSize);
     }
   };
   
@@ -852,7 +859,6 @@ if (allNull) {
           <SelectComponent placeholder={"Select Machine"} action={(val) => handleMachineChange(val,"excel")} selectedData={stateExcel.machine} data={machines} size={"large"} style={{ minWidth: "200px", marginRight: "10px" }} />
           <SelectComponent placeholder={"Select Defect"} action={(val) => handleDefectChange(val,"excel")} selectedData={stateExcel.defect} data={defectsData} size={"large"} style={{ minWidth: "200px", marginRight: "10px" }} />
           <SelectComponent placeholder={"Select Shift"} selectedData={stateExcel.shift} action={(val) => handleShiftChange(val,"excel")} data={shiftData} valueType="name" style={{ minWidth: "180px", zIndex: 1 }} size={"large"} />
-          
           <ConfigProvider
   theme={{
     token: {

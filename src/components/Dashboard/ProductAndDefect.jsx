@@ -7,7 +7,9 @@ import { Spin } from "antd";
 
 Chart.register(ChartDataLabels);
 
-const ProductAndDefect = ({ chartData , textActive }) => {
+const ProductAndDefect = ({ chartData,  textActive }) => {
+
+
   const [loading , setLoading] = useState(true)
   useEffect(()=>{
 setTimeout(()=>{
@@ -16,36 +18,36 @@ setLoading(false)
   },[chartData])
 
   const totalProduction = chartData.reduce(
-    (sum, item) => sum + (parseInt(item.total_production, 10) || 0),
+    (sum, item) => sum + parseInt(item.total_production, 10),
     0
   );
-  
+
   const totalDefects = chartData.reduce(
-    (sum, item) => sum + (Number(item.total_defects) || 0),
+    (sum, item) => sum + Number(item.total_defects),
     0
   );
-  
+
+
   const data = {
     labels: chartData.map((item) => item.date),
     datasets: [
       {
         label: "Total Production",
-        data: chartData.map((item) => item.total_production || 0), // Ensure zero is shown
+        data: chartData.map((item) => item.total_production),
         backgroundColor: "#58f558",
-        minBarLength: 10,
+        minBarLength: 10, // Minimum visible size of production bars
       },
       {
         label: "Total Defects",
-        data: chartData.map((item) => item.total_defects || 0), // Ensure zero is shown
+        data: chartData.map((item) => item.total_defects),
         backgroundColor: "#fc5347",
-        minBarLength: 10,
+        minBarLength: 10, // Minimum visible size of defect bars
       },
     ],
   };
 
   const maxValue = Math.max(...data.datasets[0].data);
   const newMax  = (maxValue * 1.15  )
-
   const options = {
     responsive: true,
     indexAxis: 'y', // This makes the bar chart horizontal
@@ -106,8 +108,6 @@ setLoading(false)
   };
 
 
-
-
   return (
     <div className="py-3 w-full ">
       <h1 className="section-title text-xl font-bold text-red-700 mb-4">
@@ -136,7 +136,7 @@ setLoading(false)
         <div className="w-9/12 h-full">
 
   {
-    !chartData.length > 0 ? (
+    chartData && chartData.length > 0 ? (
       
       <div
         style={{

@@ -22,6 +22,7 @@ export default function RealTimeManufacturingSection({
   }, [productionData]);
 
   
+  console.log(productionData,"productionData")
 
 
   // Helper to calculate total defects
@@ -47,22 +48,32 @@ export default function RealTimeManufacturingSection({
     ],
   };
 
-  // Chart Options
   const options = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
       legend: { display: false },
       tooltip: {
+        bodyFont: {
+          size: window.innerWidth < 768 ? 10 : 14, 
+        },
+        displayColors: false,
         callbacks: {
-          label: (tooltipItem) => `${tooltipItem.raw}M`,
+          label: (tooltipItem) => {
+            const value = tooltipItem.raw;
+            return window.innerWidth < 768 ? `${value}M` : `Value: ${value}M`; 
+          },
+          title: (tooltipItems) => {
+            return `Date: ${tooltipItems[0].label}`;
+          },
         },
       },
       datalabels: {
         color: "#ffff",
         font: {
-          size:productionData?.length > 15 ? 7 : 10,
+          size: productionData?.length > 15 ? 7 : 10,
         },
+        formatter: (value) => `${value}M`, // Ensure zero values are displayed
       },
     },
     scales: {
@@ -76,12 +87,13 @@ export default function RealTimeManufacturingSection({
         grid: { display: false },
         ticks: {
           autoSkip: false,
-          maxRotation: 90,
-          minRotation: 45,
+          maxRotation: window.innerWidth < 768 ? 45 : 90, 
+          minRotation: window.innerWidth < 768 ? 20 : 45,
         },
       },
     },
   };
+
 
 
 
@@ -161,11 +173,8 @@ export default function RealTimeManufacturingSection({
             <div className="flex justify-center items-center w-full">
              <Spin size="large"  tip="Loading"/>
             </div>
-          ) : productionData?.every((item) => item.defect_percentage === 0) ? (
-            <div className="flex justify-center items-center font-extrabold h-52 text-center w-full">
-              NO DATA
-            </div>
-          ) : (
+          )
+           : (
             <div
               style={{
                 width: "100%",
