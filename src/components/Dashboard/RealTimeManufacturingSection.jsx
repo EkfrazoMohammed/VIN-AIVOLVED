@@ -61,7 +61,7 @@ export default function RealTimeManufacturingSection({
         callbacks: {
           label: (tooltipItem) => {
             const value = tooltipItem.raw;
-            return window.innerWidth < 768 ? `${value}M` : `Value: ${value}M`; 
+            return window.innerWidth < 768 ? `${value}` : `Value: ${value}`; 
           },
           title: (tooltipItems) => {
             return `Date: ${tooltipItems[0].label}`;
@@ -73,14 +73,14 @@ export default function RealTimeManufacturingSection({
         font: {
           size: productionData?.length > 15 ? 7 : 10,
         },
-        formatter: (value) => `${value}M`, // Ensure zero values are displayed
+        formatter: (value) => `${value}`, // Ensure zero values are displayed
       },
     },
     scales: {
       y: {
         beginAtZero: true,
         ticks: {
-          callback: (value) => `${value}M`,
+          callback: (value) => `${value}`,
         },
       },
       x: {

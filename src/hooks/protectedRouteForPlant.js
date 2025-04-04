@@ -11,7 +11,7 @@ const ProtectedRouteForPlant = () => {
 const rememberMe = localStorage.getItem("rememberMeClicked");
 
 
-  return isAuthenticated || rememberMe ? <Outlet /> : <Navigate to="/login" />;
+  return isAuthenticated ? <Outlet /> : <Navigate to="/login" />;
 };
 
 export default ProtectedRouteForPlant;
