@@ -173,7 +173,7 @@ const Settings = () => {
         (
           <div style={{ whiteSpace: "pre-line", color: "#000" }}>{message}</div>
         ) || "",
-      duration: 5,
+      duration: 2,
     });
   };
 
@@ -271,6 +271,7 @@ const Settings = () => {
         openNotification({
           status: "error",
           message: error?.response?.data?.message,
+
         });
       }
     }
