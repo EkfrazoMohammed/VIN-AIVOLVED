@@ -25,6 +25,23 @@ const Location = () => {
             location_name: "New",
 
         },
+        {
+            id: 3,
+            is_active: false,
+            location_name: "New",
+
+        },
+        {
+            id: 3,
+            is_active: false,
+            location_name: "New",
+
+        },       {
+            id: 3,
+            is_active: false,
+            location_name: "New",
+
+        },
     ];
 
     const loader = false;

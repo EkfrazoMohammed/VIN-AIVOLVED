@@ -29,9 +29,10 @@ const DefectsReport  = lazy(()=>import("./DefectsReport"))
 
 
 const DashboardContentLayout = ({ children }) => {
+
   const apiCallInterceptor = useApiInterceptor();
   const dispatch = useDispatch();
-  const localPlantData = useSelector((state) => state?.plant?.plantData[0]);
+  const localPlantData = useSelector((state) => state?.plant?.plantData[0]) ;
   const accessToken = useSelector((state) => state.auth.authData[0].accessToken);
   const machines = useSelector((state) => state.machine.machinesData)
   const activeMachines = useSelector((state) => state.machine.activeMachines)

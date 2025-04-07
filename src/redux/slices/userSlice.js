@@ -10,6 +10,10 @@ const initialState = {
       isSuperuser: false,
       user_role_name: "",
       user_plant: "",
+      roleId : "",
+      locationId :"",
+      roleName:"",
+      permissions:[]
     }
   ],
 };
@@ -30,6 +34,11 @@ const userSlice = createSlice({
       state.userData[0].isSuperuser = action.payload.isSuperuser;
       state.userData[0].user_role_name = action.payload.lastName;
       state.userData[0].user_plant = action.payload.lastName;
+      state.userData[0].roleId = action.payload.roleId;
+      state.userData[0].roleName = action.payload.roleName;
+      state.userData[0].locationId = action.payload.locationId;
+      state.userData[0].permissions = action.payload.permissions;
+
     },
     userSignInFailure: (state, action) => {
       state.loading = false;
@@ -43,6 +52,10 @@ const userSlice = createSlice({
       state.userData[0].isSuperuser = false;
       state.userData[0].user_role_name = "";
       state.userData[0].user_plant = "";
+      state.userData[0].roleId = "";
+      state.userData[0].roleName = ""
+      state.userData[0].locationId = "";
+      state.userData[0].permissions = [];
     },
   },
 });

@@ -31,6 +31,7 @@ const Defects = ({ defectsdata }) => {
   useEffect(() => {
     getDefects(localPlantData?.plant_name, AuthToken, apiCallInterceptor)
   }, []);
+
   const columns = [
     {
       title: 'ID',
@@ -237,7 +238,7 @@ const Defects = ({ defectsdata }) => {
           </Col>
         </Row>
       </Modal>
-      <ConfigProvider
+        <ConfigProvider
           theme={{
             components: {
               Table: {

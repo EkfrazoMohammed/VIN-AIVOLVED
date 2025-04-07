@@ -16,9 +16,25 @@ import ProtectedRoutes from "./hooks/protectedRoutes";
 import NotFound from "./pages/PageNotFound";
 import ResetPasswordRoute from "./hooks/resetPasswordRoute";
 import ProtectedRouteForPlant from "./hooks/protectedRouteForPlant";
-import Location from "./pages/Location";
+import Location from "./pages/Location/Location";
+import { useSelector } from "react-redux";
+
+const routeMap = {
+  "Dashboard": { path: "/", component: <Dashboard /> },
+  "Reports": { path: "/reports", component: <Reports /> },
+  "Machine Parameter": { path: "/machine-parameter", component: <MachinesParameter /> },
+  "Ai Smart View": { path: "/ai-smart-view", component: <AiSmartView /> },
+  "Insights": { path: "/insights", component: <Insights /> },
+  "Settings": { path: "/settings", component: <SettingsContainer /> },
+  "System Status": { path: "/system-status", component: <Camera /> },
+};
+
+
 const App = () => {
-  console.log("Hey You Sneaky Developer")
+  const userPermissions = useSelector(
+    (state) => state.user.userData[0].permissions
+  );
+  console.log(userPermissions.generalRoutes, "userPermissions.generalRoutes");
   return (
     <Router>
       <Routes>
@@ -40,14 +56,20 @@ const App = () => {
           <Route path="/location" element={<Location />} />
         </Route>
         <Route element={<ProtectedRoutes />}>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/reports" element={<Reports />} />
-          <Route path="/machine-parameter" element={<MachinesParameter />} />
-          <Route path="/ai-smart-view" element={<AiSmartView />} />
-          <Route path="/insights" element={<Insights />} />
-          <Route path="/settings" element={<SettingsContainer />} />
-          <Route path="/system-status" element={<Camera />} />
-        </Route>
+        {[
+  ...(userPermissions?.generalRoutes || []),
+  ...(userPermissions?.otherRoutes || [])
+]
+  .filter((item) => item.isActive && routeMap[item.name])
+  .map((item) => (
+    <Route
+      key={item.name}
+      path={routeMap[item.name].path}
+      element={routeMap[item.name].component}
+    />
+))}
+
+    </Route>
       </Routes>
     </Router>
   );

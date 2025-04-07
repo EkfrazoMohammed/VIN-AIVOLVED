@@ -27,6 +27,7 @@ import useApiInterceptor from "../../hooks/useInterceptor";
 import { encryptAES } from "../../redux/middleware/encryptPayloadUtils";
 import { setSelectedShift } from "../../redux/slices/shiftSlice";
 import { defectTriggerSignOut } from "../../redux/slices/defecTriggerSlice";
+import { FaMapLocationDot } from "react-icons/fa6";
 const linkStyle =
   "sidemenu-link h-[45px] no-underline flex justify-start items-center px-3 rounded-[3px] gap-2";
 
@@ -123,6 +124,52 @@ const SideMenu = () => {
     dispatch(setSelectedShift(null))
   }
 
+  const PERMISSION = {
+    generalRoutes:[
+      {
+       name: "Dashboard",
+       isActive: true,
+      },
+      {
+        name: "Reports",
+        isActive: true,
+       },
+       {
+        name: "Ai Smart View",
+        isActive: true,
+       },
+       {
+        name: "Machine Parameter",
+        isActive: true,
+       },
+       {
+        name: "System Status",
+        isActive: true,
+       },
+  ],
+    organizationRoutes:[
+      {
+        name: "Locations",
+        isActive: true,
+       },
+       {
+        name: "Plant",
+        isActive: true,
+       },
+    ],
+    otherRoutes:[
+        {
+          name: "Settings",
+          isActive: true,
+        },
+       
+    ]
+  }
+  
+  const userPermissions = useSelector(
+    (state) => state.user.userData[0].permissions
+  );
+
   return (
     <>
     {contextHolder}
@@ -158,7 +205,7 @@ const SideMenu = () => {
     <div className="sidemenu-container flex flex-col min-h-screen w-[270px] fixed left-0 ">
       <div className="bg-[#06175d]  h-[75px] flex items-center gap-2 border-b-2 justify-center text-white">
         <div className='   rounded-full'>
-      <img 
+         <img 
                 src="https://eimkeia.stripocdn.email/content/guids/CABINET_8270216c780e362a1fbcd636b59c67ae376eb446dc5f95e17700b638b8c3f618/images/indus_logo_dev.png"
                 alt="client logo" className="w-40 h-auto " />
         </div>
@@ -168,114 +215,73 @@ const SideMenu = () => {
           <li className="text-[13px] font-normal">
             {/* <div className="mb-1 menu-category-name"> Min</div> */}
             <ul className="text-[15px] font-normal">
-              <li className="menu-item">
-                <Link
-                  to="/"
-                  onClick={handleClick}
-                  className={`${linkStyle} ${isActive("/dashboard")}`}
-                >
-                  <TbLayoutDashboard />
-                  Dashboard
-                </Link>
-              </li>
-              <li className="menu-item">
-                <Link
-                  to="/reports"
-                  onClick={handleClick}
-                  className={`${linkStyle} ${isActive("/reports")}`}
-                >
-                  <HiOutlineDocumentReport />
-                  Reports
-                </Link>
-              </li>
-              <li className="menu-item">
-                <Link
-                  to="/ai-smart-view"
-                  onClick={handleClick}
-                  className={`${linkStyle} ${isActive("/ai-smart-view")}`}
-                >
-                  <LuView />
-                  AI Smart View
-                </Link>
-              </li>
-              <li className="menu-item">
-                <Link
-                  to="/machine-parameter"
-                  onClick={handleClick}
-                  className={`${linkStyle} ${isActive("/machine-parameter")}`}
-                >
-                  <RiListSettingsLine />
-                  Machine Parameter
-                </Link>
-              </li>
-              <li className="menu-item">
-                <Link
-                  to="/system-status"
-                  onClick={handleClick}
-                  className={`${linkStyle} ${isActive("/system-status")}`}
-                >
-                  <MdSignalWifiStatusbarConnectedNoInternet1 />
-                  System Status
-                </Link>
-              </li>
+              {
+                userPermissions.generalRoutes.map((item, index) => {
+                  return (
+                    item.isActive && (
+                      <li key={index} className="menu-item">
+                        <Link
+                          to={item.name === "Dashboard" ? "/" : `/${item.name.toLowerCase().replace(/\s+/g, '-')}`}
+                          onClick={handleClick}
+                          className={`${linkStyle} ${isActive(item.name === "Dashboard" ? "/" : `/${item.name.toLowerCase().replace(/\s+/g, '-')}`)}`}
+                        >
+                          {item.name === "Dashboard" ? <TbLayoutDashboard /> : item.name === "Reports" ? <HiOutlineDocumentReport /> : item.name === "Ai Smart View" ? <LuView /> : item.name === "Machine Parameter" ? <RiListSettingsLine /> : <MdSignalWifiStatusbarConnectedNoInternet1 />}
+                          {item.name}
+                        </Link>
+                      </li>
+                    )
+                  )
+                } )  
+              }
             </ul>
           </li>
-          {/* {
-            role === "super_use" ?
-         
-          } */}
+          {
+            userPermissions?.organizationRoutes && userPermissions.organizationRoutes.some(item => item.isActive) && (
           <li className="text-[13px] font-normal">
             <div className="mb-1 menu-category-name"> Organization</div>
             <ul className="text-[15px] font-normal">
-              {/* <li className="menu-item">
-                <Link
-                  to="/location"
-                  onClick={handleClick}
-                  className={`${linkStyle} ${isActive("/location")}`}
-                >
-                  <FaMapLocationDot />
-                  Locations
-                </Link>
-              </li> */}
-              <li className="menu-item">
-                <Link
-                  to="/plant"
-                  onClick={handleClick}
-                  className={`${linkStyle} ${isActive("/plant")}`}
-                >
-                  <HiFlag />
-                  Plant
-                </Link>
-              </li>
+              {
+                userPermissions.organizationRoutes.map((item, index) => {
+                  return (
+                    item.isActive && (
+                      <li key={index} className="menu-item">
+                        <Link
+                          to={item.name === "Locations" ? "/location" : "/plant"}
+                          onClick={handleClick}
+                          className={`${linkStyle} ${isActive(item.name === "Locations" ? "/location" : "/plant")}`}
+                        >
+                          {item.name === "Locations" ? <FaMapLocationDot /> : <HiFlag />}
+                          {item.name}
+                        </Link>
+                      </li>
+                    )
+                  )
+                } )
+              }
             </ul>
-          </li>
+          </li>)
+          }
           <li className="text-[13px] font-normal">
             <div className="mb-1 menu-category-name"> Other</div>
             <ul className="text-[15px] font-normal">
-              {/* {
-                role === "super_use" ?
-                  <li className="menu-item">
-                    <Link
-                      to="/settings"
-                      onClick={handleClick}
-                      className={`${linkStyle} ${isActive("/settings")}`}
-                    >
-                      <CiSettings />
-                      Settings
-                    </Link>
-                  </li>
-                  : null
-              } */}
-              <li className="menu-item">
-                <Link
-                  to="/settings"
-                  onClick={handleClick}
-                  className={`${linkStyle} ${isActive("/settings")}`}
-                >
-                  <CiSettings />
-                  Settings
-                </Link>
-              </li>
+              {
+                userPermissions.otherRoutes.map((item, index) => {
+                  return (
+                    item.isActive && (
+                      <li key={index} className="menu-item">
+                        <Link
+                          to={item.name === "Settings" ? "/settings" : "/logout"}
+                          onClick={handleClick}
+                          className={`${linkStyle} ${isActive(item.name === "Settings" ? "/settings" : "/logout")}`}
+                        >
+                          {item.name === "Settings" ? <CiSettings /> : <IoMdLogOut />}
+                          {item.name}
+                        </Link>
+                      </li>
+                    )
+                  )
+                } )
+              }
               <li className="menu-item">
                 <Link
                   onClick={() => setModal1Open(true)}
@@ -288,14 +294,6 @@ const SideMenu = () => {
             </ul>
           </li>
         </ul>
-        {/* <div className="  h-[75px] flex flex-col justify-center items-center  gap-2   border-dotted border-2 border-[#06175d] mx-3 p-2 rounded-lg text-[#06175d]">
-        <div className="text-start w-full font-bold text-xs ">Powered By</div>
-        <div className="flex justify-around items-center gap-2">
-
-        <img src={aiLogo} alt="" className="w-[40px]" />
-        <span className="font-bold text-xl ">AIvolved</span>
-        </div>
-      </div> */}
         <CurrentTime />
       </div>
     </div>

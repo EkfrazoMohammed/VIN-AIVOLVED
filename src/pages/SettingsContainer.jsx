@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { Tabs } from 'antd';
-import Settings from "./TabComponents/Settings";
+import Settings from "./TabComponents/Settings/Settings";
 import Alerts from './TabComponents/Alerts';
 import Defects from './TabComponents/Defects';
 import Department from './TabComponents/Department';

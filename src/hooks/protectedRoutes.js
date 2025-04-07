@@ -4,12 +4,12 @@ import { Outlet, Navigate } from "react-router-dom";
 import Layout from "../pages/Layout";
 
 const ProtectedRoutes = () => {
-  const isAuthenticated = useSelector(
-    (state) => state.auth.authData[0].isAuthenticated
+  const isAuthenticated = useSelector((state) =>
+    state.auth.authData?.[0]?.isAuthenticated ?? false
   );
-  const rememberMe = localStorage.getItem("rememberMeClicked");
+  const plantDataFromRedux = useSelector((state) => state.plant?.isAuthenticatedPlant);
 
-  return isAuthenticated || rememberMe   ? (
+  return isAuthenticated && plantDataFromRedux ? (
     <Layout>
       <Outlet />
     </Layout>

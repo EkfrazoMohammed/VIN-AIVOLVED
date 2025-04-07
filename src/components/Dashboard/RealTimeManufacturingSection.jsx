@@ -22,9 +22,6 @@ export default function RealTimeManufacturingSection({
   }, [productionData]);
 
   
-  console.log(productionData,"productionData")
-
-
   // Helper to calculate total defects
   const totalDefects = Object.values(categoryDefects || {}).reduce(
     (total, count) => total + count,

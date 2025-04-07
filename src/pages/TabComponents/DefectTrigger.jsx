@@ -148,6 +148,7 @@ const App = () => {
         />
     );
 
+    
     // Function to handle row expansion (accordion style)
     const handleRowExpand = (expanded, record) => {
       if (expanded) {
