@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
-import { Table, Select, DatePicker, Button, Image, Tag } from 'antd';
+import { Table, Select, DatePicker, Button, Image, Tag, notification } from 'antd';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
 import moment from 'moment';
@@ -23,7 +23,7 @@ const { RangePicker } = DatePicker;
 
 
 const Reports = () => {
-
+  const [api, contextHolder] = notification.useNotification();
   const apiCallInterceptor = useApiInterceptor();
   const dateFormat = 'YYYY/MM/DD';
 
@@ -33,7 +33,15 @@ const Reports = () => {
   const defectProp = location?.state?.clickedVal[0]?.name || null
   const defectId = location?.state?.clickedVal[0]?.id || null
 
-
+  const openNotification = (param) => {
+    const {status,message , desc} = param
+    
+    api[status]({
+      message: <div style={{fontSize:"1.1rem",fontWeight:"600"}}>{message || ""}</div>,
+      description:desc,
+      duration: 2,
+    });
+  };
 
   const columns = [
     {
@@ -106,6 +114,8 @@ const Reports = () => {
   const [selectedProduct, setselectedProduct] = useState(null);
   const [dateRange, setDateRange] = useState();
   const [tableData, setTableData] = useState([]);
+  const [excelData, setExcelData] = useState([]);
+
   const [selectedDate, setSelectedDate] = useState(null);
   const [pagination, setPagination] = useState({
     current: 1,
@@ -148,6 +158,10 @@ const Reports = () => {
     if (dateStrings) {
       console.log(dateStrings)
       setSelectedDate(dateStrings)
+      setPagination({
+        ...pagination,
+        current: 1,
+      })
       setDateRange(dateStrings);
     } else {
       console.error('Invalid date range:', dates, dateStrings);
@@ -220,6 +234,7 @@ const Reports = () => {
       });
     } catch (error) {
       console.error('Error:', error);
+      setLoader(false)
     }
     // axios.get(url, {
     //   headers: {
@@ -433,10 +448,55 @@ const Reports = () => {
     prodApi()
   }, []);
 
-  const downloadExcel = () => {
+
+  const downloadExcelApi = async() =>{
+    try {
+      let fromDate, toDate;
+
+// Destructure dateRange safely
+if (Array.isArray(dateRange) && dateRange.length === 2) {
+  [fromDate, toDate] = dateRange;
+}
+
+const queryParams = {
+  plant_id: localPlantData?.id,
+  from_date: fromDate,
+  to_date: toDate,
+  machine_id: selectedMachine,
+  department_id: selectedDepartment,
+  product_id: selectedProduct,
+  defect_id: selectedDefect,
+};
+
+// Filter out undefined or null values
+const filteredParams = Object.entries(queryParams)
+  .filter(([_, value]) => value !== undefined && value !== null)
+  .map(([key, value]) => `${key}=${value}`)
+  .join('&');
+
+// Construct the final URL
+const url = `download-reports/?${filteredParams}`;
+
+      const response = await apiCallInterceptor.get(url);
+      console.log(response.data.results,"results")
+      if(response?.data?.results && response?.data?.results?.length > 0){
+        setExcelData(response.data.results)
+        downloadExcel(response.data.results)
+      }else{
+        openNotification({status:"error",message:"No Data",desc:"Please note, there is no data available for download at this time."});
+
+      }
+
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const downloadExcel = (data) => {
 
     // Convert JSON to Excel
-    const ws = XLSX.utils.json_to_sheet(tableData);
+    
+    const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
 
@@ -471,7 +531,7 @@ const Reports = () => {
 
 
   const handleTableChange = (pagination) => {
-    console.log(pagination.pageSize)
+  
     setPagination({
       ...pagination,
       pageSize: pagination.pageSize
@@ -560,7 +620,7 @@ const Reports = () => {
 
     <>
       {/* <ToastContainer /> */}
-
+{contextHolder}
 
       <div className="layout-content">
         <div className="" style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
@@ -626,11 +686,11 @@ const Reports = () => {
             value={selectedDate ? [dayjs(selectedDate[0], dateFormat), dayjs(selectedDate[1], dateFormat)] : []}
           />
 
-          <Button type="primary" onClick={() => handleApplyFilters(pagination.current, pagination.pageSize)} style={{ fontSize: "1rem", backgroundColor: "#ec522d", marginRight: "10px" }}>Apply filters</Button>
+          <Button type="primary" onClick={() => handleApplyFilters(1, pagination.pageSize)} style={{ fontSize: "1rem", backgroundColor: "#ec522d", marginRight: "10px" }}>Apply filters</Button>
           {filterActive ?
             <Button type="primary" onClick={resetFilter} style={{ fontSize: "1rem", backgroundColor: "#ec522d", marginRight: "10px" }}>Reset Filter</Button>
             : null}
-          <Button type="primary" icon={<DownloadOutlined />} size='large' style={{ fontSize: "1rem", backgroundColor: "#ec522d" }} onClick={downloadExcel}>
+          <Button type="primary" icon={<DownloadOutlined />} size='large' style={{ fontSize: "1rem", backgroundColor: "#ec522d" }} onClick={downloadExcelApi}>
             Download
           </Button>
         </div>
