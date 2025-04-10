@@ -50,9 +50,9 @@ const Location = () => {
   }, [accessToken]);
 
   return (
-    <Row className="h-screen  overflow-hidden flex   justify-center items-center w-full px-0 bg-white ">
+    <Row className="h-screen  overflow-hidden flex   justify-around items-center w-full px-0 bg-white ">
       <Col
-        span={9}
+        span={6}
         className="flex justify-start flex-col gap-0 items-center  p-2"
       >
         {loader ? (
@@ -75,7 +75,7 @@ const Location = () => {
                             alt="loadingError"
                           /> 
               </div> */}
-              <Card className=" bg-[#06175d] h-[90px] w-1/2">
+              <Card className=" bg-[#06175d] h-[90px] w-full">
                 <div className=" flex justify-center items-center gap-2">
                   <img
                     src="https://eimkeia.stripocdn.email/content/guids/CABINET_8270216c780e362a1fbcd636b59c67ae376eb446dc5f95e17700b638b8c3f618/images/hindunilvrns_bigd9791ee3bremovebgpreview.png"
@@ -94,9 +94,9 @@ const Location = () => {
                 </span>
               </div>
               {location?.length > 0 && location && (
-                <Row className=" my-3  flex-wrap   gap-3  p-2 overflow-y-auto ">
+                <Row className=" my-3  flex-wrap   gap-3   overflow-y-auto ">
                   {Array.isArray(location) && location.length > 0 && (
-                    <Row className="my-3 flex-wrap gap-3 p-2 overflow-y-auto">
+                    <Row className="my-3 flex-wrap justify-start gap-3  overflow-y-auto">
                       {location.map((locationItem) => (
                         <Col col={1} key={locationItem.id}>
                           <Card
@@ -128,7 +128,7 @@ const Location = () => {
         )}
       </Col>
       <Col
-        span={14}
+        span={17}
         className="flex flex-col justify-center   rounded-3xl h-full"
       >
         <div className="scroll-container">

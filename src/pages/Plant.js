@@ -32,7 +32,7 @@ const Plant = () => {
         plant_name: plantData[0].plant_name,
         is_active: plantData[0].is_active,
       })); // Dispatch valid plant data to Redux
-      navigate("/");
+      navigate("/dashboard");
     } else {
       console.log("Invalid or empty plant data:", plantData); // Handle invalid data
     }

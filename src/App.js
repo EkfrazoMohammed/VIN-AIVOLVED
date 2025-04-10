@@ -7,7 +7,7 @@ import ResetPasswordNewPassword from "./pages/Auth/ResetPasswordNewPassword";
 import Plant from "./pages/Plant";
 import Reports from "./pages/Reports";
 import AiSmartView from "./pages/AiSmartView";
-import Dashboard from "./pages/Dashboard";
+import Dashboard from "./components/Dashboard/DashboardContentLayout";
 import MachinesParameter from "./pages/MachinesParameter";
 import Camera from "./pages/Camera";
 import SettingsContainer from "./pages/SettingsContainer";
@@ -20,7 +20,7 @@ import Location from "./pages/Location/Location";
 import { useSelector } from "react-redux";
 
 const routeMap = {
-  "Dashboard": { path: "/", component: <Dashboard /> },
+  "Dashboard": { path: "/dashboard", component: <Dashboard /> },
   "Reports": { path: "/reports", component: <Reports /> },
   "Machine Parameter": { path: "/machine-parameter", component: <MachinesParameter /> },
   "Ai Smart View": { path: "/ai-smart-view", component: <AiSmartView /> },
@@ -34,12 +34,12 @@ const App = () => {
   const userPermissions = useSelector(
     (state) => state.user.userData[0].permissions
   );
-  console.log(userPermissions.generalRoutes, "userPermissions.generalRoutes");
+
   return (
     <Router>
       <Routes>
         <Route path="*" element={<NotFound />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<Login />} />
         <Route path="/reset-password-email" element={<ResetPasswordEmail />} />
         {/* <Route path="/plant" element={<Plant />} /> */}
         <Route
@@ -68,7 +68,11 @@ const App = () => {
       element={routeMap[item.name].component}
     />
 ))}
-
+ <Route
+      key="Insights"
+      path="/insights"
+      element={routeMap["Insights"].component}
+    />
     </Route>
       </Routes>
     </Router>

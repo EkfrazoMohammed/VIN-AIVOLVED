@@ -151,7 +151,7 @@ function Dashboard() {
   };
 
   const getSystemStatus = () => {
-    const domain = `${baseURL}`;
+    const domain = `${baseURL}/dashboard/`;
     let url = `${domain}system-status/?plant_id=${localPlantData.id}`;
     axios
       .get(url, {
@@ -163,7 +163,7 @@ function Dashboard() {
        return response
       })
       .catch((error) => {
- throw new Error(error)
+ console.log(error)
       });
   };
 
@@ -178,7 +178,7 @@ function Dashboard() {
   }, []);
 
   const getMachines = () => {
-    const domain = `${baseURL}`;
+    const domain = `${baseURL}/dashboard/`;
     let url = `${domain}machine/?plant_name=${localPlantData.plant_name}`;
     axios
       .get(url, {
@@ -199,7 +199,7 @@ function Dashboard() {
   };
 
   const getDepartments = () => {
-    const domain = `${baseURL}`;
+    const domain = `${baseURL}/dashboard/`;
     let url = `${domain}department/?plant_name=${localPlantData.plant_name}`;
     axios
       .get(url, {
@@ -273,7 +273,7 @@ function Dashboard() {
   const [alertData, setAlertData] = useState(null);
 
   const prodApi = () => {
-    const domain = `${baseURL}`;
+    const domain = `${baseURL}/dashboard/`;
     const url = `${domain}product/?plant_name=${localPlantData.plant_name}`;
     axios
       .get(url, {
@@ -340,7 +340,7 @@ function Dashboard() {
 
   const notifications =[];
   const prevNotificationLength = 0;
-  const [ contextHolder] = notification.useNotification();
+  const [api, contextHolder] = notification?.useNotification();
 
 
 
@@ -643,12 +643,17 @@ function Dashboard() {
               </Col>
               <Col xs={24} sm={24} md={12} lg={12} xl={12} className="mb-24">
                 <Card bordered={false} className="criclebox h-full">
+
+                  {tableData?.length > 0 && (
                   <StackChart data={tableData} />
+                  )}
                 </Card>
               </Col>
               <Col xs={24} sm={24} md={12} lg={12} xl={12} className="mb-24">
                 <Card bordered={false} className="criclebox h-full">
+                {tableData?.length > 0 && (
                   <PieChart data={tableData} selectedDate={selectedDate} />
+                )}
                 </Card>
               </Col>
             </>

@@ -204,7 +204,7 @@ const PasswordResetForm = () => {
               <span className="text-green-500 text-lg font-bold">
                 Password reset successfully. <br />Please login with new password.
               </span>
-              <Link to={"/login"} className="text-blue-500 font-bold ml-2">
+              <Link to={"/"} className="text-blue-500 font-bold ml-2">
                 Login
               </Link>
             </div>

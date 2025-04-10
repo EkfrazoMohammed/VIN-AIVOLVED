@@ -13,7 +13,7 @@ const NotFound = () => {
           The page you are looking for doesn't exist or has been moved.
         </p>
         <a
-          href="/"
+          href="/dashboard"
           className="mt-6 inline-block px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600"
         >
           Go to Home

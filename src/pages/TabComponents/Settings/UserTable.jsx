@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 
 const UserTable = ({ userData }) => {
   const apiInterceptor = useApiInterceptor();
+  const currentRole = useSelector((state) => state.user.userData[0].roleName);
 
   const accessToken = useSelector(
     (state) => state.auth.authData[0].accessToken
@@ -21,51 +22,69 @@ const UserTable = ({ userData }) => {
     {
       title: "ID",
       dataIndex: "id",
+      align: "center",
       render: (text) => <div>{text}</div>,
     },
     {
       title: "First Name",
       dataIndex: "first_name",
+      align: "center",
       render: (text) => <div>{text}</div>,
     },
     {
       title: "Last Name",
       dataIndex: "last_name",
+      align: "center",
+      render: (text) => <div>{text}</div>,
     },
     {
       title: "Location",
       dataIndex: "location_name",
+      align: "center",
+      render: (text) => <div>{text}</div>,
+    },
+    {
+      title: "Plant",
+      dataIndex: "plant_name",
+      align: "center",
+      render: (text) => <div>{text}</div>,
     },
     {
       title: "Role",
       dataIndex: "role_name",
+      align: "center",
+      render: (text) => <div>{text}</div>,
     },
     {
       title: "Email",
       dataIndex: "email",
+      align: "center",
+      render: (text) => <div>{text}</div>,
     },
     {
-      title: "Employee ID",
+      title: "Employee Id",
       dataIndex: "employee_id",
+      align: "center",
+      render: (text) => <div>{text}</div>,
     },
     {
       title: "Edit",
-      render: (record) => (
-        <button
-          style={{ cursor: "pointer" }}
-          onClick={() => {
-            setModalOpen(true);
-            fetchPermissions(record.id);
-          }}
-        >
-            {
-                record?.role !== "User" && 
-          <EditOutlined   />
-            }
-        </button>
-      ),
+      align: "center",
+      render: (record) =>
+       ( record?.role_name === "User" || (record?.role_name === "Manager" && currentRole === "General Manager")) && (
+          <button
+            style={{ cursor: "pointer" }}
+            onClick={() => {
+              setModalOpen(true);
+              fetchPermissions(record.id);
+            }}
+          >
+            <EditOutlined />
+          </button>
+        ),
     },
   ];
+  
 
   const fetchPermissions = async (id) => {
     try {

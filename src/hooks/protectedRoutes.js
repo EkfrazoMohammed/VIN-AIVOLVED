@@ -14,7 +14,7 @@ const ProtectedRoutes = () => {
       <Outlet />
     </Layout>
   ) : (
-    <Navigate to="/login" />
+    <Navigate to="/" />
   );
 };
 

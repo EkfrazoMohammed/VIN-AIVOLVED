@@ -9,7 +9,7 @@ import PropTypes from "prop-types";
 
 function PieChart({ data,  dateRange, loading, localPlantData }) {
  
-  const accessToken = useSelector((state) => state.auth.authData[0].accessToken);
+  const reportStatusData = useSelector((state) => state.user.userData[0].permissions.generalRoutes);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { Title } = Typography;
@@ -19,6 +19,7 @@ function PieChart({ data,  dateRange, loading, localPlantData }) {
   const [chartData, setChartData] = useState({ labels: [], series: [] });
   const [isDataReady, setIsDataReady] = useState(false);
 
+  const reportStatus = reportStatusData.find((item) => item.name === "Reports")?.isActive;
   // Memoizing defect colors to avoid recalculating on every render
   useEffect(() => {
     if (defectsData && defectsData.length > 0) {
@@ -102,7 +103,7 @@ function PieChart({ data,  dateRange, loading, localPlantData }) {
                       const clickedLabel = chartData.labels[clickedIndex];
                       const filterActive = true;
                       const clickedVal = defectsData.filter((val) => val.name === clickedLabel);
-                      if (clickedVal.length > 0) {
+                      if (clickedVal.length > 0 &&  reportStatus) {
                         setTimeout(() => {
                           navigate(`/reports`, { state:  clickedVal[0]?.id  });
                         }, 500);

@@ -110,7 +110,7 @@ const ResetPasswordEmail = () => {
               <p>
                 <ArrowLeftOutlined
                   className="text-[1rem] cursor-pointer "
-                  onClick={() => navigate("/login")}
+                  onClick={() => navigate("/")}
                 />
               </p>
               <img

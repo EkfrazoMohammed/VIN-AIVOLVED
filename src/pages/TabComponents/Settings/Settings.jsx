@@ -28,6 +28,7 @@ const Settings = () => {
     (state) => state.auth.authData[0].accessToken
   );
   const currentUserData = useSelector((state) => state.user.userData[0]);
+  const curentPlantData  = useSelector((state) => state.plant.plantData[0]);
   const currentLocationData = useSelector(
     (state) => state.location.locationData[0]
   );
@@ -49,7 +50,7 @@ const Settings = () => {
       const res = await apiInterceptor.get(
         `/user/?location=${encryptedLocationId}`
       );
-      if (res.data.results.length && res.status === 200) {
+      if (res.data.results && res.status === 200) {
         setLoading((prev) => ({ ...prev, fetchUser: false }));
         setUserData(res.data.results);
       }
@@ -101,6 +102,9 @@ const Settings = () => {
       fetchUserData(currentUserData.locationId);
     }
     if (currentUserData.roleName === "General Manager") {
+      fetchUserData(currentLocationData.id);
+    }
+    if (currentUserData.roleName === "User") {
       fetchUserData(currentLocationData.id);
     }
   }, [accessToken]);
@@ -247,17 +251,17 @@ const Settings = () => {
       );
 
       // On successful request, handle success
-      // if (postRequest) {
-      //   closeModalUser();
-      //   setModal2Open(false);
-      //   setLoading(false);
-      //   resetForm();
+      if (postRequest) {
+        closeModalUser();
+        setModal2Open(false);
+        setLoading(false);
+        resetForm();
 
-      //   openNotification({
-      //     status: "success",
-      //     message: "User Created Successfully!",
-      //   });
-      // }
+        openNotification({
+          status: "success",
+          message: "User Created Successfully!",
+        });
+      }
     } catch (error) {
       // Handle error response
       setLoading((prev) => ({ ...prev, createUser: false }));
@@ -530,7 +534,7 @@ const Settings = () => {
                   </span>
                 )}
               </div>
-              <div>
+          
                 {/* Select Role */}
                 <Select
                   size="large"
@@ -567,10 +571,6 @@ const Settings = () => {
                     </Select>
                   )}
 
-                {/* Plant: 
-      - For "Manager" user -> show directly 
-      - For "General Manager" or "user" -> show after location is selected
-  */}
                 {((currentUserData.roleName === "Manager" && selectedRole) ||
                   (selectedRole && selectedLocation)) &&
                   selectedRole !== "Manager" && (
@@ -588,7 +588,7 @@ const Settings = () => {
                       ))}
                     </Select>
                   )}
-              </div>
+           
 
               {error.location && (
                 <span style={{ fontWeight: "600", color: "red" }}>

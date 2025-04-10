@@ -12,7 +12,7 @@ export const navigateByRole = (userRole, navigate) => {
     if (mappedRoles[normalizedRole]) {
       navigate(mappedRoles[normalizedRole]); 
     } else {
-      navigate("/login"); 
+      navigate("/"); 
     }
   };
   

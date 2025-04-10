@@ -105,7 +105,7 @@ const SideMenu = () => {
   }
   const handleLogout = async () => {
     setModal1Open(false);
-    navigate("/login");
+    navigate("/");
     openNotification();
     localStorage.clear();
     clearSessionandLocalStorage();
@@ -124,47 +124,7 @@ const SideMenu = () => {
     dispatch(setSelectedShift(null))
   }
 
-  const PERMISSION = {
-    generalRoutes:[
-      {
-       name: "Dashboard",
-       isActive: true,
-      },
-      {
-        name: "Reports",
-        isActive: true,
-       },
-       {
-        name: "Ai Smart View",
-        isActive: true,
-       },
-       {
-        name: "Machine Parameter",
-        isActive: true,
-       },
-       {
-        name: "System Status",
-        isActive: true,
-       },
-  ],
-    organizationRoutes:[
-      {
-        name: "Locations",
-        isActive: true,
-       },
-       {
-        name: "Plant",
-        isActive: true,
-       },
-    ],
-    otherRoutes:[
-        {
-          name: "Settings",
-          isActive: true,
-        },
-       
-    ]
-  }
+ 
   
   const userPermissions = useSelector(
     (state) => state.user.userData[0].permissions
@@ -221,9 +181,9 @@ const SideMenu = () => {
                     item.isActive && (
                       <li key={index} className="menu-item">
                         <Link
-                          to={item.name === "Dashboard" ? "/" : `/${item.name.toLowerCase().replace(/\s+/g, '-')}`}
+                          to={item.name === "Dashboard" ? "/dashboard" : `/${item.name.toLowerCase().replace(/\s+/g, '-')}`}
                           onClick={handleClick}
-                          className={`${linkStyle} ${isActive(item.name === "Dashboard" ? "/" : `/${item.name.toLowerCase().replace(/\s+/g, '-')}`)}`}
+                          className={`${linkStyle} ${isActive(item.name === "Dashboard" ? "/dashboard" : `/${item.name.toLowerCase().replace(/\s+/g, '-')}`)}`}
                         >
                           {item.name === "Dashboard" ? <TbLayoutDashboard /> : item.name === "Reports" ? <HiOutlineDocumentReport /> : item.name === "Ai Smart View" ? <LuView /> : item.name === "Machine Parameter" ? <RiListSettingsLine /> : <MdSignalWifiStatusbarConnectedNoInternet1 />}
                           {item.name}

@@ -110,7 +110,7 @@ export const loginPost = async (
     dispatch(signInFailure(error.response?.data));
     openNotification(
       "error",
-      error.response?.data?.message || "Invalid Credentials"
+      error.response?.data?.detail || "Invalid Credentials"
     );
   } finally {
     setLoading(false);
