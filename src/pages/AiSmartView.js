@@ -87,10 +87,12 @@ const AiSmartView = () => {
   };
 
   const handleNext = async () => {
+    setMainImageSrc("")
     sliderRef.current.slickNext();
   };
 
   const handlePrev = async () => {
+    setMainImageSrc("")
     sliderRef.current.slickPrev();
   };
 
@@ -100,7 +102,10 @@ const AiSmartView = () => {
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
-    afterChange: (index) => setCurrentSlideIndex(index),
+    afterChange: (index) => { 
+        setMainImageSrc(""); 
+        setCurrentSlideIndex(index); 
+    },
   };
 
   const handleChange = async (pagination) => {
@@ -122,6 +127,7 @@ const AiSmartView = () => {
     const decrypt = decryptAES(item.image);
     setMainImageSrc(decrypt); 
     setCurrentSlideIndex(index);
+    console.log(index,"jj")
     sliderRef.current.slickGoTo(index);
   };
 
