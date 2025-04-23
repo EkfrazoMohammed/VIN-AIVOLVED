@@ -15,7 +15,10 @@ const UserTable = ({ userData }) => {
     (state) => state.auth.authData[0].accessToken
   );
 
-  const [permissions, setPermission] = React.useState(null);
+  const [permissions, setPermission] = React.useState({
+    permission :[],
+    selectedRole:"",
+  });
   const [modalOpen, setModalOpen] = React.useState(false);
 
   const columns = [
@@ -23,64 +26,72 @@ const UserTable = ({ userData }) => {
       title: "ID",
       dataIndex: "id",
       align: "center",
-      render: (text) => <div>{text}</div>,
     },
     {
       title: "First Name",
       dataIndex: "first_name",
       align: "center",
-      render: (text) => <div>{text}</div>,
     },
     {
       title: "Last Name",
       dataIndex: "last_name",
       align: "center",
-      render: (text) => <div>{text}</div>,
     },
     {
       title: "Location",
       dataIndex: "location_name",
       align: "center",
-      render: (text) => <div>{text}</div>,
     },
     {
       title: "Plant",
       dataIndex: "plant_name",
       align: "center",
-      render: (text) => <div>{text}</div>,
     },
     {
       title: "Role",
       dataIndex: "role_name",
       align: "center",
-      render: (text) => <div>{text}</div>,
     },
     {
       title: "Email",
       dataIndex: "email",
       align: "center",
-      render: (text) => <div>{text}</div>,
+         render:  (text) => {
+          
+            return (
+              <div style={{ wordWrap: "break-word", wordBreak: "break-word" }}>
+              {text ? <div className="xl:text-xs text-wrap">{text}</div> : null}
+              </div>
+            );
+          },
+      
     },
     {
       title: "Employee Id",
       dataIndex: "employee_id",
       align: "center",
-      render: (text) => <div>{text}</div>,
+   
     },
     {
-      title: "Edit",
+      title: "Accessibility",
       align: "center",
       render: (record) =>
-       ( record?.role_name === "User" || (record?.role_name === "Manager" && currentRole === "General Manager")) && (
-          <button
-            style={{ cursor: "pointer" }}
+       ( record?.role_name === "User" || (record?.role_name === "Manager" && currentRole === "General Manager"))  && (
+          <span
+            style={{ cursor: "pointer" , display:"flex" , justifyContent:'center' }}
             onClick={() => {
               setModalOpen(true);
               fetchPermissions(record.id);
+              setPermission((data)=>{
+                return {
+                  ...data,
+                  selectedRole: record.role_name,
+                };
+              });
             }}
           >
-            <EditOutlined />
-          </button>
+           <img src="https://storage.googleapis.com/vin-dashboard/icons8-accessibility-tools-50.png" width="20px" height="auto" alt="" />
+          </span>
         ),
     },
   ];
@@ -94,8 +105,14 @@ const UserTable = ({ userData }) => {
       const encryptedId = encryptAES(JSON.stringify(id));
       const res = await apiInterceptor.get(`/user-permissions/${encryptedId}/`);
       const { results } = res.data;
-      setPermission(results);
       if (results) {
+
+        setPermission((data)=>{
+          return {
+            ...data,
+            permission: results,
+          };
+        });
         //   setPlants(results);
       } else {
         console.warn("No results found in the response");
@@ -137,7 +154,8 @@ const UserTable = ({ userData }) => {
   return (
     <>
       <PermissionModal
-        permissionData={permissions}
+        permissionData={permissions.permission}
+        selectedRole={permissions.selectedRole}
         modalOpen={modalOpen}
         setModalOpen={setModalOpen}
         handleUpdatePermission={handleUpdatePermission}
@@ -158,11 +176,13 @@ const UserTable = ({ userData }) => {
               boxShadowSecondary:
                 "0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05)",
               fontWeightStrong: 500,
+            
+             
             },
           },
         }}
       >
-        <Table rowKey="id" columns={columns} dataSource={userData} />
+        <Table rowKey="id" columns={columns} dataSource={userData} scroll={{ x: "max-content" }}  />
       </ConfigProvider>
     </>
   );

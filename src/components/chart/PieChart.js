@@ -87,92 +87,103 @@ function PieChart({ data,  dateRange, loading, localPlantData }) {
           </div>
         ) : (
           <div style={{ width: "100%"  }}>
-            <ReactApexChart
-              options={{
-                
-                chart: {
-                  width: 380,
-                  type: "pie",
-                  events: {
-                    dataPointSelection: (event, chartContext, opts) => {
-                      const clickedIndex = opts.dataPointIndex;
-                      if (clickedIndex === -1 || !chartData.labels[clickedIndex]) {
-                        return;
-                      }
+<ReactApexChart
+  options={{
+    chart: {
+      width: 380,
+      type: "pie",
+      events: {
+        dataPointSelection: (event, chartContext, opts) => {
+          const clickedIndex = opts.dataPointIndex;
+          if (clickedIndex === -1 || !chartData.labels[clickedIndex]) {
+            return;
+          }
 
-                      const clickedLabel = chartData.labels[clickedIndex];
-                      const filterActive = true;
-                      const clickedVal = defectsData.filter((val) => val.name === clickedLabel);
-                      if (clickedVal.length > 0 &&  reportStatus) {
-                        setTimeout(() => {
-                          navigate(`/reports`, { state:  clickedVal[0]?.id  });
-                        }, 500);
-                      } else {
-                        console.error("No matching defect found");
-                      }
-                    },
-                  },
-                },
-                colors: chartData.labels.map((label, index) => {
-                  const predefinedColors = ["#FF5733", "#e31f09", "#3357FF"];
-                  return defectColors[label] || predefinedColors[index % predefinedColors.length];
-                }),
-                dataLabels: {
-                  enabled: true,
-                  formatter: (val) => val.toFixed(2) + "%",
-                  style: {
-                    fontSize: '12px',
-                    fontFamily: 'Helvetica, Arial, sans-serif',
-                    fontWeight: 'bold',
-                    colors: ["#000"],
-                    textShadow: "none",
-                  },
-                  dropShadow: {
-                    enabled: false,
-                  },
-                },
-                labels: chartData.labels,
-                legend: {
-                  position: "bottom",
-                  horizontalAlign: "center",
-                  fontSize: "14px",
-                  fontWeight: "bold",
-                  markers: {
-                    width: 10,
-                    height: 10,
-                    radius: 12,
-                  },
-                  onItemHover: {
-                    highlightDataSeries: false,
-                  },
-                },
-             
-                plotOptions: {
-                  pie: {
-                    dataLabels: {
-                      offset: 0,
-                    },
-                  },
-                },
-                
-                responsive: [
-                  {
-                    breakpoint: 480,
-                    options: {
-                      chart: {
-                        width: 200,
-                      },
-                      legend: {
-                        position: "bottom",
-                      },
-                    },
-                  },
-                ],
-              }}
-              series={chartData.series}
-              type="pie"
-              height={chartData.series.length > 15 ? 600 : 400}
-            />
+          const clickedLabel = chartData.labels[clickedIndex];
+          const filterActive = true;
+          const clickedVal = defectsData.filter((val) => val.name === clickedLabel);
+          if (clickedVal.length > 0 && reportStatus) {
+            setTimeout(() => {
+              navigate(`/reports`, { state: clickedVal[0]?.id });
+            }, 500);
+          } else {
+            console.error("No matching defect found");
+          }
+        },
+      },
+    },
+    colors: chartData.labels.map((label, index) => {
+      const predefinedColors = ["#FF5733", "#e31f09", "#3357FF"];
+      return defectColors[label] || predefinedColors[index % predefinedColors.length];
+    }),
+    dataLabels: {
+      enabled: true,
+      formatter: (val) => {
+        return val < 3 ? "" : `${val.toFixed(2)}%`; // hide labels under 3%
+      },
+      style: {
+        fontSize: "12px",
+        fontFamily: "Helvetica, Arial, sans-serif",
+        fontWeight: "bold",
+        colors: ["#000"],
+        textShadow: "none",
+      },
+      dropShadow: {
+        enabled: false,
+      },
+    },
+    labels: chartData.labels,
+    legend: {
+      position: "bottom",
+      horizontalAlign: "center",
+      fontSize: "14px",
+      fontWeight: "bold",
+      markers: {
+        width: 10,
+        height: 10,
+        radius: 12,
+      },
+      onItemHover: {
+        highlightDataSeries: false,
+      },
+    },
+    tooltip: {
+      y: {
+        formatter: (val) => {
+          const total = chartData.series.reduce((sum, num) => sum + num, 0);
+          const percent = total ? ((val / total) * 100).toFixed(2) : "0.00";
+          return `${val} (${percent}%)`;
+        },
+      },
+    },
+    
+    
+    plotOptions: {
+      pie: {
+        dataLabels: {
+          offset: 0,
+        },
+      },
+    },
+    responsive: [
+      {
+        breakpoint: 480,
+        options: {
+          chart: {
+            width: 200,
+          },
+          legend: {
+            position: "bottom",
+          },
+        },
+      },
+    ],
+  }}
+  series={chartData.series}
+  type="pie"
+  height={chartData.series.length > 15 ? 600 : 400}
+/>
+
           </div>
         )}
       </div>

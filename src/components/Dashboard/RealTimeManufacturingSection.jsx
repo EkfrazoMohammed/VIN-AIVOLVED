@@ -58,7 +58,7 @@ export default function RealTimeManufacturingSection({
         callbacks: {
           label: (tooltipItem) => {
             const value = tooltipItem.raw;
-            return window.innerWidth < 768 ? `${value}M` : `Value: ${value}M`; 
+            return window.innerWidth < 768 ? `${value}` : `Value: ${value}M`; 
           },
           title: (tooltipItems) => {
             return `Date: ${tooltipItems[0].label}`;
@@ -66,12 +66,18 @@ export default function RealTimeManufacturingSection({
         },
       },
       datalabels: {
-        color: "#ffff",
+        color: "#000",            // Make sure the color contrasts with the background
+        anchor: "end",            // Anchor the label to the end of the bar
+        align: "start", 
+                  // Align the label to start just outside the end (top) of the bar
+        offset: -15,                // Optional: fine-tune the distance above the bar
         font: {
           size: productionData?.length > 15 ? 7 : 10,
+           weight: "bold"
         },
-        formatter: (value) => `${value}M`, // Ensure zero values are displayed
-      },
+        formatter: (value) => `${value}`,
+      }
+      
     },
     scales: {
       y: {

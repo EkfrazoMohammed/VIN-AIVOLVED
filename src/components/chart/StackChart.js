@@ -166,7 +166,7 @@ function StackChart({ data, localPlantData, loading ,dateRange }) {
       },
       tooltip: {
         callbacks: {
-          label: (tooltipItem) => `${tooltipItem.raw}M`,
+          label: (tooltipItem) => `${tooltipItem.raw}`,
         },
       },
       datalabels: {
@@ -218,7 +218,7 @@ function StackChart({ data, localPlantData, loading ,dateRange }) {
             weight: "600",
      
           },
-          callback: (value) => `${value}M`,
+          callback: (value) => `${value}`,
         },
       },
     },

@@ -268,6 +268,10 @@ const initialExcelState = {
   apiCallInProgressExcel:false
 }
 
+
+
+
+
 const reducerExcel = (state, action) =>{
   switch(action.type){
     case 'REPORT_DATA_EXCEL':
@@ -316,7 +320,6 @@ const reducerExcel = (state, action) =>{
   const handleDownload = async () => {
     try {
       dispatch({ type: "API_CALLINPROGESS_EXCEL", payload: true });
-       
       const params = {
         plant_id: localPlantData?.id || undefined,
         from_date: selectedDateExcel?.[0] || undefined,
@@ -354,27 +357,25 @@ const reducerExcel = (state, action) =>{
        dispatchExcel({type:'SET_SELECTED_SHIFT_EXCEL', payload:null})
        setSelectedDateExcel(null)
        setLoaderExcel(true)
-      setTimeout(()=>{
-        setModal(false)
-        setLoaderExcel(false)
 
-      },[3000])
+
 
        const response = await apiCallInterceptor(url); 
        if(response.data.results.length > 0){
          downloadExcel(response.data.results);
-         setLoaderExcel(false)
-
+         setTimeout(()=>{
+          setModal(false)
+          setLoaderExcel(false)
+        },[3000])
         }
         else {
-          openNotification("error","No data available for download in Excel format.")
+        openNotification("error","No data available for download in Excel format.")
+          // setLoaderExcel(false)
+          setModal(true)
           setLoaderExcel(false)
-
         }
-
-      
     } catch (error) {
-      console.log(error)
+ 
       dispatch({ type: "API_CALLINPROGESS_EXCEL", payload: false });
       setModal(false)
     }
@@ -384,7 +385,7 @@ const reducerExcel = (state, action) =>{
   useEffect(() => {
     const handleScroll = () => {
       if (rangePickerRef.current) {
-        rangePickerRef.current.blur(); // Close the RangePicker dropdown
+        rangePickerRef.current.blur();
       }
     };
 
@@ -519,7 +520,8 @@ if (allNull) {
 
   const handleDefectChange = (value , type) => {
     const updatedValue = value || null;
-      
+    window.history.replaceState({}, document.title)
+
     if(type == "excel"){
       return dispatchExcel({type:'SET_SELECTED_DEFECT_EXCEL', payload:updatedValue})
      }
@@ -801,6 +803,7 @@ if (allNull) {
 
   const resetFilter =  () => {
     setFilterActive(false);
+    window.history.replaceState({}, document.title)
     setQueryParamState({
       defect: null,
       machine: null,
@@ -817,6 +820,7 @@ if (allNull) {
     setFilterChanged(false)
     initialReportData()
   };
+
 
 
 
@@ -837,7 +841,9 @@ if (allNull) {
          setSelectedDateExcel(null)
         }}
         footer={[
+          !loaderExcel && (
             <Button key="submit" type="primary" disabled={stateExcel.product === null && stateExcel.machine === null && stateExcel.defect === null && selectedDateExcel === null }  className="commButton" onClick={handleDownload}>Download Excel</Button>
+          )
       
         ]}
       >
@@ -1055,6 +1061,7 @@ if (allNull) {
             loading={loader}
             onChange={handleTableChange}
             className="custom-table"
+            scroll={{ x: "max-content" }} 
           />
         </ConfigProvider>
         )}

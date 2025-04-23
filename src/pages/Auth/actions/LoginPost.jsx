@@ -107,10 +107,11 @@ export const loginPost = async (
    navigateByRole(role_name, navigate);
 
   } catch (error) {
+    
     dispatch(signInFailure(error.response?.data));
     openNotification(
       "error",
-      error.response?.data?.detail || "Invalid Credentials"
+      error.response?.data?.message || "Invalid Credentials"
     );
   } finally {
     setLoading(false);

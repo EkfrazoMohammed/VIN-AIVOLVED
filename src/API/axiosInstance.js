@@ -12,7 +12,7 @@ axiosInstance.interceptors.response.use(
   (error) => {
     // Handle errors globally
     //console.error("API Error:", error);
-    return Promise.reject(new Error(error));
+    return Promise.reject(error); // Keep original error object
   }
 );
 

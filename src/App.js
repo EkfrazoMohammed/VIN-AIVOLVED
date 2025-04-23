@@ -34,7 +34,19 @@ const App = () => {
   const userPermissions = useSelector(
     (state) => state.user.userData[0].permissions
   );
+  console.clear();
 
+  // Save a reference to the original console.log
+  const originalConsoleLog = console.log;
+  // Display your custom text
+
+  originalConsoleLog('Hi 👋,Hul Dashboard ');
+
+  // Override console methods with a function that does nothing
+  console.log = function () {};
+  console.warn = function () {};
+  console.error = function () {};
+  console.table = function () {};
   return (
     <Router>
       <Routes>

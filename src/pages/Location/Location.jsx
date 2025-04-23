@@ -101,7 +101,7 @@ const Location = () => {
                         <Col col={1} key={locationItem.id}>
                           <Card
                             hoverable
-                            className="custom-card bg-[#f6f6f6] h-[150px] min-w-[180px] w-full text-black hover:bg-[#43996a] hover:!text-white flex justify-center items-center shadow-md"
+                            className="custom-card bg-[#f6f6f6] h-[150px] min-w-[170px] w-full text-black hover:bg-[#43996a] hover:!text-white flex justify-center items-center shadow-md"
                             onClick={() => handleStorage([locationItem])}
                           >
                             <div className="flex justify-center flex-col items-center h-full gap-2">

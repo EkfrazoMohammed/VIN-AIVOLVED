@@ -28,7 +28,7 @@ const Settings = () => {
     (state) => state.auth.authData[0].accessToken
   );
   const currentUserData = useSelector((state) => state.user.userData[0]);
-  const curentPlantData  = useSelector((state) => state.plant.plantData[0]);
+  const curentPlantData = useSelector((state) => state.plant.plantData[0]);
   const currentLocationData = useSelector(
     (state) => state.location.locationData[0]
   );
@@ -43,20 +43,22 @@ const Settings = () => {
   const [locations, setLocation] = useState([]);
   const [userData, setUserData] = useState([]);
 
-  const fetchUserData = async (selectedLocation) => {
+  const fetchUserData = async (selectedLocation, userID = false) => {
     try {
       setLoading((prev) => ({ ...prev, fetchUser: true }));
-            const encryptedLocationId = encryptAES(JSON.stringify(selectedLocation));
-      const res = await apiInterceptor.get(
-        `/user/?location=${encryptedLocationId}`
-      );
+      const encryptedLocationId = encryptAES(JSON.stringify(selectedLocation));
+      const url = userID
+        ? `/user/?search=${encryptedLocationId}`
+        : `/user/?location=${encryptedLocationId}`;
+      const res = await apiInterceptor.get(url);
       if (res.data.results && res.status === 200) {
         setLoading((prev) => ({ ...prev, fetchUser: false }));
         setUserData(res.data.results);
       }
     } catch (error) {
       console.log(error);
-      setLoading((prev) => ({ ...prev, fetchUser: false }));    }
+      setLoading((prev) => ({ ...prev, fetchUser: false }));
+    }
   };
 
   const fetchPlantData = async (selectedLocation) => {
@@ -84,6 +86,18 @@ const Settings = () => {
       }
     }
   };
+  const handleGetUserData = () =>{
+    if (currentUserData.roleName === "Manager") {
+      fetchPlantData(currentUserData.locationId);
+      fetchUserData(currentUserData.locationId);
+    }
+    if (currentUserData.roleName === "General Manager") {
+      fetchUserData(currentLocationData.id);
+    }
+    if (currentUserData.roleName === "User") {
+      fetchUserData(curentPlantData.id, true);
+    }
+  }
 
   useEffect(() => {
     fetchLocationData(accessToken, apiInterceptor)
@@ -97,17 +111,10 @@ const Settings = () => {
       .catch((err) => {
         console.log("Error in fetching location data:", err);
       });
-    if (currentUserData.roleName === "Manager") {
-      fetchPlantData(currentUserData.locationId);
-      fetchUserData(currentUserData.locationId);
-    }
-    if (currentUserData.roleName === "General Manager") {
-      fetchUserData(currentLocationData.id);
-    }
-    if (currentUserData.roleName === "User") {
-      fetchUserData(currentLocationData.id);
-    }
-  }, [accessToken]);
+      handleGetUserData()
+  }, []);
+
+
 
   const headersOb = {
     headers: {
@@ -129,8 +136,9 @@ const Settings = () => {
     Phone: "",
     email: "",
     employee_id: "",
-    plant: null,
-    role_name: null,
+    plant: "",
+    location: "",
+    role: "",
   });
 
   const [selectedRole, setSelectedRole] = useState(null);
@@ -138,13 +146,16 @@ const Settings = () => {
   const [selectedPlant, setSelectedPlant] = useState(null);
 
   const handleRoleChange = (value) => {
+    setError((prev) => ({ ...prev, role: "" }));
     setSelectedRole(value);
     setSelectedLocation(null);
   };
 
   const handleLocationChange = (value) => {
+    setSelectedPlant(null);
     setSelectedLocation(value);
     fetchPlantData(value);
+    setError((prev) => ({ ...prev, location: "" }));
   };
 
   const closeModalUser = () => {
@@ -210,11 +221,28 @@ const Settings = () => {
       errors.email = validateEmail(data.email);
       errors.employee_id = validateRequired(data.employee_id, "Employee ID");
 
+      errors.location = validateRequired(selectedLocation, "Location");
+      errors.role = validateRequired(selectedRole, "Role");
+
+      if (
+        currentUserData.roleName === "General Manager" &&
+        selectedRole === "Manager"
+      ) {
+        setError((prev) => ({ ...prev, Plant: "" }));
+      }
+      
+      else if( selectedRole === "Manager"){
+        setError((prev) => ({ ...prev, Plant: "" }));
+      }
+      else{
+        errors.plant = validateRequired(selectedPlant, "Plant");
+      }
+      
       // Remove any null values (empty error messages)
       errors = Object.fromEntries(
         Object.entries(errors).filter(([_, v]) => v !== null)
       );
-
+      console.log(errors, "errors");
       setError(errors); // Update errors
 
       // If there are any errors, stop execution
@@ -233,7 +261,10 @@ const Settings = () => {
         plant: selectedPlant,
         role:
           selectedRole === "Manager" ? 2 : selectedRole === "user" ? 3 : null,
-        location: selectedLocation,
+        location:
+          currentUserData.roleName === "Manager"
+            ? currentUserData.locationId
+            : selectedLocation,
         password: null,
       };
 
@@ -256,7 +287,7 @@ const Settings = () => {
         setModal2Open(false);
         setLoading(false);
         resetForm();
-
+        handleGetUserData()
         openNotification({
           status: "success",
           message: "User Created Successfully!",
@@ -275,7 +306,6 @@ const Settings = () => {
         openNotification({
           status: "error",
           message: error?.response?.data?.message,
-
         });
       }
     }
@@ -295,7 +325,6 @@ const Settings = () => {
     setLoading((prev) => ({ ...prev, createUser: true }));
 
     setError({});
-
   };
 
   const handleChange = (e) => {
@@ -325,6 +354,7 @@ const Settings = () => {
   };
 
   const handlePlantChange = (value) => {
+    setError((prev) => ({ ...prev, plant: "" }));
     setSelectedPlant(value);
   };
 
@@ -337,18 +367,20 @@ const Settings = () => {
         style={{ display: "flex", justifyContent: "space-between" }}
       >
         <Col span={9}>
-          <h5 style={{ fontWeight: 650 }}>User Creation</h5>
+          {/* <h5 style={{ fontWeight: 650 }}>User Creation</h5> */}
         </Col>
         <Col span={3}>
-          <Button
-            className="commButton"
-            type="primary"
-            style={{ width: "100%", padding: "0" }}
-            danger
-            onClick={() => setModal2Open(true)}
-          >
-            User Creation
-          </Button>
+          {currentUserData.roleName !== "User" && (
+            <Button
+              className="commButton"
+              type="primary"
+              style={{ width: "100%", padding: "0" }}
+              danger
+              onClick={() => setModal2Open(true)}
+            >
+              User Creation
+            </Button>
+          )}
         </Col>
       </Row>
       <Row
@@ -361,7 +393,11 @@ const Settings = () => {
           margin: "2rem",
         }}
       >
-        {loading.fetchUser ? <Spin size="large" /> : <UserTable userData={userData} />}
+        {loading.fetchUser ? (
+          <Spin size="large" />
+        ) : (
+          <UserTable userData={userData} />
+        )}
       </Row>
       <Row
         style={{
@@ -527,19 +563,11 @@ const Settings = () => {
                   ""
                 )}
               </div>
-              <div className="">
-                {error.role_name && (
-                  <span style={{ fontWeight: "600", color: "red" }}>
-                    {error.role_name}
-                  </span>
-                )}
-              </div>
-          
-                {/* Select Role */}
+              <>
                 <Select
                   size="large"
                   style={{ minWidth: "100%" }}
-                  placeholder="Select Role"
+                  placeholder="Select Role*"
                   value={selectedRole}
                   onChange={handleRoleChange}
                 >
@@ -552,14 +580,21 @@ const Settings = () => {
                     <Select.Option value="user">User</Select.Option>
                   ) : null}
                 </Select>
+                {error.role && (
+                  <span style={{ fontWeight: "600", color: "red" }}>
+                    {error.role}
+                  </span>
+                )}
+              </>
 
-                {/* Location: show only for General Manager when selectedRole is "Manager" or "user" */}
-                {currentUserData.roleName === "General Manager" &&
-                  (selectedRole === "Manager" || selectedRole === "user") && (
+              {/* Location: show only for General Manager when selectedRole is "Manager" or "user" */}
+              {currentUserData.roleName === "General Manager" &&
+                (selectedRole === "Manager" || selectedRole === "user") && (
+                  <>
                     <Select
                       size="large"
-                      style={{ minWidth: "100%", marginTop: 10 }}
-                      placeholder="Select Location"
+                      style={{ minWidth: "100%", }}
+                      placeholder="Select Location*"
                       onChange={handleLocationChange}
                       value={selectedLocation}
                     >
@@ -569,15 +604,22 @@ const Settings = () => {
                         </Select.Option>
                       ))}
                     </Select>
-                  )}
+                    {error.location && (
+                      <span style={{ fontWeight: "600", color: "red" }}>
+                        {error.location}
+                      </span>
+                    )}
+                  </>
+                )}
 
-                {((currentUserData.roleName === "Manager" && selectedRole) ||
-                  (selectedRole && selectedLocation)) &&
-                  selectedRole !== "Manager" && (
+              {((currentUserData.roleName === "Manager" && selectedRole) ||
+                (selectedRole && selectedLocation)) &&
+                selectedRole !== "Manager" && (
+                  <>
                     <Select
                       size="large"
-                      style={{ minWidth: "100%", marginTop: 10 }}
-                      placeholder="Select Plant"
+                      style={{ minWidth: "100%"}}
+                      placeholder="Select Plant*"
                       value={selectedPlant}
                       onChange={handlePlantChange}
                     >
@@ -587,19 +629,13 @@ const Settings = () => {
                         </Select.Option>
                       ))}
                     </Select>
-                  )}
-           
-
-              {error.location && (
-                <span style={{ fontWeight: "600", color: "red" }}>
-                  {error.location}
-                </span>
-              )}
-              {error.plant && (
-                <span style={{ fontWeight: "600", color: "red" }}>
-                  {error.plant}
-                </span>
-              )}
+                    {error.plant && (
+                      <span style={{ fontWeight: "600", color: "red" }}>
+                        {error.plant}
+                      </span>
+                    )}
+                  </>
+                )}
             </div>
             <div
               className=""

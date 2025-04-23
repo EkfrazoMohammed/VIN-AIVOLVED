@@ -1,21 +1,47 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Button, Row, Col } from "antd";
 
-const PermissionModal = ({ permissionData, modalOpen, setModalOpen  , handleUpdatePermission}) => {
+const PermissionModal = ({
+  permissionData,
+  selectedRole,
+  modalOpen,
+  setModalOpen,
+  handleUpdatePermission,
+}) => {
   const [permissionState, setPermissionState] = useState({});
 
   // Initialize permissionState only with boolean fields from permissionData
   useEffect(() => {
     if (permissionData) {
+      
       const booleanFields = Object.entries(permissionData)
         .filter(([_, value]) => typeof value === "boolean")
         .reduce((acc, [key, value]) => {
           acc[key] = value;
           return acc;
         }, {});
-      setPermissionState(booleanFields);
+  
+      if (selectedRole === "User") {
+        const filteredFields = Object.entries(booleanFields)
+          .filter(([key]) => key !== "plant" && key !== "location")
+          .reduce((acc, [key, value]) => {
+            acc[key] = value;
+            return acc;
+          }, {});
+  
+        setPermissionState(filteredFields);
+      } else if (selectedRole === "Manager") {
+        const filteredFields = Object.entries(booleanFields)
+        .filter(([key]) => key !== "location")
+        .reduce((acc, [key, value]) => {
+          acc[key] = value;
+          return acc;
+        }, {});
+        setPermissionState(filteredFields);
+      }
     }
-  }, [permissionData]);
+  }, [permissionData, selectedRole]);
+  
 
   // Handle checkbox change
   const handleCheckboxChange = (key) => {
@@ -27,10 +53,10 @@ const PermissionModal = ({ permissionData, modalOpen, setModalOpen  , handleUpda
 
   const handlePost = async () => {
     const payload = {
-        ...permissionState,
-        id: permissionData.id,
-        user:permissionData.user,
-    }
+      ...permissionState,
+      id: permissionData.id,
+      user: permissionData.user,
+    };
     handleUpdatePermission(payload);
   };
 
@@ -70,7 +96,9 @@ const PermissionModal = ({ permissionData, modalOpen, setModalOpen  , handleUpda
         <Col className="flex flex-wrap gap-4">
           {Object.entries(permissionState).map(([key, value]) => (
             <div className="flex gap-2 w-[45%]" key={key}>
-              <label style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <label
+                style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
+              >
                 <input
                   type="checkbox"
                   checked={value}
@@ -78,7 +106,9 @@ const PermissionModal = ({ permissionData, modalOpen, setModalOpen  , handleUpda
                   className="h-4 w-4 cursor-pointer"
                   disabled={key === "dashboard"}
                 />
-                <span className="text-md">{key.replace(/_/g, " ").toUpperCase()}</span>
+                <span className="text-md">
+                  {key.replace(/_/g, " ").toUpperCase()}
+                </span>
               </label>
             </div>
           ))}
